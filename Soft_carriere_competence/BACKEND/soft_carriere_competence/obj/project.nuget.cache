@@ -1,26 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "ZWKUao3YOES9oML6ktVhNQDNlaFC37rrxZ3+DtHXIAO7zarGWfd2H35Lymn2Qtw4I7qUNW+P1oPoHVNptRg1dw==",
+  "dgSpecHash": "szuQPIrCLPLGAjuBBifyFPwIEiEfOOcN/LGuRjwxy6ekkxf6jkE8BRKIHNs8bxtjQFaOYXBcNNyoWWecwTd+4w==",
   "success": true,
-  "projectFilePath": "D:\\Stage\\softwell\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence\\soft_carriere_competence.csproj",
+  "projectFilePath": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence\\soft_carriere_competence.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
-    "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\microsoft.openapi\\1.6.14\\microsoft.openapi.1.6.14.nupkg.sha512",
+    "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
     "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
-    "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.7.3\\swashbuckle.aspnetcore.swagger.6.7.3.nupkg.sha512",
+    "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.4.0\\swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
     "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.4.0\\swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",
     "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.4.0\\swashbuckle.aspnetcore.swaggerui.6.4.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Swashbuckle.AspNetCore 6.4.0 dépend de Swashbuckle.AspNetCore.Swagger (>= 6.4.0), mais Swashbuckle.AspNetCore.Swagger 6.4.0 est introuvable. Une meilleure correspondance approximative de Swashbuckle.AspNetCore.Swagger 6.7.3 a été résolue.",
-      "libraryId": "Swashbuckle.AspNetCore.Swagger",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  "logs": []
 }
