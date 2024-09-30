@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Stage\\softwell\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence\\soft_carriere_competence.csproj": {}
+    "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj": {}
   },
   "projects": {
-    "D:\\Stage\\softwell\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence\\soft_carriere_competence.csproj": {
+    "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Stage\\softwell\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence\\soft_carriere_competence.csproj",
+        "projectUniqueName": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
         "projectName": "soft_carriere_competence",
-        "projectPath": "D:\\Stage\\softwell\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence\\soft_carriere_competence.csproj",
+        "projectPath": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
         "packagesPath": "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\",
-        "outputPath": "D:\\Stage\\softwell\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence\\obj\\",
+        "outputPath": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Toky RABEHAJA\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -46,9 +46,35 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer.Design": {
+              "target": "Package",
+              "version": "[1.1.6, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.1.0, )"
             }
           },
           "imports": [
