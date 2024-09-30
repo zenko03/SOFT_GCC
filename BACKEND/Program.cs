@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using soft_carriere_competence.Data;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+//Connect base SQLSERVER
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Authentification JWT
 builder.Services.AddAuthentication(options =>
 {

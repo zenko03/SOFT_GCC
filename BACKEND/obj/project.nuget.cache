@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "5/LxpJWldp1ZkQxu4aYMDJghb2czoRe8GKcUiBog8Lp9TivMpxmc096k/MFGJFx4/NPUfZRhX6HZ3g/ou1DTcw==",
+  "dgSpecHash": "t6uLuWQXSeANyOVWcYhs62xgczpsHwb6+fFSPgKNgUMhe4rczfIkZj9fUr0qZXmG/1Jg95U30Gj8OCeRkHOYXA==",
   "success": true,
-  "projectFilePath": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
+  "projectFilePath": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
+    "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\efcore.namingconventions\\8.0.3\\efcore.namingconventions.8.0.3.nupkg.sha512",
     "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.8\\microsoft.aspnetcore.authentication.jwtbearer.8.0.8.nupkg.sha512",
     "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
