@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("soft_carriere_competence")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2358fd08d617e2cde96ae8ac5f540747449b3b56")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1387af12a17dcdc198fabdc8bcc39b44241a7971")]
 [assembly: System.Reflection.AssemblyProductAttribute("soft_carriere_competence")]
 [assembly: System.Reflection.AssemblyTitleAttribute("soft_carriere_competence")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
