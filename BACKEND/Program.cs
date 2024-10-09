@@ -1,14 +1,41 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using soft_carriere_competence.Data;
 using System.Text;
+using soft_carriere_competence.Application.Services;
+using soft_carriere_competence.Infrastructure.Data;
+using soft_carriere_competence.Core.Interface;
+using soft_carriere_competence.Infrastructure.Repositories;
+using soft_carriere_competence.Core.Entities;
+using soft_carriere_competence.Application.Services.competences_salaries;
 
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// Authentification JWT
+
+
+#region Injection independance
+builder.Services.AddScoped<EmployeeEducationService>();
+builder.Services.AddScoped<ICrudRepository<EmployeeEducation>, CrudRepository<EmployeeEducation>>();
+
+builder.Services.AddScoped<SchoolService>();
+builder.Services.AddScoped<ICrudRepository<School>, CrudRepository<School>>();
+
+builder.Services.AddScoped<DegreeService>();
+builder.Services.AddScoped<ICrudRepository<Degree>, CrudRepository<Degree>>();
+
+builder.Services.AddScoped<StudyPathService>();
+builder.Services.AddScoped<ICrudRepository<StudyPath>, CrudRepository<StudyPath>>();
+#endregion
+
+
+#region dbContext
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]), ServiceLifetime.Transient);
+
+//builder.Services.AddDbContext<DataContext>(options =>
+  //  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+#endregion
+
+#region Authentification JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -28,8 +55,9 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+#endregion
 
-// CORS configuration
+#region Cors configuration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -40,6 +68,8 @@ builder.Services.AddCors(options =>
                    .AllowAnyMethod();
         });
 });
+#endregion
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

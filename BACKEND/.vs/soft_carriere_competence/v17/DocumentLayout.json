@@ -1,22 +1,86 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\",
+  "WorkspaceRootPath": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|d:\\stage\\git\\gestion de carrieres et competences\\soft_carriere_competence\\backend\\soft_carriere_competence.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:soft_carriere_competence.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\controllers\\competences_salaries\\studypathcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:controllers\\competences_salaries\\studypathcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|d:\\stage\\git\\gestion de carrieres et competences\\soft_carriere_competence\\backend\\data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\controllers\\competences_salaries\\schoolcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:controllers\\competences_salaries\\schoolcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|d:\\stage\\git\\gestion de carrieres et competences\\soft_carriere_competence\\backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\controllers\\competences_salaries\\degreecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:controllers\\competences_salaries\\degreecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\degree.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\degree.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|d:\\stage\\git\\gestion de carrieres et competences\\soft_carriere_competence\\backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\application\\services\\competences_salaries\\schoolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:application\\services\\competences_salaries\\schoolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\school.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\school.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\employeeeducation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\employeeeducation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\studypath.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\studypath.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\controllers\\employeeeducationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:controllers\\employeeeducationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\application\\services\\competences_salaries\\degreeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:application\\services\\competences_salaries\\degreeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\application\\services\\competences_salaries\\studypathservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:application\\services\\competences_salaries\\studypathservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\application\\services\\employeeeducationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:application\\services\\employeeeducationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\infrastructure\\repositories\\crudrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:infrastructure\\repositories\\crudrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\interface\\icrudrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\interface\\icrudrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\infrastructure\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:infrastructure\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\soft_carriere_competence.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:soft_carriere_competence.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:controllers\\weatherforecastcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\soft_carriere_competence.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:soft_carriere_competence.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
@@ -29,12 +93,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 8,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:2:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
@@ -46,65 +106,264 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "DataContext.cs",
-              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
-              "RelativeDocumentMoniker": "Data\\DataContext.cs",
-              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
-              "RelativeToolTip": "Data\\DataContext.cs",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAAAAkAAAAAAAAA",
+              "Title": "SchoolController.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\competences_salaries\\SchoolController.cs",
+              "RelativeDocumentMoniker": "Controllers\\competences_salaries\\SchoolController.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\competences_salaries\\SchoolController.cs",
+              "RelativeToolTip": "Controllers\\competences_salaries\\SchoolController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADUAAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-30T09:11:27.481Z",
+              "WhenOpened": "2024-10-08T17:15:25.545Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
+              "Title": "Degree.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\Degree.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\Degree.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\Degree.cs",
+              "RelativeToolTip": "Core\\Entities\\Degree.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T09:04:20.73Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "Program.cs",
-              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\Program.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\Program.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAtAAAA",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-30T08:39:50.031Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-09-30T08:39:17.23Z",
+              "DocumentIndex": 5,
+              "Title": "SchoolService.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\competences_salaries\\SchoolService.cs",
+              "RelativeDocumentMoniker": "Application\\Services\\competences_salaries\\SchoolService.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\competences_salaries\\SchoolService.cs",
+              "RelativeToolTip": "Application\\Services\\competences_salaries\\SchoolService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T17:19:20.732Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DataContext.cs",
-              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
-              "RelativeDocumentMoniker": "..\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
-              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
-              "RelativeToolTip": "..\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
+              "DocumentIndex": 6,
+              "Title": "School.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\School.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\School.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\School.cs",
+              "RelativeToolTip": "Core\\Entities\\School.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-30T08:35:27.847Z"
+              "WhenOpened": "2024-10-08T09:03:32.03Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DegreeController.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\competences_salaries\\DegreeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\competences_salaries\\DegreeController.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\competences_salaries\\DegreeController.cs",
+              "RelativeToolTip": "Controllers\\competences_salaries\\DegreeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T17:16:25.578Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "soft_carriere_competence.csproj",
-              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
-              "RelativeDocumentMoniker": "soft_carriere_competence.csproj",
-              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
-              "RelativeToolTip": "soft_carriere_competence.csproj",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAAAB4AAAAKAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-09-30T08:35:00.114Z",
+              "Title": "StudyPathController.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\competences_salaries\\StudyPathController.cs",
+              "RelativeDocumentMoniker": "Controllers\\competences_salaries\\StudyPathController.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\competences_salaries\\StudyPathController.cs",
+              "RelativeToolTip": "Controllers\\competences_salaries\\StudyPathController.cs",
+              "ViewState": "AgIAACgAAACAmZmZmZkjwC4AAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T17:16:44.86Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "EmployeeEducation.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\EmployeeEducation.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\EmployeeEducation.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\EmployeeEducation.cs",
+              "RelativeToolTip": "Core\\Entities\\EmployeeEducation.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T09:05:06.053Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "StudyPath.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\StudyPath.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\StudyPath.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\StudyPath.cs",
+              "RelativeToolTip": "Core\\Entities\\StudyPath.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T08:58:11.348Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "EmployeeEducationController.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\EmployeeEducationController.cs",
+              "RelativeDocumentMoniker": "Controllers\\EmployeeEducationController.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\EmployeeEducationController.cs",
+              "RelativeToolTip": "Controllers\\EmployeeEducationController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T12:00:27.468Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "DegreeService.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\competences_salaries\\DegreeService.cs",
+              "RelativeDocumentMoniker": "Application\\Services\\competences_salaries\\DegreeService.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\competences_salaries\\DegreeService.cs",
+              "RelativeToolTip": "Application\\Services\\competences_salaries\\DegreeService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwYAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T17:22:53.458Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "StudyPathService.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\competences_salaries\\StudyPathService.cs",
+              "RelativeDocumentMoniker": "Application\\Services\\competences_salaries\\StudyPathService.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\competences_salaries\\StudyPathService.cs",
+              "RelativeToolTip": "Application\\Services\\competences_salaries\\StudyPathService.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAwwB8AAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T17:23:13.847Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "CrudRepository.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Infrastructure\\Repositories\\CrudRepository.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Repositories\\CrudRepository.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Infrastructure\\Repositories\\CrudRepository.cs",
+              "RelativeToolTip": "Infrastructure\\Repositories\\CrudRepository.cs",
+              "ViewState": "AgIAAAEAAAAgMzMzMzMrwAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T11:47:40.283Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "EmployeeEducationService.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\EmployeeEducationService.cs",
+              "RelativeDocumentMoniker": "Application\\Services\\EmployeeEducationService.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\EmployeeEducationService.cs",
+              "RelativeToolTip": "Application\\Services\\EmployeeEducationService.cs",
+              "ViewState": "AgIAABMAAAAAzczMzMwUwCYAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T11:55:00.348Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-09-30T08:39:17.23Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ICrudRepository.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Interface\\ICrudRepository.cs",
+              "RelativeDocumentMoniker": "Core\\Interface\\ICrudRepository.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Interface\\ICrudRepository.cs",
+              "RelativeToolTip": "Core\\Interface\\ICrudRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T09:25:04.484Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Infrastructure\\Data\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Data\\ApplicationDbContext.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Infrastructure\\Data\\ApplicationDbContext.cs",
+              "RelativeToolTip": "Infrastructure\\Data\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-08T11:39:41.788Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "soft_carriere_competence.csproj",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\soft_carriere_competence.csproj",
+              "RelativeDocumentMoniker": "soft_carriere_competence.csproj",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\soft_carriere_competence.csproj",
+              "RelativeToolTip": "soft_carriere_competence.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAABQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-09-30T08:35:00.114Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "WeatherForecastController.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\WeatherForecastController.cs",
+              "RelativeDocumentMoniker": "Controllers\\WeatherForecastController.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\WeatherForecastController.cs",
+              "RelativeToolTip": "Controllers\\WeatherForecastController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-07T13:32:12.572Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "soft_carriere_competence",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\soft_carriere_competence.csproj",
+              "RelativeDocumentMoniker": "soft_carriere_competence.csproj",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\soft_carriere_competence.csproj",
+              "RelativeToolTip": "soft_carriere_competence.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-10-07T12:20:26.124Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "DataContext.cs",
+              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
+              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-30T08:35:27.847Z"
             }
           ]
         }
