@@ -1,7 +1,7 @@
-﻿using soft_carriere_competence.Core.Entities;
+﻿using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
 
-namespace soft_carriere_competence.Application.Services.competences_salaries
+namespace soft_carriere_competence.Application.Services.salary_skills
 {
 	public class DegreeService
 	{
@@ -12,27 +12,27 @@ namespace soft_carriere_competence.Application.Services.competences_salaries
 			_repository = repository;
 		}
 
-		public async Task<IEnumerable<Degree>> GetAllDegrees()
+		public async Task<IEnumerable<Degree>> GetAll()
 		{
 			return await _repository.GetAll();
 		}
 
-		public async Task<Degree> GetDegreeById(int id)
+		public async Task<Degree> GetById(int id)
 		{
 			return await _repository.GetById(id);
 		}
 
-		public async Task AddDegree(Degree degree)
+		public async Task Add(Degree degree)
 		{
 			await _repository.Add(degree);
 		}
 
-		public async Task UpdateDegree(Degree degree)
+		public async Task Update(Degree degree)
 		{
 			await _repository.Update(degree);
 		}
 
-		public async Task DeleteDegree(int id)
+		public async Task Delete(int id)
 		{
 			await _repository.Delete(id);
 		}

@@ -1,7 +1,7 @@
-﻿using soft_carriere_competence.Core.Entities;
+﻿using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
 
-namespace soft_carriere_competence.Application.Services.competences_salaries
+namespace soft_carriere_competence.Application.Services.salary_skills
 {
 	public class SchoolService
 	{
@@ -12,27 +12,27 @@ namespace soft_carriere_competence.Application.Services.competences_salaries
 			_repository = repository;
 		}
 
-		public async Task<IEnumerable<School>> GetAllSchools()
+		public async Task<IEnumerable<School>> GetAll()
 		{
 			return await _repository.GetAll();
 		}
 
-		public async Task<School> GetSchoolById(int id)
+		public async Task<School> GetById(int id)
 		{
 			return await _repository.GetById(id);
 		}
 
-		public async Task AddSchool(School school)
+		public async Task Add(School school)
 		{
 			await _repository.Add(school);
 		}
 
-		public async Task UpdateSchool(School school)
+		public async Task Update(School school)
 		{
 			await _repository.Update(school);
 		}
 
-		public async Task DeleteSchool(int id)
+		public async Task Delete(int id)
 		{
 			await _repository.Delete(id);
 		}

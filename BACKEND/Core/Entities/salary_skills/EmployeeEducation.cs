@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace soft_carriere_competence.Core.Entities
+namespace soft_carriere_competence.Core.Entities.salary_skills
 {
 	[Table("employee_education")]
 	public class EmployeeEducation
@@ -30,5 +30,8 @@ namespace soft_carriere_competence.Core.Entities
 
 		[Column("Updated_date")]
 		public DateTime? UpdateDate { get; set; } = DateTime.Now;
+
+		[Column("Employee_id")]
+		public int EmployeeId { get; set; }
 	}
 }

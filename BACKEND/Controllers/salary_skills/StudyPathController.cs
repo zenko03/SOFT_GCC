@@ -1,40 +1,40 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using soft_carriere_competence.Application.Services.competences_salaries;
-using soft_carriere_competence.Core.Entities;
+using soft_carriere_competence.Application.Services.salary_skills;
+using soft_carriere_competence.Core.Entities.salary_skills;
 
-namespace soft_carriere_competence.Controllers.competences_salaries
+namespace soft_carriere_competence.Controllers.salary_skills
 {
 	[Route("api/[controller]")]
 	[ApiController]
 	public class StudyPathController : ControllerBase
 	{
-		private readonly StudyPathService _service;
+		private readonly StudyPathService _studyPathService;
 
 		public StudyPathController(StudyPathService service)
 		{
-			_service = service;
+			_studyPathService = service;
 		}
 
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
-			var schools = await _service.GetAllStudyPaths();
-			return Ok(schools);
+			var studyPaths = await _studyPathService.GetAll();
+			return Ok(studyPaths);
 		}
 
 		[HttpGet("{id}")]
 		public async Task<IActionResult> Get(int id)
 		{
-			var school = await _service.GetStudyPathById(id);
-			if (school == null) return NotFound();
-			return Ok(school);
+			var studyPath = await _studyPathService.GetById(id);
+			if (studyPath == null) return NotFound();
+			return Ok(studyPath);
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> Create(StudyPath studyPath)
 		{
-			await _service.AddStudyPath(studyPath);
+			await _studyPathService.Add(studyPath);
 			return CreatedAtAction(nameof(Get), new { id = studyPath.StudyPathId }, studyPath);
 		}
 
@@ -42,14 +42,14 @@ namespace soft_carriere_competence.Controllers.competences_salaries
 		public async Task<IActionResult> Update(int id, StudyPath studyPath)
 		{
 			if (id != studyPath.StudyPathId) return BadRequest();
-			await _service.UpdateStudyPath(studyPath);
+			await _studyPathService.Update(studyPath);
 			return NoContent();
 		}
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
-			await _service.DeleteStudyPath(id);
+			await _studyPathService.Delete(id);
 			return NoContent();
 		}
 	}

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace soft_carriere_competence.Core.Entities
+namespace soft_carriere_competence.Core.Entities.salary_skills
 {
 	[Table("Degree")]
 	public class Degree
