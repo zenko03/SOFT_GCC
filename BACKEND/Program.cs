@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using soft_carriere_competence.Infrastructure.Data;
@@ -9,6 +8,7 @@ using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Application.Services.salary_skills;
 
 var builder = WebApplication.CreateBuilder(args);
+<<<<<<< Updated upstream
 //Connect base SQLSERVER
 
 
@@ -59,6 +59,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 #endregion
 
 #region Authentification JWT
+=======
+
+// Authentification JWT
+>>>>>>> Stashed changes
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

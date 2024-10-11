@@ -46,6 +46,7 @@
           }
         }
       },
+<<<<<<< Updated upstream
       "EFCore.NamingConventions/8.0.3": {
         "type": "package",
         "dependencies": {
@@ -113,6 +114,8 @@
           "Humanizer.Core.zh-Hant": "2.14.1"
         }
       },
+=======
+>>>>>>> Stashed changes
       "Humanizer.Core/2.14.1": {
         "type": "package",
         "compile": {
@@ -4121,6 +4124,7 @@
         "lib/netstandard2.0/Azure.Identity.xml"
       ]
     },
+<<<<<<< Updated upstream
     "EFCore.NamingConventions/8.0.3": {
       "sha512": "TdDarM6kyIS2oVIhrs3W+r+xL/76ooFJxIXxfhzsNJQu0pB9VdFZwuyKvKJnhoc7OHYFNTBP08AN37kr4CPc+Q==",
       "type": "package",
@@ -4145,6 +4149,8 @@
         "logo.png"
       ]
     },
+=======
+>>>>>>> Stashed changes
     "Humanizer.Core/2.14.1": {
       "sha512": "lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==",
       "type": "package",
@@ -12404,10 +12410,8 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "EFCore.NamingConventions >= 8.0.3",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.8",
       "Microsoft.EntityFrameworkCore >= 8.0.8",
-      "Microsoft.EntityFrameworkCore.Design >= 8.0.4",
       "Microsoft.EntityFrameworkCore.SqlServer >= 8.0.8",
       "Microsoft.EntityFrameworkCore.SqlServer.Design >= 1.1.6",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.4",
@@ -12422,11 +12426,19 @@
   "project": {
     "version": "1.0.0",
     "restore": {
+<<<<<<< Updated upstream
       "projectUniqueName": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\soft_carriere_competence.csproj",
       "projectName": "soft_carriere_competence",
       "projectPath": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\soft_carriere_competence.csproj",
       "packagesPath": "C:\\Users\\Chalman\\.nuget\\packages\\",
       "outputPath": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\obj\\",
+=======
+      "projectUniqueName": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
+      "projectName": "soft_carriere_competence",
+      "projectPath": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
+      "packagesPath": "C:\\Users\\Toky RABEHAJA\\.nuget\\packages\\",
+      "outputPath": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\obj\\",
+>>>>>>> Stashed changes
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Chalman\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -12461,10 +12473,6 @@
       "net8.0": {
         "targetAlias": "net8.0",
         "dependencies": {
-          "EFCore.NamingConventions": {
-            "target": "Package",
-            "version": "[8.0.3, )"
-          },
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
             "target": "Package",
             "version": "[8.0.8, )"
@@ -12472,12 +12480,6 @@
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
             "version": "[8.0.8, )"
-          },
-          "Microsoft.EntityFrameworkCore.Design": {
-            "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-            "suppressParent": "All",
-            "target": "Package",
-            "version": "[8.0.4, )"
           },
           "Microsoft.EntityFrameworkCore.SqlServer": {
             "target": "Package",
