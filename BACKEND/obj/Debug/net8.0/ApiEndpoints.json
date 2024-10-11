@@ -1,6 +1,6 @@
 [
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.DegreeController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DegreeController",
     "Method": "GetAll",
     "RelativePath": "api/Degree",
     "HttpMethod": "GET",
@@ -10,7 +10,23 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.DegreeController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DegreeController",
+    "Method": "Create",
+    "RelativePath": "api/Degree",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "degree",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Degree",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DegreeController",
     "Method": "Get",
     "RelativePath": "api/Degree/{id}",
     "HttpMethod": "GET",
@@ -26,7 +42,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.DegreeController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DegreeController",
     "Method": "Update",
     "RelativePath": "api/Degree/{id}",
     "HttpMethod": "PUT",
@@ -40,14 +56,14 @@
       },
       {
         "Name": "degree",
-        "Type": "soft_carriere_competence.Core.Entities.Degree",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Degree",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.DegreeController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DegreeController",
     "Method": "Delete",
     "RelativePath": "api/Degree/{id}",
     "HttpMethod": "DELETE",
@@ -63,23 +79,244 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.DegreeController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DepartmentController",
+    "Method": "GetAll",
+    "RelativePath": "api/Department",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DepartmentController",
     "Method": "Create",
-    "RelativePath": "api/Degree/degree",
+    "RelativePath": "api/Department",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "degree",
-        "Type": "soft_carriere_competence.Core.Entities.Degree",
+        "Name": "department",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Department",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.EmployeeEducationController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DepartmentController",
+    "Method": "Get",
+    "RelativePath": "api/Department/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DepartmentController",
+    "Method": "Update",
+    "RelativePath": "api/Department/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "department",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Department",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DepartmentController",
+    "Method": "Delete",
+    "RelativePath": "api/Department/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DomainSkillController",
+    "Method": "GetAll",
+    "RelativePath": "api/DomainSkill",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DomainSkillController",
+    "Method": "Create",
+    "RelativePath": "api/DomainSkill",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "domainSkill",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.DomainSkill",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DomainSkillController",
+    "Method": "Get",
+    "RelativePath": "api/DomainSkill/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DomainSkillController",
+    "Method": "Update",
+    "RelativePath": "api/DomainSkill/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "domainSkill",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.DomainSkill",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.DomainSkillController",
+    "Method": "Delete",
+    "RelativePath": "api/DomainSkill/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeController",
+    "Method": "GetAll",
+    "RelativePath": "api/Employee",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeController",
+    "Method": "Create",
+    "RelativePath": "api/Employee",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employee",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Employee",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeController",
+    "Method": "Get",
+    "RelativePath": "api/Employee/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeController",
+    "Method": "Update",
+    "RelativePath": "api/Employee/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "employee",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Employee",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeController",
+    "Method": "Delete",
+    "RelativePath": "api/Employee/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeEducationController",
     "Method": "GetAll",
     "RelativePath": "api/EmployeeEducation",
     "HttpMethod": "GET",
@@ -89,7 +326,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.EmployeeEducationController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeEducationController",
     "Method": "Create",
     "RelativePath": "api/EmployeeEducation",
     "HttpMethod": "POST",
@@ -97,15 +334,15 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "education",
-        "Type": "soft_carriere_competence.Core.Entities.EmployeeEducation",
+        "Name": "employeeEducation",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.EmployeeEducation",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.EmployeeEducationController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeEducationController",
     "Method": "Get",
     "RelativePath": "api/EmployeeEducation/{id}",
     "HttpMethod": "GET",
@@ -121,7 +358,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.EmployeeEducationController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeEducationController",
     "Method": "Update",
     "RelativePath": "api/EmployeeEducation/{id}",
     "HttpMethod": "PUT",
@@ -134,15 +371,15 @@
         "IsRequired": true
       },
       {
-        "Name": "education",
-        "Type": "soft_carriere_competence.Core.Entities.EmployeeEducation",
+        "Name": "employeeEducation",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.EmployeeEducation",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.EmployeeEducationController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeEducationController",
     "Method": "Delete",
     "RelativePath": "api/EmployeeEducation/{id}",
     "HttpMethod": "DELETE",
@@ -158,7 +395,323 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.SchoolController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeLanguageController",
+    "Method": "GetAll",
+    "RelativePath": "api/EmployeeLanguage",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeLanguageController",
+    "Method": "Create",
+    "RelativePath": "api/EmployeeLanguage",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeLanguage",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.EmployeeLanguage",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeLanguageController",
+    "Method": "Get",
+    "RelativePath": "api/EmployeeLanguage/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeLanguageController",
+    "Method": "Update",
+    "RelativePath": "api/EmployeeLanguage/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "employeeLanguage",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.EmployeeLanguage",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeLanguageController",
+    "Method": "Delete",
+    "RelativePath": "api/EmployeeLanguage/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeOtherFormationController",
+    "Method": "GetAll",
+    "RelativePath": "api/EmployeeOtherFormation",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeOtherFormationController",
+    "Method": "Create",
+    "RelativePath": "api/EmployeeOtherFormation",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeOtherFormation",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.EmployeeOtherFormation",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeOtherFormationController",
+    "Method": "Get",
+    "RelativePath": "api/EmployeeOtherFormation/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeOtherFormationController",
+    "Method": "Update",
+    "RelativePath": "api/EmployeeOtherFormation/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "employeeOtherFormation",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.EmployeeOtherFormation",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeOtherFormationController",
+    "Method": "Delete",
+    "RelativePath": "api/EmployeeOtherFormation/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeSkillsController",
+    "Method": "GetAll",
+    "RelativePath": "api/EmployeeSkills",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeSkillsController",
+    "Method": "Create",
+    "RelativePath": "api/EmployeeSkills",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeSkill",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.EmployeeSkill",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeSkillsController",
+    "Method": "Get",
+    "RelativePath": "api/EmployeeSkills/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeSkillsController",
+    "Method": "Update",
+    "RelativePath": "api/EmployeeSkills/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "employeeSkill",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.EmployeeSkill",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.EmployeeSkillsController",
+    "Method": "Delete",
+    "RelativePath": "api/EmployeeSkills/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.LanguageController",
+    "Method": "GetAll",
+    "RelativePath": "api/Language",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.LanguageController",
+    "Method": "Create",
+    "RelativePath": "api/Language",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "language",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Language",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.LanguageController",
+    "Method": "Get",
+    "RelativePath": "api/Language/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.LanguageController",
+    "Method": "Update",
+    "RelativePath": "api/Language/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "language",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Language",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.LanguageController",
+    "Method": "Delete",
+    "RelativePath": "api/Language/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SchoolController",
     "Method": "GetAll",
     "RelativePath": "api/School",
     "HttpMethod": "GET",
@@ -168,7 +721,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.SchoolController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SchoolController",
     "Method": "Create",
     "RelativePath": "api/School",
     "HttpMethod": "POST",
@@ -177,14 +730,14 @@
     "Parameters": [
       {
         "Name": "school",
-        "Type": "soft_carriere_competence.Core.Entities.School",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.School",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.SchoolController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SchoolController",
     "Method": "Get",
     "RelativePath": "api/School/{id}",
     "HttpMethod": "GET",
@@ -200,7 +753,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.SchoolController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SchoolController",
     "Method": "Update",
     "RelativePath": "api/School/{id}",
     "HttpMethod": "PUT",
@@ -214,14 +767,14 @@
       },
       {
         "Name": "school",
-        "Type": "soft_carriere_competence.Core.Entities.School",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.School",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.SchoolController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SchoolController",
     "Method": "Delete",
     "RelativePath": "api/School/{id}",
     "HttpMethod": "DELETE",
@@ -237,7 +790,86 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.StudyPathController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SkillController",
+    "Method": "GetAll",
+    "RelativePath": "api/Skill",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SkillController",
+    "Method": "Create",
+    "RelativePath": "api/Skill",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "skill",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Skill",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SkillController",
+    "Method": "Get",
+    "RelativePath": "api/Skill/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SkillController",
+    "Method": "Update",
+    "RelativePath": "api/Skill/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "skill",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.Skill",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.SkillController",
+    "Method": "Delete",
+    "RelativePath": "api/Skill/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.StudyPathController",
     "Method": "GetAll",
     "RelativePath": "api/StudyPath",
     "HttpMethod": "GET",
@@ -247,7 +879,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.StudyPathController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.StudyPathController",
     "Method": "Create",
     "RelativePath": "api/StudyPath",
     "HttpMethod": "POST",
@@ -256,14 +888,14 @@
     "Parameters": [
       {
         "Name": "studyPath",
-        "Type": "soft_carriere_competence.Core.Entities.StudyPath",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.StudyPath",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.StudyPathController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.StudyPathController",
     "Method": "Get",
     "RelativePath": "api/StudyPath/{id}",
     "HttpMethod": "GET",
@@ -279,7 +911,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.StudyPathController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.StudyPathController",
     "Method": "Update",
     "RelativePath": "api/StudyPath/{id}",
     "HttpMethod": "PUT",
@@ -293,14 +925,14 @@
       },
       {
         "Name": "studyPath",
-        "Type": "soft_carriere_competence.Core.Entities.StudyPath",
+        "Type": "soft_carriere_competence.Core.Entities.salary_skills.StudyPath",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "soft_carriere_competence.Controllers.competences_salaries.StudyPathController",
+    "ContainingType": "soft_carriere_competence.Controllers.salary_skills.StudyPathController",
     "Method": "Delete",
     "RelativePath": "api/StudyPath/{id}",
     "HttpMethod": "DELETE",

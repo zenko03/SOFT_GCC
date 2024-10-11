@@ -2,12 +2,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using soft_carriere_competence.Application.Services;
 using soft_carriere_competence.Infrastructure.Data;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Infrastructure.Repositories;
-using soft_carriere_competence.Core.Entities;
-using soft_carriere_competence.Application.Services.competences_salaries;
+using soft_carriere_competence.Core.Entities.salary_skills;
+using soft_carriere_competence.Application.Services.salary_skills;
 
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
@@ -25,6 +24,30 @@ builder.Services.AddScoped<ICrudRepository<Degree>, CrudRepository<Degree>>();
 
 builder.Services.AddScoped<StudyPathService>();
 builder.Services.AddScoped<ICrudRepository<StudyPath>, CrudRepository<StudyPath>>();
+
+builder.Services.AddScoped<SkillService>();
+builder.Services.AddScoped<ICrudRepository<Skill>, CrudRepository<Skill>>();
+
+builder.Services.AddScoped<DomainSkillService>();
+builder.Services.AddScoped<ICrudRepository<DomainSkill>, CrudRepository<DomainSkill>>();
+
+builder.Services.AddScoped<EmployeeSkillService>();
+builder.Services.AddScoped<ICrudRepository<EmployeeSkill>, CrudRepository<EmployeeSkill>>();
+
+builder.Services.AddScoped<LanguageService>();
+builder.Services.AddScoped<ICrudRepository<Language>, CrudRepository<Language>>();
+
+builder.Services.AddScoped<EmployeeLanguageService>();
+builder.Services.AddScoped<ICrudRepository<EmployeeLanguage>, CrudRepository<EmployeeLanguage>>();
+
+builder.Services.AddScoped<EmployeeOtherFormationService>();
+builder.Services.AddScoped<ICrudRepository<EmployeeOtherFormation>, CrudRepository<EmployeeOtherFormation>>();
+
+builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddScoped<ICrudRepository<Employee>, CrudRepository<Employee>>();
+
+builder.Services.AddScoped<DepartmentService>();
+builder.Services.AddScoped<ICrudRepository<Department>, CrudRepository<Department>>();
 #endregion
 
 
@@ -70,7 +93,7 @@ builder.Services.AddCors(options =>
 });
 #endregion
 
-
+#region Swagger
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -87,6 +110,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "SOFTCARRIERE ET COMPETENCE API v1");
     });
 }
+#endregion
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
