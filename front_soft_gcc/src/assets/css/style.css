@@ -10636,6 +10636,9 @@ html {
   overflow: auto; }
 
 .container-scroller {
+  width: 100%;
+  min-height: 100vh; /* for full screen height */
+
   overflow: hidden; }
 
 pre {

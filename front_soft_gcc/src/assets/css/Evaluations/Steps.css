@@ -1,0 +1,38 @@
+/* Step1 css */
+.step1-container {
+    display: flex;
+    width: 100%;
+  }
+/*   
+  .sidebar {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    height: 100%;
+  } */
+  
+  .menu-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .menu-list li {
+    padding: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .menu-list li.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .section-content {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+  }
+  

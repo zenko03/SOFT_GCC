@@ -5,12 +5,12 @@ import pic4 from '/src/assets/images/faces-clipart/pic-4.png';
 import PageHeader from './PageHeader';
 import SearchForm from './SearchForm';
 import '../styles/competencesStyle.css';
+import Template from '../pages/Template';
 
-function Body({ task }) {
+function Body() {
   return (
-    <div className="content-wrapper">
-      <PageHeader />
-      <div className="row">
+    <Template>
+        <div className="row">
         {/* Striped Table */}
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
@@ -81,7 +81,9 @@ function Body({ task }) {
           </div>
         </div>
       </div>
-    </div>
+    </Template>
+      
+    
   );
 }
 
