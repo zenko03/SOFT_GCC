@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 function MenuBar({ task }) {
   return (
     <nav className="sidebar sidebar-offcanvas" id="sidebar">
@@ -41,8 +41,10 @@ function MenuBar({ task }) {
               </a>
               <div class="collapse" id="auth">
                 <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Blank Page </a></li>
-                  <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a></li>
+                  <li class="nav-item"> <Link className="nav-link" to="/salary-list">Notation D'evaluation</Link></li>
+                  <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Planning d'evaluations </a></li>
+                  <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Historique d'evaluations </a></li>
+
                 </ul>
               </div>
             </li>
