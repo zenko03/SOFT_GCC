@@ -88,7 +88,7 @@ function SalaryList() {
           <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable custom-modal" role="document">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Wizard Modal</h5>
+                <h5 className="modal-title">NOTATIONS</h5>
                 <button type="button" className="close" onClick={handleCloseModal}>
                   <span aria-hidden="true">&times;</span>
                 </button>
