@@ -6,9 +6,9 @@ using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Infrastructure.Repositories;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Application.Services.salary_skills;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-<<<<<<< Updated upstream
 //Connect base SQLSERVER
 
 
@@ -59,10 +59,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 #endregion
 
 #region Authentification JWT
-=======
-
-// Authentification JWT
->>>>>>> Stashed changes
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -101,7 +97,35 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "TodoList API", Version = "v1" });
+
+    // Ajouter la configuration pour le support de l'authentification JWT dans Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Veuillez entrer le token JWT ici. Exemple : Bearer <token>",
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var app = builder.Build();
 app.UseCors("AllowReactApp");
