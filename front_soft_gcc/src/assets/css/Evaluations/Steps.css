@@ -29,3 +29,34 @@
 .modal-section-content {
   padding: 20px;
 }
+
+
+/* SECTIONA */
+.sectionA-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.question {
+  margin-bottom: 20px;
+}
+
+.question p {
+  font-weight: bold;
+}
+
+.note-selection {
+  display: flex;
+  gap: 10px;
+}
+
+.note-selection label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.note-selection input[type="radio"] {
+  margin-right: 5px;
+}
+
