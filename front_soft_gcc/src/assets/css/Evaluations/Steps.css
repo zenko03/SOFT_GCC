@@ -60,3 +60,74 @@
   margin-right: 5px;
 }
 
+/* Step2 css */
+
+.step2-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.average-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.average-section h3 {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.average-score {
+  font-size: 1.5rem;
+  color: #4CAF50;
+}
+
+.remarks-toggle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.btn-show-remarks {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-show-remarks:hover {
+  background-color: #45a049;
+}
+
+.remarks-section {
+  margin-top: 20px;
+}
+
+.remark {
+  margin-bottom: 15px;
+}
+
+.remark label {
+  font-size: 1rem;
+  color: #333;
+}
+
+.remark textarea {
+  background-color: lightcyan;
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 100px;
+  color: #333;
+}
+
+.remark textarea::placeholder {
+  color: #999;
+}

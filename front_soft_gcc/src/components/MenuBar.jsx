@@ -33,17 +33,17 @@ function MenuBar({ task }) {
             </ul>
           </div>
         </li>
-        <li class="nav-item">
-              <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-                <span class="icon-bg"><i class="mdi mdi-lock menu-icon"></i></span>
-                <span class="menu-title">Evaluations</span>
-                <i class="menu-arrow"></i>
+        <li className="nav-item">
+              <a className="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+                <span className="icon-bg"><i className="mdi mdi-lock menu-icon"></i></span>
+                <span className="menu-title">Evaluations</span>
+                <i className="menu-arrow"></i>
               </a>
-              <div class="collapse" id="auth">
-                <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <Link className="nav-link" to="/salary-list">Notation D'evaluation</Link></li>
-                  <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Planning d'evaluations </a></li>
-                  <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Historique d'evaluations </a></li>
+              <div className="collapse" id="auth">
+                <ul className="nav flex-column sub-menu">
+                  <li className="nav-item"> <Link className="nav-link" to="/salary-list">Notation D'evaluation</Link></li>
+                  <li className="nav-item"> <Link className="nav-link" to="/planning"> Planning d'evaluations </Link></li>
+                  <li className="nav-item"> <a className="nav-link" href="pages/samples/login.html"> Historique d'evaluations </a></li>
 
                 </ul>
               </div>

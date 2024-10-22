@@ -2,20 +2,9 @@ import React, { useState } from 'react';
 import Template from '../../Template';
 import { Link } from 'react-router-dom';
 import '../../../assets/css/Evaluations/notationModal.css';
-import Step1 from './Step1';
-import Step2 from './Step2';
-import Step3 from './Step3';
-import SectionA from '../sections/SectionA';
 
-function SalaryList() {
-  // État pour stocker les notes pour chaque question
-  const [notes, setNotes] = useState({
-    question1: 0,
-    question2: 0,
-    question3: 0,
-    question4:0
-  });
 
+function SalaryListPlanning() {
   const [showModal, setShowModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1); // Gérer l'étape actuelle
 
@@ -36,21 +25,21 @@ function SalaryList() {
   const handleStepClick = (step) => {
     setCurrentStep(step);
   };
+  const notes = { 1: 3, 2: 4, 3: 5 }; // Exemple d'objet notes
 
   // Contenu du wizard par étape
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return <Step1 notes={notes} setNotes={setNotes}  />;
+        return <Step1/>;
       case 2:
-        return  <Step2 notes ={notes} setNotes={setNotes}/>;
+        return  <Step2 notes ={notes}/>;
       case 3:
-        return  <Step3 notes={notes}  />;
+        return  <Step3/>;
       default:
         return null;
     }
   };
-
   return (
     <Template>
       {/* Appliquez la classe darken-background lorsque le modal est visible */}
@@ -67,6 +56,7 @@ function SalaryList() {
                     <th>Nom</th>
                     <th>Poste</th>
                     <th>Date d'évaluation</th>
+                    <th>Statut</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -79,8 +69,8 @@ function SalaryList() {
                     <td> Comptable </td>
                     <td> 10/10/2024 </td>
                     <td>
-                      <button className="btn btn-primary" onClick={handleOpenModal}>Notation</button>
-                      <Link className="btn btn-primary" to="/salary-list">Réinitialiser</Link>
+                      <button className="btn btn-primary" onClick={handleOpenModal}>Plannifier</button>
+                      <Link className="btn btn-primary" to="/salary-list">Details</Link>
                     </td>
                   </tr>
                   {/* Répétez pour les autres lignes */}
@@ -163,4 +153,4 @@ function SalaryList() {
   );
 }
 
-export default SalaryList;
+export default SalaryListPlanning;

@@ -1,15 +1,8 @@
 import React, { useState } from 'react';
 import '../../../assets/css/Evaluations/Steps.css'; // Pour le style spécifique
 
-function SectionA() {
-  // État pour stocker les notes pour chaque question
-  const [notes, setNotes] = useState({
-    question1: null,
-    question2: null,
-    question3: null,
-    question4:null
-  });
-
+function SectionA({ notes, setNotes }) {
+  
   // Fonction pour gérer la sélection de note
   const handleNoteChange = (question, value) => {
     setNotes({
@@ -24,9 +17,7 @@ function SectionA() {
 
       {/* Question 1 */}
       <div className="question">
-        <p>1. Effectuer par quinzaine la consolidation comptable avec 
-            la Direction Générale, les analyses, contrôles et 
-            les régularisations dans la comptabilité de la DIR</p>
+        <p>1. Effectuer par quinzaine la consolidation comptable avec la Direction Générale, les analyses, contrôles et les régularisations dans la comptabilité de la DIR</p>
         <div className="note-selection">
           {Array.from({ length: 5 }, (_, i) => i + 1).map((num) => (
             <label key={`q1-${num}`}>
@@ -82,7 +73,6 @@ function SectionA() {
       </div>
 
       {/* Question 4 */}
-
       <div className="question">
         <p>4. Effectuer le classement des pièces comptables</p>
         <div className="note-selection">
@@ -101,11 +91,8 @@ function SectionA() {
         </div>
       </div>
     </div>
-
-
-    
   );
 }
 
-
 export default SectionA;
+

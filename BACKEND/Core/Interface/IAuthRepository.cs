@@ -1,10 +1,13 @@
-﻿namespace soft_carriere_competence.Core.Interface
+﻿using soft_carriere_competence.Core.Entities.salary_skills;
+
+namespace soft_carriere_competence.Core.Interface
 {
     public interface IAuthRepository
     {
-        Task<User> GetUserByEmailAsync(string email);
-        Task<User> GetUserByIdAsync(int id);
-        Task AddUserAsync(User user);
+
+        Task<Employee> GetUserByEmailAsync(string email);
+        Task<Employee> GetUserByIdAsync(int id);
+        Task AddUserAsync(Employee user);
         Task SaveChangesAsync();
     }
 }
