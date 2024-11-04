@@ -1,11 +1,55 @@
-# Ignorer les fichiers de logs
+# Fichiers de build
+bin/
+obj/
+
+# Fichiers de l'IDE Visual Studio
+.vs/
+*.suo
+*.user
+*.userprefs
+
+# Fichiers de configuration de l'environnement
+*.env
+
+# Dossiers de packages
+packages/
+*.nupkg
+
+# Fichiers temporaires
+*.tmp
 *.log
 
-# Ignorer les fichiers temporaires de l'éditeur
-.temp/
+# Fichiers de sauvegarde
+*.bak
+*.swp
 
-# Ignorer le dossier .vs (Visual Studio)
-.vs/
+# Dossiers de tests générés
+TestResults/
 
-# Ignorer tous les fichiers .env
-*.env
+# Dossiers et fichiers spécifiques à NuGet
+*.nuget/
+*.nupkg
+*.snupkg
+
+# Dossiers et fichiers de cache
+*.db
+*.db-journal
+*.pdb
+*.mdb
+*.sdf
+
+# Fichiers générés par les outils de développement
+*.pdb
+*.cache
+*.mdb
+*.exe
+*.dll
+*.so
+*.dylib
+*.app
+
+# Autres fichiers à ignorer
+Thumbs.db
+.DS_Store
+.idea/
+*.sln.docstates
