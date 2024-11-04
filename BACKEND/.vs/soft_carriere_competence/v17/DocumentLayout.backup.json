@@ -1,5 +1,6 @@
 {
   "Version": 1,
+<<<<<<< Updated upstream
   "WorkspaceRootPath": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\",
   "Documents": [
     {
@@ -180,6 +181,25 @@
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+  "WorkspaceRootPath": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|d:\\stage\\git\\gestion de carrieres et competences\\soft_carriere_competence\\soft_carriere_competence\\backend\\soft_carriere_competence.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:soft_carriere_competence.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|d:\\stage\\git\\gestion de carrieres et competences\\soft_carriere_competence\\soft_carriere_competence\\backend\\data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|d:\\stage\\git\\gestion de carrieres et competences\\soft_carriere_competence\\soft_carriere_competence\\backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|d:\\stage\\git\\gestion de carrieres et competences\\soft_carriere_competence\\soft_carriere_competence\\backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+>>>>>>> Stashed changes
     }
   ],
   "DocumentGroupContainers": [
@@ -189,8 +209,64 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
+<<<<<<< Updated upstream
           "SelectedChildIndex": 6,
+=======
+          "SelectedChildIndex": 3,
+>>>>>>> Stashed changes
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAACQAAAAAAAAAAAAAADoAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-30T08:39:50.031Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-09-30T08:39:17.23Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DataContext.cs",
+              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
+              "RelativeDocumentMoniker": "Data\\DataContext.cs",
+              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
+              "RelativeToolTip": "Data\\DataContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAABTAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-30T08:35:27.847Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "soft_carriere_competence",
+              "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
+              "RelativeDocumentMoniker": "soft_carriere_competence.csproj",
+              "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\soft_carriere_competence.csproj",
+              "RelativeToolTip": "soft_carriere_competence.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAABUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-09-30T08:35:00.114Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
@@ -198,6 +274,7 @@
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+<<<<<<< Updated upstream
             },
             {
               "$type": "Document",
@@ -259,7 +336,7 @@
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\Employee.cs",
               "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\Employee.cs",
               "RelativeToolTip": "Core\\Entities\\salary_skills\\Employee.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAbAAAAAAAAAA==",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAAAAkAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-09T17:25:17.812Z",
               "EditorCaption": ""
@@ -743,6 +820,8 @@
               "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-09-30T08:35:27.847Z"
+=======
+>>>>>>> Stashed changes
             }
           ]
         }
