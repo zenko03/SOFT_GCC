@@ -1,1 +1,11 @@
+# Ignorer les fichiers de logs
+*.log
+
+# Ignorer les fichiers temporaires de l'éditeur
+.temp/
+
+# Ignorer le dossier .vs (Visual Studio)
 .vs/
+
+# Ignorer tous les fichiers .env
+*.env
