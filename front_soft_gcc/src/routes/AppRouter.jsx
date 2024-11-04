@@ -11,7 +11,6 @@ import SalaryProfilePage from '../pages/salarySkills/SalaryProfilePage';
 function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<Body />} />
       <Route path="/" element={<Template />} />
       <Route path="/competences" element={<ListSkillSalaryPage />} />
       <Route path="/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
