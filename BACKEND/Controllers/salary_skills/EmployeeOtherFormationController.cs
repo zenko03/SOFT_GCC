@@ -52,5 +52,14 @@ namespace soft_carriere_competence.Controllers.salary_skills
 			await _employeeOtherFormationService.Delete(id);
 			return NoContent();
 		}
+
+		[HttpGet]
+		[Route("employee/{id}")]
+		public async Task<IActionResult> GetEmployeeOtherSkills(int id)
+		{
+			var employeeOtherSkills = await _employeeOtherFormationService.GetEmployeeOtherSkills(id);
+			if (employeeOtherSkills == null) return NotFound();
+			return Ok(employeeOtherSkills);
+		}
 	}
 }

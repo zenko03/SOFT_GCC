@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
+// Gestion des menu de navigation
 function MenuBar({ task }) {
   return (
     <nav className="sidebar sidebar-offcanvas" id="sidebar">
@@ -11,10 +13,10 @@ function MenuBar({ task }) {
           </a>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="pages/icons/mdi.html">
-            <span className="icon-bg"><i className="mdi mdi-contacts menu-icon"></i></span>
-            <span className="menu-title">Competences</span>
-          </a>
+          <Link to="/competences">
+              <span className="icon-bg"><i className="mdi mdi-contacts menu-icon"></i></span>
+              <span className="menu-title">Competences</span>
+          </Link>
         </li>
         <li className="nav-item">
           <a className="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
@@ -33,16 +35,16 @@ function MenuBar({ task }) {
             </ul>
           </div>
         </li>
-        <li class="nav-item">
-              <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-                <span class="icon-bg"><i class="mdi mdi-lock menu-icon"></i></span>
-                <span class="menu-title">Evaluations</span>
-                <i class="menu-arrow"></i>
+        <li className="nav-item">
+              <a className="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+                <span className="icon-bg"><i className="mdi mdi-lock menu-icon"></i></span>
+                <span className="menu-title">Evaluations</span>
+                <i className="menu-arrow"></i>
               </a>
-              <div class="collapse" id="auth">
-                <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Blank Page </a></li>
-                  <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a></li>
+              <div className="collapse" id="auth">
+                <ul className="nav flex-column sub-menu">
+                  <li className="nav-item"> <a className="nav-link" href="pages/samples/blank-page.html"> Blank Page </a></li>
+                  <li className="nav-item"> <a className="nav-link" href="pages/samples/login.html"> Login </a></li>
                 </ul>
               </div>
             </li>

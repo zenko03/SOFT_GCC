@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Contenu du pied de page
 function Footer({ task }) {
   return (
     <footer className="footer">

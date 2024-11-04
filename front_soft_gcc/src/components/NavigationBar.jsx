@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Affichage de la barre de navigation
 function NavigationBar({ task }) {
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">

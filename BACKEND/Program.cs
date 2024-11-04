@@ -6,11 +6,9 @@ using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Infrastructure.Repositories;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Application.Services.salary_skills;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-<<<<<<< Updated upstream
-//Connect base SQLSERVER
-
 
 #region Injection independance
 builder.Services.AddScoped<EmployeeEducationService>();
@@ -54,15 +52,9 @@ builder.Services.AddScoped<ICrudRepository<Department>, CrudRepository<Departmen
 #region dbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]), ServiceLifetime.Transient);
 
-//builder.Services.AddDbContext<DataContext>(options =>
-  //  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 #endregion
 
 #region Authentification JWT
-=======
-
-// Authentification JWT
->>>>>>> Stashed changes
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -87,13 +79,13 @@ builder.Services.AddAuthorization();
 #region Cors configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:3000") // Allow your React app
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        });
+	options.AddPolicy("AllowReactApp", policy =>
+	{
+		policy.WithOrigins("http://localhost:5173") // Autoriser uniquement cette origine
+			  .AllowAnyHeader() // Autoriser tous les en-têtes
+			  .AllowAnyMethod() // Autoriser toutes les méthodes (GET, POST, etc.)
+			  .AllowCredentials(); // Autoriser l'envoi des cookies ou des credentials
+	});
 });
 #endregion
 
