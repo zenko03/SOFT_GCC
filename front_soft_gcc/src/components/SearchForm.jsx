@@ -1,18 +1,40 @@
-import React from 'react';
+// SearchForm.js
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
-function SearchForm({ task }) {
+// Formulaire de recherche
+function SearchForm({ onSearch }) {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSearch(searchTerm.trim());
+  };
+
   return (
-    <form class="forms-sample">
-        <div class="form-group row">
-            <div class="col-sm-4">
-                <input type="text" class="form-control" id="exampleInputUsername2" placeholder="Nom, prenom ou matricule" />
-            </div>
-            <div class="col-sm-5">
-                <button type="submit" class="btn btn-primary">Rechercher</button>
-            </div>
+    <form onSubmit={handleSubmit} className="form-sample">
+      <div className="form-group row">
+        <div className="col-sm-8">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Nom, prénom ou matricule"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+        <div className="col-sm-4">
+          <button type="submit" className="btn btn-primary">
+            Rechercher
+          </button>
+        </div>
+      </div>
     </form>
   );
 }
+
+SearchForm.propTypes = {
+  onSearch: PropTypes.func.isRequired,
+};
 
 export default SearchForm;

@@ -1,15 +1,19 @@
-﻿using soft_carriere_competence.Core.Entities.salary_skills;
+﻿using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
+using soft_carriere_competence.Infrastructure.Data;
 
 namespace soft_carriere_competence.Application.Services.salary_skills
 {
 	public class EmployeeOtherFormationService
 	{
 		private readonly ICrudRepository<EmployeeOtherFormation> _repository;
+		private readonly ApplicationDbContext _context;
 
-		public EmployeeOtherFormationService(ICrudRepository<EmployeeOtherFormation> repository)
+		public EmployeeOtherFormationService(ICrudRepository<EmployeeOtherFormation> repository, ApplicationDbContext context)
 		{
 			_repository = repository;
+			_context = context;
 		}
 
 		public async Task<IEnumerable<EmployeeOtherFormation>> GetAll()
@@ -35,6 +39,14 @@ namespace soft_carriere_competence.Application.Services.salary_skills
 		public async Task Delete(int id)
 		{
 			await _repository.Delete(id);
+		}
+
+		// Recuperer les autres competences d'un employee
+		public async Task<List<VEmployeeOtherSkill>> GetEmployeeOtherSkills(int idEmployee)
+		{
+			return await _context.VEmployeeOtherSkill
+					 .FromSqlRaw("SELECT * FROM v_employee_other_formation WHERE Employee_id = {0}", idEmployee)
+					 .ToListAsync();
 		}
 	}
 }

@@ -52,5 +52,14 @@ namespace soft_carriere_competence.Controllers.salary_skills
 			await _employeeLanguageService.Delete(id);
 			return NoContent();
 		}
+
+		[HttpGet]
+		[Route("employee/{id}")]
+		public async Task<IActionResult> GetEmployeeLanguages(int id)
+		{
+			var employeeLanguages = await _employeeLanguageService.GetEmployeeLanguages(id);
+			if (employeeLanguages == null) return NotFound();
+			return Ok(employeeLanguages);
+		}
 	}
 }

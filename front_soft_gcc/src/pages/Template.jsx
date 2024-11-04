@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { Children } from 'react';
 import NavigationBar from '../components/NavigationBar';
 import MenuBar from '../components/MenuBar';
-import Body from '../components/Body';
 import Footer from '../components/Footer';
 
-function Template() {
+// Template des pages
+function Template({children}) {
   return (
-    <div>
+    <div className='container-scroller'>
       <NavigationBar />
-      <div class="container-fluid page-body-wrapper">
+      <div className="container-fluid page-body-wrapper">
         <MenuBar />
-        <div class="main-panel">
-            <Body />
-            <Footer />
+        <div className="main-panel">
+          <div className="content-wrapper">
+            {children}
+          </div>
+          <Footer />
         </div>
       </div>
     </div>
