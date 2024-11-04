@@ -19,8 +19,16 @@
       "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:controllers\\salary_skills\\employeeeducationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\salary_skills\\vskills.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\salary_skills\\vskills.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\infrastructure\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:infrastructure\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\salary_skills\\vemployeeskill.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\salary_skills\\vemployeeskill.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\controllers\\salary_skills\\skillcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -37,6 +45,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\application\\services\\salary_skills\\employeeotherformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:application\\services\\salary_skills\\employeeotherformationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\salary_skills\\vemployeelanguage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\salary_skills\\vemployeelanguage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\application\\services\\salary_skills\\employeelanguageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -69,6 +81,18 @@
     {
       "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\application\\services\\salary_skills\\employeeeducationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:application\\services\\salary_skills\\employeeeducationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\salary_skills\\vemployeeeducation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\salary_skills\\vemployeeeducation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\salary_skills\\vemployeeotherskill.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\salary_skills\\vemployeeotherskill.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\salary_skills\\vemployee.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|solutionrelative:core\\entities\\salary_skills\\vemployee.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4C92690B-D6BE-408A-B019-5FC3E7B266BB}|soft_carriere_competence.csproj|e:\\softwell\\stage\\soft_gcc\\backend\\core\\entities\\salary_skills\\employeeskill.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -189,7 +213,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -201,13 +225,25 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "VSkills.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VSkills.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\VSkills.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VSkills.cs",
+              "RelativeToolTip": "Core\\Entities\\salary_skills\\VSkills.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-22T06:43:36.203Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "EmployeeSkillService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\EmployeeSkillService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\EmployeeSkillService.cs",
               "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\EmployeeSkillService.cs",
               "RelativeToolTip": "Application\\Services\\salary_skills\\EmployeeSkillService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAEwAAADQzMzMzMwxwFYAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-09T08:59:30.279Z",
               "EditorCaption": ""
@@ -250,7 +286,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Infrastructure\\Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Data\\ApplicationDbContext.cs",
@@ -263,6 +299,18 @@
             {
               "$type": "Document",
               "DocumentIndex": 6,
+              "Title": "VEmployeeSkill.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployeeSkill.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\VEmployeeSkill.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployeeSkill.cs",
+              "RelativeToolTip": "Core\\Entities\\salary_skills\\VEmployeeSkill.cs",
+              "ViewState": "AgIAAC0AAAAAmJmZmZn5vzQAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-16T08:38:29.133Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -274,7 +322,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "EmployeeOtherFormation.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\EmployeeOtherFormation.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\EmployeeOtherFormation.cs",
@@ -286,7 +334,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "SkillController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\SkillController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\SkillController.cs",
@@ -298,7 +346,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "EmployeeOtherFormationService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\EmployeeOtherFormationService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\EmployeeOtherFormationService.cs",
@@ -310,7 +358,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
+              "Title": "VEmployeeLanguage.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployeeLanguage.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\VEmployeeLanguage.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployeeLanguage.cs",
+              "RelativeToolTip": "Core\\Entities\\salary_skills\\VEmployeeLanguage.cs",
+              "ViewState": "AgIAACMAAAAAZmZmZmYawC0AAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-16T08:39:05.096Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
               "Title": "EmployeeLanguageController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\EmployeeLanguageController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\EmployeeLanguageController.cs",
@@ -322,7 +382,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "EmployeeLanguageService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\EmployeeLanguageService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\EmployeeLanguageService.cs",
@@ -334,7 +394,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 14,
               "Title": "EmployeeLanguage.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\EmployeeLanguage.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\EmployeeLanguage.cs",
@@ -346,7 +406,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 15,
               "Title": "School.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\School.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\School.cs",
@@ -358,7 +418,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 16,
               "Title": "Employee.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\Employee.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\Employee.cs",
@@ -370,7 +430,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "EmployeeOtherFormationController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\EmployeeOtherFormationController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\EmployeeOtherFormationController.cs",
@@ -382,7 +442,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 18,
               "Title": "LanguageService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\LanguageService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\LanguageService.cs",
@@ -394,7 +454,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 19,
               "Title": "EmployeeEducationService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\EmployeeEducationService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\EmployeeEducationService.cs",
@@ -406,7 +466,44 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 20,
+              "Title": "VEmployeeEducation.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployeeEducation.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\VEmployeeEducation.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployeeEducation.cs",
+              "RelativeToolTip": "Core\\Entities\\salary_skills\\VEmployeeEducation.cs",
+              "ViewState": "AgIAACMAAADAzMzMzMwwwDUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-16T08:38:47.002Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "VEmployeeOtherSkill.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployeeOtherSkill.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\VEmployeeOtherSkill.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployeeOtherSkill.cs",
+              "RelativeToolTip": "Core\\Entities\\salary_skills\\VEmployeeOtherSkill.cs",
+              "ViewState": "AgIAACUAAAAAzczMzMwqwDEAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-16T08:39:33.102Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "VEmployee.cs",
+              "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployee.cs",
+              "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\VEmployee.cs",
+              "ToolTip": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\VEmployee.cs",
+              "RelativeToolTip": "Core\\Entities\\salary_skills\\VEmployee.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAuwA4AAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-16T08:38:10.698Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
               "Title": "EmployeeSkill.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\EmployeeSkill.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\EmployeeSkill.cs",
@@ -418,7 +515,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 24,
               "Title": "ICrudRepository.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Interface\\ICrudRepository.cs",
               "RelativeDocumentMoniker": "Core\\Interface\\ICrudRepository.cs",
@@ -430,7 +527,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 25,
               "Title": "Skill.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\Skill.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\Skill.cs",
@@ -442,7 +539,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 26,
               "Title": "SchoolController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\SchoolController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\SchoolController.cs",
@@ -454,7 +551,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 27,
               "Title": "DegreeController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\DegreeController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\DegreeController.cs",
@@ -466,7 +563,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 29,
               "Title": "DomainSkill.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\DomainSkill.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\DomainSkill.cs",
@@ -478,7 +575,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 30,
               "Title": "DegreeService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\DegreeService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\DegreeService.cs",
@@ -490,7 +587,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 28,
               "Title": "Department.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\Department.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\Department.cs",
@@ -502,7 +599,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 32,
               "Title": "DepartmentService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\DepartmentService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\DepartmentService.cs",
@@ -514,7 +611,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 31,
               "Title": "DepartmentController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\DepartmentController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\DepartmentController.cs",
@@ -526,7 +623,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 33,
               "Title": "EmployeeController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\EmployeeController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\EmployeeController.cs",
@@ -538,7 +635,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 35,
               "Title": "EmployeeEducation.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\EmployeeEducation.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\EmployeeEducation.cs",
@@ -550,7 +647,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 34,
               "Title": "Degree.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\Degree.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\Degree.cs",
@@ -562,7 +659,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 36,
               "Title": "CrudRepository.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Infrastructure\\Repositories\\CrudRepository.cs",
               "RelativeDocumentMoniker": "Infrastructure\\Repositories\\CrudRepository.cs",
@@ -574,7 +671,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 37,
               "Title": "DomainSkillService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\DomainSkillService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\DomainSkillService.cs",
@@ -586,7 +683,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 38,
               "Title": "DomainSkillController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\DomainSkillController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\DomainSkillController.cs",
@@ -598,7 +695,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 39,
               "Title": "LanguageController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\LanguageController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\LanguageController.cs",
@@ -610,7 +707,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 40,
               "Title": "Language.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\Language.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\Language.cs",
@@ -622,7 +719,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 41,
               "Title": "StudyPathController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\salary_skills\\StudyPathController.cs",
               "RelativeDocumentMoniker": "Controllers\\salary_skills\\StudyPathController.cs",
@@ -634,7 +731,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 43,
               "Title": "SkillService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\SkillService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\SkillService.cs",
@@ -646,7 +743,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 44,
               "Title": "SchoolService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\SchoolService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\SchoolService.cs",
@@ -658,7 +755,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 42,
               "Title": "StudyPathService.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Application\\Services\\salary_skills\\StudyPathService.cs",
               "RelativeDocumentMoniker": "Application\\Services\\salary_skills\\StudyPathService.cs",
@@ -670,7 +767,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 45,
               "Title": "StudyPath.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Core\\Entities\\salary_skills\\StudyPath.cs",
               "RelativeDocumentMoniker": "Core\\Entities\\salary_skills\\StudyPath.cs",
@@ -682,7 +779,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 46,
               "Title": "appsettings.json",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -694,7 +791,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 47,
               "Title": "soft_carriere_competence.csproj",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\soft_carriere_competence.csproj",
               "RelativeDocumentMoniker": "soft_carriere_competence.csproj",
@@ -706,7 +803,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 48,
               "Title": "WeatherForecastController.cs",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\Controllers\\WeatherForecastController.cs",
               "RelativeDocumentMoniker": "Controllers\\WeatherForecastController.cs",
@@ -718,7 +815,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 49,
               "Title": "soft_carriere_competence",
               "DocumentMoniker": "E:\\softwell\\stage\\SOFT_GCC\\BACKEND\\soft_carriere_competence.csproj",
               "RelativeDocumentMoniker": "soft_carriere_competence.csproj",
@@ -729,7 +826,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 50,
               "Title": "DataContext.cs",
               "DocumentMoniker": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",
               "ToolTip": "D:\\Stage\\Git\\Gestion de Carrieres et competences\\soft_carriere_competence\\Soft_carriere_competence\\BACKEND\\Data\\DataContext.cs",

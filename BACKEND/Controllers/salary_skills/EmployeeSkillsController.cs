@@ -52,5 +52,41 @@ namespace soft_carriere_competence.Controllers.salary_skills
 			await _employeeSkillService.Delete(id);
 			return NoContent();
 		}
+
+		[HttpGet]
+		[Route("employee/{id}")]
+		public async Task<IActionResult> GetEmployeeSkills(int id)
+		{
+			var employeeSkills = await _employeeSkillService.GetEmployeeSkills(id);
+			if (employeeSkills == null) return NotFound();
+			return Ok(employeeSkills);
+		}
+
+		[HttpGet]
+		[Route("list")]
+		public async Task<IActionResult> GetListSkills(int pageNumber = 1, int pageSize = 2)
+		{
+			var skills = await _employeeSkillService.GetAllSkills(pageNumber, pageSize);
+			if (skills == null) return NotFound();
+			return Ok(skills);
+		}
+
+		[HttpGet]
+		[Route("filter")]
+		public async Task<IActionResult> GetListSkillsFilter(string keyWord, int pageNumber = 1, int pageSize = 2)
+		{
+			var skills = await _employeeSkillService.GetAllSkillsFilter(keyWord,pageNumber, pageSize);
+			if (skills == null) return NotFound();
+			return Ok(skills);
+		}
+
+		[HttpGet]
+		[Route("description/{employeeId}")]
+		public async Task<IActionResult> GetEmployeeDescription(int employeeId)
+		{
+			var employeeDescription = await _employeeSkillService.GetEmployeeDescription(employeeId);
+			if (employeeDescription == null) return NotFound();
+			return Ok(employeeDescription);
+		}
 	}
 }

@@ -22,11 +22,31 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<EmployeeOtherFormation> EmployeeOtherFormation { get; set; }
 		public DbSet<Employee> Employee { get; set; }
 		public DbSet<Department> Department { get; set; }
+		public DbSet<VEmployee> VEmployee { get; set; }
+		public DbSet<VEmployeeSkill> VEmployeeSkill { get; set; }
+		public DbSet<VEmployeeEducation> VEmployeeEducation { get; set; }
+		public DbSet<VEmployeeLanguage> VEmployeeLanguage { get; set; }
+		public DbSet<VEmployeeOtherSkill> VEmployeeOtherSkill { get; set; }
+		public DbSet<VSkills> VSkills { get; set; }
 
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+
+			// Configurer la vue comme une entité en lecture seule
+			modelBuilder.Entity<VEmployee>().ToView("v_employee");
+			modelBuilder.Entity<VEmployee>().HasNoKey();
+			modelBuilder.Entity<VEmployeeSkill>().ToView("v_employee_skill"); 
+			modelBuilder.Entity<VEmployeeSkill>().HasNoKey();
+			modelBuilder.Entity<VEmployeeEducation>().ToView("v_employee_education");
+			modelBuilder.Entity<VEmployeeEducation>().HasNoKey();
+			modelBuilder.Entity<VEmployeeLanguage>().ToView("v_employee_language");
+			modelBuilder.Entity<VEmployeeLanguage>().HasNoKey();
+			modelBuilder.Entity<VEmployeeOtherSkill>().ToView("v_employee_other_formation");
+			modelBuilder.Entity<VEmployeeOtherSkill>().HasNoKey();
+			modelBuilder.Entity<VSkills>().ToView("v_skills");
+			modelBuilder.Entity<VSkills>().HasNoKey();
 		}
 	}
 }

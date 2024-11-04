@@ -34,6 +34,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		[HttpPost]
 		public async Task<IActionResult> Create(EmployeeEducation employeeEducation)
 		{
+			Console.WriteLine("Tonga");
 			await _employeeEducationService.Add(employeeEducation);
 			return CreatedAtAction(nameof(Get), new { id = employeeEducation.EmployeeEducationId }, employeeEducation);
 		}
@@ -51,6 +52,15 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		{
 			await _employeeEducationService.Delete(id);
 			return NoContent();
+		}
+
+		[HttpGet]
+		[Route("employee/{id}")]
+		public async Task<IActionResult> GetEmployeeEducations(int id)
+		{
+			var employeeEducations = await _employeeEducationService.GetEmployeeEducations(id);
+			if (employeeEducations == null) return NotFound();
+			return Ok(employeeEducations);
 		}
 	}
 }

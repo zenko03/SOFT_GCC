@@ -1,0 +1,60 @@
+.table-competences {
+    text-align: center;
+}
+
+.table-competences thead tr {
+    font-weight: bolder;
+}
+
+.button-save-profil {
+    margin: 10px;
+}
+
+.button-save-profil button {
+    margin: 5px;
+}
+
+.image-profil {
+    float: left;
+}
+
+.decription {
+    float: left;
+    color: black;
+    font-weight: bolder;
+}
+
+.value-profil {
+    color: #888;
+}
+
+.icon-edit {
+    font-size: large;
+    color: #fde826;
+}
+
+.icon-delete {
+    font-size: large;
+    color: red;
+}
+
+.table-skill {
+    margin-top: 50px;
+}
+
+.color-graph {
+    width: 50px;
+    height: 15px;
+    border: 1px solid black;
+    float: left;
+    margin-top: 5px;
+}
+
+.descri-graph {
+    float: left;
+    margin-left: 10px;
+}
+
+.color-graph1 {
+    background-color:  'rgba(255, 99, 132, 0.2)';
+}
