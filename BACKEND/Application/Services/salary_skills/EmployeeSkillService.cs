@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Infrastructure.Data;
@@ -104,10 +105,51 @@ namespace soft_carriere_competence.Application.Services.salary_skills
 
 		// Recuperer la description d'un employee
 		public async Task<List<VSkills>> GetEmployeeDescription(int idEmployee)
+		{
+			return await _context.VSkills
+				.FromSqlRaw("SELECT * FROM v_skills WHERE Employee_id = {0}", idEmployee)
+				.ToListAsync();
+		}
+
+
+		public async Task<string> IsSkillEmployeeExist(int idEmployee, int domainSkillId, int skillId)
+		{
+			try
 			{
-				return await _context.VSkills
-						 .FromSqlRaw("SELECT * FROM v_skills WHERE Employee_id = {0}", idEmployee)
-						 .ToListAsync();
+				var skills = await _context.VSkills
+					.FromSqlRaw("SELECT * FROM v_skills WHERE Employee_id = {0} AND DomainSkill_id = {1} AND Skill_id = {2}",
+								idEmployee, domainSkillId, skillId)
+					.ToListAsync();
+
+				if (skills.Any())
+				{
+					// Lancer une exception personnalisée si les compétences existent déjà
+					throw new Exception("La compétence pour cet employé existe déjà.");
+				}
+
+				return "OK";
 			}
+			catch (SqlException ex)
+			{
+				Console.Error.WriteLine($"Erreur SQL : {ex.Message}");
+				return "Erreur lors de la récupération des compétences (erreur SQL).";
+			}
+			catch (DbUpdateException ex)
+			{
+				Console.Error.WriteLine($"Erreur de mise à jour : {ex.Message}");
+				return "Erreur lors de la récupération des compétences (erreur de mise à jour).";
+			}
+			catch (InvalidOperationException ex)
+			{
+				Console.Error.WriteLine($"Erreur d'opération : {ex.Message}");
+				return "Erreur lors de la récupération des compétences (opération invalide).";
+			}
+			catch (Exception ex)
+			{
+				// Renvoie le message d'erreur personnalisé en cas de compétence déjà existante
+				Console.Error.WriteLine($"Erreur : {ex.Message}");
+				return ex.Message; // Retourne le message d'erreur personnalisé pour l'interface utilisateur
+			}
+		}
 	}
 }
