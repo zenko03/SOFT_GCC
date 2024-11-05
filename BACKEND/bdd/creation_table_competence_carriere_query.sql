@@ -1,7 +1,7 @@
 /*
 	Auteur : Inssa Chalman
 	Date : 25 septembre 2024
-	Description : Script de création base de donnees et des tables pour Soft_carriere_competences
+	Description : Script de crï¿½ation base de donnees et des tables pour Soft_carriere_competences
 	dans la module competences salaries et suivi carriere
 	Version : 1.0
 
@@ -16,6 +16,22 @@
 USE Base_soft_gcc;
 
 ----------------------------------------- TABLES POUR COMPETENCES SALARIES -----------------------------------------------------------------------
+-- Creation de la table departement(id, designation)
+CREATE TABLE Department (
+	Department_id INT PRIMARY KEY IDENTITY(1,1),
+	Department_name NVARCHAR(50)
+);
+
+-- Creation de la table employe(id, matricule, nom, prenom, date_embauche) simule
+CREATE TABLE Employee (
+	Employee_id INT PRIMARY KEY IDENTITY(1,1),
+	Registration_number NVARCHAR(100) NOT NULL,
+	Name NVARCHAR(100) NOT NULL,
+	FirstName NVARCHAR(100) NOT NULL,
+	Birthday DATE NOT NULL,
+	Hiring_date DATE NOT NULL,
+	Department_id INT NOT NULL REFERENCES Department(Department_id)
+);
 
 -- Creation de la table filiere(id, designation)
 CREATE TABLE Study_path (
@@ -44,7 +60,8 @@ CREATE TABLE Employee_education (
 	Year INT,
 	State INT,
 	Creation_date DATE,
-	Updated_date DATE
+	Updated_date DATE,
+	Employee_id INT NOT NULL REFERENCES Employee(Employee_id)
 );
 
 
@@ -55,19 +72,20 @@ CREATE TABLE Language (
 );
 
 -- Creation de la table language_employe(id, id_language, id_nivreau_language, etat)
-CREATE TABLE language_employe(
-	Language_employe_id INT PRIMARY KEY IDENTITY(1,1),
+CREATE TABLE Employee_language(
+	Employee_language_id INT PRIMARY KEY IDENTITY(1,1),
 	Language_id INT NOT NULL REFERENCES Language(Language_id),
 	Level DOUBLE PRECISION NOT NULL,
 	State INT,
 	creation_date DATE,
-	Updated_date DATE
+	Updated_date DATE,
+	Employee_id INT NOT NULL REFERENCES Employee(Employee_id)
 );
 
 -- Creation de la table domaine(id, designation)
 CREATE TABLE Domain_skill (
 	Domain_skill_id INT PRIMARY KEY IDENTITY(1,1),
-	Domain__skill_name NVARCHAR(100) NOT NULL
+	Domain_skill_name NVARCHAR(100) NOT NULL
 );
 
 -- Creation de la table competence(id, designation)
@@ -78,38 +96,30 @@ CREATE TABLE Skill (
 
 -- Creation de la table competence_employe(id, id_domaine, id_competence, etat)
 CREATE TABLE Employee_skill (
-	Employe_skill_id INT PRIMARY KEY IDENTITY(1,1),
+	Employee_skill_id INT PRIMARY KEY IDENTITY(1,1),
 	Domain_skill_id INT NOT NULL REFERENCES Domain_skill(Domain_skill_id),
 	Skill_id INT NOT NULL REFERENCES Skill(Skill_id),
-	level DOUBLE PRECISION NOT NULL,
+	Level DOUBLE PRECISION NOT NULL,
 	State INT,
 	Creation_date DATE,
-	Updated_date DATE
+	Updated_date DATE,
+	Employee_id INT NOT NULL REFERENCES Employee(Employee_id)
 );
 
 -- Creation de la table autre_formation_employe(id, formation, etat)
 CREATE TABLE Employee_other_formation (
-	Employe_other_formation_id INT PRIMARY KEY IDENTITY(1,1),
+	Employee_other_formation_id INT PRIMARY KEY IDENTITY(1,1),
 	Description NVARCHAR(250),
 	Start_date DATE NOT NULL,
 	End_date DATE NOT NULL,
 	Comment TEXT,
 	State INT,
 	Creation_date DATE,
-	Updated_date DATE
+	Updated_date DATE,
+	Employee_id INT NOT NULL REFERENCES Employee(Employee_id)
 );
 
 ----------------------------------- TABLES POUR CARRIERE  -------------------------------------------------------------------------
-
--- Creation de la table employe(id, matricule, nom, prenom, date_embauche) simule
-CREATE TABLE Employee (
-	Employee_id INT PRIMARY KEY IDENTITY(1,1),
-	Registration_number NVARCHAR(100) NOT NULL,
-	Employee_name NVARCHAR(100) NOT NULL,
-	Name NVARCHAR(100) NOT NULL,
-	FirstName NVARCHAR(100) NOT NULL,
-	Date_hire DATE NOT NULL
-);
 
 -- Creation de la table poste(id, designation)
 CREATE TABLE Position (
@@ -170,11 +180,6 @@ CREATE TABLE Establishment (
 	Establishment_name NVARCHAR(50)
 );
 
--- Creation de la table departement(id, designation)
-CREATE TABLE Department (
-	Department_id INT PRIMARY KEY IDENTITY(1,1),
-	Department_name NVARCHAR(50)
-);
 
 -- Creation de la table departement(id, designation)
 CREATE TABLE Fonction (
