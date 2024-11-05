@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Template from '../pages/Template';
 import LoginPage from '../pages/LoginPage';
-import Body from '../components/Body';
 import SalaryList from '../pages/Evaluations/Notations/SalaryList';
 import Notation from '../pages/Evaluations/Notations/Notation';
 import ListSkillSalaryPage from '../pages/salarySkills/ListSkillSalaryPage';
