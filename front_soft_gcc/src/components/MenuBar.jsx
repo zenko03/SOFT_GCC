@@ -13,6 +13,12 @@ function MenuBar({ task }) {
           </a>
         </li>
         <li className="nav-item">
+          <a className="nav-link" href="/competences">
+            <span className="icon-bg"><i className="mdi mdi-cube menu-icon"></i></span>
+            <span className="menu-title">Compétences</span>
+          </a>
+        </li>
+        <li className="nav-item">
           <Link to="/competences">
             <span className="icon-bg"><i className="mdi mdi-contacts menu-icon"></i></span>
             <span className="menu-title">Compétences</span>
