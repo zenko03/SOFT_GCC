@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../../../assets/css/Evaluations/Steps.css'; // CSS séparé pour le style
 import SectionA from '../sections/SectionA';
 
-function Step1() {
+function Step1({notes, setNotes}) {
   const [activeSection, setActiveSection] = useState('A'); // Gérer la section active
 
   // Fonction pour gérer le clic sur une section
@@ -14,7 +14,7 @@ function Step1() {
   const renderSectionContent = () => {
     switch (activeSection) {
       case 'A':
-        return <SectionA />;
+        return <SectionA notes={notes} setNotes={setNotes}  />;
       case 'B':
         return <div>Contenu de la Section B</div>;
       default:
