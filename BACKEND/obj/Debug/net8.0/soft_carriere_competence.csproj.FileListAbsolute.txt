@@ -7,7 +7,6 @@ E:\softwell\stage\SOFT_GCC\BACKEND\bin\Debug\net8.0\soft_carriere_competence.dll
 E:\softwell\stage\SOFT_GCC\BACKEND\bin\Debug\net8.0\soft_carriere_competence.pdb
 E:\softwell\stage\SOFT_GCC\BACKEND\bin\Debug\net8.0\Azure.Core.dll
 E:\softwell\stage\SOFT_GCC\BACKEND\bin\Debug\net8.0\Azure.Identity.dll
-E:\softwell\stage\SOFT_GCC\BACKEND\bin\Debug\net8.0\EFCore.NamingConventions.dll
 E:\softwell\stage\SOFT_GCC\BACKEND\bin\Debug\net8.0\Humanizer.dll
 E:\softwell\stage\SOFT_GCC\BACKEND\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 E:\softwell\stage\SOFT_GCC\BACKEND\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll

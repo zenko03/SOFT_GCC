@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\Authentification\" />
     <Folder Include="Core\Enums\" />
     <Folder Include="Modeles\" />
   </ItemGroup>
