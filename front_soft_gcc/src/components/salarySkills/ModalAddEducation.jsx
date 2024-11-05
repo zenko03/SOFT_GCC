@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import Modal from 'react-modal';
 import Fetcher from '../fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
-    
-// Gerer l'insertion d'une education
+import './ModalAddEducation.css';
+
+Modal.setAppElement('#root');
+
 function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fetchData, error, dataEmployeeDescription }) {
-    // Appel API pour charger les données
     const { data: dataStudyPath, error: errorStudyPath, isLoading: loadingStudyPath } = useSWR('/StudyPath', Fetcher);
     const { data: dataDegree, error: errorLevel, isLoading: loadingLevel } = useSWR('/Degree', Fetcher);
     const { data: dataSchool, error: errorSchool, isLoading: loadingSchool } = useSWR('/School', Fetcher);
 
-    // Gestion état du formulaire
     const [formData, setFormData] = useState({
         studyPathId: '',
         degreeId: '',
@@ -21,8 +21,9 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
         state: '1',
         employeeId: idEmployee,
     });
+    
+    const [formErrors, setFormErrors] = useState({});
 
-    // Gérer les changements dans les champs du formulaire
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -31,153 +32,108 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
         }));
     };
 
-    // Gérer la soumission du formulaire
-    const handleSubmit = async () => {
-        try {
-            const dataToSend = {
-                ...formData,
-                creationDate: new Date().toISOString(),
-                updateDate: new Date().toISOString(),
-            };
+    const validateForm = () => {
+        const errors = {};
+        
+        if (!formData.studyPathId) errors.studyPathId = 'Veuillez sélectionner une filière.';
+        if (!formData.degreeId) errors.degreeId = 'Veuillez sélectionner un niveau.';
+        if (!formData.schoolId) errors.schoolId = 'Veuillez sélectionner une école.';
+        if (!formData.year) errors.year = 'Veuillez entrer une année.';
+        else if (formData.year < 1900 || formData.year > new Date().getFullYear()) errors.year = 'Veuillez entrer une année valide.';
 
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0; // Retourne `true` si aucune erreur
+    };
+
+    const handleSubmit = async () => {
+        if (!validateForm()) return; // Arrête la soumission en cas d'erreurs
+
+        const dataToSend = {
+            ...formData,
+            creationDate: new Date().toISOString(),
+            updateDate: new Date().toISOString(),
+        };
+
+        try {
             const response = await axios.post(urlApi('/EmployeeEducation'), dataToSend);
-            handleCloseEducation(); 
+            console.log("Réponse de l'API :", response.data);
+            handleCloseEducation();
             await fetchData();
             dataEmployeeDescription.educationNumber++;
         } catch (error) {
-            error = `Erreur lors d'insertion d'une diplome et formation : ${error.message}`;
+            console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
         }
     };
 
-    // Gestion du chargement
-    if (loadingStudyPath || loadingLevel || loadingSchool) {
-        
-        return <Modal show={showEducation} onHide={handleCloseEducation}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Ajouter une nouvelle diplomes & formation</Modal.Title>
-                    </Modal.Header>
-
-                    <Modal.Body>
-                        <div>Chargement...</div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseEducation}>
-                            Fermer
-                        </Button>
-                    </Modal.Footer>
-                </Modal>;
-    }
-
-    // Gestion des erreurs
-    if (errorStudyPath || errorLevel || errorSchool) {
-        return <Modal show={showEducation} onHide={handleCloseEducation}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Ajouter une nouvelle diplomes & formation</Modal.Title>
-                    </Modal.Header>
-
-                    <Modal.Body>
-                        <div>Erreur lors du chargement des donnees.</div>;
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseEducation}>
-                            Fermer
-                        </Button>
-                    </Modal.Footer>
-                </Modal>;
-    }
-
-    // Gestion des validations de données
-    if (!dataStudyPath || !dataDegree || !dataSchool) {
-        return <Modal show={showEducation} onHide={handleCloseEducation}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Ajouter une nouvelle diplomes & formation</Modal.Title>
-                    </Modal.Header>
-
-                    <Modal.Body>
-                        <div>Pas de donnees disponible</div>;
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseEducation}>
-                            Fermer
-                        </Button>
-                    </Modal.Footer>
-                </Modal>;
-    }
-
-    // Gestion des erreurs 
-    if (error) {
-        return (
-            <Modal show={showSkill} onHide={handleCloseSkill}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Ajouter une nouvelle diplomes & formations</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>{error}</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseSkill}>Fermer</Button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-
     return (
-        <div>
-            <Modal show={showEducation} onHide={handleCloseEducation}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Ajouter une nouvelle diplomes & formations</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formBasicSelect">
-                            <Form.Label>Filiere</Form.Label>
-                            <Form.Select name="studyPathId" value={formData.studyPathId} onChange={handleChange}>
-                                <option value="">Sélectionner une filiere</option>
-                                {dataStudyPath.map((item, id) => (
+        <Modal
+            isOpen={showEducation}
+            onRequestClose={handleCloseEducation}
+            contentLabel="Ajouter une nouvelle diplômes & formation"
+            className="modal-content"
+            overlayClassName="modal-overlay"
+        >
+            <div className="modal-header">
+                <h2>Ajouter une nouvelle diplômes & formations</h2>
+                <button onClick={handleCloseEducation} className="close-button">&times;</button>
+            </div>
+            <div className="modal-body">
+                {loadingStudyPath || loadingLevel || loadingSchool ? (
+                    <div>Chargement...</div>
+                ) : errorStudyPath || errorLevel || errorSchool ? (
+                    <div>Erreur lors du chargement des données.</div>
+                ) : (
+                    <form>
+                        <div className="form-group">
+                            <label>Filière</label>
+                            <select name="studyPathId" value={formData.studyPathId} onChange={handleChange} className="form-control">
+                                <option value="">Sélectionner une filière</option>
+                                {dataStudyPath && dataStudyPath.map((item, id) => (
                                     <option key={id} value={item.studyPathId}>
                                         {item.studyPathName}
                                     </option>
                                 ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <Form.Group controlId="formBasicSelect">
-                            <Form.Label>Niveau</Form.Label>
-                            <Form.Select name="degreeId" value={formData.degreeId} onChange={handleChange}>
+                            </select>
+                            {formErrors.studyPathId && <small className="error-text">{formErrors.studyPathId}</small>}
+                        </div>
+                        <div className="form-group">
+                            <label>Niveau</label>
+                            <select name="degreeId" value={formData.degreeId} onChange={handleChange} className="form-control">
                                 <option value="">Sélectionner un niveau</option>
-                                {dataDegree.map((item, id) => (
+                                {dataDegree && dataDegree.map((item, id) => (
                                     <option key={id} value={item.degreeId}>
                                         {item.name}
                                     </option>
                                 ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <Form.Group controlId="formBasicSelect">
-                            <Form.Label>Ecole</Form.Label>
-                            <Form.Select name="schoolId" value={formData.schoolId} onChange={handleChange}>
-                                <option value="">Sélectionner une ecole</option>
-                                {dataSchool.map((item, id) => (
+                            </select>
+                            {formErrors.degreeId && <small className="error-text">{formErrors.degreeId}</small>}
+                        </div>
+                        <div className="form-group">
+                            <label>École</label>
+                            <select name="schoolId" value={formData.schoolId} onChange={handleChange} className="form-control">
+                                <option value="">Sélectionner une école</option>
+                                {dataSchool && dataSchool.map((item, id) => (
                                     <option key={id} value={item.schoolId}>
                                         {item.name}
                                     </option>
                                 ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <Form.Group controlId="formBasicEmail">
-                            <Form.Label>Annee</Form.Label>
-                            <Form.Control type="number" name="year" value={formData.year} onChange={handleChange} />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseEducation} >
-                        Fermer
-                    </Button>
-                    <Button variant="success" onClick={handleSubmit}>
-                        Valider
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </div>
-      );
-    }
-    
-    export default ModalAddEducation;
-    
+                            </select>
+                            {formErrors.schoolId && <small className="error-text">{formErrors.schoolId}</small>}
+                        </div>
+                        <div className="form-group">
+                            <label>Année</label>
+                            <input type="number" name="year" value={formData.year} onChange={handleChange} className="form-control" />
+                            {formErrors.year && <small className="error-text">{formErrors.year}</small>}
+                        </div>
+                    </form>
+                )}
+            </div>
+            <div className="modal-footer">
+                <button onClick={handleCloseEducation} className="button button-secondary">Fermer</button>
+                <button onClick={handleSubmit} className="button button-primary">Valider</button>
+            </div>
+        </Modal>
+    );
+}
+
+export default ModalAddEducation;
