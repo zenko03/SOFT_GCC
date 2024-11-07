@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import Modal from 'react-modal';
 import Fetcher from '../fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
+import '../../styles/modal.css';
 
 // Gerer la modification d'une competence
 function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, idEmployee, fetchData, error }) {
@@ -22,6 +23,7 @@ function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, id
     });
 
     const [formErrors, setFormErrors] = useState({}); // Pour stocker les erreurs de validation
+    const [submitError, setSubmitError] = useState(''); 
 
     // Utilisez useEffect pour pré-remplir les données lorsque la modale s'ouvre
     useEffect(() => {
@@ -74,91 +76,72 @@ function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, id
             handleCloseEditSkill();
             fetchData();
         } catch (error) {
-            setFormErrors({ submit: `Erreur lors de l'insertion de la compétence : ${error.message}` });
+            setSubmitError({ submit: `Erreur lors de l'insertion de la compétence : ${error.message}` });
         }
     };
 
-    if (loadingDomainSkill || loadingSkill) {
-        return (
-            <Modal show={showEditSkill} onHide={handleCloseEditSkill}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Modifier une compétence</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Chargement...</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseEditSkill}>Fermer</Button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-
-    // Gestion des erreurs
-    if (errorDomainSkill || errorSkill) {
-        return (
-            <Modal show={showEditSkill} onHide={handleCloseEditSkill}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Modifier une compétence</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Erreur lors du chargement des données.</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseEditSkill}>Fermer</Button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-
     return (
-        <Modal show={showEditSkill} onHide={handleCloseEditSkill}>
-            <Modal.Header closeButton>
-                <Modal.Title>Modifier une compétence</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formBasicSelectDomain">
-                        <Form.Label>Domaine</Form.Label>
-                        <Form.Select name="domainSkillId" value={formData.domainSkillId} onChange={handleChange}>
-                            <option value="">Sélectionner un domaine</option>
-                            {dataDomainSkill.map((item, id) => (
-                                <option key={id} value={item.domainSkillId}>{item.name}</option>
-                            ))}
-                        </Form.Select>
-                        {formErrors.domainSkillId && <div className="text-danger">{formErrors.domainSkillId}</div>}
-                    </Form.Group>
-
-                    <Form.Group controlId="formBasicSelectSkill">
-                        <Form.Label>Compétence</Form.Label>
-                        <Form.Select name="skillId" value={formData.skillId} onChange={handleChange}>
-                            <option value="">Sélectionner une compétence</option>
-                            {dataSkill.map((item, id) => (
-                                <option key={id} value={item.skillId}>{item.name}</option>
-                            ))}
-                        </Form.Select>
-                        {formErrors.skillId && <div className="text-danger">{formErrors.skillId}</div>}
-                    </Form.Group>
-
-                    <Form.Group controlId="formBasicLevel">
-                        <Form.Label>Niveau (en %)</Form.Label>
-                        <Form.Control type="number" name="level" value={formData.level} onChange={handleChange} />
-                        {formErrors.level && <div className="text-danger">{formErrors.level}</div>}
-                    </Form.Group>
-
-                    <Form.Group controlId="formBasicSelectState">
-                        <Form.Label>État</Form.Label>
-                        <Form.Select name="state" value={formData.state} onChange={handleChange}>
-                            <option value="">Sélectionner un état</option>
-                            <option value="1">Non validé</option>
-                            <option value="5">Validé par évaluation</option>
-                            <option value="10">Confirmé</option>
-                        </Form.Select>
-                        {formErrors.state && <div className="text-danger">{formErrors.state}</div>}
-                    </Form.Group>
-                </Form>
-                {formErrors.submit && <div className="text-danger mt-2">{formErrors.submit}</div>}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseEditSkill}>Fermer</Button>
-                <Button variant="success" onClick={handleSubmit}>Modifier</Button>
-            </Modal.Footer>
+        <Modal
+            isOpen={showEditSkill}
+            onRequestClose={handleCloseEditSkill}
+            contentLabel="Modifier une compétence"
+            className="modal-content"
+            overlayClassName="modal-overlay"
+        >
+            <div className="modal-header">
+                <h2>Modifier une compétence</h2>
+                <button onClick={handleCloseEditSkill} className="close-button">&times;</button>
+            </div>
+            <div className="modal-body">
+                {loadingDomainSkill || loadingSkill ? (
+                    <div>Chargement...</div>
+                ) : errorDomainSkill || errorSkill ? (
+                    <div>Erreur lors du chargement des données.</div>
+                ) : (
+                    <form>
+                        <div className="form-group">
+                            <label>Domaine</label>
+                            <select name="domainSkillId" value={formData.domainSkillId} onChange={handleChange} className="form-control">
+                                <option value="">Sélectionner un domaine</option>
+                                {dataDomainSkill.map((item, id) => (
+                                    <option key={id} value={item.domainSkillId}>{item.name}</option>
+                                ))}
+                            </select>
+                            {formErrors.domainSkillId && <div className="text-danger">{formErrors.domainSkillId}</div>}
+                        </div>
+                        <div className="form-group">
+                            <label>Compétence</label>
+                            <select name="skillId" value={formData.skillId} onChange={handleChange} className="form-control">
+                                <option value="">Sélectionner une compétence</option>
+                                {dataSkill.map((item, id) => (
+                                    <option key={id} value={item.skillId}>{item.name}</option>
+                                ))}
+                            </select>
+                            {formErrors.skillId && <div className="text-danger">{formErrors.skillId}</div>}
+                        </div>
+                        <div className="form-group">
+                            <label>Niveau (en %)</label>
+                            <input type="number" name="level" value={formData.level} onChange={handleChange} className="form-control" />
+                            {formErrors.level && <div className="text-danger">{formErrors.level}</div>}
+                        </div>
+                        <div className="form-group">
+                            <label>État</label>
+                            <select name="state" value={formData.state} onChange={handleChange} className="form-control">
+                                <option value="">Sélectionner un état</option>
+                                <option value="1">Non validé</option>
+                                <option value="5">Validé par évaluation</option>
+                                <option value="10">Confirmé</option>
+                            </select>
+                            {formErrors.state && <div className="text-danger">{formErrors.state}</div>}
+                        </div>
+                        {submitError && <small className="error-text">{submitError}</small>}
+                    </form>
+                )}
+            </div>
+            <div className="modal-footer">
+                <button onClick={handleCloseEditSkill} className="button button-secondary">Fermer</button>
+                <button onClick={handleSubmit} className="button button-primary">Modifier</button>
+            </div>
         </Modal>
     );
 }

@@ -9,6 +9,8 @@ using soft_carriere_competence.Application.Services.salary_skills;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+//Connect base SQLSERVER
+
 
 #region Injection independance
 builder.Services.AddScoped<EmployeeEducationService>();
@@ -82,8 +84,8 @@ builder.Services.AddCors(options =>
 	options.AddPolicy("AllowReactApp", policy =>
 	{
 		policy.WithOrigins("http://localhost:5173") // Autoriser uniquement cette origine
-			  .AllowAnyHeader() // Autoriser tous les en-têtes
-			  .AllowAnyMethod() // Autoriser toutes les méthodes (GET, POST, etc.)
+			  .AllowAnyHeader() // Autoriser tous les en-tï¿½tes
+			  .AllowAnyMethod() // Autoriser toutes les mï¿½thodes (GET, POST, etc.)
 			  .AllowCredentials(); // Autoriser l'envoi des cookies ou des credentials
 	});
 });
@@ -93,7 +95,35 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "TodoList API", Version = "v1" });
+
+    // Ajouter la configuration pour le support de l'authentification JWT dans Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Veuillez entrer le token JWT ici. Exemple : Bearer <token>",
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var app = builder.Build();
 app.UseCors("AllowReactApp");

@@ -10636,6 +10636,9 @@ html {
   overflow: auto; }
 
 .container-scroller {
+  width: 100%;
+  min-height: 100vh; /* for full screen height */
+
   overflow: hidden; }
 
 pre {
@@ -13550,7 +13553,7 @@ dl {
             margin-left: 1rem;
             margin-right: 0; }
           .sidebar .nav .nav-item .nav-link .icon-bg .menu-icon {
-            color: #33c92d; }
+            color: #DAC616; }
             .sidebar .nav .nav-item .nav-link .icon-bg .menu-icon:after, .sidebar .nav .nav-item .nav-link .icon-bg .menu-icon:before {
               font-size: 1rem;
               color: inherit; }
@@ -13603,17 +13606,17 @@ dl {
           left: 0;
           top: .5rem;
           bottom: 0;
-          background: #44ce42;
+          background: #DAC616;
           height: 24px;
           width: 4px; }
           .rtl .sidebar .nav .nav-item.active > .nav-link:before {
             left: auto;
             right: 0; }
         .sidebar .nav .nav-item.active > .nav-link .menu-title {
-          color: #44ce42;
+          color: #DAC616;
           font-family: "nunito-medium", sans-serif; }
         .sidebar .nav .nav-item.active > .nav-link i {
-          color: #44ce42; }
+          color: #DAC616; }
       .sidebar .nav .nav-item:hover {
         background: #161621; }
       .sidebar .nav .nav-item.nav-profile .nav-link {
