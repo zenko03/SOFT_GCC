@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import Modal from 'react-modal';
 import Fetcher from '../fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
+import '../../styles/modal.css';
     
 // Gerer l'inertion d'une langue
 function ModalAddLanguage ({ showLanguage, handleCloseLanguage, idEmployee, fetchData, error, dataEmployeeDescription }) {
@@ -18,6 +19,9 @@ function ModalAddLanguage ({ showLanguage, handleCloseLanguage, idEmployee, fetc
     employeeId: idEmployee, // Valeur par défaut de l'employé, peut être rendue dynamique
   });
 
+  const [formErrors, setFormErrors] = useState({});
+  const [submitError, setSubmitError] = useState(''); 
+
   // Gérer les changements dans les champs du formulaire
   const handleChange = (e) => {
       const { name, value } = e.target;
@@ -27,8 +31,23 @@ function ModalAddLanguage ({ showLanguage, handleCloseLanguage, idEmployee, fetc
       }));
   };
 
+  // Gestion de la validation du formulaire
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!formData.language_id) errors.language_id = 'Veuillez sélectionner une langue.';
+    if (!formData.level) errors.level = 'Veuillez entrer un nombre entre 0 et 100.';
+    if (!formData.state) errors.state = 'Veuillez sélectionner un état.';
+    else if (formData.level < 0 || formData.level > 100) errors.year = 'Veuillez entrer un nombre entre 0 et 100.';
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0; // Retourne `true` si aucune erreur
+  };
+
   // Gérer la soumission du formulaire
   const handleSubmit = async () => {
+    if (!validateForm()) return; 
+
       try {
           const dataToSend = {
               ...formData,
@@ -41,127 +60,67 @@ function ModalAddLanguage ({ showLanguage, handleCloseLanguage, idEmployee, fetc
           await fetchData();
           dataEmployeeDescription.languageNumber++;
         } catch (error) {
-          error = `Erreur lors d'insertion d'un language : ${error.message}`;
+          console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
+          setSubmitError(`Erreur lors d'insertion d'un language : ${error.message}`);
       }
   };
-
-    // Gestion du chargement
-    if (loadingLanguage) {
         
-        return <Modal show={showLanguage} onHide={handleCloseLanguage}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Ajouter une nouvelle competence linguistique</Modal.Title>
-                    </Modal.Header>
-
-                    <Modal.Body>
-                        <div>Chargement...</div>;
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseLanguage}>
-                            Fermer
-                        </Button>
-                    </Modal.Footer>
-                </Modal>;
-    }
-
-    // Gestion des erreurs
-    if (errorLanguage) {
-        return <Modal show={showLanguage} onHide={handleCloseLanguage}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Ajouter une nouvelle competence linguistique</Modal.Title>
-                    </Modal.Header>
-
-                    <Modal.Body>
-                        <div>Erreur lors du chargement des donnees.</div>;
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseLanguage}>
-                            Fermer
-                        </Button>
-                    </Modal.Footer>
-                </Modal>;
-    }
-
-    // Gestion des validations de données
-    if (!dataLanguage) {
-        return <Modal show={showLanguage} onHide={handleLanguage}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Ajouter une nouvelle competence linguistique</Modal.Title>
-                    </Modal.Header>
-
-                    <Modal.Body>
-                        <div>Pas de donnees disponible</div>;
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseLanguage}>
-                            Fermer
-                        </Button>
-                    </Modal.Footer>
-                </Modal>;
-    }
-
-    // Gestion des erreurs
-    if (error) {
-      return <Modal show={showLanguage} onHide={handleLanguage}>
-                  <Modal.Header closeButton>
-                      <Modal.Title>Ajouter une nouvelle competence linguistique</Modal.Title>
-                  </Modal.Header>
-
-                  <Modal.Body>
-                      <div>{error}</div>;
-                  </Modal.Body>
-                  <Modal.Footer>
-                      <Button variant="secondary" onClick={handleCloseLanguage}>
-                          Fermer
-                      </Button>
-                  </Modal.Footer>
-              </Modal>;
-  }
 
     return (
-        <div>
-            <Modal show={showLanguage} onHide={handleCloseLanguage}>
-            <Modal.Header closeButton>
-              <Modal.Title>Ajouter une nouvelle competence linguistique</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form>
-                <Form.Group controlId="formBasicSelect">
-                  <Form.Label>Langue</Form.Label>
-                  <Form.Select name="language_id" value={formData.language_id} onChange={handleChange}>
-                    <option value="">Sélectionner une langue</option>
-                    {dataLanguage.map((item, id) => (
-                      <option key={id} value={item.languageId}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-                <Form.Group controlId="formBasicEmail">
-                  <Form.Label>Niveau (en %)</Form.Label>
-                  <Form.Control type="number" name="level" value={formData.level} onChange={handleChange} />
-                </Form.Group>
-                <Form.Group controlId="formBasicSelect">
-                  <Form.Label>Etat</Form.Label>
-                  <Form.Select name="state" value={formData.state} onChange={handleChange}>
-                    <option value="">Sélectionner un état</option>
-                    <option value="1">Non validé</option>
-                    <option value="5">Validé par évaluation</option>
-                    <option value="10">Confirmé</option>
-                  </Form.Select>
-                </Form.Group>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleCloseLanguage}>
-                Fermer
-              </Button>
-              <Button variant="success" onClick={handleSubmit}>
-                Valider
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </div>
+      <Modal
+          isOpen={showLanguage}
+          onRequestClose={handleCloseLanguage}
+          contentLabel="Ajouter une nouvelle competence linguistique"
+          className="modal-content"
+          overlayClassName="modal-overlay"
+      >
+          <div className="modal-header">
+              <h2>Ajouter une nouvelle competence linguistique</h2>
+              <button onClick={handleCloseLanguage} className="close-button">&times;</button>
+          </div>
+          <div className="modal-body">
+              {loadingLanguage ? (
+                  <div>Chargement...</div>
+              ) : errorLanguage ? (
+                  <div>Erreur lors du chargement des données.</div>
+              ) : (
+                  <form>
+                      <div className="form-group">
+                          <label>Langue</label>
+                          <select name="language_id" value={formData.language_id} onChange={handleChange} className="form-control">
+                            <option value="">Sélectionner une langue</option>
+                            {dataLanguage.map((item, id) => (
+                              <option key={id} value={item.languageId}>
+                                {item.name}
+                              </option>
+                            ))}
+                          </select>
+                          {formErrors.language_id && <small className="error-text">{formErrors.language_id}</small>}
+                      </div>
+                      <div className="form-group">
+                          <label>Niveau (en %)</label>
+                          <input type="number" name="level" value={formData.level} onChange={handleChange} className="form-control" />
+                          {formErrors.level && <small className="error-text">{formErrors.level}</small>}
+                      </div>
+                      <div className="form-group">
+                          <label>Etat</label>
+                          <select name="state" value={formData.state} onChange={handleChange} className="form-control">
+                              <option value="">Sélectionner un état</option>
+                              <option value="1">Non validé</option>
+                              <option value="5">Validé par évaluation</option>
+                              <option value="10">Confirmé</option>
+                          </select>
+                          {formErrors.state && <small className="error-text">{formErrors.state}</small>}
+                      </div>
+                      {submitError && <small className="error-text">{submitError}</small>}
+                    </form>
+              )}
+          </div>
+          <div className="modal-footer">
+              <button onClick={handleCloseLanguage} className="button button-secondary">Fermer</button>
+              <button onClick={handleSubmit} className="button button-primary">Valider</button>
+          </div>
+      </Modal>
       );
     }
     

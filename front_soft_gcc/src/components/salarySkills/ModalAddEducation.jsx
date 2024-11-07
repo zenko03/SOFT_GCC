@@ -4,13 +4,13 @@ import Fetcher from '../fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
-import './ModalAddEducation.css';
+import '../../styles/modal.css';
 
 Modal.setAppElement('#root');
 
-function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fetchData, error, dataEmployeeDescription }) {
+function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fetchData, dataEmployeeDescription }) {
     const { data: dataStudyPath, error: errorStudyPath, isLoading: loadingStudyPath } = useSWR('/StudyPath', Fetcher);
-    const { data: dataDegree, error: errorLevel, isLoading: loadingLevel } = useSWR('/Degree', Fetcher);
+    const { data: dataDegree, error: errorDegree, isLoading: loadingDegree } = useSWR('/Degree', Fetcher);
     const { data: dataSchool, error: errorSchool, isLoading: loadingSchool } = useSWR('/School', Fetcher);
 
     const [formData, setFormData] = useState({
@@ -21,8 +21,9 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
         state: '1',
         employeeId: idEmployee,
     });
-    
+
     const [formErrors, setFormErrors] = useState({});
+    const [submitError, setSubmitError] = useState(''); 
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -42,11 +43,11 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
         else if (formData.year < 1900 || formData.year > new Date().getFullYear()) errors.year = 'Veuillez entrer une année valide.';
 
         setFormErrors(errors);
-        return Object.keys(errors).length === 0; // Retourne `true` si aucune erreur
+        return Object.keys(errors).length === 0;
     };
 
     const handleSubmit = async () => {
-        if (!validateForm()) return; // Arrête la soumission en cas d'erreurs
+        if (!validateForm()) return;
 
         const dataToSend = {
             ...formData,
@@ -56,12 +57,11 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
 
         try {
             const response = await axios.post(urlApi('/EmployeeEducation'), dataToSend);
-            console.log("Réponse de l'API :", response.data);
             handleCloseEducation();
             await fetchData();
             dataEmployeeDescription.educationNumber++;
         } catch (error) {
-            console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
+            setSubmitError(error.response?.data || 'Erreur lors de l\'insertion.');
         }
     };
 
@@ -78,9 +78,9 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
                 <button onClick={handleCloseEducation} className="close-button">&times;</button>
             </div>
             <div className="modal-body">
-                {loadingStudyPath || loadingLevel || loadingSchool ? (
+                {loadingStudyPath || loadingDegree || loadingSchool ? (
                     <div>Chargement...</div>
-                ) : errorStudyPath || errorLevel || errorSchool ? (
+                ) : errorStudyPath || errorDegree || errorSchool ? (
                     <div>Erreur lors du chargement des données.</div>
                 ) : (
                     <form>
@@ -125,6 +125,7 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
                             <input type="number" name="year" value={formData.year} onChange={handleChange} className="form-control" />
                             {formErrors.year && <small className="error-text">{formErrors.year}</small>}
                         </div>
+                        {submitError && <small className="error-text">{submitError}</small>}
                     </form>
                 )}
             </div>
