@@ -243,7 +243,7 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
                         </Button>
                       </Modal.Footer>
                     </Modal>
-
+                 
                   {/*Condition d'affichage pour gerer les modales de competences a afficher */}
                     {modalDisplay === 2 ? (
                       <div className="d-md-block d-none">

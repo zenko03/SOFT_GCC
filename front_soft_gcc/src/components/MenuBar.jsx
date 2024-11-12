@@ -27,10 +27,13 @@ function MenuBar({ task }) {
           <div className="collapse" id="ui-basic">
             <ul className="nav flex-column sub-menu">
               <li className="nav-item">
-                <a className="nav-link" href="pages/ui-features/buttons.html">Plan de carrière</a>
+                <Link className="nav-link" to="/carriere">Plan de carrière</Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="pages/ui-features/dropdowns.html">Suivi retraite</a>
+                <a className="nav-link" href="pages/ui-features/dropdowns.html">Depart a la retraite</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="pages/ui-features/dropdowns.html">Evolution de carrière</a>
               </li>
             </ul>
           </div>
@@ -49,7 +52,13 @@ function MenuBar({ task }) {
 
                 </ul>
               </div>
-            </li>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="index.html">
+            <span className="icon-bg"><i className="mdi mdi-cube menu-icon"></i></span>
+            <span className="menu-title">Organigramme</span>
+          </a>
+        </li>
         <li className="nav-item sidebar-user-actions">
           <div className="sidebar-user-menu">
             <a href="#" className="nav-link">

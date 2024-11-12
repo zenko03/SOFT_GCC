@@ -1786,7 +1786,7 @@ body {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #a7afb7;
+  color: black;
   text-align: left;
   background-color: #fff; }
 
@@ -10654,7 +10654,7 @@ code {
   border-radius: 4px; }
 
 .page-header {
-  margin: 0 1rem 1.5rem 1rem; }
+  margin: 0 1rem 1.5rem 0rem; }
   .page-header .breadcrumb {
     border: 0;
     margin-bottom: 0; }
@@ -13741,10 +13741,10 @@ dl {
               right: 0;
               content: "\F04D"; }
           .sidebar .nav.sub-menu .nav-item .nav-link.active {
-            color: #44ce42;
+            color: #DAC616;
             background: transparent; }
             .sidebar .nav.sub-menu .nav-item .nav-link.active:before {
-              color: #44ce42; }
+              color: #DAC616; }
           .sidebar .nav.sub-menu .nav-item .nav-link:hover {
             color: #555555; }
         .sidebar .nav.sub-menu .nav-item:hover {
@@ -14136,7 +14136,7 @@ dl {
 
 .content-wrapper {
   background: #f0f1f6;
-  padding: 2.875rem 2.875rem 0 2.875rem;
+  padding: 20px;
   width: 100%;
   -webkit-box-flex: 1;
   -ms-flex-positive: 1;
