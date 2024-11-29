@@ -154,5 +154,21 @@ namespace soft_carriere_competence.Controllers.career
 				return BadRequest("Échec de la suppression definitif du plan de carriere.");
 			}
 		}
+
+		[HttpDelete]
+		[Route("History/Delete/{historyId}")]
+		public async Task<IActionResult> DeleteHistory(int historyId)
+		{
+			bool isUpdated = await _careerPlanService.DeleteHistory(historyId);
+
+			if (isUpdated)
+			{
+				return Ok("Suppression de l'historique.");
+			}
+			else
+			{
+				return BadRequest("Échec de la suppression de l'historique.");
+			}
+		}
 	}
 }

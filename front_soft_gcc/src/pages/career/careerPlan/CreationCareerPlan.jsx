@@ -14,7 +14,7 @@ function CreationCareerPlan({ onSearch }) {
     // Url d'en-tete de page
     const module = "Plan de carrière";
     const action = "Creation";
-    const url = "/carriere/creation";
+    const url = "/carriere";
 
     // Initialisation des states
     const [selectedItem, setSelectedItem] = useState('1');

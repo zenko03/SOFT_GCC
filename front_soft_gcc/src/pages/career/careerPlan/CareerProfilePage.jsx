@@ -14,7 +14,7 @@ import { useParams } from 'react-router-dom';
 function CareerProfilePage({ onSearch }) {
     const module = "Plan de carrière";
     const action = "Fiche";
-    const url = "/carriere/fiche";
+    const url = "/carriere";
     const { registrationNumber } = useParams();
     const [isLoading, setIsLoading] = useState(false); 
     const [error, setError] = useState(false); 

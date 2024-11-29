@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Alert } from 'react-bootstrap';
 import Template from '../../Template';
 import PageHeader from '../../../components/PageHeader';
 import AppointmentForm from '../../../components/career/AppointmentForm';
@@ -9,9 +10,9 @@ import { urlApi } from '../../../helpers/utils';
 import { useParams } from 'react-router-dom';
 import LoaderComponent from '../../../helpers/LoaderComponent';
 
-function EditAffectation() {
+function DetailAssignment() {
     const module = "Plan de carrière";
-    const action = "Edit";
+    const action = "Detail";
     const url = "/carriere";
     const { CareerPlanId } = useParams();
 
@@ -155,12 +156,9 @@ function EditAffectation() {
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
-            <div className="row">
-                <div className="button-save-profil">
-                    <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">Modifier</button>
-                    <button type="button" className="btn btn-light btn-fw">Annuler</button>
-                </div>
-            </div>
+            <Alert variant="warning" className="mb-4">
+                Le plan de carriere est cloture
+            </Alert>
 
             <form className="forms-sample">
                 <div className="row">
@@ -227,4 +225,4 @@ function EditAffectation() {
     );
 }
 
-export default EditAffectation;
+export default DetailAssignment;

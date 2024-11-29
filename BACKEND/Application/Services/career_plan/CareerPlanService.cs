@@ -211,5 +211,31 @@ namespace soft_carriere_competence.Application.Services.career_plan
 			}
 		}
 
+		// Supprimer definitivement un plan de carriere
+		public async Task<bool> DeleteHistory(int historyId)
+		{
+			try
+			{
+				// Construire la requête de suppression
+				string deleteQuery = @"
+				DELETE FROM history
+				WHERE history_id = @HistoryId";
+
+				// Exécuter la requête avec les paramètres
+				int rowsAffected = await _context.Database.ExecuteSqlRawAsync(
+					deleteQuery,
+					new SqlParameter("@HistoryId", historyId)
+				);
+
+				// Vérifier si une ligne a été supprimée
+				return rowsAffected > 0;
+			}
+			catch (Exception ex)
+			{
+				// Gestion des erreurs (log si nécessaire)
+				Console.Error.WriteLine($"Erreur lors de la suppression définitive : {ex.Message}");
+				return false;
+			}
+		}
 	}
 }

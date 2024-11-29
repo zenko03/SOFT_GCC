@@ -14,7 +14,7 @@ import '../../../styles/pagination.css';
 function ListCareerPage() {
     // Url d'en-tete de page
     const module = "Plan de carrière";
-    const action = "Employés";
+    const action = "Liste";
     const url = "/carriere";
 
     // Initialisation des variables de states

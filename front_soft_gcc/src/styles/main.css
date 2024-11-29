@@ -21,3 +21,8 @@ body {
     margin: 0 0 5px 0;
   }
   
+  th {
+    font-weight: 800;
+    font-size: 16px;
+    text-transform: uppercase;
+}
