@@ -37,7 +37,7 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
         try {
             await axios.put(urlApi(itemToDelete));
             setShowConfirmDelete(false);
-            setSuccessMessage("L'élément a été supprimé avec succès."); // Définir le message de succès
+            setSuccessMessage("L'élément a été supprimé avec succès."); 
             await fetchData();
             // Récupérer à nouveau les données après la suppression
         } catch (error) {
@@ -60,6 +60,16 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
 
     return (
         <div className="row"> 
+            {successMessage && (
+                <Alert variant="success" className="mb-4">
+                    {successMessage}
+                </Alert>
+            )}
+            {error && (
+                <Alert variant="danger" className="mb-4">
+                    {error}
+                </Alert>
+            )}
             <div className="col-md-12 grid-margin stretch-card">
                 <div className="card">
                     <div className="card-body">  
@@ -74,16 +84,6 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                 </div>
                             </div>
                         </div>
-                        {successMessage && (
-                            <Alert variant="success" className="mb-4">
-                                {successMessage}
-                            </Alert>
-                        )}
-                        {error && (
-                            <Alert variant="danger" className="mb-4">
-                                {error}
-                            </Alert>
-                        )}
 
                         <Modal show={showConfirmDelete} onHide={handleCloseDelete}>
                         <Modal.Header closeButton>

@@ -49,7 +49,7 @@ function ListCareerPage() {
         setError(null);
 
         try {
-          const route = searchTerm ? '/EmployeeSkills/filter' : '/CareerPlan/careers';
+          const route = searchTerm ? '/CareerPlan/filter' : '/CareerPlan/careers';
           const params = searchTerm
             ? { keyWord: searchTerm, pageNumber: currentPage, pageSize }
             : { pageNumber: currentPage, pageSize };
