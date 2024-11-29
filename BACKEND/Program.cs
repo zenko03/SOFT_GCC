@@ -7,6 +7,9 @@ using soft_carriere_competence.Infrastructure.Repositories;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Application.Services.salary_skills;
 using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Application.Services.Evaluations;
+using soft_carriere_competence.Core.Interface.EvaluationInterface;
+using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
@@ -48,6 +51,18 @@ builder.Services.AddScoped<ICrudRepository<Employee>, CrudRepository<Employee>>(
 
 builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<ICrudRepository<Department>, CrudRepository<Department>>();
+
+// EVALUATIONS
+builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
+builder.Services.AddScoped<EvaluationService>();
+// Enregistrement de IEvaluationQuestionRepository
+builder.Services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
+
+// Enregistrement de IGenericRepository<>
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+
+builder.Services.AddScoped<UserService>();
 #endregion
 
 
