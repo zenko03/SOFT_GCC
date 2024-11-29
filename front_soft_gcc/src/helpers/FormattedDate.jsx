@@ -4,8 +4,8 @@ import { format } from 'date-fns';
 function FormattedDate({ date }) {
     const parsedDate = new Date(date);
 
-    if (isNaN(parsedDate.getTime())) { // Vérifie si la date est invalide
-        return <span>Date invalide</span>; // Ou un autre message
+    if (isNaN(parsedDate.getTime())) { 
+        return <span>Date invalide</span>; 
     }
 
     const formattedDate = format(parsedDate, 'yyyy-MM-dd');

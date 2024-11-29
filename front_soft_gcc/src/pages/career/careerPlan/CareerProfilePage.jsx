@@ -1,21 +1,72 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import Template from '../../Template';
 import PageHeader from '../../../components/PageHeader';
 import AffectationList from '../../../components/career/AffectationList';
 import Certificate from '../../../components/career/Certificate';
 import History from '../../../components/career/History';
 import '../../../styles/careerStyle.css';
+import axios from 'axios';
+import { urlApi } from '../../../helpers/utils';
+import Loader from '../../../helpers/Loader';
+import { useParams } from 'react-router-dom';
+
 
 function CareerProfilePage({ onSearch }) {
     const module = "Plan de carrière";
     const action = "Fiche";
-    const url = "/carriere/fiche";
+    const url = "/carriere";
+    const { registrationNumber } = useParams();
+    const [isLoading, setIsLoading] = useState(false); 
+    const [error, setError] = useState(false); 
+
+    // Appel api pour les donnees du formulaire
+    const [dataEmployee, setDataEmployee] = useState([]); 
+    const [dataAssignmentAdvancement, setDataAssignmentAdvancement] = useState([]);
+    const [dataAssignmentAppointment, setDataAssignmentAppointment] = useState([]);
+    const [dataAssignmentAvailability, setDataAssignmentAvailability] = useState([]);
 
     const [componentToDisplay, setComponentToDisplay] = useState(1);
 
     const updateComponent = (value) => {
         setComponentToDisplay(value);
     };
+
+    // Chargement des donnees depuis l'api 
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const [employeeResponse, advancementResponse, appointmentResponse, availabilityResponse] = await Promise.all([
+                axios.get(urlApi(`/CareerPlan/careers/${registrationNumber}`)),
+                axios.get(urlApi(`/CareerPlan/employee/${registrationNumber}/advancement`)),
+                axios.get(urlApi(`/CareerPlan/employee/${registrationNumber}/appointment`)),
+                axios.get(urlApi(`/CareerPlan/employee/${registrationNumber}/availability`))
+            ]);
+            setDataEmployee(employeeResponse.data || []);
+            setDataAssignmentAdvancement(advancementResponse.data || []);
+            setDataAssignmentAppointment(appointmentResponse.data || []);
+            setDataAssignmentAvailability(availabilityResponse.data || []);
+        } catch (error) {
+            setError(`Erreur lors de la recuperation des donnees : ${error}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [registrationNumber]);
+
+    /// Gestion d'affichage de loading
+    if (isLoading) {
+        return <div>
+                <Loader />
+            </div>;
+    }
+
+    /// Gestion d'affichage d'erreur
+    if (error) {
+        return <div>Erreur: {error.message}</div>;
+    }
 
     return (
         <Template>
@@ -26,18 +77,18 @@ function CareerProfilePage({ onSearch }) {
                 <div className="col-md-6 grid-margin stretch-card">
                     <div className="card">
                         <div className="card-body">
-                            <p>Employe : <span className='value-profil'>Rakoto Jean</span></p>
-                            <p>Matricule : <span className='value-profil'>NUM002334</span></p>
-                            <p>Date naissance : <span className='value-profil'>19/06/2002</span></p>
+                            <p>Employe : <span className='value-profil'>{dataEmployee.firstName+" "+dataEmployee.name}</span></p>
+                            <p>Matricule : <span className='value-profil'>{dataEmployee.registrationNumber}</span></p>
+                            <p>Date naissance : <span className='value-profil'>{new Date(dataEmployee.birthday).toLocaleDateString()}</span></p>
                         </div>
                     </div>
                 </div>
                 <div className="col-md-6 grid-margin stretch-card">
                     <div className="card">
                         <div className="card-body">
-                            <p>Poste actuel : <span className='value-profil'>Developpeur</span></p>
-                            <p>Salaire : <span className='value-profil'>1 000 000 Ar</span></p>
-                            <p>Date d'embauche : <span className='value-profil'>19/06/2022</span></p>
+                            <p>Poste actuel : <span className='value-profil'>{dataEmployee.positionName}</span></p>
+                            <p>Salaire : <span className='value-profil'>{dataEmployee.baseSalary} Ar</span></p>
+                            <p>Date d'embauche : <span className='value-profil'>{new Date(dataEmployee.assignmentDate).toLocaleDateString()}</span></p>
                         </div>
                     </div>
                 </div>
@@ -63,9 +114,9 @@ function CareerProfilePage({ onSearch }) {
             {componentToDisplay === 2 ? (
                 <Certificate />
             ) : componentToDisplay === 3 ? (
-                <History />
+                <History registrationNumber={registrationNumber} />
             ) : (
-                <AffectationList />
+                <AffectationList dataAssignmentAppointment={dataAssignmentAppointment} dataAssignmentAdvancement={dataAssignmentAdvancement} dataAssignmentAvailability={dataAssignmentAvailability} fetchData={fetchData} />
             )}
         </Template>
     );

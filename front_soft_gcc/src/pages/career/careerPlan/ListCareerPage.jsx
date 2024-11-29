@@ -11,15 +11,15 @@ import Loader from '../../../helpers/Loader';
 import '../../../styles/pagination.css';
 
 // Page liste des competences
-function ListSalaryPage() {
+function ListCareerPage() {
     // Url d'en-tete de page
     const module = "Plan de carrière";
-    const action = "Employés";
+    const action = "Liste";
     const url = "/carriere";
 
     // Initialisation des variables de states
-    const [skills, setSkills] = useState([]);
-    const [sortedSkills, setSortedSkills] = useState([]);
+    const [careers, setCareers] = useState([]);
+    const [sortedCareers, setSortedCareers] = useState([]);
     const [sortDirection, setSortDirection] = useState('asc');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(10);
@@ -29,38 +29,38 @@ function ListSalaryPage() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    /* useEffect(() => {
-        fetchSkills();
+     useEffect(() => {
+        fetchCareers();
     }, [currentPage, searchTerm]);
 
     // Appliquer le tri chaque fois que `sortDirection` ou `skills` change
     useEffect(() => {
-        const sorted = [...skills].sort((a, b) => {
-        const dateA = new Date(a.birthday);
-        const dateB = new Date(b.birthday);
+        const sorted = [...careers].sort((a, b) => {
+        const dateA = new Date(a.assignmentDate);
+        const dateB = new Date(b.assignmentDate);
         return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
         });
-        setSortedSkills(sorted);
-    }, [sortDirection, skills]);
-    */
+        setSortedCareers(sorted);
+    }, [sortDirection, careers]);
+    
     // Chargement des donnees de competences salaries
-    const fetchSkills = async () => {
+    const fetchCareers = async () => {
         setLoading(true);
         setError(null);
 
         try {
-        /*const route = searchTerm ? '/EmployeeSkills/filter' : '/EmployeeSkills/list';
-        const params = searchTerm
+          const route = searchTerm ? '/EmployeeSkills/filter' : '/CareerPlan/careers';
+          const params = searchTerm
             ? { keyWord: searchTerm, pageNumber: currentPage, pageSize }
             : { pageNumber: currentPage, pageSize };
-
-        const response = await axios.get(urlApi(route), { params });*/
-        setSkills(null);
-        setTotalPages(10);
+    
+          const response = await axios.get(urlApi(route), { params });
+          setCareers(response.data.data);
+          setTotalPages(response.data.totalPages);
         } catch (err) {
-        setError("Erreur lors de la récupération des données.");
+            setError("Erreur lors de la récupération des données.");
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
@@ -116,7 +116,6 @@ function ListSalaryPage() {
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
             <div className="card-body">
-              <h4 className="card-title">Recherche salariés</h4>
               <SearchForm onSearch={handleSearch} />
 
               {error && <p className="text-danger">{error}</p>}
@@ -128,6 +127,8 @@ function ListSalaryPage() {
                       <tr>
                         <th>Employé</th>
                         <th>Nom complet</th>
+                        <th>Departement</th>
+                        <th>Poste</th>
                         <th 
                           onClick={handleSort} 
                           style={{
@@ -137,26 +138,36 @@ function ListSalaryPage() {
                           }}
                           className="sortable-header"
                         >
-                          Date d'affetation
+                          Date d'affectation
                           <span style={{ marginLeft: '5px' }}>
                             {sortDirection === 'asc' ? '▲' : '▼'}
                           </span>
                         </th>
-                        <th>Description</th>
+                        <th>Plan de carriere</th>
                       </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                      {sortedCareers.length > 0 ? (
+                        sortedCareers.map((item, id) => (
+                          <tr key={id}>
                             <td className="py-1">
-                              <Link to={`/carriere/fiche`}>
+                              <Link to={`/carriere/fiche/${item.registrationNumber}`}>
                                 <img src={pic1} alt="Profil" />
                               </Link>
                             </td>
-                            <td>Jean rakoto</td>
-                            <td>19/04/2023</td> {/* Affichez la vraie date de mise à jour */}
-                            <td>Un peu de decscription a la lettre</td>
+                            <td>{item.firstName} {item.name}</td>
+                            <td>{item.departmentName}</td>
+                            <td>{item.positionName}</td>
+                            <td>{new Date(item.assignmentDate).toLocaleDateString()}</td>
+                            <td>{item.careerPlanNumber}</td>
                           </tr>
-                        </tbody>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="7" className="text-center">Aucun résultat trouvé.</td>
+                        </tr>
+                      )}
+                    </tbody>
                   </table>
                   <div className="pagination">
                     <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
@@ -177,4 +188,4 @@ function ListSalaryPage() {
   );
 }
 
-export default ListSalaryPage;
+export default ListCareerPage;

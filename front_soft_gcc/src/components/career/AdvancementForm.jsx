@@ -1,13 +1,24 @@
 import React from 'react';
 
+import useSWR from 'swr';
+import Fetcher from '../fetcher';
+
 // Contenu du pied de page
-function AdvancementForm({ task }) {
+function AdvancementForm({ handleChange, formData }) {
+
+    const { data: dataDepartment } = useSWR('/Department', Fetcher);
+    const { data: dataSocioCategoryProfessional } = useSWR('/SocioCategoryProfessional', Fetcher);
+    const { data: dataIndication } = useSWR('/Indication', Fetcher);
+    const { data: dataEchelon } = useSWR('/Echelon', Fetcher);
+    const { data: dataProfessionalCategory } = useSWR('/ProfessionalCategory', Fetcher);
+    const { data: dataLegalClass } = useSWR('/LegalClass', Fetcher);
+
   return (
         <div className="row">            
             <div className="col-md-6 grid-margin stretch-card">
                 <div className="card">
                     <div className="card-body">
-                        <h4 class="card-title" 
+                        <h4 className="card-title" 
                             style={{
                                 color: '#B8860B',  
                                 borderBottom: '2px solid #B8860B', 
@@ -16,32 +27,48 @@ function AdvancementForm({ task }) {
                         >Employe</h4>
 
                         <div className="form-group">
-                            <label for="exampleInputUsername1">Departement</label>
-                            <select class="form-control" id="exampleSelectGender">
-                                <option>Informatique</option>
-                                <option>Marketing</option>
+                            <label htmlFor="exampleInputUsername1">Departement</label>
+                            <select name="departmentId" value={formData.departmentId} onChange={handleChange} className="form-control" id="exampleSelectGender">
+                                <option value="">Sélectionner un departement</option>
+                                {dataDepartment && dataDepartment.map((item, id) => (
+                                    <option key={item.departmentId} value={item.departmentId}>
+                                    {item.name}
+                                    </option>
+                                ))}
                             </select>    
                         </div>
                         <div className="form-group">
-                            <label for="exampleInputUsername1">Categorie socio-professionnelle</label>
-                            <select class="form-control" id="exampleSelectGender">
-                                <option>Categorie A</option>
-                                <option>Categorie B</option>
+                            <label htmlFor="exampleInputUsername1">Categorie socio-professionnelle</label>
+                            <select name="socioCategoryProfessionalId" value={formData.socioCategoryProfessionalId} onChange={handleChange} className="form-control" id="exampleSelectGender">
+                                <option value="">Sélectionner une categorie socio-professionnelle</option>
+                                {dataSocioCategoryProfessional && dataSocioCategoryProfessional.map((item, id) => (
+                                    <option key={item.socioCategoryProfessionalId} value={item.socioCategoryProfessionalId}>
+                                    {item.socioCategoryProfessionalId}
+                                    </option>
+                                ))}
                             </select>    
                         </div>
                         <div className="form-group">
-                            <label for="exampleInputUsername1">Indice</label>
-                            <select class="form-control" id="exampleSelectGender">
-                                <option>Indice 1</option>
-                                <option>Indice 2</option>
-                            </select>    
+                            <label htmlFor="exampleInputUsername1">Indice</label>
+                            <select name="indicationId" value={formData.indicationId} onChange={handleChange} className="form-control" id="exampleSelectGender">
+                                <option value="">Sélectionner une indice</option>
+                                {dataIndication && dataIndication.map((item, id) => (
+                                    <option key={item.indicationId} value={item.indicationId}>
+                                    {item.indicationName}
+                                    </option>
+                                ))}
+                            </select>   
                         </div>
                         <div className="form-group">
-                            <label for="exampleInputUsername1">Echelon</label>
-                            <select class="form-control" id="exampleSelectGender">
-                                <option>Echelon 1</option>
-                                <option>Echelon 2</option>
-                            </select>    
+                            <label htmlFor="exampleInputUsername1">Echelon</label>
+                            <select name="echelonId" value={formData.echelonId} onChange={handleChange} className="form-control" id="exampleSelectGender">
+                                <option value="">Sélectionner une echelon</option>
+                                {dataEchelon && dataEchelon.map((item, id) => (
+                                    <option key={item.echelonId} value={item.echelonId}>
+                                    {item.echelonName}
+                                    </option>
+                                ))}
+                            </select> 
                         </div>
                     </div>
                 </div>
@@ -49,7 +76,7 @@ function AdvancementForm({ task }) {
             <div className="col-md-6 grid-margin stretch-card">
                 <div className="card">
                     <div className="card-body">
-                        <h4 class="card-title" 
+                        <h4 className="card-title" 
                             style={{
                                 color: '#B8860B',  
                                 borderBottom: '2px solid #B8860B', 
@@ -58,17 +85,25 @@ function AdvancementForm({ task }) {
                         >Contrat</h4>
 
                         <div className="form-group">
-                            <label for="exampleInputUsername1">Catégorie professionnelle</label>
-                            <select class="form-control" id="exampleSelectGender">
-                                <option>Categorie 1</option>
-                                <option>Categorie 2</option>
-                            </select>    
+                            <label htmlFor="exampleInputUsername1">Catégorie professionnelle</label>
+                            <select name="professionalCategoryId" value={formData.professionalCategoryId} onChange={handleChange} className="form-control" id="exampleSelectGender">
+                                <option value="">Sélectionner une categorie professionnelle</option>
+                                {dataProfessionalCategory && dataProfessionalCategory.map((item, id) => (
+                                    <option key={item.professionalCategoryId} value={item.professionalCategoryId}>
+                                    {item.professionalCategoryName}
+                                    </option>
+                                ))}
+                            </select>      
                         </div>
                         <div className="form-group">
-                            <label for="exampleInputUsername1">Classe légale</label>
-                            <select class="form-control" id="exampleSelectGender">
-                                <option>Classe légale 1</option>
-                                <option>Classe légale 2</option>
+                            <label htmlFor="exampleInputUsername1">Classe légale</label>
+                            <select name="legalClassId" value={formData.legalClassId} onChange={handleChange} className="form-control" id="exampleSelectGender">
+                                <option value="">Sélectionner une classe legale</option>
+                                {dataLegalClass && dataLegalClass.map((item, id) => (
+                                    <option key={item.legalClassId} value={item.legalClassId}>
+                                    {item.legalClassName}
+                                    </option>
+                                ))}
                             </select>    
                         </div>
                     </div>

@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Core.Entities.career_plan;
+using soft_carriere_competence.Core.Entities.crud_career;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -10,6 +12,7 @@ namespace soft_carriere_competence.Infrastructure.Data
 		{
 		}
 
+		// Competences
 		public DbSet<StudyPath> StudyPaths { get; set; }
 		public DbSet<School> Schools { get; set; }
 		public DbSet<Degree> Degrees { get; set; }
@@ -29,10 +32,32 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<VEmployeeOtherSkill> VEmployeeOtherSkill { get; set; }
 		public DbSet<VSkills> VSkills { get; set; }
 
+		// Carriere
+		public DbSet<CareerPlan> CareerPlan { get; set; }
+		public DbSet<AssignmentType> AssignmentType { get; set; }
+		public DbSet<Echelon> Echelon { get; set; }
+		public DbSet<EmployeeType> EmployeeType { get; set; }
+		public DbSet<Establishment> Establishment { get; set; }
+		public DbSet<Fonction> Fonction { get; set; }
+		public DbSet<Indication> Indication { get; set; }
+		public DbSet<LegalClass> LegalClass { get; set; }
+		public DbSet<NewsLetterTemplate> NewsLetterTemplate { get; set; }
+		public DbSet<PaymentMethod> PaymentMethod { get; set; }
+		public DbSet<Position> Position { get; set; }
+		public DbSet<ProfessionalCategory> ProfessionalCategory { get; set; }
+		public DbSet<SocioCategoryProfessional> SocioCategoryProfessional { get; set; }
+		public DbSet<CertificateType> CertificateType { get; set; }
+		public DbSet<VAssignmentAppointment> VAssignmentAppointment { get; set; }
+		public DbSet<VAssignmentAvailability> VAssignmentAvailability { get; set; }
+		public DbSet<VAssignmentAdvancement> VAssignmentAdvancement { get; set; }
+		public DbSet<VEmployeeCareer> VEmployeeCareer { get; set; }
+		public DbSet<History> History { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+			modelBuilder.Entity<CareerPlan>()
+			.ToTable(tb => tb.HasTrigger("trg_AfterInsert_CareerPlan"));
 
 			// Configurer la vue comme une entité en lecture seule
 			modelBuilder.Entity<VEmployee>().ToView("v_employee");
@@ -47,6 +72,14 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<VEmployeeOtherSkill>().HasNoKey();
 			modelBuilder.Entity<VSkills>().ToView("v_skills");
 			modelBuilder.Entity<VSkills>().HasNoKey();
+			modelBuilder.Entity<VAssignmentAppointment>().ToView("v_assignment_appointment");
+			modelBuilder.Entity<VAssignmentAppointment>().HasNoKey();
+			modelBuilder.Entity<VAssignmentAdvancement>().ToView("v_assignment_advancement");
+			modelBuilder.Entity<VAssignmentAdvancement>().HasNoKey();
+			modelBuilder.Entity<VAssignmentAvailability>().ToView("v_assignment_availability");
+			modelBuilder.Entity<VAssignmentAvailability>().HasNoKey();
+			modelBuilder.Entity<VEmployeeCareer>().ToView("v_employee_career");
+			modelBuilder.Entity<VEmployeeCareer>().HasNoKey();
 		}
 	}
 }
