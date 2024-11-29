@@ -12,6 +12,9 @@ import CreationCareerPlan from '../pages/career/careerPlan/CreationCareerPlan';
 import CareerProfilePage from '../pages/career/careerPlan/CareerProfilePage';
 import EditAffectation from '../pages/career/careerPlan/EditAffectation';
 import DetailAssignment from '../pages/career/careerPlan/DetailAssignment';
+import EvalHistory from '../pages/Evaluations/History/EvalHistory';
+import EvaluationInterviews from '../pages/Evaluations/ValidationWorkflow/EvaluationInterviews';
+
 
 function AppRouter() {
   return (
@@ -26,6 +29,10 @@ function AppRouter() {
       <Route path="/salary-list" element={<SalaryList />} />
       <Route path="/notation" element={<Notation />} />
       <Route path="/planning" element={<SalaryListPlanning />} />
+      <Route path="/history" element={<EvalHistory />} />
+      <Route path="/validation" element={<EvaluationInterviews />} />
+
+
 
       {/*CARRIERE */}
       <Route path="/carriere" element={<ListSalaryPage />} />

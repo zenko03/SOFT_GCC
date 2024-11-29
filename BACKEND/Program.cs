@@ -12,6 +12,10 @@ using soft_carriere_competence.Core.Entities.career_plan;
 using soft_carriere_competence.Core.Entities.crud_career;
 using soft_carriere_competence.Application.Services.crud_career;
 
+using soft_carriere_competence.Application.Services.Evaluations;
+using soft_carriere_competence.Core.Interface.EvaluationInterface;
+using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
+
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
 
@@ -94,6 +98,17 @@ builder.Services.AddScoped<ICrudRepository<ProfessionalCategory>, CrudRepository
 
 builder.Services.AddScoped<SocioCategoryProfessionalService>();
 builder.Services.AddScoped<ICrudRepository<SocioCategoryProfessional>, CrudRepository<SocioCategoryProfessional>>();
+// EVALUATIONS
+builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
+builder.Services.AddScoped<EvaluationService>();
+// Enregistrement de IEvaluationQuestionRepository
+builder.Services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
+
+// Enregistrement de IGenericRepository<>
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+
+builder.Services.AddScoped<UserService>();
 #endregion
 
 

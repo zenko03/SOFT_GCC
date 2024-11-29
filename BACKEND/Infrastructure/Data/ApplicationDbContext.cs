@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Core.Entities.career_plan;
 using soft_carriere_competence.Core.Entities.crud_career;
+using soft_carriere_competence.Core.Entities.Evaluations;
+
+using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -53,7 +56,20 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<VEmployeeCareer> VEmployeeCareer { get; set; }
 		public DbSet<History> History { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //EVALUATIONS
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<EvaluationType> EvaluationTypes { get; set; }
+        public DbSet<Evaluation> Evaluations { get; set; }
+        public DbSet<EvaluationQuestionnaire> EvaluationQuestionnaires { get; set; }
+        public DbSet<EvaluationSchedule> EvaluationSchedules { get; set; }
+        public DbSet<TrainingSuggestion> TrainingSuggestions { get; set; }
+        public DbSet<EvaluationHistory> EvaluationHistories { get; set; }
+        public DbSet<PerformanceEvolution> PerformanceEvolutions { get; set; }
+		public DbSet<Poste> postes { get; set; }
+		public DbSet<EvaluationQuestion> evaluationQuestions {  get; set; }  
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 			modelBuilder.Entity<CareerPlan>()
