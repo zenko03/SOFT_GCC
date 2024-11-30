@@ -7,6 +7,14 @@ using soft_carriere_competence.Infrastructure.Repositories;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Application.Services.salary_skills;
 using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Application.Services.career_plan;
+using soft_carriere_competence.Core.Entities.career_plan;
+using soft_carriere_competence.Core.Entities.crud_career;
+using soft_carriere_competence.Application.Services.crud_career;
+
+using soft_carriere_competence.Application.Services.Evaluations;
+using soft_carriere_competence.Core.Interface.EvaluationInterface;
+using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
@@ -48,6 +56,59 @@ builder.Services.AddScoped<ICrudRepository<Employee>, CrudRepository<Employee>>(
 
 builder.Services.AddScoped<DepartmentService>();
 builder.Services.AddScoped<ICrudRepository<Department>, CrudRepository<Department>>();
+
+builder.Services.AddScoped<CareerPlanService>();
+builder.Services.AddScoped<ICrudRepository<CareerPlan>, CrudRepository<CareerPlan>>();
+
+builder.Services.AddScoped<AssignmentTypeService>();
+builder.Services.AddScoped<ICrudRepository<AssignmentType>, CrudRepository<AssignmentType>>();
+
+builder.Services.AddScoped<EchelonService>();
+builder.Services.AddScoped<ICrudRepository<Echelon>, CrudRepository<Echelon>>();
+
+builder.Services.AddScoped<EmployeeTypeService>();
+builder.Services.AddScoped<ICrudRepository<EmployeeType>, CrudRepository<EmployeeType>>();
+
+builder.Services.AddScoped<EstablishmentService>();
+builder.Services.AddScoped<ICrudRepository<Establishment>, CrudRepository<Establishment>>();
+
+builder.Services.AddScoped<FonctionService>();
+builder.Services.AddScoped<ICrudRepository<Fonction>, CrudRepository<Fonction>>();
+
+builder.Services.AddScoped<IndicationService>();
+builder.Services.AddScoped<ICrudRepository<Indication>, CrudRepository<Indication>>();
+
+builder.Services.AddScoped<LegalClassService>();
+builder.Services.AddScoped<ICrudRepository<LegalClass>, CrudRepository<LegalClass>>();
+
+builder.Services.AddScoped<NewsLetterTemplateService>();
+builder.Services.AddScoped<ICrudRepository<NewsLetterTemplate>, CrudRepository<NewsLetterTemplate>>();
+
+builder.Services.AddScoped<PaymentMethodService>();
+builder.Services.AddScoped<ICrudRepository<PaymentMethod>, CrudRepository<PaymentMethod>>();
+
+builder.Services.AddScoped<PositionService>();
+builder.Services.AddScoped<ICrudRepository<Position>, CrudRepository<Position>>();
+
+builder.Services.AddScoped<CertificateTypeService>();
+builder.Services.AddScoped<ICrudRepository<CertificateType>, CrudRepository<CertificateType>>();
+
+builder.Services.AddScoped<ProfessionalCategoryService>();
+builder.Services.AddScoped<ICrudRepository<ProfessionalCategory>, CrudRepository<ProfessionalCategory>>();
+
+builder.Services.AddScoped<SocioCategoryProfessionalService>();
+builder.Services.AddScoped<ICrudRepository<SocioCategoryProfessional>, CrudRepository<SocioCategoryProfessional>>();
+// EVALUATIONS
+builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
+builder.Services.AddScoped<EvaluationService>();
+// Enregistrement de IEvaluationQuestionRepository
+builder.Services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
+
+// Enregistrement de IGenericRepository<>
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+
+builder.Services.AddScoped<UserService>();
 #endregion
 
 

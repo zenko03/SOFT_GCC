@@ -16,7 +16,7 @@ function ModalAddLanguage ({ showLanguage, handleCloseLanguage, idEmployee, fetc
     language_id: '',
     level: '',
     state: '',
-    employeeId: idEmployee, // Valeur par défaut de l'employé, peut être rendue dynamique
+    employeeId: idEmployee,
   });
 
   const [formErrors, setFormErrors] = useState({});

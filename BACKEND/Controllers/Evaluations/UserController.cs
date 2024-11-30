@@ -1,0 +1,43 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using soft_carriere_competence.Application.Services.Evaluations;
+
+[Route("api/User")]
+[ApiController]
+public class UserController : ControllerBase
+{
+	private readonly UserService _employeeService;
+
+
+	public UserController(UserService employeeService)
+	{
+		_employeeService = employeeService;
+	}
+
+	// Endpoint GET : api/User pour récupérer tous les employés avec leurs détails
+	[HttpGet]
+	public async Task<ActionResult<IEnumerable<object>>> GetEmployeesWithDetails()
+	{
+		var employees = await _employeeService.GetAllEmployeesWithDetailsAsync();
+		
+		return Ok(employees);
+	}
+
+	[HttpGet("{id}")]
+	public async Task<IActionResult> GetEmployee(int id)
+	{
+		Console.WriteLine("dhsshfiurhfuireio");
+		var employee = await _employeeService.GetEmployeeAsync(id);
+		Console.WriteLine("tonga ato");
+
+
+		if (employee == null)
+		{
+			return NotFound("L'employé n'existe pas.");
+		}
+
+		Console.WriteLine($"id and name of selected salary {employee.Id}, {employee.FirstName}");
+		return Ok(employee);
+	}
+
+
+}
