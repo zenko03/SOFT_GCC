@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+//import { Line } from 'react-chartjs-2';
+//import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
 // Enregistrement des composants nécessaires pour Chart.js
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+//ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const GlobalPerformanceGraph = ({ data }) => {
-  const [filters, setFilters] = useState({
+  /*const [filters, setFilters] = useState({
     year: new Date().getFullYear(), // Filtrer par année
     position: '', // Filtrer par poste
   });
@@ -82,12 +82,12 @@ const GlobalPerformanceGraph = ({ data }) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
   };
-
+*/
   return (
     <div>
 
       {/* Filtres */}
-      <div className="filters">
+      {/*<div className="filters">
         <select name="year" value={filters.year} onChange={handleFilterChange}>
           <option value="">Toutes les années</option>
           {Array.from(new Set(data.map((item) => new Date(item.evaluationDate).getFullYear()))).map((year) => (
@@ -107,12 +107,12 @@ const GlobalPerformanceGraph = ({ data }) => {
       </div>
 
       {/* Graphique */}
-      <div className="graph-container">
+      {/*<div className="graph-container">
         <Line data={chartData} options={options} />
       </div>
 
       {/* Tendances */}
-      <div className="trend">
+      {/*<div className="trend">
         {averages.length > 1 ? (
           averages[averages.length - 1].average > averages[averages.length - 2].average ? (
             <span className="positive-trend">↑ Tendances positives</span>
@@ -122,7 +122,7 @@ const GlobalPerformanceGraph = ({ data }) => {
         ) : (
           <span>Aucune tendance disponible</span>
         )}
-      </div>
+      </div>*/}
     </div>
   );
 };

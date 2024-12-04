@@ -16,6 +16,14 @@
 USE Base_soft_gcc;
 
 ----------------------------------------- TABLES POUR COMPETENCES SALARIES -----------------------------------------------------------------------
+-- Civilite
+CREATE TABLE Civilite (
+	Civilite_id INT PRIMARY KEY IDENTITY(1,1),
+	Civilite_name NVARCHAR(50)
+);
+
+INSERT INTO Civilite(Civilite_name) VALUES ('Monsieur'), ('Madame');
+
 -- Creation de la table departement(id, designation)
 CREATE TABLE Department (
 	Department_id INT PRIMARY KEY IDENTITY(1,1),
@@ -30,7 +38,8 @@ CREATE TABLE Employee (
 	FirstName NVARCHAR(100) NOT NULL,
 	Birthday DATE NOT NULL,
 	Hiring_date DATE NOT NULL,
-	Department_id INT NOT NULL REFERENCES Department(Department_id)
+	Department_id INT NOT NULL REFERENCES Department(Department_id),
+	Civilite_id INT NOT NULL REFERENCES Civilite(Civilite_id)
 );
 
 -- Creation de la table filiere(id, designation)
@@ -261,13 +270,15 @@ CREATE TABLE Wish_evolution_position (
 	Updated_date Date
 );
 
--- Creation de la table type historique(id, age_femme, age_homme)
+-- Donne d'insertion
+INSERT INTO Module(Module_name) VALUES ('Competences');
+INSERT INTO Module(Module_name) VALUES ('Carrieres');
+
+-------------------------------------------------- DEPART A LA RETRAITE --------------------------------------------------------------------
 CREATE TABLE Retirement_parameter (
 	Retirement_parameter_id INT PRIMARY KEY IDENTITY(1,1),
 	Woman_age INT NOT NULL,
 	Man_age INT NOT NULL
 );
 
--- Donne d'insertion
-INSERT INTO Module(Module_name) VALUES ('Competences');
-INSERT INTO Module(Module_name) VALUES ('Carrieres');
+INSERT INTO Retirement_parameter (Woman_age, Man_age) VALUES (60, 60);

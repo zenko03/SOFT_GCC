@@ -14,6 +14,7 @@ import EditAffectation from '../pages/career/careerPlan/EditAffectation';
 import DetailAssignment from '../pages/career/careerPlan/DetailAssignment';
 import EvalHistory from '../pages/Evaluations/History/EvalHistory';
 import EvaluationInterviews from '../pages/Evaluations/ValidationWorkflow/EvaluationInterviews';
+import RetirementPage from '../pages/retirement/retirementPage';
 
 
 function AppRouter() {
@@ -40,6 +41,9 @@ function AppRouter() {
       <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
       <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
       <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
+
+      {/*Gestion retraite */}
+      <Route path="/retraite" element={<RetirementPage />} />
 
     </Routes>
   );
