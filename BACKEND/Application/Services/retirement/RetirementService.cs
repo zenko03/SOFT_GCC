@@ -89,16 +89,50 @@ namespace soft_carriere_competence.Application.Services.retirement
 
 			if (!string.IsNullOrWhiteSpace(age))
 			{
-				sql.Append(" AND age = @Age");
-				countSql.Append(" AND age = @Age");
-				parameters.Add(new SqlParameter("@Age", age));
+				string[] ageSplitted = age.Split("-");
+
+				var ageParts = age.Split("-");
+				if (ageParts.Any(part => !int.TryParse(part, out _)))
+				{
+					throw new ArgumentException("Age doit contenir des donnees de cette forme : nombre ou nombre1-nombre2.");
+				}
+				if (ageSplitted.Length > 1)
+				{
+					sql.Append(" AND age BETWEEN @Age1 AND @Age2");
+					countSql.Append(" AND age BETWEEN @Age1 AND @Age2");
+					parameters.Add(new SqlParameter("@Age1", ageSplitted[0]));
+					parameters.Add(new SqlParameter("@Age2", ageSplitted[1]));
+				}
+				else
+				{
+					sql.Append(" AND age = @Age");
+					countSql.Append(" AND age = @Age");
+					parameters.Add(new SqlParameter("@Age", ageSplitted[0]));
+				}
 			}
 
 			if (!string.IsNullOrWhiteSpace(year))
 			{
-				sql.Append(" AND Year_retirement = @Year");
-				countSql.Append(" AND Year_retirement = @Year");
-				parameters.Add(new SqlParameter("@Year", year));
+				string[] yearSplitted = year.Split("-");
+				var yearParts = year.Split("-");
+
+				if (yearParts.Any(part => !int.TryParse(part, out _)))
+				{
+					throw new ArgumentException("Annee doit contenir des donnees de cette forme : 'nombre' ou 'nombre1-nombre2'.");
+				}
+				if (yearSplitted.Length > 1)
+				{
+					sql.Append(" AND Year_retirement BETWEEN @Year1 AND @Year2");
+					countSql.Append(" AND Year_retirement BETWEEN @Year1 AND @Year2");
+					parameters.Add(new SqlParameter("@Year1", yearSplitted[0]));
+					parameters.Add(new SqlParameter("@Year2", yearSplitted[1]));
+				}
+				else
+				{
+					sql.Append(" AND Year_retirement = @Year");
+					countSql.Append(" AND Year_retirement = @Year");
+					parameters.Add(new SqlParameter("@Year", yearSplitted[0]));
+				}
 			}
 
 			// Ajout de la pagination

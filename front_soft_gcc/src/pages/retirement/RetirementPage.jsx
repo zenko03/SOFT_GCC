@@ -125,7 +125,7 @@ function RetirementPage() {
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Âge"
+                      placeholder="Âge, ex: 24 ou 20-50"
                       name="age"
                       value={filters.age}
                       onChange={handleFilterChange}
@@ -135,7 +135,7 @@ function RetirementPage() {
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Année"
+                      placeholder="Année, ex: 2024 ou 2030-2040"
                       name="year"
                       value={filters.year}
                       onChange={handleFilterChange}
