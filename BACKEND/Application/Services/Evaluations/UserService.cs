@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Infrastructure.Data;
@@ -49,37 +50,15 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         }
         public async Task<User?> GetEmployeeAsync(int employeeId)
         {
-            Console.WriteLine("ato indray " + employeeId);
-
-            var query = @"
-                        SELECT 
-                            u.UserId, 
-                            u.first_name, 
-                            u.last_name, 
-                            u.email, 
-                            u.password, 
-                            u.postId, 
-                            u.role_id, 
-                            u.departmentid, 
-                            u.creation_date, 
-                            u.deletion_date, 
-                            u.deleted_by, 
-                            u.created_by,
-                            r.title AS role_title,  -- Alias unique pour le titre du rôle
-                            p.title AS post_title,  -- Alias unique pour le titre du poste
-                            d.Department_name AS department_name -- Alias unique pour le nom du département
-                        FROM Users u
-                        LEFT JOIN Roles r ON u.role_id = r.Role_id
-                        LEFT JOIN Postes p ON u.postId = p.Poste_id
-                        LEFT JOIN Department d ON u.departmentid = d.Department_id
-                        WHERE u.UserId = @employeeId";
-            
+            Console.WriteLine("Avant la requete query ");
 
             var user = await _context.Users
-                .FromSqlRaw(query, new SqlParameter("@employeeId", employeeId))
-                .FirstOrDefaultAsync();
+        .Include(u=> u.Poste)
+        .Include(u=> u.Department)
+        .Include(u=> u.Role)
+        .FirstOrDefaultAsync(u => u.Id == employeeId);
 
-            Console.WriteLine(" dia avy eo ato indray");
+            Console.WriteLine(" Apres la requete ");
 
             if (user != null)
             {
@@ -87,6 +66,11 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             }
 
             return user;
+        }
+
+        public async Task<Poste?> GetPostByIdAsync(int postId)
+        {
+            return await _context.postes.FindAsync(postId);
         }
 
 

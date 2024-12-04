@@ -28,7 +28,17 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return await _evaluationTypeRepository.GetAllAsync();
         }
 
-       
+        public double CalculateAverageRating(Dictionary<int, int> ratings)
+        {
+            if (ratings == null || ratings.Count == 0)
+                return 0;
+
+            var total = ratings.Values.Sum();
+            var count = ratings.Count;
+
+            return (double)total / count;
+        }
+
 
 
 

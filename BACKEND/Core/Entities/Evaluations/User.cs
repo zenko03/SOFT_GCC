@@ -47,8 +47,8 @@ public class User
 
     // Navigation Properties
     [ForeignKey("RoleId")]
-    public Role Role { get; set; }
-    public Department Department { get; set; }
+    public Role? Role { get; set; }
+    public Department? Department { get; set; }
     [ForeignKey("PostId")]
-    public Poste Poste { get; set; }
+    public Poste? Poste { get; set; }
 }

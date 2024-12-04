@@ -18,8 +18,35 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		[HttpGet("questions")]
 		public async Task<IActionResult> GetEvaluationQuestions(int evaluationTypeId, int postId)
 		{
-			var questions = await _evaluationService.GetEvaluationQuestionsAsync(evaluationTypeId, postId);
-			return Ok(questions);
+			Console.WriteLine("Before the try");
+
+			try
+			{
+				Console.WriteLine("in the block try, before function getEvalQuestions");
+
+				var questions = await _evaluationService.GetEvaluationQuestionsAsync(evaluationTypeId, postId);
+				Console.WriteLine("in the block try, after calling getEvalQuestions");
+
+				// Add explicit null check
+				if (questions == null)
+				{
+					return NotFound($"No questions found for evaluationTypeId {evaluationTypeId} and postId {postId}");
+				}
+
+				return Ok(questions);
+			}
+			catch (Exception ex)
+			{
+				// Log the full exception details
+				Console.WriteLine($"Error in GetEvaluationQuestions: {ex.Message}");
+				Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+
+				return StatusCode(500, new
+				{
+					message = "An error occurred while fetching evaluation questions",
+					details = ex.Message
+				});
+			}
 		}
 
 		[HttpGet("types")]
@@ -32,6 +59,17 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			return Ok(evaluationTypes);
 		}
 
+		[HttpPost("calculate-average")]
+		public IActionResult CalculateAverage([FromBody] Dictionary<int, int> ratings)
+		{
+			if (ratings == null || ratings.Count == 0)
+			{
+				return BadRequest("No ratings provided.");
+			}
+
+			double average = _evaluationService.CalculateAverageRating(ratings);
+			return Ok(new { average = Math.Round(average, 2) }); 
+		}
 
 
 
