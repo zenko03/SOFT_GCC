@@ -1,13 +1,13 @@
 import React from 'react';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+//import { Line } from 'react-chartjs-2';
+//import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 
 // Enregistrer les composants Chart.js
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+//ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const PerformanceGraph = ({ performanceData }) => {
   // Vérification des données
-  if (!performanceData || performanceData.length === 0) {
+  /*if (!performanceData || performanceData.length === 0) {
     return <p>Aucune donnée de performance disponible pour afficher le graphique.</p>;
   }
 
@@ -54,11 +54,11 @@ const PerformanceGraph = ({ performanceData }) => {
       },
     },
   };
-
+*/
   return (
     <div className="graph-section">
       <h5>Graphique d'Évolution des Performances</h5>
-      <Line data={data} options={options} className="performance-graph" />
+      {/*<Line data={data} options={options} className="performance-graph" />*/}
     </div>
   );
 };

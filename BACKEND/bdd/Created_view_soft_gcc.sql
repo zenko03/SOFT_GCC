@@ -8,13 +8,18 @@ SELECT
     e.Birthday, 
     d.Department_id, 
     d.Department_name, 
-    e.hiring_date
+    e.hiring_date,
+	e.civilite_id,
+	c.civilite_name
 FROM 
     Employee e 
 JOIN 
     Department d 
 ON 
-    d.Department_id = e.department_id;
+    d.Department_id = e.department_id
+JOIN 
+	Civilite c
+ON c.civilite_id=e.civilite_id;
 
 -- Creation de la vue v_employee_skill (Competence de l'employe)
 CREATE VIEW v_employee_skill AS 
@@ -307,6 +312,8 @@ SELECT
 	e.FirstName, 
 	e.Birthday, 
 	e.hiring_date, 
+	e.civilite_id,
+	e.civilite_name,
 	COALESCE(count(*), 0) as career_plan_number 
 FROM v_employee e
 LEFT join career_plan c 
@@ -365,6 +372,8 @@ WHERE rp.rn = 1;
 CREATE VIEW v_employee_career AS
 SELECT 
 	ep.Registration_number, 
+	cpen.civilite_id,
+	cpen.civilite_name,
 	cpen.Name,
 	cpen.FirstName,
 	cpen.Birthday,
@@ -466,3 +475,38 @@ BEGIN
         1 -- État fixe
     FROM DELETED;
 END;
+
+-- Vue pour afficher les departs a la retraite
+CREATE VIEW v_retirement AS
+SELECT 
+    e.Registration_number, 
+    e.civilite_id,
+    e.civilite_name,
+    e.Name,
+    e.FirstName,
+    e.Birthday,
+    e.hiring_date,
+    e.Department_id,
+    e.Department_name,
+    e.Position_id,
+    e.Position_name,
+    e.Base_salary,
+    e.Net_salary,
+    DATEDIFF(YEAR, e.Birthday, GETDATE()) AS Age,
+    CASE 
+        WHEN e.Civilite_id = 1 THEN DATEADD(YEAR, rp.Man_age, e.Birthday)
+        WHEN e.Civilite_id = 2 THEN DATEADD(YEAR, rp.Woman_age, e.Birthday) 
+        ELSE NULL
+    END AS Date_retirement,
+    YEAR(
+        CASE 
+            WHEN e.Civilite_id = 1 THEN DATEADD(YEAR, rp.Man_age, e.Birthday)
+            WHEN e.Civilite_id = 2 THEN DATEADD(YEAR, rp.Woman_age, e.Birthday) 
+            ELSE NULL
+        END
+    ) AS Year_retirement
+FROM 
+    v_employee_career e
+CROSS JOIN 
+    Retirement_parameter rp;
+

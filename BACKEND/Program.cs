@@ -15,6 +15,8 @@ using soft_carriere_competence.Application.Services.crud_career;
 using soft_carriere_competence.Application.Services.Evaluations;
 using soft_carriere_competence.Core.Interface.EvaluationInterface;
 using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
+using soft_carriere_competence.Core.Entities.retirement;
+using soft_carriere_competence.Application.Services.retirement;
 
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
@@ -98,6 +100,12 @@ builder.Services.AddScoped<ICrudRepository<ProfessionalCategory>, CrudRepository
 
 builder.Services.AddScoped<SocioCategoryProfessionalService>();
 builder.Services.AddScoped<ICrudRepository<SocioCategoryProfessional>, CrudRepository<SocioCategoryProfessional>>();
+
+builder.Services.AddScoped<RetirementService>();
+builder.Services.AddScoped<ICrudRepository<RetirementParameter>, CrudRepository<RetirementParameter>>();
+
+builder.Services.AddScoped<CiviliteService>();
+builder.Services.AddScoped<ICrudRepository<Civilite>, CrudRepository<Civilite>>();
 // EVALUATIONS
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 builder.Services.AddScoped<EvaluationService>();

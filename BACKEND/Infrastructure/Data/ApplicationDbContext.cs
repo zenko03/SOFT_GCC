@@ -4,6 +4,7 @@ using soft_carriere_competence.Core.Entities.crud_career;
 using soft_carriere_competence.Core.Entities.Evaluations;
 
 using soft_carriere_competence.Core.Entities.Evaluations;
+using soft_carriere_competence.Core.Entities.retirement;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -55,9 +56,10 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<VAssignmentAdvancement> VAssignmentAdvancement { get; set; }
 		public DbSet<VEmployeeCareer> VEmployeeCareer { get; set; }
 		public DbSet<History> History { get; set; }
+		public DbSet<Civilite> Civilite { get; set; }
 
-        //EVALUATIONS
-        public DbSet<Role> Roles { get; set; }
+		//EVALUATIONS
+		public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<EvaluationType> EvaluationTypes { get; set; }
         public DbSet<Evaluation> Evaluations { get; set; }
@@ -67,9 +69,13 @@ namespace soft_carriere_competence.Infrastructure.Data
         public DbSet<EvaluationHistory> EvaluationHistories { get; set; }
         public DbSet<PerformanceEvolution> PerformanceEvolutions { get; set; }
 		public DbSet<Poste> postes { get; set; }
-		public DbSet<EvaluationQuestion> evaluationQuestions {  get; set; }  
+		public DbSet<EvaluationQuestion> evaluationQuestions {  get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		// RETRAITE
+		public DbSet<VRetirement> VRetirement { get; set; }
+		public DbSet<RetirementParameter> RetirementParameter { get; set; }
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 			modelBuilder.Entity<CareerPlan>()
@@ -96,6 +102,8 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<VAssignmentAvailability>().HasNoKey();
 			modelBuilder.Entity<VEmployeeCareer>().ToView("v_employee_career");
 			modelBuilder.Entity<VEmployeeCareer>().HasNoKey();
+			modelBuilder.Entity<VRetirement>().ToView("v_retirement");
+			modelBuilder.Entity<VRetirement>().HasNoKey();
 		}
 	}
 }

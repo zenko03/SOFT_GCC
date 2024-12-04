@@ -105,7 +105,7 @@ function CareerProfilePage({ onSearch }) {
                                     <a onClick={() => updateComponent(1)} className="nav-link active" id="business-tab" data-toggle="tab" href="#business-1" role="tab" aria-selected="false">Suivi carriere</a>
                                 </li>
                                 <li className="nav-item">
-                                    <a onClick={() => updateComponent(3)} className="nav-link" id="performance-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Historiques (13)</a>
+                                    <a onClick={() => updateComponent(3)} className="nav-link" id="performance-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Historiques</a>
                                 </li>
                             </ul>
                 </div>

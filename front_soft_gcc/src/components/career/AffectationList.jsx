@@ -84,7 +84,6 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                 </div>
                             </div>
                         </div>
-
                         <Modal show={showConfirmDelete} onHide={handleCloseDelete}>
                         <Modal.Header closeButton>
                             <Modal.Title>Confirmer la suppression</Modal.Title>
@@ -99,10 +98,18 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                             </Button>
                         </Modal.Footer>
                         </Modal>
+                        <br></br>
                         <div className='table-responsive'>
                             {selectedAssignment === 1 ? (
                                 <>
                                     {/* Nomination */}
+                                    <h4 className="card-title" 
+                                        style={{
+                                        color: '#B8860B',  
+                                        borderBottom: '2px solid #B8860B', 
+                                        paddingBottom: '5px'
+                                        }}
+                                    >Nomination</h4>
                                     <table className="table table-striped table-competences">
                                         <thead>
                                             <tr>
@@ -196,6 +203,13 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                             ) : selectedAssignment === 2 ? (
                                 <>
                                     {/* Avancements */}
+                                    <h4 className="card-title" 
+                                        style={{
+                                        color: '#B8860B',  
+                                        borderBottom: '2px solid #B8860B', 
+                                        paddingBottom: '5px'
+                                        }}
+                                    >Avancements</h4>
                                     <table className="table table-striped table-competences">
                                         <thead>
                                             <tr>
@@ -256,6 +270,13 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                             ) : (
                                 <>
                                     {/* Mise en disponibilite */}
+                                    <h4 className="card-title" 
+                                        style={{
+                                        color: '#B8860B',  
+                                        borderBottom: '2px solid #B8860B', 
+                                        paddingBottom: '5px'
+                                        }}
+                                    >Mise en disponibilité</h4>
                                     <table className="table table-striped table-competences">
                                         <thead>
                                             <tr>
