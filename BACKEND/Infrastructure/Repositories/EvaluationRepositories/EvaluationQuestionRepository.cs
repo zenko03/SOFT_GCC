@@ -17,7 +17,7 @@ namespace soft_carriere_competence.Infrastructure.Repositories.EvaluationReposit
         {
             Console.WriteLine("Avant la fonction getEvaluationTypeAndPost");
             return await _context.evaluationQuestions
-                .Where(q => q.evaluationTypeId == evaluationTypeId && q.postId == postId)
+                .Where(q => q.evaluationTypeId == evaluationTypeId && q.postId == postId).Include(u => u.poste).Include(u => u.EvaluationType)
                 .ToListAsync();
 
         }
