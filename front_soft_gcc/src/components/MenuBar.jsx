@@ -30,7 +30,7 @@ function MenuBar({ task }) {
                 <Link className="nav-link" to="/carriere">Plan de carrière</Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="pages/ui-features/dropdowns.html">Depart a la retraite</a>
+                <Link className="nav-link" to="/retraite">Depart a la retraite</Link>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="pages/ui-features/dropdowns.html">Evolution de carrière</a>
