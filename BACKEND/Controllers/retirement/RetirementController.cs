@@ -52,6 +52,7 @@ namespace soft_carriere_competence.Controllers.retirement
 			return Ok(list);
 		}
 
+		
 		[HttpGet]
 		[Route("filter")]
 		public async Task<IActionResult> GetRetirementFilter(
@@ -64,24 +65,59 @@ namespace soft_carriere_competence.Controllers.retirement
 		int page = 1,
 		int pageSize = 10)
 		{
-			// Appel au service pour récupérer les données et le total
-			var (data, totalCount) = await _retirementService.GetRetirementFilter(
-				keyWord, civiliteId, departmentId, positionId, age, year, page, pageSize);
-
-			// Structure de réponse standard
-			var response = new
+			try
 			{
-				Success = data != null && data.Any(),
-				Message = data != null && data.Any() ? "Données récupérées avec succès." : "Aucun résultat trouvé avec les critères donnés.",
-				Data = data ?? Enumerable.Empty<object>(),
-				TotalCount = totalCount,
-				TotalPages = data != null && data.Any() ? (int)Math.Ceiling((double)totalCount / pageSize) : 0,
-				CurrentPage = page,
-				PageSize = pageSize
-			};
+				// Appel au service pour récupérer les données et le total
+				var (data, totalCount) = await _retirementService.GetRetirementFilter(
+					keyWord, civiliteId, departmentId, positionId, age, year, page, pageSize);
 
-			return Ok(response);
+				// Structure de réponse standard
+				var response = new
+				{
+					Success = data != null && data.Any(),
+					Message = data != null && data.Any()
+						? "Données récupérées avec succès."
+						: "Aucun résultat trouvé avec les critères donnés.",
+					Data = data ?? Enumerable.Empty<object>(),
+					TotalCount = totalCount,
+					TotalPages = data != null && data.Any()
+						? (int)Math.Ceiling((double)totalCount / pageSize)
+						: 0,
+					CurrentPage = page,
+					PageSize = pageSize
+				};
+
+				return Ok(response);
+			}
+			catch (ArgumentException ex)
+			{
+				// Exception de validation des paramètres (message personnalisé)
+				return Ok(new
+				{
+					Success = false,
+					Message = ex.Message,
+					Data = Enumerable.Empty<object>(),
+					TotalCount = 0,
+					TotalPages = 0,
+					CurrentPage = page,
+					PageSize = pageSize
+				});
+			}
+			catch (Exception ex)
+			{
+				// Exception générique (message standard)
+				return Ok(new
+				{
+					Success = false,
+					Message = "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+					Details = ex.Message,
+					Data = Enumerable.Empty<object>(),
+					TotalCount = 0,
+					TotalPages = 0,
+					CurrentPage = page,
+					PageSize = pageSize
+				});
+			}
 		}
-
 	}
 }
