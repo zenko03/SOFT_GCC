@@ -64,10 +64,3 @@
 .rating-label input[type="radio"] {
     margin-right: 5px; /* Espacement entre le bouton et le texte */
 }
-.average-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centre horizontalement */
-    justify-content: center; /* Centre verticalement */
-    min-height: 100px; /* Ajustez cette valeur selon vos besoins */
-}

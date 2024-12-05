@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/Steps.css'; // Styles spécifiques
+import '../../../assets/css/Evaluations/Questions.css'; // Styles spécifiques
 
 
 function Step2({ ratings }) {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/Questions.css'; // Styles spécifiques
 
-function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType, selectedEmployee, setRatings, ratings }) {
+function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType, selectedEmployee, setRatings }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [localRatings, setLocalRatings] = useState({}); // Pour stocker temporairement les notes des questions
@@ -16,9 +16,7 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
           const response = await axios.get(
             `https://localhost:7082/api/Evaluation/questions?evaluationTypeId=${selectedEvaluationType}&postId=${selectedEmployee.postId}`
           );
-          console.log("Questions récupérées :", response.data); // Log des questions récupérées
           setQuestions(response.data);
-          setLocalRatings(ratings); // Initialiser localRatings avec les notes passées
         } catch (error) {
           console.error("Erreur lors de la récupération des questions :", error);
         } finally {
@@ -27,7 +25,7 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
       };
       fetchQuestions();
     }
-  }, [selectedEvaluationType, selectedEmployee.postId]); // Retirer ratings ici
+  }, [selectedEvaluationType, selectedEmployee.postId]);
 
   const handleEvaluationTypeChange = async (event) => {
     const typeId = event.target.value;
@@ -38,7 +36,6 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
       const response = await axios.get(
         `https://localhost:7082/api/Evaluation/questions?evaluationTypeId=${typeId}&postId=${selectedEmployee.postId}`
       );
-      console.log("Questions récupérées après changement :", response.data); // Log des questions récupérées
       setQuestions(response.data);
       setLocalRatings({}); // Réinitialiser les notes lorsque le type d'évaluation change
     } catch (error) {
@@ -49,8 +46,9 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
   };
 
   const handleRatingChange = (questionId, rating) => {
-    console.log(`Rating changed for question ${questionId}: ${rating}`); // Log pour vérifier l'ID de la question
-
+    // Assurez-vous que questionId est bien défini ici
+    console.log(`Rating changed for question ${questionId}: ${rating}`);
+    
     setLocalRatings(prevRatings => ({
       ...prevRatings,
       [questionId]: rating // Utiliser l'ID de la question comme clé
@@ -60,7 +58,7 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
   // Passer les notes au composant parent lorsque l'utilisateur change d'étape
   useEffect(() => {
     setRatings(localRatings); // Passer les notes mises à jour
-  }, [localRatings]); // Gardez uniquement localRatings ici
+  }, [localRatings, setRatings]);
 
   return (
     <div className="step1-container">
@@ -78,17 +76,17 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
 
       <div className="questions-container">
         {questions.map(question => (
-          <div key={question.questiondId} className="question-item"> {/* Utiliser questiondId ici */}
+          <div key={question.questionId} className="question-item">
             <p>{question.question}</p> {/* Assurez-vous que 'question' est la bonne propriété */}
             <div className="rating-container">
               {[1, 2, 3, 4, 5].map(rating => (
-                <label key={`rating-${question.questiondId}-${rating}`} className="rating-label"> {/* Utiliser questiondId ici aussi */}
+                <label key={`rating-${question.questionId}-${rating}`} className="rating-label">
                   <input
                     type="radio"
-                    name={`rating-${question.questiondId}`}
+                    name={`rating-${question.questionId}`}
                     value={rating}
-                    checked={localRatings[question.questiondId] === rating}
-                    onChange={() => handleRatingChange(question.questiondId, rating)} // Passer l'ID ici
+                    checked={localRatings[question.questionId] === rating}
+                    onChange={() => handleRatingChange(question.questionId, rating)} // Passer l'ID ici
                   />
                   {rating}
                 </label>

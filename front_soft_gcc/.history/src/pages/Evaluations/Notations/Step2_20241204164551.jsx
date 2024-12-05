@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/Steps.css'; // Styles spécifiques
 
-
 function Step2({ ratings }) {
   const [average, setAverage] = useState(0);
   const [loading, setLoading] = useState(true); // Pour afficher un état de chargement
@@ -15,28 +14,29 @@ function Step2({ ratings }) {
   });
 
   // Fonction pour récupérer la moyenne depuis l'API
-  const fetchAverage = async () => {
-    setLoading(true);
-    try {
+  // Fonction pour récupérer la moyenne depuis l'API
+const fetchAverage = async () => {
+  setLoading(true);
+  try {
       if (ratings && Object.keys(ratings).length > 0) {
-        console.log("Sending ratings to backend:", ratings); // Log pour vérifier le format des données
-        const response = await axios.post('https://localhost:7082/api/Evaluation/calculate-average', ratings);
-        
-        // Ajoutez un délai de 3 secondes avant de mettre à jour la moyenne
-        setTimeout(() => {
-          setAverage(response.data.average);
-          setLoading(false); // Arrêter le chargement après le délai
-        }, 3000); // Délai de 3000 ms (3 secondes)
+          console.log("Sending ratings to backend:", ratings); // Log pour vérifier le format des données
+          const response = await axios.post('https://localhost:7082/api/Evaluation/calculate-average', ratings);
+          
+          // Ajoutez un délai de 3 secondes avant de mettre à jour la moyenne
+          setTimeout(() => {
+              setAverage(response.data.average);
+              setLoading(false); // Arrêter le chargement après le délai
+          }, 3000); // Délai de 3000 ms (3 secondes)
       } else {
-        setAverage(0); // Réinitialiser si pas de notes
-        setLoading(false); // Arrêter le chargement si pas de notes
+          setAverage(0); // Réinitialiser si pas de notes
+          setLoading(false); // Arrêter le chargement si pas de notes
       }
-    } catch (err) {
+  } catch (err) {
       console.error(err);
       setError('Erreur lors du calcul de la moyenne.');
       setLoading(false); // Arrêter le chargement en cas d'erreur
-    }
-  };
+  }
+};
 
   // Appel de l'API au montage du composant ou quand les ratings changent
   useEffect(() => {
@@ -61,7 +61,7 @@ function Step2({ ratings }) {
       <div className="average-section">
         <h3>Résultat d'Évaluation</h3>
         {loading ? (
-          <div className="loader"></div> // Utilisez le loader ici
+          <p>Chargement...</p>
         ) : error ? (
           <p className="error-message">{error}</p>
         ) : (

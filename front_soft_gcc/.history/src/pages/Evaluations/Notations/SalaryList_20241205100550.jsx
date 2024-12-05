@@ -13,16 +13,16 @@ function SalaryList() {
   const [currentStep, setCurrentStep] = useState(1);
   const [evaluationTypes, setEvaluationTypes] = useState([]);
   const [selectedEvaluationType, setSelectedEvaluationType] = useState(null);
-  const [questions, setQuestions] = useState([]);
-  const [ratings, setRatings] = useState({}); // État pour stocker les notes
+  const [questions, setQuestions] = useState([]); // Stocker les questions globalement
+  const [ratings, setRatings] = useState({}); // Stocker les notes
   const [remarks, setRemarks] = useState({
     strengths: '',
     weaknesses: '',
     generalEvaluation: '',
-  }); // État pour stocker les remarques
+  }); // Stocker les remarques
 
   const allQuestionsRated = () => {
-    return questions.every(question => ratings[question.questionId] !== undefined);
+    return questions.every((question) => ratings[question.questionId] !== undefined);
   };
 
   // Récupération des employés
@@ -32,7 +32,7 @@ function SalaryList() {
         const response = await axios.get('https://localhost:7082/api/User');
         setEmployees(response.data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des employés :", error);
+        console.error('Erreur lors de la récupération des employés :', error);
       }
     };
 
@@ -50,10 +50,9 @@ function SalaryList() {
 
       setSelectedEmployee(employeeData);
       setEvaluationTypes(evaluationTypesData);
-
       setShowModal(true);
     } catch (error) {
-      console.error("Erreur lors de la récupération de l'employé :", error);
+      console.error('Erreur lors de la récupération de l\'employé :', error);
     }
   };
 
@@ -66,19 +65,14 @@ function SalaryList() {
             onEvaluationTypeChange={setSelectedEvaluationType}
             selectedEvaluationType={selectedEvaluationType}
             selectedEmployee={selectedEmployee}
-            ratings={ratings} // Assurez-vous que cette ligne est présente
+            ratings={ratings}
             setRatings={setRatings}
-            setQuestions={setQuestions} // Passer les questions pour vérifier les réponses
+            questions={questions} // Passer les questions depuis le parent
+            setQuestions={setQuestions} // Mettre à jour les questions
           />
         );
       case 2:
-        return (
-          <Step2
-            ratings={ratings}
-            remarks={remarks}
-            setRemarks={setRemarks} // Passer et modifier les remarques
-          />
-        );
+        return <Step2 ratings={ratings} remarks={remarks} setRemarks={setRemarks} />;
       case 3:
         return <Step3 />;
       default:
@@ -109,12 +103,14 @@ function SalaryList() {
                       <td className="py-1">
                         <img src="../../assets/images/faces-clipart/pic-1.png" alt="employee" />
                       </td>
-                      <td>{employee.firstName} {employee.lastName}</td>
+                      <td>
+                        {employee.firstName} {employee.lastName}
+                      </td>
                       <td>{employee.poste?.title || 'Non défini'}</td>
                       <td>
                         {employee.evaluationDate
                           ? new Date(employee.evaluationDate).toLocaleDateString()
-                          : "Aucune évaluation"}
+                          : 'Aucune évaluation'}
                       </td>
                       <td>
                         <button
@@ -123,7 +119,9 @@ function SalaryList() {
                         >
                           Notation
                         </button>
-                        <Link className="btn btn-primary" to="/salary-list">Réinitialiser</Link>
+                        <Link className="btn btn-primary" to="/salary-list">
+                          Réinitialiser
+                        </Link>
                       </td>
                     </tr>
                   ))}
@@ -148,18 +146,44 @@ function SalaryList() {
               </div>
               <div className="modal-body">
                 <ul className="step-navigation">
-                  <li onClick={() => setCurrentStep(1)} className={currentStep === 1 ? 'active' : ''}>Étape 1</li>
-                  <li onClick={() => setCurrentStep(2)} className={currentStep === 2 ? 'active' : ''} disabled={!allQuestionsRated()}>Étape 2</li>
-                  <li onClick={() => setCurrentStep(3)} className={currentStep === 3 ? 'active' : ''}>Étape 3</li>
+                  <li
+                    onClick={() => setCurrentStep(1)}
+                    className={currentStep === 1 ? 'active' : ''}
+                  >
+                    Étape 1
+                  </li>
+                  <li
+                    onClick={() => setCurrentStep(2)}
+                    className={currentStep === 2 ? 'active' : ''}
+                    disabled={!allQuestionsRated()}
+                  >
+                    Étape 2
+                  </li>
+                  <li
+                    onClick={() => setCurrentStep(3)}
+                    className={currentStep === 3 ? 'active' : ''}
+                  >
+                    Étape 3
+                  </li>
                 </ul>
 
                 {renderStepContent()}
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))} disabled={currentStep === 1}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentStep === 1}
+                >
                   Précédent
                 </button>
-                <button type="button" className="btn btn-primary" onClick={() => setCurrentStep(prev => Math.min(prev + 1, 3))} disabled={!allQuestionsRated() || currentStep === 3}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => setCurrentStep((prev) => Math.min(prev + 1, 3))}
+                  disabled={!allQuestionsRated() || currentStep === 3}
+                >
                   Suivant
                 </button>
                 <button type="button" className="btn btn-danger" onClick={() => setShowModal(false)}>

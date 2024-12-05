@@ -15,11 +15,6 @@ function SalaryList() {
   const [selectedEvaluationType, setSelectedEvaluationType] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [ratings, setRatings] = useState({}); // État pour stocker les notes
-  const [remarks, setRemarks] = useState({
-    strengths: '',
-    weaknesses: '',
-    generalEvaluation: '',
-  }); // État pour stocker les remarques
 
   const allQuestionsRated = () => {
     return questions.every(question => ratings[question.questionId] !== undefined);
@@ -29,10 +24,10 @@ function SalaryList() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get('https://localhost:7082/api/User');
+        const response = await axios.get('https://localhost:5189/api/User');
         setEmployees(response.data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des employés :", error);
+        console.error("Erreur lors de la récupération des employés :", error.response ? error.response.data : error.message);
       }
     };
 
@@ -66,19 +61,13 @@ function SalaryList() {
             onEvaluationTypeChange={setSelectedEvaluationType}
             selectedEvaluationType={selectedEvaluationType}
             selectedEmployee={selectedEmployee}
-            ratings={ratings} // Assurez-vous que cette ligne est présente
+            ratings={ratings}
             setRatings={setRatings}
-            setQuestions={setQuestions} // Passer les questions pour vérifier les réponses
+            setQuestions={setQuestions} // Pour vérifier les réponses
           />
         );
       case 2:
-        return (
-          <Step2
-            ratings={ratings}
-            remarks={remarks}
-            setRemarks={setRemarks} // Passer et modifier les remarques
-          />
-        );
+        return <Step2 ratings={ratings} />;
       case 3:
         return <Step3 />;
       default:

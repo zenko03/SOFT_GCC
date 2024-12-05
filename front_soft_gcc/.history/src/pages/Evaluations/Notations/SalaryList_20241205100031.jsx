@@ -66,7 +66,7 @@ function SalaryList() {
             onEvaluationTypeChange={setSelectedEvaluationType}
             selectedEvaluationType={selectedEvaluationType}
             selectedEmployee={selectedEmployee}
-            ratings={ratings} // Assurez-vous que cette ligne est présente
+            ratings={ratings}
             setRatings={setRatings}
             setQuestions={setQuestions} // Passer les questions pour vérifier les réponses
           />

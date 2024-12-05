@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/Questions.css'; // Styles spécifiques
 
-function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType, selectedEmployee, setRatings, ratings }) {
+function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType, selectedEmployee, setRatings }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [localRatings, setLocalRatings] = useState({}); // Pour stocker temporairement les notes des questions
@@ -10,24 +10,24 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
   useEffect(() => {
     // Charger les questions si le type d'évaluation est déjà sélectionné
     if (selectedEvaluationType) {
-      const fetchQuestions = async () => {
-        setLoading(true);
-        try {
-          const response = await axios.get(
-            `https://localhost:7082/api/Evaluation/questions?evaluationTypeId=${selectedEvaluationType}&postId=${selectedEmployee.postId}`
-          );
-          console.log("Questions récupérées :", response.data); // Log des questions récupérées
-          setQuestions(response.data);
-          setLocalRatings(ratings); // Initialiser localRatings avec les notes passées
-        } catch (error) {
-          console.error("Erreur lors de la récupération des questions :", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchQuestions();
+        const fetchQuestions = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get(
+                    `https://localhost:7082/api/Evaluation/questions?evaluationTypeId=${selectedEvaluationType}&postId=${selectedEmployee.postId}`
+                );
+                console.log("Questions récupérées :", response.data); // Log des questions récupérées
+                setQuestions(response.data);
+                setLocalRatings(ratings); // Initialiser localRatings avec les notes passées
+            } catch (error) {
+                console.error("Erreur lors de la récupération des questions :", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchQuestions();
     }
-  }, [selectedEvaluationType, selectedEmployee.postId]); // Retirer ratings ici
+}, [selectedEvaluationType, selectedEmployee.postId, ratings]); // Ajoutez ratings comme dépendance
 
   const handleEvaluationTypeChange = async (event) => {
     const typeId = event.target.value;
@@ -50,7 +50,7 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
 
   const handleRatingChange = (questionId, rating) => {
     console.log(`Rating changed for question ${questionId}: ${rating}`); // Log pour vérifier l'ID de la question
-
+    
     setLocalRatings(prevRatings => ({
       ...prevRatings,
       [questionId]: rating // Utiliser l'ID de la question comme clé
@@ -60,7 +60,7 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
   // Passer les notes au composant parent lorsque l'utilisateur change d'étape
   useEffect(() => {
     setRatings(localRatings); // Passer les notes mises à jour
-  }, [localRatings]); // Gardez uniquement localRatings ici
+  }, [localRatings, setRatings]);
 
   return (
     <div className="step1-container">

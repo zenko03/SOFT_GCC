@@ -20,7 +20,7 @@ function Step2({ ratings }) {
     try {
       if (ratings && Object.keys(ratings).length > 0) {
         console.log("Sending ratings to backend:", ratings); // Log pour vérifier le format des données
-        const response = await axios.post('https://localhost:7082/api/Evaluation/calculate-average', ratings);
+        const response = await axios.post('http://localhost:5189/api/Evaluation/calculate-average', ratings);
         
         // Ajoutez un délai de 3 secondes avant de mettre à jour la moyenne
         setTimeout(() => {

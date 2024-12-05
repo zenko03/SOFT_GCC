@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../../../assets/css/Evaluations/Steps.css'; // For specific styles
 
-function Step3({ generalScore, ratings }) {
+function Step3({ generalScore, notes }) {
   const [serviceApproved, setServiceApproved] = useState(false);
   const [dgApproved, setDgApproved] = useState(false);
   const [serviceDate, setServiceDate] = useState('');
@@ -18,7 +18,7 @@ function Step3({ generalScore, ratings }) {
 
   // Filter training based on scores
   const suggestedTrainings = trainingSuggestions.filter(
-    (item, index) => ratings[`question${index + 1}`] && ratings[`question${index + 1}`] < item.minScore
+    (item, index) => notes[`question${index + 1}`] && notes[`question${index + 1}`] < item.minScore
   );
 
   return (

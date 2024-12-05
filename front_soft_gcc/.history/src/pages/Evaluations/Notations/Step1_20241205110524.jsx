@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/Questions.css'; // Styles spécifiques
 
-function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType, selectedEmployee, setRatings, ratings }) {
+function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType, selectedEmployee, setRatings,ratings }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [localRatings, setLocalRatings] = useState({}); // Pour stocker temporairement les notes des questions
@@ -27,7 +27,7 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
       };
       fetchQuestions();
     }
-  }, [selectedEvaluationType, selectedEmployee.postId]); // Retirer ratings ici
+  }, [selectedEvaluationType, selectedEmployee.postId, ratings]); // Ajoutez ratings comme dépendance
 
   const handleEvaluationTypeChange = async (event) => {
     const typeId = event.target.value;
@@ -60,7 +60,12 @@ function Step1({ evaluationTypes, onEvaluationTypeChange, selectedEvaluationType
   // Passer les notes au composant parent lorsque l'utilisateur change d'étape
   useEffect(() => {
     setRatings(localRatings); // Passer les notes mises à jour
-  }, [localRatings]); // Gardez uniquement localRatings ici
+  }, [localRatings, setRatings]);
+
+  // Passer les notes au composant parent lorsque l'utilisateur change d'étape
+  useEffect(() => {
+    setRatings(localRatings); // Passer les notes mises à jour
+  }, [localRatings, setRatings]);
 
   return (
     <div className="step1-container">

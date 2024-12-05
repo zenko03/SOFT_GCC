@@ -24,5 +24,6 @@ namespace soft_carriere_competence.Infrastructure.Repositories.EvaluationReposit
 
 
 
+
     }
 }

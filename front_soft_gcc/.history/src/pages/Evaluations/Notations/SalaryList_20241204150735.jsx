@@ -15,11 +15,6 @@ function SalaryList() {
   const [selectedEvaluationType, setSelectedEvaluationType] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [ratings, setRatings] = useState({}); // État pour stocker les notes
-  const [remarks, setRemarks] = useState({
-    strengths: '',
-    weaknesses: '',
-    generalEvaluation: '',
-  }); // État pour stocker les remarques
 
   const allQuestionsRated = () => {
     return questions.every(question => ratings[question.questionId] !== undefined);
@@ -66,19 +61,13 @@ function SalaryList() {
             onEvaluationTypeChange={setSelectedEvaluationType}
             selectedEvaluationType={selectedEvaluationType}
             selectedEmployee={selectedEmployee}
-            ratings={ratings} // Assurez-vous que cette ligne est présente
+            ratings={ratings}
             setRatings={setRatings}
-            setQuestions={setQuestions} // Passer les questions pour vérifier les réponses
+            setQuestions={setQuestions} // Pour vérifier les réponses
           />
         );
       case 2:
-        return (
-          <Step2
-            ratings={ratings}
-            remarks={remarks}
-            setRemarks={setRemarks} // Passer et modifier les remarques
-          />
-        );
+        return <Step2 ratings={ratings} />;
       case 3:
         return <Step3 />;
       default:

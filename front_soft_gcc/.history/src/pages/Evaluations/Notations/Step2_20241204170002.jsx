@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/Steps.css'; // Styles spécifiques
 
-
 function Step2({ ratings }) {
   const [average, setAverage] = useState(0);
   const [loading, setLoading] = useState(true); // Pour afficher un état de chargement
