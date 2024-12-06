@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using soft_carriere_competence.Application.Dtos;
 using soft_carriere_competence.Application.Services.Evaluations;
 
 namespace soft_carriere_competence.Controllers.Evaluations
@@ -69,6 +70,89 @@ namespace soft_carriere_competence.Controllers.Evaluations
 
 			double average = _evaluationService.CalculateAverageRating(ratings);
 			return Ok(new { average = Math.Round(average, 2) }); 
+		}
+
+
+
+		[HttpPost("save-evaluation-results")]
+		public async Task<IActionResult> SaveEvaluationResults([FromBody] EvaluationResultsDto dto)
+		{
+			try
+			{
+				await _evaluationService.SaveEvaluationResultsAsync(
+					dto.EvaluationId,
+					dto.Ratings,
+					dto.OverallScore,
+					dto.Strengths,
+					dto.Weaknesses,
+					dto.GeneralEvaluation);
+
+				return Ok(new { message = "Evaluation results saved successfully." });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		[HttpGet("suggestions")]
+		public async Task<IActionResult> GetTrainingSuggestions(int evaluationId)
+		{
+			try
+			{
+				var suggestions = await _evaluationService.GetTrainingSuggestionsAsync(evaluationId);
+				return Ok(suggestions);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		[HttpPost("validate-evaluation")]
+		public async Task<IActionResult> ValidateEvaluation([FromBody] EvaluationValidationDto dto)
+		{
+			try
+			{
+				var success = await _evaluationService.ValidateEvaluationAsync(
+					dto.EvaluationId,
+					dto.IsServiceApproved,
+					dto.IsDgApproved,
+					dto.ServiceApprovalDate,
+					dto.DgApprovalDate);
+
+				if (success)
+				{
+					return Ok(new { message = "Evaluation validated successfully." });
+				}
+				return BadRequest("Failed to validate evaluation.");
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+
+		[HttpPost("create-evaluation")]
+		public async Task<IActionResult> CreateEvaluation([FromBody] CreateEvaluationDto dto)
+		{
+			try
+			{
+				var evaluationId = await _evaluationService.CreateEvaluationAsync(
+					dto.UserId,
+					dto.EvaluationTypeId,
+					dto.SupervisorId,
+					dto.StartDate,
+					dto.EndDate
+				);
+
+				return Ok(new { evaluationId, message = "Evaluation created successfully." });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
 		}
 
 
