@@ -53,15 +53,23 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         }
 
 
-        public async Task<List<TrainingSuggestion>> GetTrainingSuggestionsAsync(int evaluationId)
+        public async Task<List<TrainingSuggestion>> GetTrainingSuggestionsByQuestionsAsync(int evaluationId, Dictionary<int, int> ratings)
         {
-            var evaluation = await _trainingSuggestionsRepository.GetByIdAsync(evaluationId);
+            var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
             if (evaluation == null) throw new Exception($"Evaluation with ID {evaluationId} not found.");
 
-            // Récupérer les suggestions liées
+            // Récupérer les questions et leurs seuils
             var suggestions = await _trainingSuggestionsRepository.GetAllAsync();
-            return suggestions.Where(s => s.EvaluationId == evaluationId && s.scoreThreshold >= evaluation.Evaluation.OverallScore).ToList();
+
+            return suggestions
+                .Where(s =>
+                    s.EvaluationId == evaluationId &&
+                    ratings.ContainsKey(s.questionId) && // Vérifier si une note existe pour la question
+                    ratings[s.questionId] < s.scoreThreshold // Vérifier si la note est en dessous du seuil
+                )
+                .ToList();
         }
+
 
         public async Task<bool> ValidateEvaluationAsync(int evaluationId, bool isServiceApproved, bool isDgApproved, DateTime? serviceApprovalDate, DateTime? dgApprovalDate)
         {
@@ -131,6 +139,14 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return newEvaluation.EvaluationId; // Retourner l'ID généré
         }
 
+
+        public async Task<bool> CreateTrainingSuggestionAsync(TrainingSuggestion suggestion)
+        {
+            if (suggestion == null) throw new ArgumentNullException(nameof(suggestion));
+
+            await _trainingSuggestionsRepository.CreateAsync(suggestion);
+            return true;
+        }
 
 
     }

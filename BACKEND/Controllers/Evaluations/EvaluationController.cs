@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using soft_carriere_competence.Application.Dtos;
 using soft_carriere_competence.Application.Services.Evaluations;
+using soft_carriere_competence.Core.Entities.Evaluations;
 
 namespace soft_carriere_competence.Controllers.Evaluations
 {
@@ -95,12 +96,12 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			}
 		}
 
-		[HttpGet("suggestions")]
-		public async Task<IActionResult> GetTrainingSuggestions(int evaluationId)
+		[HttpPost("suggestions")]
+		public async Task<IActionResult> GetTrainingSuggestions([FromBody] TrainingSuggestionsRequestDto dto)
 		{
 			try
 			{
-				var suggestions = await _evaluationService.GetTrainingSuggestionsAsync(evaluationId);
+				var suggestions = await _evaluationService.GetTrainingSuggestionsByQuestionsAsync(dto.EvaluationId, dto.Ratings);
 				return Ok(suggestions);
 			}
 			catch (Exception ex)
@@ -108,6 +109,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 				return StatusCode(500, new { error = ex.Message });
 			}
 		}
+
 
 		[HttpPost("validate-evaluation")]
 		public async Task<IActionResult> ValidateEvaluation([FromBody] EvaluationValidationDto dto)
@@ -154,6 +156,31 @@ namespace soft_carriere_competence.Controllers.Evaluations
 				return StatusCode(500, new { error = ex.Message });
 			}
 		}
+
+		[HttpPost("create-training-suggestion")]
+		public async Task<IActionResult> CreateTrainingSuggestion([FromBody] TrainingSuggestionCreationDto dto)
+		{
+			try
+			{
+				var suggestion = new TrainingSuggestion
+				{
+					evaluationTypeId = dto.EvaluationTypeId,
+					questionId = dto.QuestionId,
+					Training = dto.Training,
+					Details = dto.Details,
+					scoreThreshold = dto.ScoreThreshold,
+					state = dto.State
+				};
+
+				await _evaluationService.CreateTrainingSuggestionAsync(suggestion);
+				return Ok(new { message = "Training suggestion created successfully." });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
 
 
 
