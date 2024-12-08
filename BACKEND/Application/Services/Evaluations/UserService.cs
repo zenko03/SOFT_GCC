@@ -17,14 +17,17 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly IGenericRepository<User> _userRepository;
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService; // Service pour l'envoi d'emails.
 
 
 
-        public UserService(IGenericRepository<User> repository, ApplicationDbContext context, IConfiguration configuration)
+
+        public UserService(IGenericRepository<User> repository, ApplicationDbContext context, IConfiguration configuration, IEmailService emailService)
         {
             _userRepository = repository;
             _context = context;
             _configuration = configuration;
+            _emailService = emailService;
         }
         // Méthode pour récupérer tous les employés
         public async Task<IEnumerable<User>> GetAllEmployeesAsync()
@@ -104,7 +107,11 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 Email = dto.Email,
                 Password = hashedPassword,
                 RoleId = dto.RoleId,
-                CreationDate = DateTime.UtcNow
+                CreationDate = DateTime.UtcNow,
+                DepartmentId = dto.departementId,
+                PostId = 1,
+                Createdby = 1
+
             };
 
             await _userRepository.CreateAsync(user); // Ajout de l'utilisateur dans la base de données.
@@ -161,29 +168,32 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         // Méthode pour générer un token JWT pour un utilisateur.
         private string GenerateJwtToken(User user)
         {
-            // Clé de sécurité utilisée pour signer le token.
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            // Création des claims pour le token (informations utilisateur).
-            var claims = new List<Claim>
+            var key = _configuration["Jwt:Key"];
+            if (string.IsNullOrEmpty(key))
             {
-                new Claim(ClaimTypes.Name, user.Email), // Email de l'utilisateur.
-                new Claim(ClaimTypes.Role, user.RoleId.ToString()) // Rôle de l'utilisateur.
-            };
+                throw new Exception("La clé JWT est manquante ou invalide dans la configuration.");
+            }
 
-            // Construction du token avec les claims et les paramètres.
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.Email),
+        new Claim(ClaimTypes.Role, user.RoleId.ToString())
+    };
+
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.Now.AddHours(1), // Expiration dans une heure.
-                signingCredentials: creds
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: credentials
             );
 
-            // Retourne le token sous forme de chaîne.
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
     }
 }

@@ -63,7 +63,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             return suggestions
                 .Where(s =>
-                    s.EvaluationId == evaluationId &&
+                   
                     ratings.ContainsKey(s.questionId) && // Vérifier si une note existe pour la question
                     ratings[s.questionId] < s.scoreThreshold // Vérifier si la note est en dessous du seuil
                 )
