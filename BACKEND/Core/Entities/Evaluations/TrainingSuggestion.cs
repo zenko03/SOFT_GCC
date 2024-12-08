@@ -20,7 +20,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Column("details")]
         public string Details { get; set; }
         [Column("state")]
-        public string state {  get; set; }
+        public int state {  get; set; }
         [Column("scoreThreshold")]
         public int scoreThreshold {  get; set; }
         [ForeignKey("evaluationTypeId")]
