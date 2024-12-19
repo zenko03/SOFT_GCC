@@ -5,7 +5,7 @@ import '../../styles/skillsStyle.css';
 import Loader from '../../helpers/Loader';
 import '../../styles/pagination.css';
 import ModalParameter from '../../components/retirement/ModalParameter';
-import Fetcher from '../../components/fetcher';
+import Fetcher from '../../components/Fetcher';
 import useSWR from 'swr';
 
 // Fonction debounce pour éviter les appels excessifs

@@ -258,17 +258,6 @@ CREATE TABLE History (
 	Creation_date DATETIME DEFAULT GETDATE()
 );
 
--- Creation de la table souhait_evolution_poste(id, id_poste, reason, date, description, etat)
-CREATE TABLE Wish_evolution_position (
-	Wish_evolution_position_id INT PRIMARY KEY IDENTITY(1,1),
-	Position_id INT NOT NULL REFERENCES Position(Position_id),
-	Reason NVARCHAR(50) NOT NULL,
-	Date DATE NOT NULL,
-	Description TEXT,
-	State INT,
-	Creation_date Date,
-	Updated_date Date
-);
 
 -- Donne d'insertion
 INSERT INTO Module(Module_name) VALUES ('Competences');
@@ -282,3 +271,53 @@ CREATE TABLE Retirement_parameter (
 );
 
 INSERT INTO Retirement_parameter (Woman_age, Man_age) VALUES (60, 60);
+
+----------------------------------------------------- SOUHAIT EVOLUTION ----------------------------------------------------------------------
+-- Creation de la table 
+CREATE TABLE Wish_type (
+	Wish_type_id INT PRIMARY KEY IDENTITY(1,1),
+	designation NVARCHAR(250) NOT NULL,
+);
+
+INSERT INTO Wish_type (designation) VALUES ('Evolution'), ('Changement de departement');
+
+-- Creation de la table souhaitEvolution pour enregistrer les demandes de souhait d'evolution des employes
+CREATE TABLE Wish_evolution_career (
+	Wish_evolution_career_id INT PRIMARY KEY IDENTITY(1,1),
+	Position_id INT NOT NULL REFERENCES Position(Position_id),
+	Employee_id INT NOT NULL REFERENCES Employee(Employee_id),
+	Wish_type_id INT NOT NULL REFERENCES Wish_type(Wish_type_id),
+	Motivation NVARCHAR(250) NOT NULL,
+	Disponibility DATE NOT NULL,
+	Priority FLOAT NOT NULL,
+	Request_date DATE NOT NULL,
+	State INT,
+	Creation_date DATETIME,
+	Updated_date DATETIME
+);
+
+
+INSERT INTO Wish_evolution_career(Position_id, Employee_id, Wish_type_id, Motivation, Disponibility, Priority, Request_date, State, 
+Creation_date, Updated_date) VALUES 
+(3, 7, 1, 'Etre Chef', '2024/12/14', 5, '2024/12/02', 1, GETDATE(), GETDATE()),
+(2, 8, 1, 'Etre chef', '2024/12/14', 5, '2024/11/25', 1, GETDATE(), GETDATE());
+
+-- Creation de la table simulation pour les competences necessaires dans une poste
+CREATE TABLE Skill_position (
+	Skill_position_id INT PRIMARY KEY IDENTITY(1,1),
+	Position_id INT NOT NULL REFERENCES Position(Position_id),
+	Skill_id INT NOT NULL REFERENCES Skill(Skill_id),
+	State INT,
+	Creation_date DATETIME,
+	Updated_date DATETIME
+);
+
+
+INSERT INTO skill_position (Position_id, Skill_id, State, Creation_date, Updated_date)
+VALUES 
+(1, 1, 1, GETDATE(), GETDATE()),
+(1, 2, 1, GETDATE(), GETDATE()),
+(1, 3, 1, GETDATE(), GETDATE()),
+(2, 4, 1, GETDATE(), GETDATE()),
+(2, 5, 1, GETDATE(), GETDATE()),
+(3, 6, 1, GETDATE(), GETDATE());
