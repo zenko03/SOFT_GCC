@@ -6,6 +6,7 @@ using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.retirement;
 using soft_carriere_competence.Core.Entities.salary_skills;
+using soft_carriere_competence.Core.Entities.wish_evolution;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace soft_carriere_competence.Infrastructure.Data
@@ -75,6 +76,15 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<VRetirement> VRetirement { get; set; }
 		public DbSet<RetirementParameter> RetirementParameter { get; set; }
 
+		// SOUHAIT EVOLUTION
+		public DbSet<SkillPosition> SkillPosition { get; set; }
+		public DbSet<WishType> WishType { get; set; }
+		public DbSet<WishEvolutionCareer> WishEvolutionCareer { get; set; }
+		public DbSet<VWishEvolution> VWishEvolution { get; set; }
+		public DbSet<VStatWishEvolution> VStatWishEvolution { get; set; }
+		public DbSet<PcdSuggestionPosition> PcdSuggestionPosition { get; set; }
+		public DbSet<VSkillPosition> VSkillPosition { get; set; }
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
@@ -104,6 +114,14 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<VEmployeeCareer>().HasNoKey();
 			modelBuilder.Entity<VRetirement>().ToView("v_retirement");
 			modelBuilder.Entity<VRetirement>().HasNoKey();
+			modelBuilder.Entity<VWishEvolution>().ToView("v_wish_evolution");
+			modelBuilder.Entity<VWishEvolution>().HasNoKey();
+			modelBuilder.Entity<VStatWishEvolution>().ToView("v_stat_wish_evolution");
+			modelBuilder.Entity<VStatWishEvolution>().HasNoKey();
+			modelBuilder.Entity<PcdSuggestionPosition>().ToView("pcd_GetSuggestionPosition");
+			modelBuilder.Entity<PcdSuggestionPosition>().HasNoKey();
+			modelBuilder.Entity<VSkillPosition>().ToView("v_skill_position");
+			modelBuilder.Entity<VSkillPosition>().HasNoKey();
 		}
 	}
 }

@@ -110,6 +110,7 @@ function App() {
                                 </td>
                                 <td>
                                     <Button
+                                    className={`text-${item.status === "Valide" ? "success" : "danger"}`}
                                         style={{
                                             width: '25px',
                                             height: '25px',
@@ -122,6 +123,7 @@ function App() {
                                     >
                                     <i className="mdi mdi-delete icon-delete" style={{ fontSize: '20px' }}></i>
                                     </Button>
+                                    
                                 </td>
                             </tr>
                         </tbody>

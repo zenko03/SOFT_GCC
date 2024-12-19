@@ -33,7 +33,7 @@ function MenuBar({ task }) {
                 <Link className="nav-link" to="/retraite">Depart a la retraite</Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="pages/ui-features/dropdowns.html">Evolution de carrière</a>
+                <Link className="nav-link" to="/softGcc/souhaitEvolution/suivi">Evolution de carrière</Link>
               </li>
             </ul>
           </div>
@@ -50,9 +50,8 @@ function MenuBar({ task }) {
               <li className="nav-item"> <Link className="nav-link" to="/planning"> Planning d'evaluations </Link></li>
               <li className="nav-item"> <Link className="nav-link" to="/validation"> Entretien d'evaluations </Link></li>
               <li className="nav-item"> <Link className="nav-link" to="/history"> Historique d'evaluations </Link></li>
-
-                </ul>
-              </div>
+            </ul>
+          </div>
         </li>
         <li className="nav-item">
           <a className="nav-link" href="index.html">

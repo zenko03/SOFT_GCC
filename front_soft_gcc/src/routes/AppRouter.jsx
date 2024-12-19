@@ -15,6 +15,10 @@ import DetailAssignment from '../pages/career/careerPlan/DetailAssignment';
 import EvalHistory from '../pages/Evaluations/History/EvalHistory';
 import EvaluationInterviews from '../pages/Evaluations/ValidationWorkflow/EvaluationInterviews';
 import RetirementPage from '../pages/retirement/retirementPage';
+import FollowedWishEvolution from '../pages/wishEvolution/FollowedWishEvolution';
+import DetailsWishEvolution from '../pages/wishEvolution/DetailsWishEvolution';
+import AddWishEvolution from '../pages/wishEvolution/addWishEvolution';
+import EditWishEvolution from '../pages/wishEvolution/EditWishEvolution';
 
 
 function AppRouter() {
@@ -44,6 +48,12 @@ function AppRouter() {
 
       {/*Gestion retraite */}
       <Route path="/retraite" element={<RetirementPage />} />
+
+      {/*Souhait evolution */}
+      <Route path="/softGcc/souhaitEvolution/ajouter" element={<AddWishEvolution />} />
+      <Route path="/softGcc/souhaitEvolution/suivi" element={<FollowedWishEvolution />} />
+      <Route path="/softGcc/souhaitEvolution/details/:WishEvolutionId" element={<DetailsWishEvolution />} />
+      <Route path="/softGcc/souhaitEvolution/edit/:WishEvolutionId" element={<EditWishEvolution />} />
 
     </Routes>
   );
