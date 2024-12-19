@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using soft_carriere_competence.Application.Dtos;
+using soft_carriere_competence.Application.Dtos.EvaluationsDto;
 using soft_carriere_competence.Application.Services.Evaluations;
 using soft_carriere_competence.Core.Entities.Evaluations;
 
@@ -18,7 +18,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		}
 
 		[HttpGet("questions")]
-		public async Task<IActionResult> GetEvaluationQuestions(int evaluationTypeId, int postId)
+		public async Task<IActionResult> GetEvaluationQuestions([FromQuery] int evaluationTypeId, [FromQuery] int postId)
 		{
 			Console.WriteLine("Before the try");
 
@@ -78,30 +78,54 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		[HttpPost("save-evaluation-results")]
 		public async Task<IActionResult> SaveEvaluationResults([FromBody] EvaluationResultsDto dto)
 		{
+			// Log des données reçues
+			Console.WriteLine("==== Données reçues dans SaveEvaluationResults ====");
+			Console.WriteLine($"EvaluationId: {dto.EvaluationId}");
+			Console.WriteLine("Ratings:");
+			foreach (var rating in dto.Ratings)
+			{
+				Console.WriteLine($"  QuestionId: {rating.Key}, Score: {rating.Value}");
+			}
+			Console.WriteLine($"OverallScore: {dto.OverallScore}");
+			Console.WriteLine($"Strengths: {dto.Strengths}");
+			Console.WriteLine($"Weaknesses: {dto.Weaknesses}");
+			Console.WriteLine($"GeneralEvaluation: {dto.GeneralEvaluation}");
+
 			try
 			{
+				Console.WriteLine("==== Appel du service SaveEvaluationResultsAsync ====");
+
+				// Appel au service pour sauvegarder les données
 				await _evaluationService.SaveEvaluationResultsAsync(
 					dto.EvaluationId,
 					dto.Ratings,
 					dto.OverallScore,
 					dto.Strengths,
 					dto.Weaknesses,
-					dto.GeneralEvaluation);
+					dto.GeneralEvaluation
+				);
+
+				Console.WriteLine("==== Sauvegarde réussie ====");
 
 				return Ok(new { message = "Evaluation results saved successfully." });
 			}
 			catch (Exception ex)
 			{
+				// Log de l'exception
+				Console.WriteLine("==== Erreur lors de la sauvegarde ====");
+				Console.WriteLine(ex.Message);
+
 				return StatusCode(500, new { error = ex.Message });
 			}
 		}
+
 
 		[HttpPost("suggestions")]
 		public async Task<IActionResult> GetTrainingSuggestions([FromBody] TrainingSuggestionsRequestDto dto)
 		{
 			try
 			{
-				var suggestions = await _evaluationService.GetTrainingSuggestionsByQuestionsAsync(dto.EvaluationId, dto.Ratings);
+				var suggestions = await _evaluationService.GetTrainingSuggestionsByQuestionsAsync(dto.Ratings);
 				return Ok(suggestions);
 			}
 			catch (Exception ex)
@@ -109,6 +133,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 				return StatusCode(500, new { error = ex.Message });
 			}
 		}
+
 
 
 		[HttpPost("validate-evaluation")]
@@ -136,26 +161,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		}
 
 
-		[HttpPost("create-evaluation")]
-		public async Task<IActionResult> CreateEvaluation([FromBody] CreateEvaluationDto dto)
-		{
-			try
-			{
-				var evaluationId = await _evaluationService.CreateEvaluationAsync(
-					dto.UserId,
-					dto.EvaluationTypeId,
-					dto.SupervisorId,
-					dto.StartDate,
-					dto.EndDate
-				);
-
-				return Ok(new { evaluationId, message = "Evaluation created successfully." });
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, new { error = ex.Message });
-			}
-		}
+		
 
 		[HttpPost("create-training-suggestion")]
 		public async Task<IActionResult> CreateTrainingSuggestion([FromBody] TrainingSuggestionCreationDto dto)
@@ -171,7 +177,6 @@ namespace soft_carriere_competence.Controllers.Evaluations
 					scoreThreshold = dto.ScoreThreshold,
 					state = dto.State
 				};
-
 				await _evaluationService.CreateTrainingSuggestionAsync(suggestion);
 				return Ok(new { message = "Training suggestion created successfully." });
 			}
@@ -180,9 +185,5 @@ namespace soft_carriere_competence.Controllers.Evaluations
 				return StatusCode(500, new { error = ex.Message });
 			}
 		}
-
-
-
-
 	}
 }

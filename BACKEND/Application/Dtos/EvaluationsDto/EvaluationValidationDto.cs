@@ -1,4 +1,4 @@
-﻿namespace soft_carriere_competence.Application.Dtos
+﻿namespace soft_carriere_competence.Application.Dtos.EvaluationsDto
 {
     public class EvaluationValidationDto
     {

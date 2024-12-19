@@ -1,7 +1,9 @@
-﻿using soft_carriere_competence.Core.Entities.Evaluations;
+﻿using soft_carriere_competence.Application.Dtos.EvaluationsDto;
+using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Core.Interface.EvaluationInterface;
 using soft_carriere_competence.Infrastructure.Data;
+using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -53,22 +55,44 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         }
 
 
-        public async Task<List<TrainingSuggestion>> GetTrainingSuggestionsByQuestionsAsync(int evaluationId, Dictionary<int, int> ratings)
+        public async Task<List<TrainingSuggestionResultDto>> GetTrainingSuggestionsByQuestionsAsync(Dictionary<int, int> ratings)
         {
-            var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
-            if (evaluation == null) throw new Exception($"Evaluation with ID {evaluationId} not found.");
-
-            // Récupérer les questions et leurs seuils
+            // 1. Récupérer toutes les suggestions de formation
             var suggestions = await _trainingSuggestionsRepository.GetAllAsync();
 
-            return suggestions
-                .Where(s =>
-                   
-                    ratings.ContainsKey(s.questionId) && // Vérifier si une note existe pour la question
-                    ratings[s.questionId] < s.scoreThreshold // Vérifier si la note est en dessous du seuil
-                )
+            // 2. Filtrer les suggestions en fonction des ratings
+            var filteredSuggestions = suggestions
+                .Where(s => ratings.ContainsKey(s.questionId) && ratings[s.questionId] < s.scoreThreshold)
                 .ToList();
+
+            if (!filteredSuggestions.Any())
+                return new List<TrainingSuggestionResultDto>();
+
+            // 3. Extraire les questionIds uniques des suggestions filtrées
+            var questionIds = filteredSuggestions.Select(s => s.questionId).Distinct();
+
+            // 4. Récupérer les questions associées depuis Evaluation_questions
+            var questions = await _evaluationQuestion
+                .FindAsync(q => questionIds.Contains(q.questiondId));
+
+            // 5. Créer un dictionnaire pour un accès rapide aux questions
+            var questionDictionary = questions
+                .ToDictionary(q => q.questiondId, q => q.question);
+
+            // 6. Construire le résultat final en associant suggestions et questions
+            var result = filteredSuggestions.Select(suggestion => new TrainingSuggestionResultDto
+            {
+                Training = suggestion.Training,
+                Details = suggestion.Details,
+                Question = questionDictionary.ContainsKey(suggestion.questionId)
+                            ? questionDictionary[suggestion.questionId]
+                            : "Question introuvable"
+            }).ToList();
+
+            return result;
         }
+
+
 
 
         public async Task<bool> ValidateEvaluationAsync(int evaluationId, bool isServiceApproved, bool isDgApproved, DateTime? serviceApprovalDate, DateTime? dgApprovalDate)
@@ -86,27 +110,36 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         }
 
         public async Task<bool> SaveEvaluationResultsAsync(
-    int evaluationId,
-    Dictionary<int, int> ratings,
-    decimal overallScore,
-    string strengths,
-    string weaknesses,
-    string generalEvaluation)
+       int evaluationId,
+       Dictionary<int, int> ratings,
+       decimal overallScore,
+       string strengths,
+       string weaknesses,
+       string generalEvaluation)
         {
-            // Vérifier si l'évaluation existe
+            Console.WriteLine("tafiditra avant getbyidasync");
+
             var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
+            Console.WriteLine("tafiditra apres getbyidasync");
+
             if (evaluation == null) throw new Exception($"Evaluation with ID {evaluationId} not found.");
 
-            // Mettre à jour les données de l'évaluation
+            // Enregistrer les informations globales de l'évaluation
             evaluation.OverallScore = overallScore;
             evaluation.Comments = generalEvaluation;
-            evaluation.ActionPlan = $"{strengths}\n{weaknesses}";
+            evaluation.strengths = strengths;  // Colonne ajoutée
+            evaluation.weaknesses = weaknesses; // Colonne ajoutée
+            
+
 
             await _evaluationRepository.UpdateAsync(evaluation);
 
             // Enregistrer les résultats des questions dans Evaluation_questionnaire
             foreach (var rating in ratings)
             {
+                var questionExists = await _questionRepository.ExistsAsync(rating.Key);
+                if (!questionExists) throw new Exception($"Question with ID {rating.Key} not found.");
+
                 var questionnaire = new EvaluationQuestionnaire
                 {
                     EvaluationId = evaluationId,
@@ -120,6 +153,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return true;
         }
 
+
         public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, int supervisorId, DateTime startDate, DateTime endDate)
         {
             var newEvaluation = new Evaluation
@@ -131,14 +165,11 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 EndDate = endDate,
                 OverallScore = 0, // Initialisé à 0, sera mis à jour avec les résultats
                 Comments = null,
-                ActionPlan = null,
                 state = 1 // Actif
             };
-
             await _evaluationRepository.CreateAsync(newEvaluation);
             return newEvaluation.EvaluationId; // Retourner l'ID généré
         }
-
 
         public async Task<bool> CreateTrainingSuggestionAsync(TrainingSuggestion suggestion)
         {

@@ -51,4 +51,5 @@ public class User
     public Department? Department { get; set; }
     [ForeignKey("PostId")]
     public Poste? Poste { get; set; }
+
 }

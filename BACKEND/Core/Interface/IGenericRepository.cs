@@ -33,5 +33,7 @@ namespace soft_carriere_competence.Core.Interface
 
         // Calcule le nombre total de pages pour une taille de page donnée
         int GetTotalPages(int pageSize);
+
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
     }
 }

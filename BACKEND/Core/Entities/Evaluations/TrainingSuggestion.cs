@@ -7,7 +7,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
     public class TrainingSuggestion
     {
         [Key]
-        [Column("TrainingSuggestionsId")]
+        [Column("Training_suggestion_id")]
         public int TrainingSuggestionId { get; set; }
         [Column("evaluationTypeId")]
         public int evaluationTypeId { get; set; }

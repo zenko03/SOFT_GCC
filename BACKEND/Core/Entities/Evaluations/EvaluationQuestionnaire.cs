@@ -19,7 +19,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Column("questionId")]
         public int questionId {  get; set; }
 
-        public string Comments { get; set; }
+        public string? Comments { get; set; }
         [Column("state")]
         public int state {  get; set; }
 

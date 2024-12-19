@@ -25,16 +25,17 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Column("overallScore",TypeName = "decimal(5, 2)")]
         public decimal? OverallScore { get; set; }
         [Column("comments")]
-
         public string? Comments { get; set; }
-        [Column("actionPlan")]
-        public string? ActionPlan { get; set; }
 
         [Column("IsServiceApproved ")]
         public bool? IsServiceApproved {  get; set; }
         [Column("isDgApproved")]
         public bool? isDgApproved {  get; set; }
 
+        [Column("strengths")]
+        public string? strengths {  get; set; }
+        [Column("weaknesses")]
+        public string? weaknesses {  get; set; }
         [Column("serviceApprovalDate")]
         public DateTime? serviceApprovalDate {  get; set; }
         [Column("dgApprovalDate")]

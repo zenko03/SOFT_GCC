@@ -36,48 +36,17 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         }
 
         // Méthode pour récupérer tous les employés avec leur position et date d'évaluation
-        public async Task<IEnumerable<object>> GetAllEmployeesWithDetailsAsync()
+        public async Task<IEnumerable<VEmployeeDetails>> GetAllEmployeesWithDetailsAsync()
         {
-            var employees = await _context.Users
-                .Include(u => u.Poste)
-                .Include(u => u.Role) // Jointure avec la table Roles pour récupérer le poste
-                .Join(
-                    _context.Evaluations,
-                    user => user.Id,
-                    eval => eval.UserId,
-                    (user, eval) => new
-                    {
-                        user.Id,
-                        user.FirstName,
-                        user.LastName,
-                        Role = user.Role.Title,  // Récupérer le rôle
-                        Position = user.Poste.title, // Titre du poste à partir de Roles
-                        EvaluationDate = eval.StartDate // Date de début d'évaluation
-                    }
-                )
-                .ToListAsync();
-
-            return employees;
+            return await _context.VEmployeeDetails.ToListAsync();
         }
-        public async Task<User?> GetEmployeeAsync(int employeeId)
+
+        public async Task<VEmployeeDetails?> GetEmployeeAsync(int employeeId)
         {
-            Console.WriteLine("Avant la requete query ");
-
-            var user = await _context.Users
-        .Include(u=> u.Poste)
-        .Include(u=> u.Department)
-        .Include(u=> u.Role)
-        .FirstOrDefaultAsync(u => u.Id == employeeId);
-
-            Console.WriteLine(" Apres la requete ");
-
-            if (user != null)
-            {
-                Console.WriteLine($"PostId: {user.PostId}, RoleId: {user.RoleId}, DepartmentId: {user.DepartmentId}");
-            }
-
-            return user;
+            return await _context.VEmployeeDetails
+                .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
         }
+
 
         public async Task<Poste?> GetPostByIdAsync(int postId)
         {

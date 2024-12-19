@@ -70,9 +70,12 @@ namespace soft_carriere_competence.Infrastructure.Data
         public DbSet<PerformanceEvolution> PerformanceEvolutions { get; set; }
 		public DbSet<Poste> postes { get; set; }
 		public DbSet<EvaluationQuestion> evaluationQuestions {  get; set; }
+		public DbSet<VEmployeeDetails> VEmployeeDetails { get; set; }
+        public DbSet<VEmployeeWithoutEvaluation> vEmployeeWithoutEvaluations { get; set; }
 
-		// RETRAITE
-		public DbSet<VRetirement> VRetirement { get; set; }
+
+        // RETRAITE
+        public DbSet<VRetirement> VRetirement { get; set; }
 		public DbSet<RetirementParameter> RetirementParameter { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -104,6 +107,13 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<VEmployeeCareer>().HasNoKey();
 			modelBuilder.Entity<VRetirement>().ToView("v_retirement");
 			modelBuilder.Entity<VRetirement>().HasNoKey();
-		}
-	}
+
+
+
+			//------------------EVALUATIONS-----------------------------------------//
+			modelBuilder.Entity<VEmployeeDetails>().HasNoKey().ToView("VEmployeeDetails");
+            modelBuilder.Entity<VEmployeeWithoutEvaluation>().HasNoKey().ToView("VEmployeesWithoutEvaluation");
+
+        }
+    }
 }

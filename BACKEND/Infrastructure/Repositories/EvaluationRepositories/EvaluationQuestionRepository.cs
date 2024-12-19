@@ -2,6 +2,7 @@
 using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Interface.EvaluationInterface;
 using soft_carriere_competence.Infrastructure.Data;
+using System.Linq.Expressions;
 
 namespace soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories
 {
@@ -21,9 +22,13 @@ namespace soft_carriere_competence.Infrastructure.Repositories.EvaluationReposit
                 .ToListAsync();
 
         }
+        public async Task<bool> ExistsAsync(int questionId)
+        {
+            return await _context.evaluationQuestions.AnyAsync(q => q.questiondId == questionId);
+        }
 
 
-
+      
 
     }
 }

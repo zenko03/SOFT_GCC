@@ -108,11 +108,19 @@ builder.Services.AddScoped<ICrudRepository<RetirementParameter>, CrudRepository<
 
 builder.Services.AddScoped<CiviliteService>();
 builder.Services.AddScoped<ICrudRepository<Civilite>, CrudRepository<Civilite>>();
+
+
+
+
+
+
 // EVALUATIONS
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 builder.Services.AddScoped<EvaluationService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<EvaluationPlanningService>();
+
 
 
 // Enregistrement de IEvaluationQuestionRepository

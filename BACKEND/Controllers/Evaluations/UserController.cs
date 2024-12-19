@@ -35,7 +35,7 @@ public class UserController : ControllerBase
 			return NotFound("L'employé n'existe pas.");
 		}
 
-		Console.WriteLine($"id and name of selected salary {employee.Id}, {employee.FirstName}");
+		Console.WriteLine($"id and name of selected salary {employee.EmployeeId}, {employee.FirstName}");
 		return Ok(employee);
 	}
 
