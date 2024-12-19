@@ -16,19 +16,12 @@ import EvalHistory from '../pages/Evaluations/History/EvalHistory';
 import EvaluationInterviews from '../pages/Evaluations/ValidationWorkflow/EvaluationInterviews';
 import RetirementPage from '../pages/retirement/retirementPage';
 import Login from '../pages/Authentification/Login';
-import Register from '../pages/Authentification/Register.Jsx';
 
 
 function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<Template />} />
-      {/* Authentification */}
-      <Route path="/Login" element={<Login />} />
-      <Route path="/Register" element={<Register />} />
-
-
-
       {/*COMPETENCES */}
       <Route path="/competences" element={<ListSkillSalaryPage />} />
       <Route path="/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
@@ -39,6 +32,7 @@ function AppRouter() {
       <Route path="/planning" element={<SalaryListPlanning />} />
       <Route path="/history" element={<EvalHistory />} />
       <Route path="/validation" element={<EvaluationInterviews />} />
+      <Route path="/Login" element={<Login />} />
 
 
 

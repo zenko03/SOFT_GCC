@@ -6,7 +6,7 @@ const Register = () => {
     <div className="register-container">
       <div className="register-wrapper">
         <div className="register-brand">
-          {/* <img src="../../assets/images/logo-dark.svg" alt="Logo" className="register-logo" /> */}
+          <img src="../../assets/images/logo-dark.svg" alt="Logo" className="register-logo" />
         </div>
         <h4>Create Your Account</h4>
         <p className="register-subtitle">Join us and manage your team efficiently.</p>
