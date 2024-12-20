@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { registerUser } from '../../services/AuthService/AuthService';
 import '../../assets/css/Authentification/Register.css'; // Styles spécifiques
-import { Link } from 'react-router-dom';
 
 const Register = () => {
   const [formData, setFormData] = useState({

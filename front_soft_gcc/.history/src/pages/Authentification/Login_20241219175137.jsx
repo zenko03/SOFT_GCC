@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { loginUser } from '../../services/AuthService/AuthService';
 import '../../assets/css/Authentification/Login.css'; // Styles spécifiques
-import { Link } from 'react-router-dom';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -73,7 +72,7 @@ const Login = () => {
           </button>
         </form>
         <p className="signup-prompt">
-          Don't have an account? <Link className='nav-link' to={'/Register'}>Create one</Link> 
+          Don't have an account? <a href="/register" className="signup-link">Create one</a>
         </p>
       </div>
     </div>

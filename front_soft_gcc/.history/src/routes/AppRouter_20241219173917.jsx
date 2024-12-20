@@ -26,7 +26,6 @@ function AppRouter() {
       <Route path="/" element={<Template />} />
       {/* Authentification */}
       <Route path="/Login" element={<Login />} />
-      <Route path="/Register" element={<Register />} />
 
 
 

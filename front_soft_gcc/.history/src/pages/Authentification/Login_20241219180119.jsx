@@ -73,7 +73,7 @@ const Login = () => {
           </button>
         </form>
         <p className="signup-prompt">
-          Don't have an account? <Link className='nav-link' to={'/Register'}>Create one</Link> 
+          Don't have an account?<Link className='nav-link' to={'/Register'}>Create one</Link> 
         </p>
       </div>
     </div>

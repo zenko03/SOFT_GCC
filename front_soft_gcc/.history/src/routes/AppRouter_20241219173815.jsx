@@ -16,7 +16,7 @@ import EvalHistory from '../pages/Evaluations/History/EvalHistory';
 import EvaluationInterviews from '../pages/Evaluations/ValidationWorkflow/EvaluationInterviews';
 import RetirementPage from '../pages/retirement/retirementPage';
 import Login from '../pages/Authentification/Login';
-import Register from '../pages/Authentification/Register';
+import Register from '../pages/Authentification/Register.Jsx';
 
 
 

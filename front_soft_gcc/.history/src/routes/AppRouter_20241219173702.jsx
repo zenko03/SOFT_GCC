@@ -19,7 +19,6 @@ import Login from '../pages/Authentification/Login';
 import Register from '../pages/Authentification/Register';
 
 
-
 function AppRouter() {
   return (
     <Routes>
