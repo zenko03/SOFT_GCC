@@ -13,6 +13,6 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [MaxLength(100)]
         public string Designation { get; set; }
         [Column("state")]
-        public int state { get; set; }
+        public int? state { get; set; }
     }
 }

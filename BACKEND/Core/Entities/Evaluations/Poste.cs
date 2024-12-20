@@ -11,5 +11,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         public int posteId { get; set; }
         [Column("title")]
         public string title { get; set; }
+        [Column("state")]
+        public int? state { get; set; }
     }
 }
