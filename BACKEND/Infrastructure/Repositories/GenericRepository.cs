@@ -99,5 +99,25 @@ namespace soft_carriere_competence.Infrastructure.Repositories
         {
             return await _dbSet.FindAsync(id);
         }
+
+
+        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _dbSet;
+
+            // Ajout des inclusions pour les relations si spécifiées
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync(predicate); // Renvoie le premier résultat ou null
+        }
+
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
+        }
+
     }
 }

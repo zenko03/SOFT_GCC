@@ -19,16 +19,24 @@ import FollowedWishEvolution from '../pages/wishEvolution/FollowedWishEvolution'
 import DetailsWishEvolution from '../pages/wishEvolution/DetailsWishEvolution';
 import AddWishEvolution from '../pages/wishEvolution/addWishEvolution';
 import EditWishEvolution from '../pages/wishEvolution/EditWishEvolution';
+import Login from '../pages/Authentification/Login';
+import Register from '../pages/Authentification/Register';
+
 
 
 function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<Template />} />
+      {/* Authentification */}
+      <Route path="/Login" element={<Login />} />
+      <Route path="/Register" element={<Register />} />
+
+
+
       {/*COMPETENCES */}
       <Route path="/competences" element={<ListSkillSalaryPage />} />
       <Route path="/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
-      <Route path="/login" element={<LoginPage />} />
       
       {/* EVALUATIONS */}
       <Route path="/salary-list" element={<SalaryList />} />
@@ -36,6 +44,7 @@ function AppRouter() {
       <Route path="/planning" element={<SalaryListPlanning />} />
       <Route path="/history" element={<EvalHistory />} />
       <Route path="/validation" element={<EvaluationInterviews />} />
+
 
 
 

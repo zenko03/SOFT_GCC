@@ -10,11 +10,10 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Column("Role_id")]
         public int Roleid { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public string Title { get; set; }
 
         [Column("state")]
-        public int state {  get; set; }
+        public int? state {  get; set; }
     }
 }

@@ -22,13 +22,25 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Column(TypeName = "date")]
         public DateTime EndDate { get; set; }
 
-        [Column(TypeName = "decimal(5, 2)")]
-        public decimal OverallScore { get; set; }
+        [Column("overallScore",TypeName = "decimal(5, 2)")]
+        public decimal? OverallScore { get; set; }
+        [Column("comments")]
+        public string? Comments { get; set; }
 
-        public string Comments { get; set; }
+        [Column("IsServiceApproved ")]
+        public bool? IsServiceApproved {  get; set; }
+        [Column("isDgApproved")]
+        public bool? isDgApproved {  get; set; }
 
-        public string ActionPlan { get; set; }
-       
+        [Column("strengths")]
+        public string? strengths {  get; set; }
+        [Column("weaknesses")]
+        public string? weaknesses {  get; set; }
+        [Column("serviceApprovalDate")]
+        public DateTime? serviceApprovalDate {  get; set; }
+        [Column("dgApprovalDate")]
+        public DateTime? dgApprovalDate {  get; set; }
+
 
         [ForeignKey("EvaluationTypeId")]
         public EvaluationType EvaluationType { get; set; }
@@ -38,5 +50,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
 
         [ForeignKey("SupervisorId")]
         public User Supervisor { get; set; }
+        [Column("state")]
+        public int state {  get; set; }
     }
 }

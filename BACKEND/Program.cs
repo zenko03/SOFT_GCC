@@ -19,6 +19,8 @@ using soft_carriere_competence.Core.Entities.retirement;
 using soft_carriere_competence.Application.Services.retirement;
 using soft_carriere_competence.Application.Services.wish_evolution;
 using soft_carriere_competence.Core.Entities.wish_evolution;
+using soft_carriere_competence.Application.Services.EmailService;
+using soft_carriere_competence.Core.Interface.AuthInterface;
 
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
@@ -114,9 +116,20 @@ builder.Services.AddScoped<ICrudRepository<WishEvolutionCareer>, CrudRepository<
 
 builder.Services.AddScoped<WishTypeService>();
 builder.Services.AddScoped<ICrudRepository<WishType>, CrudRepository<WishType>>();
+
+
+
+
+
 // EVALUATIONS
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 builder.Services.AddScoped<EvaluationService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<EvaluationPlanningService>();
+
+
+
 // Enregistrement de IEvaluationQuestionRepository
 builder.Services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
 
@@ -146,9 +159,9 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = "https://localhost:7273",
-        ValidAudience = "https://localhost:7273",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_key_12345"))
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
 
