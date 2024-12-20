@@ -110,7 +110,6 @@ function AddWishEvolution({ onSearch }) {
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
                             <div className="card-body">
-                                <h6 className="card-title subtitle">Formulaire d'ajout</h6>
                                 <br></br>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputUsername1">Employe</label>
@@ -171,7 +170,7 @@ function AddWishEvolution({ onSearch }) {
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
                             <div className="card-body">
-                                <h4 className="card-title subtitle">Suggestion de postes</h4>
+                                <h4 className="card-title subtitle">SUGGESTION DE POSTES</h4>
                                 <table className="table table-bordered table-skill">
                                     <tr>
                                         <th>#</th>

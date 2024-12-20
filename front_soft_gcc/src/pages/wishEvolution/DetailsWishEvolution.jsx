@@ -90,6 +90,7 @@ function DetailsWishEvolution() {
         wishEvolutionId: dataDescription.wishEvolutionCareerId,
     };
 
+    console.log(dataToSend);
       const response = await axios.put(urlApi(`/WishEvolution/UpdateState?state=${state}&wishEvolutionId=${dataDescription.wishEvolutionCareerId}`));
       fetchData();
     } catch (error) {
@@ -138,8 +139,6 @@ function DetailsWishEvolution() {
             <div className="col-md-6">
               <div className="card shadow-sm border-0">
                 <div className="card-body">
-                <h6 className="card-title subtitle" 
-                >Description</h6>
                   <p><strong>Référence employé :</strong> {dataDescription.registrationNumber}</p>
                   <p><strong>Employé demandant :</strong> {`${dataDescription.name} ${dataDescription.firstName}`}</p>
                   <p><strong>Type de souhait :</strong> {dataDescription.wishTypeName}</p>
@@ -152,8 +151,6 @@ function DetailsWishEvolution() {
             <div className="col-md-6">
               <div className="card shadow-sm border-0">
                 <div className="card-body">
-                  <h6 className="card-title subtitle" 
-                  >Description</h6>
                   <p><strong>Création de la demande :</strong> {new Date(dataDescription.creationDate).toLocaleDateString()}</p>
                   <p><strong>Dernière modification :</strong> {new Date(dataDescription.updatedDate).toLocaleDateString()}</p>
                   <p><strong>Disponibilité :</strong> {new Date(dataDescription.disponibility).toLocaleDateString()}</p>
@@ -190,8 +187,8 @@ function DetailsWishEvolution() {
           <div className="col-md-8">
             <div className="card shadow-sm border-0">
               <div className="card-body">
-                <h6 className="card-title subtitle" 
-                >Vérification des compétences nécessaires</h6>
+                <h5 className="card-title subtitle" 
+                >VERIFICATION DES COMPETENCES NECESSAIRES</h5>
                 <table className="table table-hover">
                   <thead>
                     <tr>
@@ -216,8 +213,8 @@ function DetailsWishEvolution() {
           <div className="col-md-4">
             <div className="card shadow-sm border-0">
               <div className="card-body">
-                <h6 className="card-title subtitle" 
-                >Postes suggerées</h6>
+                <h5 className="card-title subtitle" 
+                >POSTES SUGGERES</h5>
                 <table className="table table-hover">
                   <thead>
                     <tr>

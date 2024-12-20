@@ -192,7 +192,7 @@ namespace soft_carriere_competence.Application.Services.wish_evolution
 				// Construire la requête de mise à jour
 				string updateQuery = @"
 				UPDATE Wish_evolution_career
-				SET state = @State, Updated_date = GETDATE()
+				SET state = @State
 				WHERE Wish_evolution_career_id = @WishEvolutionCareerId";
 
 				// Exécuter la requête avec les paramètres
