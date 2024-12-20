@@ -211,7 +211,7 @@ function FollowedWishEvolution() {
                       </div>
                       <div className="col-sm-3">
                         <input
-                          type="date"
+                          type="text"
                           className="form-control"
                           placeholder="Date demande min"
                           name="dateRequestMin"
@@ -221,7 +221,7 @@ function FollowedWishEvolution() {
                       </div>
                       <div className="col-sm-3">
                         <input
-                          type="date"
+                          type="text"
                           className="form-control"
                           placeholder="Date demande max"
                           name="dateRequestMax"
