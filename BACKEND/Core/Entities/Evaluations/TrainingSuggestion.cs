@@ -7,16 +7,25 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
     public class TrainingSuggestion
     {
         [Key]
+        [Column("Training_suggestion_id")]
         public int TrainingSuggestionId { get; set; }
-
-        public int EvaluationId { get; set; }
+        [Column("evaluationTypeId")]
+        public int evaluationTypeId { get; set; }
+        [Column("questionId")]
+        public int questionId {  get; set; }
 
         [MaxLength(255)]
+        [Column("training")]
         public string Training { get; set; }
-
+        [Column("details")]
         public string Details { get; set; }
-
-        [ForeignKey("EvaluationId")]
-        public Evaluation Evaluation { get; set; }
+        [Column("state")]
+        public int state {  get; set; }
+        [Column("scoreThreshold")]
+        public int scoreThreshold {  get; set; }
+        [ForeignKey("evaluationTypeId")]
+        public EvaluationType evaluationType { get; set; }
+        [ForeignKey("questionId")]
+        public EvaluationQuestion evaluationQuestion {  get; set; }
     }
 }

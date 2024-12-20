@@ -5,6 +5,8 @@ namespace soft_carriere_competence.Core.Interface.EvaluationInterface
     public interface IEvaluationQuestionRepository 
     {
         Task<IEnumerable<EvaluationQuestion>> GetQuestionsByEvaluationTypeAndPostAsync(int evaluationTypeId, int postId);
+        Task<bool> ExistsAsync(int questionId);
+
 
     }
 }

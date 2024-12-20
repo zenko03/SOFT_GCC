@@ -1,4 +1,6 @@
-﻿namespace soft_carriere_competence.Core.Interface
+﻿using System.Linq.Expressions;
+
+namespace soft_carriere_competence.Core.Interface
 {
     public interface IGenericRepository<T> where T : class
     {
@@ -26,7 +28,12 @@
         // Récupère une page d'entités avec des propriétés de navigation
         IEnumerable<T> GetPage(int pageNumber, int pageSize, string includeProperties = "");
 
+        Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
+
+
         // Calcule le nombre total de pages pour une taille de page donnée
         int GetTotalPages(int pageSize);
+
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
     }
 }

@@ -25,9 +25,9 @@ public class UserController : ControllerBase
 	[HttpGet("{id}")]
 	public async Task<IActionResult> GetEmployee(int id)
 	{
-		Console.WriteLine("dhsshfiurhfuireio");
+		Console.WriteLine("avant la fonction getEmployeeAsync");
 		var employee = await _employeeService.GetEmployeeAsync(id);
-		Console.WriteLine("tonga ato");
+		Console.WriteLine("apres la fonction getEmployeeAsync");
 
 
 		if (employee == null)
@@ -35,7 +35,7 @@ public class UserController : ControllerBase
 			return NotFound("L'employé n'existe pas.");
 		}
 
-		Console.WriteLine($"id and name of selected salary {employee.Id}, {employee.FirstName}");
+		Console.WriteLine($"id and name of selected salary {employee.EmployeeId}, {employee.FirstName}");
 		return Ok(employee);
 	}
 

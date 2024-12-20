@@ -1,0 +1,38 @@
+.step1-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centre horizontalement */
+    margin: 20px; /* Ajoute un peu d'espace autour */
+}
+
+.evaluation-select {
+    padding: 10px;
+    border: 2px solid #007bff; /* Couleur du bord */
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #fff; /* Fond blanc */
+    transition: border-color 0.3s ease; /* Transition douce pour le survol */
+}
+
+.evaluation-select:hover {
+    border-color: #0056b3; /* Couleur du bord au survol */
+}
+
+.loader {
+    font-size: 16px;
+    color: #007bff; /* Couleur du texte */
+    margin-top: 10px;
+}
+
+.questions-container {
+    margin-top: 20px;
+}
+
+.question-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 15px; /* Augmente le padding pour plus d'espace */
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Ajoute une ombre portée */
+}

@@ -510,3 +510,104 @@ FROM
 CROSS JOIN 
     Retirement_parameter rp;
 
+-- Vue pour les competences des postes
+CREATE VIEW v_skill_position AS 
+SELECT 
+	cp.Skill_position_id,
+	cp.Position_id,
+	p.position_name,
+	cp.Skill_id,
+	s.Skill_name,
+	cp.State,
+	cp.Creation_date,
+	cp.Updated_date
+FROM Skill_position cp
+INNER JOIN Position p
+ON p.Position_id = cp.Position_id
+INNER JOIN Skill s
+ON s.Skill_id = cp.Skill_id;
+
+
+-- Creation d'une procedure stockee pour les suggestions des postes d'un employe
+CREATE PROCEDURE pcd_GetSuggestionPosition
+    @IdEmployee INT
+AS 
+BEGIN TRY
+
+	SELECT
+		position_id, 
+		position_name 
+	FROM 
+		v_skill_position 
+	WHERE 
+		skill_id in (select skill_id from employee_skill where employee_id=@idEmployee)
+	GROUP BY 
+		position_id, position_name
+
+END TRY
+BEGIN CATCH
+	-- Gestion des erreurs
+    SELECT ERROR_MESSAGE() AS MessageErreur;
+END CATCH;
+
+-- Appel
+
+-- Creation de la vue des demandes souhait evolution
+CREATE VIEW v_wish_evolution AS
+SELECT
+	w.Wish_evolution_career_id, 
+	w.Employee_id,
+	e.Registration_number,
+	e.Name,
+	e.FirstName,
+	e.Hiring_date,
+	e.Birthday,
+	w.Position_id AS Wish_position_id,
+	p.Position_name AS Wish_position_name,
+	w.Wish_type_id,
+	wt.Designation AS Wish_type_name, 
+	w.Motivation,
+	w.Disponibility,
+	w.Priority,
+	CASE 
+        WHEN w.Priority >= 0 AND w.Priority < 5 THEN 'Bas'
+        WHEN w.Priority >= 5 AND w.Priority < 10 THEN 'Moyen'
+        ELSE 'Eleve'
+    END AS priority_letter,
+	w.request_date,
+	w.State,
+	CASE 
+		WHEN w.State <= 0 THEN 'Refusé'
+        WHEN w.State > 0 AND w.State < 5 THEN 'En atente'
+        WHEN w.State >= 5 AND w.State < 10 THEN 'En cours'
+		WHEN w.State >= 10 THEN 'Validé'
+        ELSE NULL
+    END AS state_letter,
+	ec.Department_id AS Actual_department_id,
+	ec.Department_name AS Actual_department_name,
+	ec.Position_id AS Actual_position_id,
+	ec.Position_name AS Actual_position_name,
+	w.Creation_date,
+	w.Updated_date
+FROM Wish_evolution_career w 
+JOIN position p
+ON p.Position_id = w.position_id
+JOIN employee e
+ON e.employee_id = w.employee_id
+JOIN wish_type wt
+ON wt.wish_type_id = w.wish_type_id
+JOIN v_employee_career ec
+ON ec.Registration_number = e.Registration_number
+
+-- Creation de la vue pour analyse statistique des demandes de souhait evolution par mois dans une annee
+CREATE VIEW v_stat_wish_evolution AS
+SELECT 
+    YEAR(Request_date) AS Year,
+    MONTH(Request_date) AS Month,
+    COUNT(*) AS Total_requests,
+    AVG(Priority) AS Average_priority
+FROM 
+    Wish_evolution_career
+GROUP BY 
+    YEAR(Request_date), 
+    MONTH(Request_date);
