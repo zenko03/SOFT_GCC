@@ -13,8 +13,8 @@ import "../../styles/careerStyle.css";
 function EditWishEvolution({ onSearch }) {
     // Url d'en-tete de page
     const module = "Souhait evolution";
-    const action = "Ajouter";
-    const url = "/SouhaitEvolution/Ajouter";
+    const action = "Modifier";
+    const url = "/SouhaitEvolution/Modifier";
 
     const { WishEvolutionId } = useParams();
 
@@ -134,12 +134,13 @@ function EditWishEvolution({ onSearch }) {
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
-            <h4>AJOUT D'UN SOUHAIT D'EVALUATION</h4>
+            <h4>MODIFICATION D'UN SOUHAIT D'EVALUATION</h4>
             <form className="forms-sample">
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
                             <div className="card-body">
+                                <h6 className="card-title subtitle">Formulaire de modification</h6>
                                 <br></br>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputUsername1">Employe</label>
@@ -199,7 +200,7 @@ function EditWishEvolution({ onSearch }) {
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
                             <div className="card-body">
-                                <h4 className="card-title subtitle">SUGGESTION DE POSTES</h4>
+                                <h6 className="card-title subtitle">Suggestion des postes</h6>
                                 <table className="table table-bordered table-skill">
                                     <tr>
                                         <th>#</th>

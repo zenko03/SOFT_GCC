@@ -185,7 +185,7 @@ function FollowedWishEvolution() {
           <PageHeader module={module} action={action} url={url} />
           <div className='row'>
             <div className='col-lg-6'>
-              <h4 className="card-title">DEMANDE SOUHAIT EVOLUTION</h4>
+              <h4 className="card-title">DEMANDES SOUHAIT D'EVOLUTION</h4>
             </div>
             <div className='col-lg-6'>
               <div className="action-buttons text-right my-1">
@@ -197,6 +197,7 @@ function FollowedWishEvolution() {
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
                 <div className="card-body">
+                  <h4 className="card-title subtitle">Filtre</h4>
                   <form className="form-sample">
                     <div className="form-group row">
                       <div className="col-sm-6">
@@ -289,8 +290,17 @@ function FollowedWishEvolution() {
                         </select>
                       </div>
                     </div>
-                  </form>
-    
+                  </form>    
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-lg-12 grid-margin stretch-card">
+              <div className="card">
+                <div className="card-body">
+                  <h4 className="card-title subtitle">Liste</h4>
                       <table className="table table-competences">
                         <thead>
                           <tr>
@@ -347,12 +357,12 @@ function FollowedWishEvolution() {
             </div>
           </div>
           
-          <h4 className="card-title">GRAPHE DE DEMANDE SOUHAIT D'EVOLUTION</h4>
+          <h4 className="card-title">GRAPHE DES DEMANDES DE SOUHAIT D'EVOLUTION</h4>
           <div className="row justify-content-center">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card shadow-sm border-0">
                 <div className="card-body">
-                  <h4 className="card-title text-left">Analyse des demandes par mois</h4>
+                  <h6 className="card-title text-left subtitle">Analyse des demandes par mois</h6>
                   <p className="card-description text-left">Un aperçu des demandes au cours de l'année</p>
                   <div className="form-group row">
                     <div className="col-sm-3">

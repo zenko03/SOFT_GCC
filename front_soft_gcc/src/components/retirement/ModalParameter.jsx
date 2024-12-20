@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import '../../styles/modal.css';
-import Fetcher from '../fetcher';
+import Fetcher from '../Fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';

@@ -100,16 +100,21 @@ function RetirementPage() {
       <ModalParameter showParameter={showParameter} handleCloseParameter={() => setShowParameter(false)} fetchFilteredData={fetchFilteredData} />
       <PageHeader module={module} action={action} url={url} />
       <div className="row">
-        <div className="button-save-profil">
-          <button onClick={() => setShowParameter(true)} type="button" className="btn btn-success btn-fw">
-            Paramètre
-          </button>
+        <div className='col-lg-10' style={{marginTop: '20px'}}>
+          <h4 className="card-title">DÉPART À LA RETRAITE</h4>
+        </div>
+        <div className='col-lg-2'>
+          <div className="button-save-profil">
+            <button onClick={() => setShowParameter(true)} type="button" className="btn btn-success btn-fw">
+              Paramètre
+            </button>
+          </div>
         </div>
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
             <div className="card-body">
-              <h4 className="card-title">DÉPART À LA RETRAITE</h4>
               <form className="form-sample">
+                <h6 className="card-title subtitle">Filtre</h6>
                 <div className="form-group row">
                   <div className="col-sm-4">
                     <input
@@ -191,50 +196,59 @@ function RetirementPage() {
                 </div>
               </form>
               {error && <p className="text-danger">{error}</p>}
+            </div>
+          </div>
+        </div>
+      </div>
 
-              {dataRetirement?.length > 0 ? (
-                <>
-                  <table className="table table-striped table-competences">
-                    <thead>
-                      <tr>
-                        <th>Civilité</th>
-                        <th>Nom complet</th>
-                        <th>Matricule</th>
-                        <th>Département</th>
-                        <th>Poste</th>
-                        <th>Âge</th>
-                        <th>Départ à la retraite</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dataRetirement.map((item, index) => (
-                        <tr key={index}>
-                          <td>{item.civiliteName}</td>
-                          <td>{`${item.name} ${item.firstName}`}</td>
-                          <td>{item.registrationNumber}</td>
-                          <td>{item.departmentName}</td>
-                          <td>{item.positionName}</td>
-                          <td>{item.age}</td>
-                          <td>{new Date(item.dateDepart).toLocaleDateString()}</td>
+      <div className="row">
+        <div className="col-lg-12 grid-margin stretch-card">
+          <div className="card">
+            <div className="card-body">
+              <h6 className="card-title subtitle">Liste</h6>
+                {dataRetirement?.length > 0 ? (
+                  <>
+                    <table className="table table-competences">
+                      <thead>
+                        <tr>
+                          <th>Civilité</th>
+                          <th>Nom complet</th>
+                          <th>Matricule</th>
+                          <th>Département</th>
+                          <th>Poste</th>
+                          <th>Âge</th>
+                          <th>Départ à la retraite</th>
                         </tr>
+                      </thead>
+                      <tbody>
+                        {dataRetirement.map((item, index) => (
+                          <tr key={index}>
+                            <td>{item.civiliteName}</td>
+                            <td>{`${item.name} ${item.firstName}`}</td>
+                            <td>{item.registrationNumber}</td>
+                            <td>{item.departmentName}</td>
+                            <td>{item.positionName}</td>
+                            <td>{item.age}</td>
+                            <td style={{color: '#B8860B'}}>{new Date(item.dateDepart).toLocaleDateString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <div className="pagination">
+                      {[...Array(totalPages)].map((_, index) => (
+                        <button
+                          key={index}
+                          className={`page-button ${index + 1 === currentPage ? 'active' : ''}`}
+                          onClick={() => setCurrentPage(index + 1)}
+                        >
+                          {index + 1}
+                        </button>
                       ))}
-                    </tbody>
-                  </table>
-                  <div className="pagination">
-                    {[...Array(totalPages)].map((_, index) => (
-                      <button
-                        key={index}
-                        className={`page-button ${index + 1 === currentPage ? 'active' : ''}`}
-                        onClick={() => setCurrentPage(index + 1)}
-                      >
-                        {index + 1}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                !error && <p>{error}</p>
-              )}
+                    </div>
+                  </>
+                ) : (
+                  !error && <p>{error}</p>
+                )}
             </div>
           </div>
         </div>
