@@ -162,5 +162,12 @@ namespace soft_carriere_competence.Controllers.wish_evolution
 			await _wishEvolutionService.Update(wishEvolution);
 			return NoContent();
 		}
+
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> Delete(int id)
+		{
+			await _wishEvolutionService.Delete(id);
+			return NoContent();
+		}
 	}
 }

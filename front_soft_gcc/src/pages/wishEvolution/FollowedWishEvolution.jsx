@@ -5,8 +5,6 @@ import '../../styles/skillsStyle.css';
 import '../../styles/pagination.css';
 import ChartLine from '../../components/ChartLine';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { urlApi } from '../../helpers/utils';
 import Loader from '../../helpers/Loader';
 import '../../styles/pagination.css';
 import Fetcher from '../../components/Fetcher';
@@ -185,18 +183,23 @@ function FollowedWishEvolution() {
           <PageHeader module={module} action={action} url={url} />
           <div className='row'>
             <div className='col-lg-6'>
-              <h4 className="card-title">DEMANDE SOUHAIT EVOLUTION</h4>
+              <h4 className="card-title">DEMANDES DES SOUHAITS D'ÉVOLUTION</h4>
             </div>
             <div className='col-lg-6'>
               <div className="action-buttons text-right my-1">
-                <button type="button" onClick={handleClick} className="btn btn-success btn-fw">Ajouter</button>
+                <button type="button" onClick={handleClick} className="btn btn-success">
+                  <i className='mdi mdi-plus button-logo'></i>
+                  Ajouter
+                </button>
               </div>
             </div>
           </div>
+
           <div className="row">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
                 <div className="card-body">
+                  <h5 className="card-title subtitle">Filtre</h5>
                   <form className="form-sample">
                     <div className="form-group row">
                       <div className="col-sm-6">
@@ -289,70 +292,78 @@ function FollowedWishEvolution() {
                         </select>
                       </div>
                     </div>
-                  </form>
-    
-                      <table className="table table-competences">
-                        <thead>
-                          <tr>
-                            <th>Matricule</th>
-                            <th>Employe</th>
-                            <th>Type souhait</th>
-                            <th>Poste souhaite</th>
-                            <th>Priorite</th>
-                            <th>Date de demande</th>
-                            <th>Statut</th>
+                  </form>    
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-lg-12 grid-margin stretch-card">
+              <div className="card">
+                <div className="card-body">
+                  <h5 className="card-title subtitle">Liste</h5>
+                  <table className="table table-competences">
+                    <thead>
+                      <tr>
+                        <th>Matricule</th>
+                        <th>Employe</th>
+                        <th>Type souhait</th>
+                        <th>Poste souhaite</th>
+                        <th>Priorite</th>
+                        <th>Date de demande</th>
+                        <th>Statut</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {wishesEvolution?.length > 0 ? (
+                        wishesEvolution.map((item) => (
+                          <tr key={item.wishEvolutionCareerId}>
+                            <Link to={`/softGcc/souhaitEvolution/details/${item.wishEvolutionCareerId}`}>
+                              <td>{item.registrationNumber}</td>
+                            </Link>
+                            <td>{item.firstName} {item.name}</td>
+                            <td>{item.wishTypeName}</td>
+                            <td style={{color: '#B8860B'}}>{item.wishPositionName}</td>
+                            <td>{item.priorityLetter}</td>
+                            <td>{new Date(item.requestDate).toLocaleDateString()}</td>
+                            {item.state === 1 ? (
+                              <td><label className="badge badge-warning">{item.stateLetter}</label ></td>
+                            ) : item.state === 5 ? (
+                              <td><label className="badge badge-warning">{item.stateLetter}</label ></td>
+                            ) : item.state === 10 ? (
+                              <td><label className="badge badge-success">{item.stateLetter}</label ></td>
+                            ) : (
+                              <td><label className="badge badge-danger">{item.stateLetter}</label ></td>
+                            )}
                           </tr>
-                        </thead>
-                        <tbody>
-                          {wishesEvolution?.length > 0 ? (
-                            wishesEvolution.map((item) => (
-                              <tr key={item.wishEvolutionCareerId}>
-                                <Link to={`/softGcc/souhaitEvolution/details/${item.wishEvolutionCareerId}`}>
-                                  <td>{item.registrationNumber}</td>
-                                </Link>
-                                <td>{item.firstName} {item.name}</td>
-                                <td>{item.wishTypeName}</td>
-                                <td style={{color: '#B8860B'}}>{item.wishPositionName}</td>
-                                <td>{item.priorityLetter}</td>
-                                <td>{new Date(item.requestDate).toLocaleDateString()}</td>
-                                {item.state === 1 ? (
-                                  <td><label className="badge badge-warning">{item.stateLetter}</label ></td>
-                                ) : item.state === 5 ? (
-                                  <td><label className="badge badge-warning">{item.stateLetter}</label ></td>
-                                ) : item.state === 10 ? (
-                                  <td><label className="badge badge-success">{item.stateLetter}</label ></td>
-                                ) : (
-                                  <td><label className="badge badge-danger">{item.stateLetter}</label ></td>
-                                )}
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan="7" className="text-center">Aucun résultat trouvé.</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                      <div className="pagination">
-                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                          Précédent
-                        </button>
-                        {renderPageNumbers()}
-                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                          Suivant
-                        </button>
-                      </div>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="7" className="text-center">Aucun résultat trouvé.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                  <div className="pagination">
+                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                      Précédent
+                    </button>
+                    {renderPageNumbers()}
+                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                        Suivant
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           
-          <h4 className="card-title">GRAPHE DE DEMANDE SOUHAIT D'EVOLUTION</h4>
           <div className="row justify-content-center">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card shadow-sm border-0">
                 <div className="card-body">
-                  <h4 className="card-title text-left">Analyse des demandes par mois</h4>
+                  <h4 className="card-title text-left subtitle">Analyse des demandes par mois</h4>
                   <p className="card-description text-left">Un aperçu des demandes au cours de l'année</p>
                   <div className="form-group row">
                     <div className="col-sm-3">

@@ -97,18 +97,24 @@ function RetirementPage() {
   return (
     <Template>
       {loading && <Loader />}
-      <ModalParameter showParameter={showParameter} handleCloseParameter={() => setShowParameter(false)} fetchFilteredData={fetchFilteredData} />
+      <ModalParameter Fetcher={Fetcher} showParameter={showParameter} handleCloseParameter={() => setShowParameter(false)} fetchFilteredData={fetchFilteredData} />
       <PageHeader module={module} action={action} url={url} />
       <div className="row">
-        <div className="button-save-profil">
-          <button onClick={() => setShowParameter(true)} type="button" className="btn btn-success btn-fw">
-            Paramètre
-          </button>
+        <div className='col-lg-10' style={{marginTop: '20px'}}>
+          <h4 className="card-title">DÉPART À LA RETRAITE</h4>
         </div>
+        <div className='col-lg-2'>
+          <div className="button-save-profil">
+            <button onClick={() => setShowParameter(true)} type="button" className="btn btn-success btn-fw">
+              <i className='mdi mdi-settings button-logo'></i>Paramètre
+            </button>
+          </div>
+        </div>
+        
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
             <div className="card-body">
-              <h4 className="card-title">DÉPART À LA RETRAITE</h4>
+              <h5 className="card-title subtitle">Filtre</h5>
               <form className="form-sample">
                 <div className="form-group row">
                   <div className="col-sm-4">
@@ -191,10 +197,19 @@ function RetirementPage() {
                 </div>
               </form>
               {error && <p className="text-danger">{error}</p>}
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <div className="row">
+        <div className="col-lg-12 grid-margin stretch-card">
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title subtitle">Liste</h5>
               {dataRetirement?.length > 0 ? (
                 <>
-                  <table className="table table-striped table-competences">
+                  <table className="table table-competences">
                     <thead>
                       <tr>
                         <th>Civilité</th>
@@ -210,12 +225,12 @@ function RetirementPage() {
                       {dataRetirement.map((item, index) => (
                         <tr key={index}>
                           <td>{item.civiliteName}</td>
-                          <td>{`${item.name} ${item.firstName}`}</td>
+                          <td style={{color: '#58d8a3'}}>{`${item.name} ${item.firstName}`}</td>
                           <td>{item.registrationNumber}</td>
                           <td>{item.departmentName}</td>
                           <td>{item.positionName}</td>
                           <td>{item.age}</td>
-                          <td>{new Date(item.dateDepart).toLocaleDateString()}</td>
+                          <td style={{color: '#B8860B'}}>{new Date(item.dateDepart).toLocaleDateString()}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -81,7 +81,7 @@ function DetailsWishEvolution() {
   }, [WishEvolutionId]);
 
 
-  // Gérer la soumission du formulaire
+  // Gérer la validation des etats
   const handleUpdateState = async (state) => {
     setIsLoading(true);
     try {
@@ -101,14 +101,22 @@ function DetailsWishEvolution() {
     }
   };
 
+  const handleDelete = async (wishEvolutionId) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.delete(urlApi(`/WishEvolution/${wishEvolutionId}`));
+      navigate(`/softGcc/souhaitEvolution/suivi`);
+    } catch (error) {
+        console.error('Erreur lors de la suppression du souhait d\'evolution : ', error.response?.data || error.message);
+        setError('Erreur lors de la suppression du souhait d\'evolution : '+error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Navigation pour modifier
   const handleEdit = (wishEvolutionId) => {
     navigate(`/softGcc/souhaitEvolution/edit/${wishEvolutionId}`);
-  };
-
-  // Navigation pour supprimer definitivement
-  const handleDelete = (wishEvolutionId) => {
-    navigate(`/softGcc/souhaitEvolution/delete/${wishEvolutionId}`);
   };
 
   // Navigation pour la page des competences
@@ -131,14 +139,15 @@ function DetailsWishEvolution() {
         <button type="button" onClick={handleSkill} className="btn btn-outline-primary mx-2">Compétences</button>
         <button type="button" onClick={handleCareer} className="btn btn-outline-primary mx-2">Carrières</button>
       </div>
+      <hr></hr>
 
-      <div className="container">
         <h4 className="section-title text-left text-uppercase mb-4">DETAILS DE LA DEMANDE</h4>
         {dataDescription ? (
           <div className="row g-4">
             <div className="col-md-6">
               <div className="card shadow-sm border-0">
                 <div className="card-body">
+                  <h5 className="card-title subtitle">Description</h5>
                   <p><strong>Référence employé :</strong> {dataDescription.registrationNumber}</p>
                   <p><strong>Employé demandant :</strong> {`${dataDescription.name} ${dataDescription.firstName}`}</p>
                   <p><strong>Type de souhait :</strong> {dataDescription.wishTypeName}</p>
@@ -151,6 +160,7 @@ function DetailsWishEvolution() {
             <div className="col-md-6">
               <div className="card shadow-sm border-0">
                 <div className="card-body">
+                  <h5 className="card-title subtitle">Description</h5>
                   <p><strong>Création de la demande :</strong> {new Date(dataDescription.creationDate).toLocaleDateString()}</p>
                   <p><strong>Dernière modification :</strong> {new Date(dataDescription.updatedDate).toLocaleDateString()}</p>
                   <p><strong>Disponibilité :</strong> {new Date(dataDescription.disponibility).toLocaleDateString()}</p>
@@ -188,7 +198,7 @@ function DetailsWishEvolution() {
             <div className="card shadow-sm border-0">
               <div className="card-body">
                 <h5 className="card-title subtitle" 
-                >VERIFICATION DES COMPETENCES NECESSAIRES</h5>
+                >Vérification des compétences nécessaires</h5>
                 <table className="table table-hover">
                   <thead>
                     <tr>
@@ -214,7 +224,7 @@ function DetailsWishEvolution() {
             <div className="card shadow-sm border-0">
               <div className="card-body">
                 <h5 className="card-title subtitle" 
-                >POSTES SUGGERES</h5>
+                >Postes suggerrées</h5>
                 <table className="table table-hover">
                   <thead>
                     <tr>
@@ -276,7 +286,6 @@ function DetailsWishEvolution() {
             </div>
 
         </div>
-      </div>
     </Template>
   );
 }

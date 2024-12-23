@@ -134,12 +134,13 @@ function EditWishEvolution({ onSearch }) {
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
-            <h4>AJOUT D'UN SOUHAIT D'EVALUATION</h4>
+            <h4>Modifcation D'UN SOUHAIT D'ÉVALUATION</h4>
             <form className="forms-sample">
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
                             <div className="card-body">
+                                <h5 className="card-title subtitle">Formulaire de modification du souhait d'évaluation</h5>
                                 <br></br>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputUsername1">Employe</label>
@@ -199,11 +200,11 @@ function EditWishEvolution({ onSearch }) {
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
                             <div className="card-body">
-                                <h4 className="card-title subtitle">SUGGESTION DE POSTES</h4>
+                            <h5 className="card-title subtitle">Suggestions des postes</h5>
                                 <table className="table table-bordered table-skill">
                                     <tr>
                                         <th>#</th>
-                                        <th>Postes suggerres</th>
+                                        <th>Poste suggerrée</th>
                                     </tr>
                                     {dataSuggestionPosition.length > 0 ? (
                                         dataSuggestionPosition.map((item) => (

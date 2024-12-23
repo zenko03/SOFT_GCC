@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import '../../styles/modal.css';
-import Fetcher from '../fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
     
 // Gerer l'insertion d'autres formations
-function ModalParameter ({ showParameter, handleCloseParameter, fetchFilteredData }) {
+function ModalParameter ({ Fetcher,showParameter, handleCloseParameter, fetchFilteredData }) {
     const { data: parameter, error: errorParameter, isLoading: loadingParameter } = useSWR('/Retirement/parametre/1', Fetcher);
 
     // Gestion état du formulaire
@@ -77,7 +76,7 @@ function ModalParameter ({ showParameter, handleCloseParameter, fetchFilteredDat
           overlayClassName="modal-overlay"
         >
           <div className="modal-header">
-              <h2>Parametre legal du depart a la retraite</h2>
+              <h3 className='subtitle'>Paramètre légal du départ à la retraite</h3>
               <button onClick={handleCloseParameter} className="close-button">&times;</button>
           </div>
           <div className="modal-body">
