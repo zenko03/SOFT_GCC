@@ -14,15 +14,13 @@ import EditAffectation from '../pages/career/careerPlan/EditAffectation';
 import DetailAssignment from '../pages/career/careerPlan/DetailAssignment';
 import EvalHistory from '../pages/Evaluations/History/EvalHistory';
 import EvaluationInterviews from '../pages/Evaluations/ValidationWorkflow/EvaluationInterviews';
-import RetirementPage from '../pages/retirement/retirementPage';
+import RetirementPage from '../pages/retirement/RetirementPage';
 import FollowedWishEvolution from '../pages/wishEvolution/FollowedWishEvolution';
 import DetailsWishEvolution from '../pages/wishEvolution/DetailsWishEvolution';
 import AddWishEvolution from '../pages/wishEvolution/addWishEvolution';
 import EditWishEvolution from '../pages/wishEvolution/EditWishEvolution';
 import Login from '../pages/Authentification/Login';
-import Register from '../pages/Authentification/Register';
-
-
+import Register from '../pages/Authentification/Register.Jsx';
 
 function AppRouter() {
   return (
@@ -31,8 +29,6 @@ function AppRouter() {
       {/* Authentification */}
       <Route path="/Login" element={<Login />} />
       <Route path="/Register" element={<Register />} />
-
-
 
       {/*COMPETENCES */}
       <Route path="/competences" element={<ListSkillSalaryPage />} />
@@ -44,9 +40,6 @@ function AppRouter() {
       <Route path="/planning" element={<SalaryListPlanning />} />
       <Route path="/history" element={<EvalHistory />} />
       <Route path="/validation" element={<EvaluationInterviews />} />
-
-
-
 
       {/*CARRIERE */}
       <Route path="/carriere" element={<ListSalaryPage />} />

@@ -82,3 +82,8 @@
         border-bottom: 1px solid #ddd;
     }
 }
+
+.button-logo {
+    margin-right: 10px; 
+    font-size: large !important;
+}
