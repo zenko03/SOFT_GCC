@@ -14,25 +14,15 @@ function SalaryListPlanning() {
   const [positions, setPositions] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-  const [selectAll, setSelectAll] = useState(false); // État pour la case "Tout sélectionner"
+  const [selectAll, setSelectAll] = useState(false);
   const [evaluationDetails, setEvaluationDetails] = useState({
     evaluationType: '',
     supervisor: '',
     startDate: '',
     endDate: '',
   });
+  const [evaluationTypes, setEvaluationTypes] = useState([]); // Nouvel état pour les types d'évaluations
   const [showModal, setShowModal] = useState(false);
-
-  const [evaluationTypes, setEvaluationTypes] = useState([]);
-
-  const fetchEvaluationTypes = async () => {
-    try {
-      const response = await axios.get('https://localhost:7082/api/EvaluationPlanning/evaluation-types');
-      setEvaluationTypes(response.data);
-    } catch (error) {
-      console.error("Erreur lors de la récupération des types d'évaluation :", error);
-    }
-  };
 
   const fetchEmployeesWithoutEvaluations = async () => {
     try {
@@ -40,6 +30,7 @@ function SalaryListPlanning() {
         'https://localhost:7082/api/EvaluationPlanning/employees-without-evaluations',
         { params: { ...filters, search: searchQuery } }
       );
+      console.log('Employés sans évaluation:', response.data); // Debug
       setEmployees(response.data);
       setFilteredEmployees(response.data);
     } catch (error) {
@@ -50,17 +41,14 @@ function SalaryListPlanning() {
     }
   };
 
-  const handleRemoveEmployee = (employeeId) => {
-    setSelectedEmployees((prev) => prev.filter((id) => id !== employeeId));
-  };
-  
-
   const fetchFilterOptions = async () => {
     try {
       const [positionsRes, departmentsRes] = await Promise.all([
         axios.get('https://localhost:7082/api/EvaluationPlanning/positions'),
         axios.get('https://localhost:7082/api/EvaluationPlanning/departments'),
       ]);
+      console.log('Positions:', positionsRes.data); // Debug
+      console.log('Départements:', departmentsRes.data); // Debug
       setPositions(positionsRes.data);
       setDepartments(departmentsRes.data);
     } catch (error) {
@@ -68,12 +56,32 @@ function SalaryListPlanning() {
     }
   };
 
+  const fetchEvaluationTypes = async () => {
+    try {
+      const response = await axios.get('https://localhost:7082/api/EvaluationPlanning/types');
+      console.log('Types d\'évaluation:', response.data); // Debug
+      setEvaluationTypes(response.data);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des types d\'évaluations :', error);
+    }
+  };
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      await fetchEmployeesWithoutEvaluations();
+      await fetchFilterOptions();
+    };
+
+    loadInitialData();
+  }, []);
+
   useEffect(() => {
     fetchEmployeesWithoutEvaluations();
-    fetchFilterOptions();
-    fetchEvaluationTypes(); // Récupération des types d'évaluations
-
   }, [filters, searchQuery]);
+
+  useEffect(() => {
+    fetchEvaluationTypes(); // Charger les types une seule fois
+  }, []);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
@@ -83,24 +91,6 @@ function SalaryListPlanning() {
     const { name, value } = e.target;
     const parsedValue = value ? parseInt(value, 10) : '';
     setFilters((prev) => ({ ...prev, [name]: parsedValue }));
-  };
-
-  const handleSelectEmployee = (employeeId) => {
-    setSelectedEmployees((prev) =>
-      prev.includes(employeeId)
-        ? prev.filter((id) => id !== employeeId)
-        : [...prev, employeeId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setSelectedEmployees([]); // Désélectionner tous
-    } else {
-      const allEmployeeIds = filteredEmployees.map((emp) => emp.employeeId);
-      setSelectedEmployees(allEmployeeIds); // Sélectionner tous
-    }
-    setSelectAll(!selectAll);
   };
 
   const handleOpenModal = () => {
@@ -123,13 +113,7 @@ function SalaryListPlanning() {
       return;
     }
 
-    if (new Date(evaluationDetails.startDate) > new Date(evaluationDetails.endDate)) {
-      alert('La date de début doit être antérieure à la date de fin.');
-      return;
-    }
-
     try {
-      // Construire le payload avec le champ dto
       const payload = selectedEmployees.map((employeeId) => ({
         userId: employeeId,
         evaluationTypeId: parseInt(evaluationDetails.evaluationType, 10),
@@ -140,7 +124,6 @@ function SalaryListPlanning() {
 
       await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation', payload);
 
-
       alert('Planification effectuée avec succès pour tous les employés sélectionnés.');
       fetchEmployeesWithoutEvaluations();
       setSelectedEmployees([]);
@@ -149,110 +132,83 @@ function SalaryListPlanning() {
       console.error('Erreur lors de la planification :', error);
       alert('Une erreur est survenue lors de la planification.');
     }
-
   };
-
 
   return (
     <Template>
       <div className="salary-list-planning">
-        <h4 className="title">Planification des évaluations</h4>
-
-        {/* Barre de recherche et filtres */}
-        <div className="filters card p-3 mb-4">
-          <div className="d-flex align-items-center justify-content-between">
-            <input
-              type="text"
-              className="form-control w-25"
-              placeholder="Rechercher un employé..."
-              value={searchQuery}
-              onChange={handleSearch}
-            />
-
-            <select
-              name="position"
-              className="form-control w-25 mx-2"
-              value={filters.position}
-              onChange={handleFilterChange}
-            >
-              <option value="">Tous les postes</option>
-              {positions.map((pos) => (
-                <option key={pos.posteId} value={String(pos.posteId)}>
-                  {pos.title}
-                </option>
-              ))}
-            </select>
-
-            <select
-              name="department"
-              className="form-control w-25"
-              value={filters.department}
-              onChange={handleFilterChange}
-            >
-              <option value="">Tous les départements</option>
-              {departments.map((dep) => (
-                <option key={dep.departmentId} value={String(dep.departmentId)}>
-                  {dep.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="filters">
+          <input
+            type="text"
+            placeholder="Rechercher un employé"
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+          <select name="position" onChange={handleFilterChange}>
+            <option value="">Toutes les positions</option>
+            {positions.map((position) => (
+              <option key={position.id} value={position.id}>
+                {position.name}
+              </option>
+            ))}
+          </select>
+          <select name="department" onChange={handleFilterChange}>
+            <option value="">Tous les départements</option>
+            {departments.map((department) => (
+              <option key={department.id} value={department.id}>
+                {department.name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Tableau des employés */}
-        <div className="card">
-          <div className="card-body">
-            <table className="table table-bordered">
-              <thead className="thead-light">
-                <tr>
-                  <th>
+        {filteredEmployees.length > 0 ? (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={() => setSelectAll(!selectAll)}
+                  />
+                </th>
+                <th>Nom</th>
+                <th>Poste</th>
+                <th>Département</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredEmployees.map((employee) => (
+                <tr key={employee.id}>
+                  <td>
                     <input
                       type="checkbox"
-                      checked={selectAll}
-                      onChange={handleSelectAll}
+                      checked={selectedEmployees.includes(employee.id)}
+                      onChange={() =>
+                        setSelectedEmployees((prev) =>
+                          prev.includes(employee.id)
+                            ? prev.filter((id) => id !== employee.id)
+                            : [...prev, employee.id]
+                        )
+                      }
                     />
-                  </th>
-                  <th>Nom</th>
-                  <th>Poste</th>
-                  <th>Département</th>
+                  </td>
+                  <td>{employee.name}</td>
+                  <td>{employee.position}</td>
+                  <td>{employee.department}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredEmployees.length > 0 ? (
-                  filteredEmployees.map((employee) => (
-                    <tr key={employee.employeeId}>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={selectedEmployees.includes(employee.employeeId)}
-                          onChange={() => handleSelectEmployee(employee.employeeId)}
-                        />
-                      </td>
-                      <td>
-                        {employee.firstName} {employee.lastName}
-                      </td>
-                      <td>{employee.position}</td>
-                      <td>{employee.department}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="text-center">
-                      Aucun employé trouvé.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-            <div className="text-right mt-3">
-              <button className="btn btn-primary" onClick={handleOpenModal} disabled={selectedEmployees.length === 0}>
-                Planifier
-              </button>
-            </div>
-          </div>
-        </div>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div>Aucun employé sans évaluation trouvé.</div>
+        )}
 
-        {/* Modal */}
+        <button className="btn btn-primary" onClick={handleOpenModal}>
+          Planification en masse
+        </button>
+
         {showModal && (
           <div className="modal fade show" tabIndex="-1" style={{ display: 'block' }}>
             <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable custom-modal">
@@ -265,27 +221,6 @@ function SalaryListPlanning() {
                 </div>
                 <div className="modal-body">
                   <form>
-                    <div className="form-group">
-                      <label>Employés sélectionnés :</label>
-                      <ul className="selected-employees-list">
-                        {selectedEmployees.map((employeeId) => {
-                          const employee = employees.find((emp) => emp.employeeId === employeeId);
-                          return (
-                            <li key={employeeId} className="selected-employee-item">
-                              <span>{employee.firstName} {employee.lastName}</span>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-danger ml-2"
-                                onClick={() => handleRemoveEmployee(employeeId)}
-                              >
-                                Retirer
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                    {/* Champs existants */}
                     <div className="form-group">
                       <label>Date de début :</label>
                       <input
@@ -317,7 +252,7 @@ function SalaryListPlanning() {
                         <option value="">Choisir un type</option>
                         {evaluationTypes.map((type) => (
                           <option key={type.evaluationTypeId} value={type.evaluationTypeId}>
-                            {type.designation}
+                            {type.name}
                           </option>
                         ))}
                       </select>
@@ -334,21 +269,18 @@ function SalaryListPlanning() {
                     </div>
                   </form>
                 </div>
-
                 <div className="modal-footer">
-                  <button className="btn btn-primary" onClick={handleMassPlanning}>
-                    Planifier
+                  <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+                    Annuler
                   </button>
-                  <button className="btn btn-secondary" onClick={handleCloseModal}>
-                    Fermer
+                  <button type="button" className="btn btn-primary" onClick={handleMassPlanning}>
+                    Planifier
                   </button>
                 </div>
               </div>
             </div>
           </div>
         )}
-
-
       </div>
     </Template>
   );

@@ -25,7 +25,7 @@ const Login = () => {
       });
       localStorage.setItem('token', response.token); // Stocker le token dans localStorage
       setMessage('Login successful!');
-      Navigate('/notation');
+      Navigate('/');
       // Redirigez l'utilisateur si nécessaire
     } catch (error) {
       setMessage(error || 'Invalid email or password.');

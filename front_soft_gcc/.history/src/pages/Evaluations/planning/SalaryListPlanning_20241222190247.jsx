@@ -50,11 +50,6 @@ function SalaryListPlanning() {
     }
   };
 
-  const handleRemoveEmployee = (employeeId) => {
-    setSelectedEmployees((prev) => prev.filter((id) => id !== employeeId));
-  };
-  
-
   const fetchFilterOptions = async () => {
     try {
       const [positionsRes, departmentsRes] = await Promise.all([

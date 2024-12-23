@@ -80,12 +80,12 @@
     cursor: pointer;
   }
   
-  .login-container .btn-primary {
+  .btn-primary {
     background: #a9db34;
     color: #ffffff;
   }
   
-  .login-container .btn-primary:hover {
+  .btn-primary:hover {
     background: #2980b9;
   }
   

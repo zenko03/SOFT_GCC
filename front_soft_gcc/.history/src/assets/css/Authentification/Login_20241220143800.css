@@ -1,4 +1,4 @@
-/* General container styling */
+General container styling
 .login-container {
     display: flex;
     justify-content: center;
@@ -69,7 +69,7 @@
     text-decoration: none;
   }
   
- .login-container .btn {
+.login-container .btn {
     display: block;
     width: 100%;
     padding: 10px;
@@ -89,7 +89,7 @@
     background: #2980b9;
   }
   
-  .btn-facebook {
+  .login-container  .btn-facebook {
     background: #98aa23;
     color: #ffffff;
     display: flex;
@@ -97,11 +97,11 @@
     justify-content: center;
   }
   
-  .btn-facebook i {
+  .login-container  .btn-facebook i {
     margin-right: 8px;
   }
   
-  .signup-prompt {
+  .login-container .signup-prompt {
     margin-top: 20px;
     font-size: 14px;
   }

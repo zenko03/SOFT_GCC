@@ -73,3 +73,7 @@
     font-size: 12px;
   }
   
+  .custom-modal-width {
+    max-width: 800px;
+  }
+  

@@ -50,11 +50,6 @@ function SalaryListPlanning() {
     }
   };
 
-  const handleRemoveEmployee = (employeeId) => {
-    setSelectedEmployees((prev) => prev.filter((id) => id !== employeeId));
-  };
-  
-
   const fetchFilterOptions = async () => {
     try {
       const [positionsRes, departmentsRes] = await Promise.all([
@@ -129,7 +124,6 @@ function SalaryListPlanning() {
     }
 
     try {
-      // Construire le payload avec le champ dto
       const payload = selectedEmployees.map((employeeId) => ({
         userId: employeeId,
         evaluationTypeId: parseInt(evaluationDetails.evaluationType, 10),
@@ -140,7 +134,6 @@ function SalaryListPlanning() {
 
       await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation', payload);
 
-
       alert('Planification effectuée avec succès pour tous les employés sélectionnés.');
       fetchEmployeesWithoutEvaluations();
       setSelectedEmployees([]);
@@ -149,7 +142,6 @@ function SalaryListPlanning() {
       console.error('Erreur lors de la planification :', error);
       alert('Une erreur est survenue lors de la planification.');
     }
-
   };
 
 
@@ -266,27 +258,6 @@ function SalaryListPlanning() {
                 <div className="modal-body">
                   <form>
                     <div className="form-group">
-                      <label>Employés sélectionnés :</label>
-                      <ul className="selected-employees-list">
-                        {selectedEmployees.map((employeeId) => {
-                          const employee = employees.find((emp) => emp.employeeId === employeeId);
-                          return (
-                            <li key={employeeId} className="selected-employee-item">
-                              <span>{employee.firstName} {employee.lastName}</span>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-danger ml-2"
-                                onClick={() => handleRemoveEmployee(employeeId)}
-                              >
-                                Retirer
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                    {/* Champs existants */}
-                    <div className="form-group">
                       <label>Date de début :</label>
                       <input
                         type="date"
@@ -317,11 +288,12 @@ function SalaryListPlanning() {
                         <option value="">Choisir un type</option>
                         {evaluationTypes.map((type) => (
                           <option key={type.evaluationTypeId} value={type.evaluationTypeId}>
-                            {type.designation}
+                            {type.name}
                           </option>
                         ))}
                       </select>
                     </div>
+
                     <div className="form-group">
                       <label>Superviseur :</label>
                       <input
@@ -334,7 +306,6 @@ function SalaryListPlanning() {
                     </div>
                   </form>
                 </div>
-
                 <div className="modal-footer">
                   <button className="btn btn-primary" onClick={handleMassPlanning}>
                     Planifier

@@ -25,7 +25,7 @@ const Login = () => {
       });
       localStorage.setItem('token', response.token); // Stocker le token dans localStorage
       setMessage('Login successful!');
-      Navigate('/notation');
+      Navigate('/');
       // Redirigez l'utilisateur si nécessaire
     } catch (error) {
       setMessage(error || 'Invalid email or password.');
@@ -38,8 +38,8 @@ const Login = () => {
         <div className="login-brand">
           <img src="/assets/images/logo-dark.svg" alt="Logo" className="login-logo" />
         </div>
-        <h4>SOFT GCC</h4>
-        <p className="login-subtitle">Connection</p>
+        <h4>Welcome Back!</h4>
+        <p className="login-subtitle">Se connecter</p>
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <input
@@ -74,7 +74,7 @@ const Login = () => {
           </button>
         </form>
         <p className="signup-prompt">
-          Pas de compte? <Link className='nav-link' to={'/Register'}>Crées en un</Link> 
+          Don't have an account? <Link className='nav-link' to={'/Register'}>Crées en un</Link> 
         </p>
       </div>
     </div>

@@ -49,19 +49,25 @@ namespace soft_carriere_competence.Controllers.Evaluations
 
 
 		[HttpPost("create-evaluation")]
-		public async Task<IActionResult> CreateEvaluation([FromBody] CreateEvaluationDto dto)
+		public async Task<IActionResult> CreateEvaluation([FromBody] List<CreateEvaluationDto> dtos)
 		{
 			try
 			{
-				var evaluationId = await _evaluationService.CreateEvaluationAsync(
-					dto.UserId,
-					dto.EvaluationTypeId,
-					dto.SupervisorId,
-					dto.StartDate,
-					dto.EndDate
-				);
+				var evaluationIds = new List<int>();
 
-				return Ok(new { evaluationId, message = "Evaluation created successfully." });
+				foreach (var dto in dtos)
+				{
+					var evaluationId = await _evaluationService.CreateEvaluationAsync(
+						dto.UserId,
+						dto.EvaluationTypeId,
+						dto.SupervisorId,
+						dto.StartDate,
+						dto.EndDate
+					);
+					evaluationIds.Add(evaluationId);
+				}
+
+				return Ok(new { evaluationIds, message = "Evaluations created successfully." });
 			}
 			catch (Exception ex)
 			{
@@ -70,7 +76,8 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		}
 
 
-		[HttpGet("types")]
+
+		[HttpGet("evaluation-types")]
 		public async Task<IActionResult> GetEvaluationTypes()
 		{
 			var evaluationTypes = await _evaluationService.GetEvaluationTypeAsync();
