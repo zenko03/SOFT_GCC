@@ -104,6 +104,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             evaluation.isDgApproved = isDgApproved;
             evaluation.serviceApprovalDate = serviceApprovalDate;
             evaluation.dgApprovalDate = dgApprovalDate;
+            evaluation.state= 20;
 
             await _evaluationRepository.UpdateAsync(evaluation);
             return true;
@@ -145,7 +146,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     EvaluationId = evaluationId,
                     questionId = rating.Key,
                     Score = rating.Value,
-                    state = 1 // Actif
+                    state = 10 // TERMINEE
                 };
                 await _evaluationQuestionnaireRepository.CreateAsync(questionnaire);
             }
@@ -165,7 +166,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 EndDate = endDate,
                 OverallScore = 0, // Initialisé à 0, sera mis à jour avec les résultats
                 Comments = null,
-                state = 1 // Actif
+                state = 10 // Actif
             };
             await _evaluationRepository.CreateAsync(newEvaluation);
             return newEvaluation.EvaluationId; // Retourner l'ID généré

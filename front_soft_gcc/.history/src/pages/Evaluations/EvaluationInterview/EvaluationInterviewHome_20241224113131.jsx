@@ -3,7 +3,7 @@ import Template from '../../Template';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/SalaryListPlanning.css'; // Styles spécifiques
 
-function SalaryListPlanning() {
+function EvaluationInterviewHome() {
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -355,4 +355,4 @@ function SalaryListPlanning() {
   );
 }
 
-export default SalaryListPlanning;
+export default EvaluationInterviewHome;

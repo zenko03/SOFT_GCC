@@ -3,7 +3,7 @@ import Template from '../../Template';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/SalaryListPlanning.css'; // Styles spécifiques
 
-function SalaryListPlanning() {
+function EvaluationInterviewHome() {
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,7 +28,7 @@ function SalaryListPlanning() {
 
   const fetchEvaluationTypes = async () => {
     try {
-      const response = await axios.get('https://localhost:7082/api/EvaluationPlanning/evaluation-types');
+      const response = await axios.get('https://localhost:7082/api/EvaluationInterview/evaluation-types');
       setEvaluationTypes(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des types d'évaluation :", error);
@@ -38,14 +38,14 @@ function SalaryListPlanning() {
   const fetchEmployeesWithoutEvaluations = async () => {
     try {
       const response = await axios.get(
-        'https://localhost:7082/api/EvaluationPlanning/employees-without-evaluations',
+        'https://localhost:7082/api/EvaluationInterview/employees-finished-evaluations',
         { params: { ...filters, search: searchQuery } }
       );
       setEmployees(response.data);
       setFilteredEmployees(response.data);
     } catch (error) {
       console.error(
-        'Erreur lors de la récupération des employés sans évaluation :',
+        'Erreur lors de la récupération des employés qui ont finis ses evaluations :',
         error
       );
     }
@@ -59,8 +59,8 @@ function SalaryListPlanning() {
   const fetchFilterOptions = async () => {
     try {
       const [positionsRes, departmentsRes] = await Promise.all([
-        axios.get('https://localhost:7082/api/EvaluationPlanning/positions'),
-        axios.get('https://localhost:7082/api/EvaluationPlanning/departments'),
+        axios.get('https://localhost:7082/api/EvaluationInterview/positions'),
+        axios.get('https://localhost:7082/api/EvaluationInterview/departments'),
       ]);
       setPositions(positionsRes.data);
       setDepartments(departmentsRes.data);
@@ -139,7 +139,7 @@ function SalaryListPlanning() {
         endDate: evaluationDetails.endDate,
       }));
 
-      await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation', payload);
+      await axios.post('https://localhost:7082/api/EvaluationInterview/create-evaluation', payload);
 
 
       alert('Planification effectuée avec succès pour tous les employés sélectionnés.');
@@ -157,7 +157,7 @@ function SalaryListPlanning() {
   return (
     <Template>
       <div className="salary-list-planning">
-        <h4 className="title">Planification des évaluations</h4>
+        <h4 className="title">Entretien D'evaluation</h4>
 
         {/* Barre de recherche et filtres */}
         <div className="filters card p-3 mb-4">
@@ -335,7 +335,7 @@ function SalaryListPlanning() {
                     </div>
                   </form>
                 </div>
-
+                            
                 <div className="modal-footer">
                   <button className="btn btn-primary" onClick={handleMassPlanning}>
                     Planifier
@@ -355,4 +355,4 @@ function SalaryListPlanning() {
   );
 }
 
-export default SalaryListPlanning;
+export default EvaluationInterviewHome;

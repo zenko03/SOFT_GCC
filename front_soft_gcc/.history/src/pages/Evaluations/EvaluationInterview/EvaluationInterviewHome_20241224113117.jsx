@@ -3,7 +3,7 @@ import Template from '../../Template';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/SalaryListPlanning.css'; // Styles spécifiques
 
-function SalaryListPlanning() {
+function SalaryFinishedEv() {
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');

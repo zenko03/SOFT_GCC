@@ -3,7 +3,7 @@ import Template from '../../Template';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/SalaryListPlanning.css'; // Styles spécifiques
 
-function SalaryListPlanning() {
+function EvaluationInterviewHome() {
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,7 +38,7 @@ function SalaryListPlanning() {
   const fetchEmployeesWithoutEvaluations = async () => {
     try {
       const response = await axios.get(
-        'https://localhost:7082/api/EvaluationPlanning/employees-without-evaluations',
+        'https://localhost:7082/api/EvaluationPlanning/employees-finished-evaluations',
         { params: { ...filters, search: searchQuery } }
       );
       setEmployees(response.data);
@@ -157,7 +157,7 @@ function SalaryListPlanning() {
   return (
     <Template>
       <div className="salary-list-planning">
-        <h4 className="title">Planification des évaluations</h4>
+        <h4 className="title">Entretien D'evaluation</h4>
 
         {/* Barre de recherche et filtres */}
         <div className="filters card p-3 mb-4">
@@ -355,4 +355,4 @@ function SalaryListPlanning() {
   );
 }
 
-export default SalaryListPlanning;
+export default EvaluationInterviewHome;

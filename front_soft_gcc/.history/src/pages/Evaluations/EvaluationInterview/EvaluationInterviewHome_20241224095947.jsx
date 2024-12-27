@@ -23,7 +23,6 @@ function SalaryListPlanning() {
   });
   const [showModal, setShowModal] = useState(false);
 
-  
   const [evaluationTypes, setEvaluationTypes] = useState([]);
 
   const fetchEvaluationTypes = async () => {
@@ -348,8 +347,6 @@ function SalaryListPlanning() {
             </div>
           </div>
         )}
-
-
       </div>
     </Template>
   );

@@ -17,7 +17,6 @@ import EvaluationInterviews from '../pages/Evaluations/EvaluationInterview/Evalu
 import RetirementPage from '../pages/retirement/retirementPage';
 import Login from '../pages/Authentification/Login';
 import Register from '../pages/Authentification/Register';
-import EvaluationInterviewHome from '../pages/Evaluations/EvaluationInterview/EvaluationInterviewHome';
 
 
 
@@ -41,8 +40,6 @@ function AppRouter() {
       <Route path="/planning" element={<SalaryListPlanning />} />
       <Route path="/history" element={<EvalHistory />} />
       <Route path="/validation" element={<EvaluationInterviews />} />
-      <Route path="/homeInterview" element={<EvaluationInterviewHome />} />
-
 
 
 
