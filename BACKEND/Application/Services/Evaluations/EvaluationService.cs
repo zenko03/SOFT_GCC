@@ -4,6 +4,9 @@ using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Core.Interface.EvaluationInterface;
 using soft_carriere_competence.Infrastructure.Data;
 using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
+using soft_carriere_competence.Application.Services.EmailService;
+using soft_carriere_competence.Core.Interface.AuthInterface;
+
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -15,14 +18,16 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly IGenericRepository<TrainingSuggestion> _trainingSuggestionsRepository;
         private readonly IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaireRepository;
         private readonly IGenericRepository<Evaluation> _evaluationRepository;
-
-
-
-
+        private readonly IGenericRepository<User> _userRepository;
+        private readonly IEmailService _emailService; 
+        
+        
         public EvaluationService(IEvaluationQuestionRepository questionRepository, IGenericRepository<EvaluationType> evaluationType,
             IGenericRepository<EvaluationQuestion> EvaluationQuestion, IGenericRepository<Evaluation> _evaluation,
-            IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaire, IGenericRepository<TrainingSuggestion> _trainingSuggestions
-
+            IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaire, IGenericRepository<TrainingSuggestion> _trainingSuggestions,
+            IGenericRepository<User> userRepository,
+            IEmailService emailService
+            
             )
         {
             _questionRepository = questionRepository;
@@ -31,6 +36,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             _evaluationRepository = _evaluation;
             _trainingSuggestionsRepository = _trainingSuggestions;
             _evaluationQuestionnaireRepository = _evaluationQuestionnaire; 
+            _userRepository = userRepository;
+            _emailService = emailService;
         }
      
         public async Task<IEnumerable<EvaluationQuestion>> GetEvaluationQuestionsAsync(int evaluationTypeId, int postId)
@@ -50,6 +57,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             var total = ratings.Values.Sum();
             var count = ratings.Count;
+            
+            
 
             return (double)total / count;
         }
@@ -91,10 +100,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             return result;
         }
-
-
-
-
+        
         public async Task<bool> ValidateEvaluationAsync(int evaluationId, bool isServiceApproved, bool isDgApproved, DateTime? serviceApprovalDate, DateTime? dgApprovalDate)
         {
             var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
@@ -130,8 +136,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             evaluation.Comments = generalEvaluation;
             evaluation.strengths = strengths;  // Colonne ajoutée
             evaluation.weaknesses = weaknesses; // Colonne ajoutée
-            
-
 
             await _evaluationRepository.UpdateAsync(evaluation);
 
@@ -157,6 +161,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, int supervisorId, DateTime startDate, DateTime endDate)
         {
+            
             var newEvaluation = new Evaluation
             {
                 UserId = userId,
@@ -169,6 +174,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 state = 10 // Actif
             };
             await _evaluationRepository.CreateAsync(newEvaluation);
+            var user = await _userRepository.GetByIdAsync(userId);
+          
+            await _emailService.SendEmailAsync(user.Email, "Planification évaluation",
+                $"Vous avez une évaluation le : {startDate} au {endDate}");
             return newEvaluation.EvaluationId; // Retourner l'ID généré
         }
 
@@ -178,6 +187,23 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             await _trainingSuggestionsRepository.CreateAsync(suggestion);
             return true;
+        }
+
+        public async Task<int> rappelerEvaluation(int evaluation_id)
+        {
+            try
+            {
+                var evaluation = await _evaluationRepository.GetByIdAsync(evaluation_id);
+                int idUser = evaluation.UserId;
+                var user = await _userRepository.GetByIdAsync(idUser);
+                await _emailService.SendEmailAsync(user.Email, "Rappel évaluation",
+                    $"Pour rappel , vous avez une évaluation le : {evaluation.StartDate} au {evaluation.EndDate}");
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+            return 1;
         }
 
 

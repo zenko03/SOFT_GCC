@@ -64,6 +64,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 						dto.StartDate,
 						dto.EndDate
 					);
+					// Send email to user
 					evaluationIds.Add(evaluationId);
 				}
 
@@ -85,6 +86,19 @@ namespace soft_carriere_competence.Controllers.Evaluations
 				return NotFound("No evaluation types found.");
 
 			return Ok(evaluationTypes);
+		}
+		
+		[HttpGet("rappel-evaluation")]
+		public async Task<IActionResult> rappelerEvaluation([FromQuery] int idEvaluation)
+		{
+
+			int state_result = await _evaluationService.rappelerEvaluation(idEvaluation);
+			if (state_result == 0)
+			{
+				return StatusCode(500, new { error = "Erreur lors du rappel de l'evaluation" });
+			}
+
+			return Ok(new { idEvaluation, message = "Rappel avec succes.Un mail a été envoyé" });
 		}
 
 
