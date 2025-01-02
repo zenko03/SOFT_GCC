@@ -205,7 +205,5 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             }
             return 1;
         }
-
-
     }
 }

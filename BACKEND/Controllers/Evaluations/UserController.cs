@@ -14,12 +14,18 @@ public class UserController : ControllerBase
 	}
 
 	// Endpoint GET : api/User pour récupérer tous les employés avec leurs détails
-	[HttpGet]
+	[HttpGet("details")]
 	public async Task<ActionResult<IEnumerable<object>>> GetEmployeesWithDetails()
 	{
 		var employees = await _employeeService.GetAllEmployeesWithDetailsAsync();
 		
 		return Ok(employees);
+	}
+	[HttpGet("managers-directors")]
+	public async Task<ActionResult<IEnumerable<object>>> GetAllManagerAndDirector()
+	{
+		var dm = await _employeeService.GetManagerAndDirector();
+		return Ok(dm);
 	}
 
 	[HttpGet("{id}")]

@@ -53,6 +53,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return await _context.postes.FindAsync(postId);
         }
 
+        public async Task<IEnumerable<User>> GetManagerAndDirector()
+        {
+            return await _context.Users.Where(u => u.RoleId == 2 || u.RoleId ==4).ToListAsync();
+        }
 
         // --------------------------------------AUTHENTIFICATION--------------------------------------- //
 

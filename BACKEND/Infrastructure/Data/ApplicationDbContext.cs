@@ -123,18 +123,18 @@ namespace soft_carriere_competence.Infrastructure.Data
             modelBuilder.Entity<VEmployeeWithoutEvaluation>().HasNoKey().ToView("VEmployeesWithoutEvaluation");
             modelBuilder.Entity<VEmployeesFinishedEvaluation>().HasNoKey().ToView("VEmployeesFinishedEvaluation");
 
-            // Configuration de la relation EvaluationInterviews - InterviewParticipants
-            modelBuilder.Entity<InterviewParticipants>()
-                .HasOne(p => p.Interview)
-                .WithMany(i => i.Participants)
-                .HasForeignKey(p => p.InterviewId)
-                .OnDelete(DeleteBehavior.Cascade); // Cascade si nécessaire
+        //    // Configuration de la relation EvaluationInterviews - InterviewParticipants
+        //    modelBuilder.Entity<InterviewParticipants>()
+        //        .HasOne(p => p.Interview)
+        //        .WithMany(i => i.Participants)
+        //        .HasForeignKey(p => p.InterviewId)
+        //        .OnDelete(DeleteBehavior.Cascade); // Cascade si nécessaire
 
-            modelBuilder.Entity<InterviewParticipants>()
-                .HasOne(p => p.User)
-                .WithMany()
-                .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Pas de suppression d'utilisateur si le participant est supprimé
+        //    modelBuilder.Entity<InterviewParticipants>()
+        //        .HasOne(p => p.User)
+        //        .WithMany()
+        //        .HasForeignKey(p => p.UserId)
+        //        .OnDelete(DeleteBehavior.Restrict); // Pas de suppression d'utilisateur si le participant est supprimé
         }
     }
 }
