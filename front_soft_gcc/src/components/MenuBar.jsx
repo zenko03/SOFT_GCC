@@ -7,10 +7,10 @@ function MenuBar({ task }) {
     <nav className="sidebar sidebar-offcanvas" id="sidebar">
       <ul className="nav">
         <li className="nav-item">
-          <a className="nav-link" href="index.html">
+          <Link className="nav-link" to="/softGcc/tableauBord">
             <span className="icon-bg"><i className="mdi mdi-cube menu-icon"></i></span>
             <span className="menu-title">Tableau de bord</span>
-          </a>
+          </Link>
         </li>
         <li className="nav-item">
           <Link className="nav-link" to="/competences">
