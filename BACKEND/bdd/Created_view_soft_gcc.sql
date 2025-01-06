@@ -39,6 +39,7 @@ SELECT
 	e.FirstName, 
 	e.Birthday,
 	e.Department_name,
+	e.Department_id,
 	e.hiring_date
 FROM
 	Employee_skill es
@@ -611,3 +612,35 @@ FROM
 GROUP BY 
     YEAR(Request_date), 
     MONTH(Request_date);
+
+-- Competences des employes par department
+CREATE VIEW v_n_employee_skill_by_department AS
+SELECT 
+	Skill_name, 
+	Skill_id, 
+	Department_name, 
+	Department_id, 
+	state,
+	count(*) as n_employee 
+FROM v_employee_skill 
+GROUP BY 
+	Skill_name, 
+	Skill_id, 
+	Department_name, 
+	Department_id,
+	state
+
+-- NOmbre des employes dans une poste par department
+CREATE VIEW v_n_employee_career_by_department AS
+SELECT
+	Department_id, 
+	Department_name, 
+	Position_id, 
+	position_name, 
+	count(*) AS n_employee 
+FROM v_employee_career 
+GROUP BY 
+	Department_id, 
+	Department_name, 
+	Position_id, 
+	Position_name

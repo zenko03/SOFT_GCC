@@ -90,7 +90,6 @@ function DetailsWishEvolution() {
         wishEvolutionId: dataDescription.wishEvolutionCareerId,
     };
 
-    console.log(dataToSend);
       const response = await axios.put(urlApi(`/WishEvolution/UpdateState?state=${state}&wishEvolutionId=${dataDescription.wishEvolutionCareerId}`));
       fetchData();
     } catch (error) {

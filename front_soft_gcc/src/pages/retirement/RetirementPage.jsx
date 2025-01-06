@@ -58,7 +58,6 @@ function RetirementPage() {
         }).toString();
 
         const response = await Fetcher(`/Retirement/filter?${queryParams}`);
-        console.log(`https://localhost:7082/api/Retirement/filter?${queryParams}`);
 
         if (response.success) {
           setDataRetirement(response.data);

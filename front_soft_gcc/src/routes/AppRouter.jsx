@@ -21,6 +21,7 @@ import AddWishEvolution from '../pages/wishEvolution/addWishEvolution';
 import EditWishEvolution from '../pages/wishEvolution/EditWishEvolution';
 import Login from '../pages/Authentification/Login';
 import Register from '../pages/Authentification/Register.Jsx';
+import DashboardPage from '../pages/dashboardStatistics/DashboardPage';
 
 function AppRouter() {
   return (
@@ -56,6 +57,9 @@ function AppRouter() {
       <Route path="/softGcc/souhaitEvolution/suivi" element={<FollowedWishEvolution />} />
       <Route path="/softGcc/souhaitEvolution/details/:WishEvolutionId" element={<DetailsWishEvolution />} />
       <Route path="/softGcc/souhaitEvolution/edit/:WishEvolutionId" element={<EditWishEvolution />} />
+
+      {/*Tableau de bord et statistique */}
+      <Route path="/softGcc/tableauBord" element={<DashboardPage />} />
 
     </Routes>
   );

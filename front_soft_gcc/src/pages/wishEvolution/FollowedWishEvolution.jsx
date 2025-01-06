@@ -9,7 +9,6 @@ import Loader from '../../helpers/Loader';
 import '../../styles/pagination.css';
 import Fetcher from '../../components/Fetcher';
 import useSWR from 'swr';
-
  
 // Fonction debounce pour éviter les appels excessifs
 function debounce(func, delay) {
@@ -89,7 +88,6 @@ function FollowedWishEvolution() {
           page: currentPage,
         }).toString();
         const response = await Fetcher(`/WishEvolution/filter?${queryParams}`);
-        console.log(response);
         if (response.success) {
           setWishesEvolution(response.data);
           setTotalPages(response.totalPages);
