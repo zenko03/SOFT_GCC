@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Core.Entities.career_plan;
 using soft_carriere_competence.Core.Entities.crud_career;
+using soft_carriere_competence.Core.Entities.dashboard;
 using soft_carriere_competence.Core.Entities.Evaluations;
 
 using soft_carriere_competence.Core.Entities.Evaluations;
@@ -88,6 +89,10 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<PcdSuggestionPosition> PcdSuggestionPosition { get; set; }
 		public DbSet<VSkillPosition> VSkillPosition { get; set; }
 
+		// DASHBOARD
+		public DbSet<VNEmployeeSkillByDepartment> VNEmployeeSkillByDepartment { get; set; }
+		public DbSet<VNEmployeeCareerByDepartment> VNEmployeeCareerByDepartment { get; set; }
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
@@ -129,6 +134,12 @@ namespace soft_carriere_competence.Infrastructure.Data
 			//------------------EVALUATIONS-----------------------------------------//
 			modelBuilder.Entity<VEmployeeDetails>().HasNoKey().ToView("VEmployeeDetails");
             modelBuilder.Entity<VEmployeeWithoutEvaluation>().HasNoKey().ToView("VEmployeesWithoutEvaluation");
+
+			//------------------DASHBOARD-------------------------------------------//
+			modelBuilder.Entity<VNEmployeeSkillByDepartment>().ToView("v_n_employee_skill_by_department");
+			modelBuilder.Entity<VNEmployeeSkillByDepartment>().HasNoKey();
+			modelBuilder.Entity<VNEmployeeCareerByDepartment>().ToView("v_n_employee_career_by_department");
+			modelBuilder.Entity<VNEmployeeCareerByDepartment>().HasNoKey();
 		}
 	}
 }
