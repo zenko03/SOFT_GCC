@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using soft_carriere_competence.Application.Dtos.EvaluationsDto;
 using soft_carriere_competence.Application.Services.Evaluations;
+using soft_carriere_competence.Application.Services.salary_skills;
 
 namespace soft_carriere_competence.Controllers.Evaluations
 {
@@ -58,11 +59,37 @@ namespace soft_carriere_competence.Controllers.Evaluations
 
 
 		[HttpPost("schedule-interview")]
-		public async Task<IActionResult> ScheduleInterview(int evaluationId, DateTime scheduledDate, List<int> participants)
+		public async Task<IActionResult> ScheduleInterview([FromBody] ScheduleInterviewRequest request)
 		{
-			var interviewId = await _evaluationInterviewService.ScheduleInterviewAsync(evaluationId, scheduledDate, participants);
-			return Ok(new { InterviewId = interviewId });
+			if (request == null)
+			{
+				return BadRequest(new { message = "Requête invalide." });
+			}
+
+			if (request.ScheduledDate < DateTime.Now)
+			{
+				return BadRequest(new { message = "La date planifiée ne peut pas être dans le passé." });
+			}
+
+			if (request.Participants == null || !request.Participants.Any())
+			{
+				return BadRequest(new { message = "La liste des participants est vide ou invalide." });
+			}
+
+			var result = await _evaluationInterviewService.ScheduleInterviewAsync(
+				request.EvaluationId,
+				request.ScheduledDate,
+				request.Participants
+			);
+
+			if (!result.Success)
+			{
+				return BadRequest(new { message = result.Message });
+			}
+
+			return Ok(new { InterviewId = result.InterviewId });
 		}
+
 
 
 		[HttpPut("update-interview/{interviewId}")]
@@ -90,7 +117,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		[HttpPut("complete-interview/{interviewId}")]
 		public async Task<IActionResult> CompleteInterview(int interviewId, [FromBody] CompleteInterviewDto dto)
 		{
-			var result = await _evaluationInterviewService.CompleteInterviewAsync(interviewId, dto.ManagerApproval, dto.ManagerComments, dto.DirectorApproval, dto.DirectorComments);
+			var result = await _evaluationInterviewService.CompleteInterviewAsync(interviewId, dto.ManagerApproval, dto.ManagerComments, dto.DirectorApproval, dto.DirectorComments, dto.Notes);
 
 			if (!result)
 				return BadRequest("Cannot complete the interview");
@@ -109,7 +136,43 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			return Ok(interview);
 		}
 
+		[HttpGet("{id}")]
+		public async Task<IActionResult> GetEmployee(int id)
+		{
+			Console.WriteLine("avant la fonction getEmployeeAsync");
+			var employee = await _evaluationInterviewService.GetEmployeeAsync(id);
+			Console.WriteLine("apres la fonction getEmployeeAsync");
 
+
+			if (employee == null)
+			{
+				return NotFound("L'employé n'existe pas.");
+			}
+
+			Console.WriteLine($"id and name of selected salary {employee.EmployeeId}, {employee.FirstName}");
+			return Ok(employee);
+		}
+
+		[HttpGet("get-interview-by-participant/{participantId}")]
+		public async Task<IActionResult> GetInterviewByParticipant(int participantId)
+		{
+			try
+			{
+				// Appel du service pour récupérer l'entretien
+				var interview = await _evaluationInterviewService.GetInterviewByParticipantIdAsync(participantId);
+
+				if (interview == null)
+				{
+					return NotFound(new { message = "Aucun entretien trouvé pour ce participant." });
+				}
+
+				return Ok(interview);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(new { message = $"Erreur lors de la récupération de l'entretien : {ex.Message}" });
+			}
+		}
 
 	}
 }

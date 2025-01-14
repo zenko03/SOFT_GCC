@@ -73,12 +73,11 @@ namespace soft_carriere_competence.Infrastructure.Data
 	    public DbSet<EvaluationInterviews> evaluationInterviews { get; set; }
         public DbSet<InterviewParticipants> interviewParticipants { get; set; }
 
-
-
-
         public DbSet<VEmployeeDetails> VEmployeeDetails { get; set; }
         public DbSet<VEmployeeWithoutEvaluation> vEmployeeWithoutEvaluations { get; set; }
         public DbSet<VEmployeesFinishedEvaluation> vEmployeesFinishedEvaluations { get; set; }
+        public DbSet<VEvaluationHistory> vEvaluationHistories { get; set; }
+
 
 
 
@@ -122,19 +121,21 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<VEmployeeDetails>().HasNoKey().ToView("VEmployeeDetails");
             modelBuilder.Entity<VEmployeeWithoutEvaluation>().HasNoKey().ToView("VEmployeesWithoutEvaluation");
             modelBuilder.Entity<VEmployeesFinishedEvaluation>().HasNoKey().ToView("VEmployeesFinishedEvaluation");
+            modelBuilder.Entity<VEvaluationHistory>().HasNoKey().ToView("VEvaluationHistory");
 
-        //    // Configuration de la relation EvaluationInterviews - InterviewParticipants
-        //    modelBuilder.Entity<InterviewParticipants>()
-        //        .HasOne(p => p.Interview)
-        //        .WithMany(i => i.Participants)
-        //        .HasForeignKey(p => p.InterviewId)
-        //        .OnDelete(DeleteBehavior.Cascade); // Cascade si nécessaire
 
-        //    modelBuilder.Entity<InterviewParticipants>()
-        //        .HasOne(p => p.User)
-        //        .WithMany()
-        //        .HasForeignKey(p => p.UserId)
-        //        .OnDelete(DeleteBehavior.Restrict); // Pas de suppression d'utilisateur si le participant est supprimé
+            //    // Configuration de la relation EvaluationInterviews - InterviewParticipants
+            //    modelBuilder.Entity<InterviewParticipants>()
+            //        .HasOne(p => p.Interview)
+            //        .WithMany(i => i.Participants)
+            //        .HasForeignKey(p => p.InterviewId)
+            //        .OnDelete(DeleteBehavior.Cascade); // Cascade si nécessaire
+
+            //    modelBuilder.Entity<InterviewParticipants>()
+            //        .HasOne(p => p.User)
+            //        .WithMany()
+            //        .HasForeignKey(p => p.UserId)
+            //        .OnDelete(DeleteBehavior.Restrict); // Pas de suppression d'utilisateur si le participant est supprimé
         }
     }
 }

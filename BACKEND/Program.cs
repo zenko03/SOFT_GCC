@@ -122,17 +122,13 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<EvaluationPlanningService>();
 builder.Services.AddScoped<EvaluationInterviewService>();
 
-
-
-
-// Enregistrement de IEvaluationQuestionRepository
+builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
 builder.Services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
 
-// Enregistrement de IGenericRepository<>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<EvaluationHistoryService>();
+
 #endregion
 
 

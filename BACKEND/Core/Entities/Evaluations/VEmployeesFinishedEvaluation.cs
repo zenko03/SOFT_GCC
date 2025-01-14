@@ -18,5 +18,10 @@
         public DateTime? InterviewDate {  get; set; }
         public int? InterviewStatus { get; set; }
         public int? evaluationId {  get; set; }
+        public bool? directorApproval {  get; set; }
+        public bool? managerApproval {  get; set; }
+        public string? directorComments {  get; set; }
+        public string? managerComments {  get; set; }
+
     }
 }

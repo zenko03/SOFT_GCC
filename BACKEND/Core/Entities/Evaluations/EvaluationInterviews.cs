@@ -34,7 +34,6 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Column("director_comments")]
         public string? directorComments { get; set; }
 
-        public ICollection<InterviewParticipants> Participants { get; set; } = new List<InterviewParticipants>();
 
     }
 }

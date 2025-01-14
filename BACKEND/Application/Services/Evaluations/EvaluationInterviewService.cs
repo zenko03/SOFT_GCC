@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
@@ -41,6 +42,12 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return await query.ToListAsync();
         }
 
+        public async Task<VEmployeesFinishedEvaluation?> GetEmployeeAsync(int employeeId)
+        {
+            return await _context.vEmployeesFinishedEvaluations
+                .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
+        }
+
         public async Task<Poste> GetPosteByIdAsync(int posteId)
         {
             return await _posteRepository.GetByIdAsync(posteId);
@@ -63,42 +70,59 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
 
         // Planifier un entretien
-        public async Task<int?> ScheduleInterviewAsync(int evaluationId, DateTime scheduledDate, List<int> participantIds)
+        public async Task<(bool Success, string Message, int? InterviewId)> ScheduleInterviewAsync(int evaluationId, DateTime scheduledDate, List<int> participantIds)
         {
-            // Vérifier si un entretien existe déjà pour cette évaluation
-            var existingInterview = await _context.evaluationInterviews
-                .FirstOrDefaultAsync(e => e.EvaluationId == evaluationId);
-
-            if (existingInterview != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                return null; // Entretien déjà planifié
-            }
+                // Vérifier si l'évaluation existe
+                var evaluationExists = await _context.Evaluations.AnyAsync(e => e.EvaluationId == evaluationId);
+                if (!evaluationExists)
+                {
+                    return (false, "Évaluation non trouvée.", null);
+                }
 
-            var interview = new EvaluationInterviews
-            {
-                EvaluationId = evaluationId,
-                InterviewDate = scheduledDate,
-                status = InterviewStatus.Planned
-            };
+                // Vérifier si un entretien existe déjà pour cette évaluation
+                var existingInterview = await _context.evaluationInterviews
+                    .FirstOrDefaultAsync(e => e.EvaluationId == evaluationId);
 
-            _context.evaluationInterviews.Add(interview);
-            await _context.SaveChangesAsync(); // InterviewId généré
+                if (existingInterview != null)
+                {
+                    return (false, "Un entretien est déjà planifié pour cette évaluation.", null);
+                }
 
-            // Ajouter les participants avec l'InterviewId défini
-            foreach (var participantId in participantIds)
-            {
-                var participant = new InterviewParticipants
+                // Créer l'entretien
+                var interview = new EvaluationInterviews
+                {
+                    EvaluationId = evaluationId,
+                    InterviewDate = scheduledDate,
+                    status = InterviewStatus.Planned
+                };
+
+                _context.evaluationInterviews.Add(interview);
+                await _context.SaveChangesAsync();
+
+                // Ajouter les participants
+                var participants = participantIds.Select(participantId => new InterviewParticipants
                 {
                     InterviewId = interview.InterviewId,
                     UserId = participantId
-                };
-                _context.interviewParticipants.Add(participant);
+                });
+
+                _context.interviewParticipants.AddRange(participants);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+                return (true, "Entretien planifié avec succès.", interview.InterviewId);
             }
-
-            await _context.SaveChangesAsync(); // Sauvegarde des participants
-
-            return interview.InterviewId;
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                // Log de l'exception (non montré ici pour la simplicité)
+                return (false, "Une erreur s'est produite lors de la planification de l'entretien.", null);
+            }
         }
+
 
         // Démarrer un entretien
         public async Task<bool> StartInterviewAsync(int interviewId)
@@ -107,7 +131,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             var interview = await _context.evaluationInterviews.FindAsync(interviewId);
             Console.WriteLine("after calling FindAsync");
-            if (interview == null || interview.status != InterviewStatus.Planned)
+            if (interview == null )
             {
                 Console.WriteLine("Dans la condition IF");
 
@@ -116,6 +140,9 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             Console.WriteLine("after The condition ");
 
             interview.status = InterviewStatus.InProgress;
+            Console.WriteLine("Statut de l'interview: "+interview.status );
+
+
             _context.evaluationInterviews.Update(interview);
             await _context.SaveChangesAsync();
 
@@ -124,26 +151,64 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         // Terminer un entretien avec validation
         public async Task<bool> CompleteInterviewAsync(
-            int interviewId,
-            bool managerApproval,
-            string? managerComments,
-            bool directorApproval,
-            string? directorComments)
+      int interviewId,
+      bool? managerApproval = null,
+      string? managerComments = null,
+      bool? directorApproval = null,
+      string? directorComments = null,
+      string? notes = null
+  )
         {
             var interview = await _context.evaluationInterviews
-                .Include(i => i.Participants)
                 .FirstOrDefaultAsync(i => i.InterviewId == interviewId);
 
-            if (interview == null || interview.status != InterviewStatus.InProgress)
+            if (interview == null)
             {
                 return false;
             }
 
-            interview.status = (managerApproval && directorApproval) ? InterviewStatus.Completed : InterviewStatus.Rejected;
-            interview.managerApproval = managerApproval;
-            interview.managerComments = managerComments;
-            interview.directorApproval = directorApproval;
-            interview.directorComments = directorComments;
+            // Mise à jour conditionnelle des champs
+            if (managerApproval.HasValue)
+            {
+                interview.managerApproval = managerApproval;
+            }
+
+            if (!string.IsNullOrEmpty(managerComments))
+            {
+                interview.managerComments = managerComments;
+            }
+
+            if (directorApproval.HasValue)
+            {
+                interview.directorApproval = directorApproval;
+            }
+
+            if (!string.IsNullOrEmpty(directorComments))
+            {
+                interview.directorComments = directorComments;
+            }
+
+            if (!string.IsNullOrEmpty(notes))
+            {
+                interview.notes = notes;
+            }
+
+            // Mise à jour du statut en fonction des validations
+            if (interview.managerApproval == true && interview.directorApproval == true)
+            {
+                // Tous les deux ont validé
+                interview.status = InterviewStatus.Completed;
+            }
+            else if (interview.managerApproval == false || interview.directorApproval == false)
+            {
+                // L'un des deux a refusé
+                interview.status = InterviewStatus.Rejected;
+            }
+            else
+            {
+                // En attente de validation
+                interview.status = InterviewStatus.PendingValidation;
+            }
 
             _context.evaluationInterviews.Update(interview);
             await _context.SaveChangesAsync();
@@ -151,20 +216,36 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return true;
         }
 
+
+
+
         // Récupérer les détails d'un entretien
         public async Task<EvaluationInterviews?> GetInterviewDetailsAsync(int interviewId)
         {
-            return await _context.evaluationInterviews
-                .Include(i => i.Participants)
-                .ThenInclude(p => p.User)
+            // Récupère les détails de l'entretien
+            var interview = await _context.evaluationInterviews
                 .FirstOrDefaultAsync(i => i.InterviewId == interviewId);
+
+            if (interview != null)
+            {
+                // Récupère les participants associés à cet entretien
+                var participants = await _context.interviewParticipants
+                    .Where(p => p.InterviewId == interviewId)
+                    .Include(p => p.User) // Inclure les détails de l'utilisateur
+                    .ToListAsync();
+
+                // Si nécessaire, on peut mapper les participants dans un DTO ou un objet temporaire
+                // Exemple :
+                // interview.Participants = participants.Select(p => p.User).ToList(); 
+            }
+
+            return interview;
         }
 
 
         public async Task<bool> UpdateInterviewAsync(int interviewId, DateTime? newDate, List<int> newParticipantIds, int? newStatus)
         {
             var interview = await _context.evaluationInterviews
-                .Include(i => i.Participants)
                 .FirstOrDefaultAsync(i => i.InterviewId == interviewId);
 
             if (interview == null)
@@ -188,7 +269,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             if (newParticipantIds != null && newParticipantIds.Any())
             {
                 // Supprimer les anciens participants
-                _context.interviewParticipants.RemoveRange(interview.Participants);
+               // _context.interviewParticipants.RemoveRange(interview.Participants);
 
                 // Ajouter les nouveaux participants
                 foreach (var participantId in newParticipantIds)
@@ -219,8 +300,63 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             _context.evaluationInterviews.Update(interview);
             await _context.SaveChangesAsync();
 
+
             return true;
         }
+
+        public async Task<EvaluationInterviews?> GetInterviewByParticipantIdAsync(int participantId)
+        {
+            return await _context.interviewParticipants
+                .Where(p => p.UserId == participantId)
+                .Select(p => p.Interview)
+                .FirstOrDefaultAsync();
+        }
+
+        public string GetValidationStatus(int interviewId)
+        {
+            var interview = _context.evaluationInterviews
+                .FirstOrDefault(i => i.InterviewId == interviewId);
+
+            if (interview == null)
+            {
+                return "Entretien introuvable.";
+            }
+
+            string validationStatus = "Statut de validation :";
+
+            // Vérifier la validation du Manager
+            if (interview.managerApproval == null)
+            {
+                validationStatus += " Manager n'a pas encore validé.";
+            }
+            else if (interview.managerApproval == true)
+            {
+                validationStatus += " Manager a validé.";
+            }
+            else
+            {
+                validationStatus += " Manager a refusé.";
+            }
+
+            // Vérifier la validation du Directeur
+            if (interview.directorApproval == null)
+            {
+                validationStatus += " Directeur n'a pas encore validé.";
+            }
+            else if (interview.directorApproval == true)
+            {
+                validationStatus += " Directeur a validé.";
+            }
+            else
+            {
+                validationStatus += " Directeur a refusé.";
+            }
+
+            return validationStatus;
+        }
+
+
+
 
 
     }
