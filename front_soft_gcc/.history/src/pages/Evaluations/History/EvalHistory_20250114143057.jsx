@@ -83,21 +83,18 @@ const EvaluationHistory = () => {
 
   const handleDetailsClick = async (evaluationId) => {
     try {
-      // Remplacez par l'URL correcte de votre API
-      const response = await axios.get(`https://localhost:7082/api/EvaluationHistory/detail/${evaluationId}`);
-
-      console.log("Données récupérées :", response.data);
-
-      // Mettez à jour l'état avec les détails de l'évaluation
-      setSelectedEvaluation(response.data);
-
-      // Affichez la modal
+      const response = await fetch(`https://localhost:7082/EvaluationHistory/detail/${evaluationId}`);
+      if (!response.ok) {
+        throw new Error("Erreur lors du chargement des détails.");
+      }
+      const evaluationDetails = await response.json();
+      setSelectedEvaluation(evaluationDetails);
       setShowModal(true);
     } catch (error) {
-      console.error("Erreur lors du chargement des détails :", error);
+      console.error("Erreur :", error);
     }
   };
-
+  
 
   if (error) {
     return (

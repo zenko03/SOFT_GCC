@@ -4,10 +4,8 @@ import PerformanceGraph from './PerformanceGraph';
 import GlobalPerformanceGraph from './GlobalPerformanceGraph';
 import '../../../assets/css/Evaluations/EvaluationHistory.css';
 import axios from 'axios';
-import EvaluationDetailsModal from './EvaluationDetailsModal';
 
 const EvaluationHistory = () => {
-  const [selectedEvaluation, setSelectedEvaluation] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     evaluationDate: '',
@@ -20,9 +18,6 @@ const EvaluationHistory = () => {
   const [evaluations, setEvaluations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const [showModal, setShowModal] = useState(false);
-
 
   useEffect(() => {
     const fetchEvaluations = async () => {
@@ -81,24 +76,6 @@ const EvaluationHistory = () => {
     currentPage * itemsPerPage
   );
 
-  const handleDetailsClick = async (evaluationId) => {
-    try {
-      // Remplacez par l'URL correcte de votre API
-      const response = await axios.get(`https://localhost:7082/api/EvaluationHistory/detail/${evaluationId}`);
-
-      console.log("Données récupérées :", response.data);
-
-      // Mettez à jour l'état avec les détails de l'évaluation
-      setSelectedEvaluation(response.data);
-
-      // Affichez la modal
-      setShowModal(true);
-    } catch (error) {
-      console.error("Erreur lors du chargement des détails :", error);
-    }
-  };
-
-
   if (error) {
     return (
       <Template>
@@ -107,10 +84,6 @@ const EvaluationHistory = () => {
     );
   }
 
-  const closeModal = () => {
-    setSelectedEvaluation(null);
-    setShowModal(false);
-  };
   return (
     <Template>
       <div className="container mt-4">
@@ -196,23 +169,12 @@ const EvaluationHistory = () => {
                         <td>{emp.evaluationType}</td>
 
                         <td>
-                          <button
-                            className="btn btn-info btn-sm"
-                            onClick={() => handleDetailsClick(emp.evaluationId)}
-                          >
-                            Détails
-                          </button>                        </td>
+                          <button className="btn btn-info btn-sm">Détails</button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                {/* Details de l'evaluation */}
-                {showModal && selectedEvaluation && (
-                  <EvaluationDetailsModal
-                    evaluation={selectedEvaluation}
-                    onClose={closeModal}
-                  />
-                )}
 
                 <div className="d-flex justify-content-between mt-3">
                   <button

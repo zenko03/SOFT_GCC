@@ -61,30 +61,58 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         {
             var evaluation = await _context.vEvaluationHistories
                 .Where(e => e.EvaluationId == evaluationId)
-                .Select(e => new EvaluationHistoryDetailDto
+                .Select(e => new
                 {
-                    EvaluationId = e.EvaluationId,
-                    LastName = e.LastName,
-                    FirstName = e.FirstName,
-                    Position = e.Position,
-                    EvaluationType = e.EvaluationType,
-                    StartDate = e.StartDate,
-                    EndDate = e.EndDate,
-                    OverallScore = e.OverallScore,
-                    EvaluationComments = e.EvaluationComments,
-                    Strengths = e.Strengths,
-                    Weaknesses = e.Weaknesses,
-                    Department = e.Department,
-                    InterviewDate = e.InterviewDate,
-                    InterviewStatus = e.InterviewStatus
+                    e.EvaluationId,
+                    e.LastName,
+                    e.FirstName,
+                    e.Position,
+                    e.EvaluationType,
+                    e.StartDate,
+                    e.EndDate,
+                    e.OverallScore,
+                    e.EvaluationComments,
+                    e.Strengths,
+                    e.Weaknesses,
+                    e.Department,
+                    e.InterviewDate,
+                    e.InterviewStatus,
+                    e.Recommendations,
+                    e.ParticipantNames
                 })
                 .FirstOrDefaultAsync();
 
             if (evaluation == null)
                 throw new KeyNotFoundException("Evaluation not found.");
 
-            return evaluation;
+            // Transform ParticipantNames en une liste après la récupération des données
+            var participants = evaluation.ParticipantNames?
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(name => name.Trim())
+                .ToList();
+
+            return new EvaluationHistoryDetailDto
+            {
+                EvaluationId = evaluation.EvaluationId,
+                LastName = evaluation.LastName,
+                FirstName = evaluation.FirstName,
+                Position = evaluation.Position,
+                EvaluationType = evaluation.EvaluationType,
+                StartDate = evaluation.StartDate,
+                EndDate = evaluation.EndDate,
+                OverallScore = evaluation.OverallScore,
+                EvaluationComments = evaluation.EvaluationComments,
+                Strengths = evaluation.Strengths,
+                Weaknesses = evaluation.Weaknesses,
+                Department = evaluation.Department,
+                InterviewDate = evaluation.InterviewDate,
+                InterviewStatus = evaluation.InterviewStatus,
+                Recommendations = evaluation.Recommendations,
+                Participants = participants
+            };
         }
+
+
 
         public async Task<StatisticsDto> GetEvaluationStatisticsAsync(DateTime? startDate, DateTime? endDate)
         {
