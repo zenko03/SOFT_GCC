@@ -8,8 +8,6 @@ import Step3 from './Step3';
 import '../../../assets/css/Evaluations/notationModal.css'; // Styles spécifiques
 import '../../../assets/css/Evaluations/Questions.css'; // Styles spécifiques
 
-
-
 function SalaryList() {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -18,24 +16,23 @@ function SalaryList() {
   const [evaluationTypes, setEvaluationTypes] = useState([]);
   const [selectedEvaluationType, setSelectedEvaluationType] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [ratings, setRatings] = useState({});
   const [remarks, setRemarks] = useState({
     strengths: '',
     weaknesses: '',
     generalEvaluation: '',
   });
-
   const [isEmployeeLoaded, setIsEmployeeLoaded] = useState(false);
-  const [isSaved, setIsSaved] = useState(false); // Contrôle pour éviter plusieurs appels API
+  const [isSaved, setIsSaved] = useState(false);
 
-  // Fonction pour sauvegarder les résultats
   const saveEvaluationResults = async () => {
     if (!selectedEmployee || !selectedEvaluationType || !ratings) {
       console.error('Données incomplètes pour sauvegarder l\'évaluation.');
       return;
     }
 
-    const average = calculateAverage(); // Fonction pour calculer la moyenne
+    const average = calculateAverage();
     const data = {
       evaluationId: selectedEmployee.evaluationId,
       ratings,
@@ -64,7 +61,6 @@ function SalaryList() {
     return scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2) : 0;
   };
 
-  // Récupération des employés
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -76,6 +72,16 @@ function SalaryList() {
     };
     fetchEmployees();
   }, []);
+
+  const handleSearch = (e) => {
+    let query_text = e.target.value.toLowerCase();
+    setSearchQuery(query_text.trim());
+  };
+
+  const filteredEmployees = employees.filter((employee) => {
+    const fullName = `${employee.FirstName} ${employee.lastName}`.toLowerCase();
+    return fullName.includes(searchQuery);
+  });
 
   const handleOpenModal = async (employeeId) => {
     try {
@@ -143,6 +149,18 @@ function SalaryList() {
           <div className="card">
             <div className="card-body">
               <h4 className="card-title">Notation d'évaluation des employés</h4>
+              {/* Barre de recherche et filtres */}
+              <div className="filters card p-3 mb-4">
+                <div className="d-flex align-items-center justify-content-between">
+                  <input
+                    type="text"
+                    className="form-control w-25"
+                    placeholder="Rechercher un employé..."
+                    value={searchQuery}
+                    onChange={handleSearch}
+                  />
+                </div>
+              </div>
               <table className="table table-striped">
                 <thead>
                   <tr>
@@ -154,7 +172,7 @@ function SalaryList() {
                   </tr>
                 </thead>
                 <tbody>
-                  {employees.map((employee, index) => (
+                  {filteredEmployees.map((employee, index) => (
                     <tr key={`${employee.employeeId}-${index}`}>
                       <td>
                         <img src="../../assets/images/faces-clipart/pic-1.png" alt="employee" />

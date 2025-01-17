@@ -77,7 +77,8 @@ function SalaryListPlanning() {
   }, [filters, searchQuery]);
 
   const handleSearch = (e) => {
-    setSearchQuery(e.target.value.toLowerCase());
+    let text_query = e.target.value.toLowerCase();
+    setSearchQuery(text_query.trim());
   };
 
   const handleFilterChange = (e) => {
