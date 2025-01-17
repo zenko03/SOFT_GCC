@@ -23,15 +23,16 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
 
   // Préparer les données du graphique
   const chartData = {
-    labels: evaluation?.questionDetails?.map((q) => q.questionId) || [],
+    labels: evaluation?.cycles?.map((cycle) => cycle.year) || [],
     datasets: [
       {
-        label: "Scores par question",
-        data: evaluation?.questionDetails?.map((q) => q.score) || [],
+        label: "Communication",
+        data: evaluation?.cycles?.map((cycle) => cycle.communicationScore) || [],
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         borderWidth: 2,
       },
+      // Vous pouvez ajouter d'autres datasets pour d'autres critères ici
     ],
   };
 
@@ -39,10 +40,9 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
     responsive: true,
     plugins: {
       legend: { position: "top" },
-      title: { display: true, text: "Scores par question pour une évaluation" },
+      title: { display: true, text: "Évolution des Scores (Communication)" },
     },
   };
-
 
   const renderStepContent = () => {
     if (!evaluation) return <div>Chargement des détails de l'évaluation...</div>;
@@ -92,14 +92,9 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
         return (
           <div>
             <h5>Graphique d'Évolution des Scores</h5>
-            {evaluation?.questionDetails && evaluation.questionDetails.length > 0 ? (
-              <Line data={chartData} options={chartOptions} />
-            ) : (
-              <p>Aucune donnée disponible pour ce graphique.</p>
-            )}
+            <Line data={chartData} options={chartOptions} />
           </div>
         );
-
 
       default:
         return null;

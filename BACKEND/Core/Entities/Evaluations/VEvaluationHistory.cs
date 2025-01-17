@@ -20,6 +20,8 @@
         public int InterviewStatus { get; set; }
         public string? Recommendations { get; set; }
         public string? ParticipantNames {  get; set; }
+        public string? QuestionDetails { get; set; } // Nouveau champ
+
 
     }
 }

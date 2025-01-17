@@ -25,10 +25,10 @@ const GlobalPerformanceGraph = () => {
         },
       });
 
-      const data = Array.isArray(response.data) ? response.data : []; // Vérifiez si la réponse est un tableau
+      const data = response.data || []; // Assurez-vous que data est un tableau vide par défaut
 
-      const labels = data.length > 0 ? data.map(item => item.year || 'Année Inconnue') : [];
-      const scores = data.length > 0 ? data.map(item => item.averageScore || 0) : [];
+      const labels = data.map(item => item.year || 'Année Inconnue'); // Gérer les cas où 'year' est undefined
+      const scores = data.map(item => item.averageScore || 0); // Gérer les cas où 'averageScore' est undefined
 
       setChartData({
         labels,

@@ -1,49 +1,14 @@
 import React, { useState } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-// Enregistrement des composants nécessaires pour Chart.js
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const EvaluationDetailsModal = ({ evaluation, onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
 
-  const handleNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 3));
+  // Gestion des étapes
+  const handleNextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 2));
   const handlePreviousStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
   const handleStepChange = (step) => setCurrentStep(step);
 
-  // Préparer les données du graphique
-  const chartData = {
-    labels: evaluation?.questionDetails?.map((q) => q.questionId) || [],
-    datasets: [
-      {
-        label: "Scores par question",
-        data: evaluation?.questionDetails?.map((q) => q.score) || [],
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderWidth: 2,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: "top" },
-      title: { display: true, text: "Scores par question pour une évaluation" },
-    },
-  };
-
-
+  // Rendu du contenu pour chaque étape
   const renderStepContent = () => {
     if (!evaluation) return <div>Chargement des détails de l'évaluation...</div>;
 
@@ -88,19 +53,6 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
           </div>
         );
 
-      case 3:
-        return (
-          <div>
-            <h5>Graphique d'Évolution des Scores</h5>
-            {evaluation?.questionDetails && evaluation.questionDetails.length > 0 ? (
-              <Line data={chartData} options={chartOptions} />
-            ) : (
-              <p>Aucune donnée disponible pour ce graphique.</p>
-            )}
-          </div>
-        );
-
-
       default:
         return null;
     }
@@ -137,14 +89,6 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
                   Interview
                 </button>
               </li>
-              <li className="nav-item">
-                <button
-                  className={`nav-link ${currentStep === 3 ? "active" : ""}`}
-                  onClick={() => handleStepChange(3)}
-                >
-                  Graphique
-                </button>
-              </li>
             </ul>
 
             {/* Contenu de la modal */}
@@ -165,7 +109,7 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
               type="button"
               className="btn btn-primary"
               onClick={handleNextStep}
-              disabled={currentStep === 3}
+              disabled={currentStep === 2}
             >
               Suivant
             </button>

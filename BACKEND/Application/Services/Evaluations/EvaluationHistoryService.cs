@@ -59,6 +59,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         public async Task<EvaluationHistoryDetailDto> GetEvaluationDetailAsync(int evaluationId)
         {
+            // Charger les informations principales de l'évaluation
             var evaluation = await _context.vEvaluationHistories
                 .Where(e => e.EvaluationId == evaluationId)
                 .Select(e => new
@@ -85,7 +86,18 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             if (evaluation == null)
                 throw new KeyNotFoundException("Evaluation not found.");
 
-            // Transform ParticipantNames en une liste après la récupération des données
+            // Charger les détails des questions séparément et les mapper vers le DTO
+            var questionDetails = await _context.EvaluationQuestionnaires
+                .Where(q => q.EvaluationId == evaluationId)
+                .Select(q => new QuestionDetailDto
+                {
+                    QuestionId = q.questionId,
+                    Question = q.evaluationQuestion.question,
+                    Score = q.Score
+                })
+                .ToListAsync();
+
+            // Transform ParticipantNames en une liste
             var participants = evaluation.ParticipantNames?
                 .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(name => name.Trim())
@@ -108,11 +120,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 InterviewDate = evaluation.InterviewDate,
                 InterviewStatus = evaluation.InterviewStatus,
                 Recommendations = evaluation.Recommendations,
-                Participants = participants
+                Participants = participants,
+                QuestionDetails = questionDetails // Utilisation du nouveau DTO
             };
         }
-
-
 
         public async Task<StatisticsDto> GetEvaluationStatisticsAsync(DateTime? startDate, DateTime? endDate)
         {
@@ -142,5 +153,43 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             };
         }
 
-    }
+
+        public async Task<IEnumerable<GlobalPerformanceDto>> GetGlobalPerformanceAsync(DateTime? startDate, DateTime? endDate, string department, string evaluationType)
+        {
+            var query = _context.vEvaluationHistories.AsQueryable();
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(e => e.StartDate >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(e => e.EndDate <= endDate.Value);
+            }
+
+            if (!string.IsNullOrEmpty(department))
+            {
+                query = query.Where(e => e.Department == department);
+            }
+
+            if (!string.IsNullOrEmpty(evaluationType))
+            {
+                query = query.Where(e => e.EvaluationType == evaluationType);
+            }
+
+            var groupedData = await query
+                .GroupBy(e => e.StartDate.Year)
+                .Select(g => new GlobalPerformanceDto
+                {
+                    Year = g.Key,
+                    AverageScore = g.Average(e => e.OverallScore)
+                })
+                .ToListAsync();
+
+            return groupedData;
+        }
+
+
+}
 }

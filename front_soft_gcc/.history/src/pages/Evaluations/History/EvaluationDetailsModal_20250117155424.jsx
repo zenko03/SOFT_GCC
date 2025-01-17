@@ -23,7 +23,7 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
 
   // Préparer les données du graphique
   const chartData = {
-    labels: evaluation?.questionDetails?.map((q) => q.questionId) || [],
+    labels: evaluation?.questionDetails?.map((q) => q.question) || [],
     datasets: [
       {
         label: "Scores par question",

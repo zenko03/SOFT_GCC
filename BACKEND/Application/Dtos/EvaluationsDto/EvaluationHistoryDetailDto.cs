@@ -19,6 +19,8 @@
         public int? InterviewStatus { get; set; }
         public string? Recommendations { get; set; }
         public List<string>? Participants { get; set; } = new List<string>();
+        public List<QuestionDetailDto>? QuestionDetails { get; set; }
+
 
     }
 }

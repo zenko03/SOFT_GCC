@@ -44,5 +44,23 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			return Ok(result);
 		}
 
+		[HttpGet("global-performance")]
+		public async Task<IActionResult> GetGlobalPerformance(
+		   [FromQuery] DateTime? startDate,
+		   [FromQuery] DateTime? endDate,
+		   [FromQuery] string department = null,
+		   [FromQuery] string evaluationType = null)
+		{
+			try
+			{
+				var performanceData = await _evaluationHistoryService.GetGlobalPerformanceAsync(startDate, endDate, department, evaluationType);
+				return Ok(performanceData);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, "Erreur interne du serveur : " + ex.Message);
+			}
+		}
+
 	}
 }

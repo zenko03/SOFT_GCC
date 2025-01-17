@@ -25,10 +25,9 @@ const GlobalPerformanceGraph = () => {
         },
       });
 
-      const data = Array.isArray(response.data) ? response.data : []; // Vérifiez si la réponse est un tableau
-
-      const labels = data.length > 0 ? data.map(item => item.year || 'Année Inconnue') : [];
-      const scores = data.length > 0 ? data.map(item => item.averageScore || 0) : [];
+      const data = response.data;
+      const labels = data.map(item => item.year);
+      const scores = data.map(item => item.averageScore);
 
       setChartData({
         labels,
@@ -51,12 +50,13 @@ const GlobalPerformanceGraph = () => {
     }
   };
 
+  // Debounce effect for input changes
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchGlobalPerformanceData();
-    }, 500);
+    }, 500); // Adjust debounce time as needed
 
-    return () => clearTimeout(delayDebounceFn);
+    return () => clearTimeout(delayDebounceFn); // Cleanup function
   }, [startDate, endDate, department, evaluationType]);
 
   return (
