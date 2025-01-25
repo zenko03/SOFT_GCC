@@ -1,8 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Application.Dtos.EvaluationsDto;
 using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Infrastructure.Data;
+using System.Text;
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -10,11 +16,18 @@ namespace soft_carriere_competence.Application.Services.Evaluations
     {
         private readonly ApplicationDbContext _context;
         private readonly IGenericRepository<VEvaluationHistory> _evaluationHistoryRepository;
+        private readonly EvaluationInterviewService _evaluationService;
+        private readonly UserService _userService;
 
-        public EvaluationHistoryService(ApplicationDbContext context, IGenericRepository<VEvaluationHistory> evaluationHistoryRepository)
+
+
+        public EvaluationHistoryService(ApplicationDbContext context, IGenericRepository<VEvaluationHistory> evaluationHistoryRepository, EvaluationInterviewService evaluationService
+            , UserService userService)
         {
             _context = context;
             _evaluationHistoryRepository = evaluationHistoryRepository;
+            _evaluationService = evaluationService;
+            _userService = userService;
         }
 
         public async Task<List<EvaluationHistoryDto>> GetEvaluationHistoryAsync(
@@ -56,6 +69,60 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             }).ToListAsync();
         }
 
+        public async Task<(IEnumerable<EvaluationHistoryDto> Evaluations, int TotalPages)> GetEvaluationHistoryPaginatedAsync(
+    int pageNumber = 1,
+    int pageSize = 10,
+    DateTime? startDate = null,
+    DateTime? endDate = null,
+    string? evaluationType = null,
+    string? department = null,
+    string? employeeName = null)
+        {
+            var query = _context.vEvaluationHistories.AsQueryable();
+
+            // Appliquer les filtres
+            if (startDate.HasValue)
+                query = query.Where(e => e.StartDate >= startDate.Value);
+
+            if (endDate.HasValue)
+                query = query.Where(e => e.EndDate <= endDate.Value);
+
+            if (!string.IsNullOrEmpty(evaluationType))
+                query = query.Where(e => e.EvaluationType != null && e.EvaluationType == evaluationType);
+
+            if (!string.IsNullOrEmpty(department))
+                query = query.Where(e => e.Department != null && e.Department == department);
+
+            if (!string.IsNullOrEmpty(employeeName))
+                query = query.Where(e => e.LastName != null && e.LastName.Contains(employeeName));
+
+            // Calculer le nombre total d'éléments
+            var totalItems = await query.CountAsync();
+
+            // Calculer le nombre total de pages
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            // Paginer les résultats
+            var evaluations = await query
+                .Select(e => new EvaluationHistoryDto
+                {
+                    EvaluationId = e.EvaluationId,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    EvaluationType = e.EvaluationType ?? "",
+                    OverallScore = e.OverallScore,
+                    Status = e.status,
+                    Recommendations = e.Recommendations ?? "",
+                    FirstName = e.FirstName,
+                    LastName = e.LastName,
+                    Position = e.Position
+                })
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (evaluations, totalPages);
+        }
 
         public async Task<EvaluationHistoryDetailDto> GetEvaluationDetailAsync(int evaluationId)
         {
@@ -190,6 +257,159 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return groupedData;
         }
 
+        public async Task<KPIResult> GetKPIsAsync(DateTime? startDate, DateTime? endDate, int? department)
+        {
+            // Récupérez les évaluations terminées
+            var evaluations = await _evaluationService.GetEmployeesWithFinishedEvalAsync(department: department);
 
-}
+            // Filtrez par dates si spécifiées
+            if (startDate.HasValue)
+                evaluations = evaluations.Where(e => e.startDate >= startDate.Value).ToList();
+
+            if (endDate.HasValue)
+                evaluations = evaluations.Where(e => e.endDate <= endDate.Value).ToList();
+
+            // Récupérez le nombre total d'employés (peut nécessiter une nouvelle méthode si indisponible)
+            var totalEmployees = await _userService.CountAsync();
+
+            // Calcul des KPI
+            var completedEvaluations = evaluations.Count(); // Évaluations terminées
+            var approvedEvaluations = evaluations.Count(e => e.state == 20);
+            var overallAverage = evaluations.Any() ? evaluations.Average(e => e.overallScore) : 0;
+
+            // Retourner les KPI
+            return new KPIResult
+            {
+                ParticipationRate = totalEmployees > 0 ? (completedEvaluations / (double)totalEmployees) * 100 : 0,
+                ApprovalRate = evaluations.Any() ? (approvedEvaluations / (double)evaluations.Count()) * 100 : 0,
+                OverallAverage = overallAverage
+            };
+        }
+
+        public async Task<(byte[] Content, string ContentType, string FileName)> ExportDataAsync(string format, DateTime? startDate, DateTime? endDate)
+        {
+            try
+            {
+                // Filtrage des évaluations par date
+                var evaluations = _context.Evaluations
+                    .Include(e => e.EvaluationType)
+                    .Include(e => e.User)
+                    .Where(e => (!startDate.HasValue || e.StartDate >= startDate) &&
+                                (!endDate.HasValue || e.EndDate <= endDate))
+                    .ToList();
+
+                switch (format.ToLower())
+                {
+                    case "csv":
+                        var csvContent = GenerateCsv(evaluations);
+                        return (csvContent, "text/csv", "Evaluations.csv");
+
+                    case "excel":
+                        var excelContent = GenerateExcel(evaluations);
+                        return (excelContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Evaluations.xlsx");
+
+                    case "pdf":
+                        var pdfContent = await GeneratePdfAsync(evaluations);
+                        return (pdfContent, "application/pdf", "Evaluations.pdf");
+
+                    default:
+                        throw new ArgumentException("Format d'exportation non supporté.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log erreur (assurez-vous que le logger est configuré)
+                Console.WriteLine("erreur rencontroler, "+ex.Message);
+                throw; // Réémet l'exception pour renvoyer une erreur 500
+            }
+        }
+
+        // Génération de contenu CSV
+        private byte[] GenerateCsv(IEnumerable<Evaluation> evaluations)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("Date,Type d'évaluation,Employé,Score Global,Statut");
+
+            foreach (var eval in evaluations)
+            {
+                var date = eval.StartDate.ToString("yyyy-MM-dd") ?? "N/A";
+                var type = eval.EvaluationType?.Designation ?? "Inconnu";
+                var employee = $"{eval.User?.FirstName ?? "N/A"} {eval.User?.LastName ?? "N/A"}";
+                var score = eval.OverallScore?.ToString() ?? "N/A";
+                var state = eval.state;
+
+                builder.AppendLine($"{date},{type},{employee},{score},{state}");
+            }
+
+            return Encoding.UTF8.GetBytes(builder.ToString());
+        }
+
+
+        // Génération de contenu Excel
+        private byte[] GenerateExcel(IEnumerable<Evaluation> evaluations)
+        {
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Historique des Évaluations");
+
+            worksheet.Cell(1, 1).Value = "Date";
+            worksheet.Cell(1, 2).Value = "Type d'évaluation";
+            worksheet.Cell(1, 3).Value = "Employé";
+            worksheet.Cell(1, 4).Value = "Score Global";
+            worksheet.Cell(1, 5).Value = "Statut";
+
+            int row = 2;
+            foreach (var eval in evaluations)
+            {
+                worksheet.Cell(row, 1).Value = eval.StartDate.ToString("yyyy-MM-dd");
+                worksheet.Cell(row, 2).Value = eval.EvaluationType.Designation;
+                worksheet.Cell(row, 3).Value = $"{eval.User.FirstName} {eval.User.LastName}";
+                worksheet.Cell(row, 4).Value = eval.OverallScore;
+                worksheet.Cell(row, 5).Value = eval.state;
+                row++;
+            }
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            return stream.ToArray();
+        }
+
+        // Génération de contenu PDF
+        private async Task<byte[]> GeneratePdfAsync(IEnumerable<Evaluation> evaluations)
+        {
+            using var stream = new MemoryStream();
+
+            // Création du document PDF
+            var document = new iTextSharp.text.Document();
+            var writer = iTextSharp.text.pdf.PdfWriter.GetInstance(document, stream);
+            document.Open();
+
+            // Titre du document
+            var titleFont = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA_BOLD, 16);
+            var bodyFont = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 12);
+
+            document.Add(new iTextSharp.text.Paragraph("Historique des Évaluations", titleFont));
+            document.Add(new iTextSharp.text.Paragraph("\n")); // Ligne vide
+
+            // Ajout des données d'évaluation
+            foreach (var eval in evaluations)
+            {
+                document.Add(new iTextSharp.text.Paragraph($"Date : {eval.StartDate:yyyy-MM-dd}", bodyFont));
+                document.Add(new iTextSharp.text.Paragraph($"Type d'évaluation : {eval.EvaluationType.Designation}", bodyFont));
+                document.Add(new iTextSharp.text.Paragraph($"Employé : {eval.User.FirstName} {eval.User.LastName}", bodyFont));
+                document.Add(new iTextSharp.text.Paragraph($"Score Global : {eval.OverallScore}", bodyFont));
+                document.Add(new iTextSharp.text.Paragraph($"Statut : {eval.state}", bodyFont));
+                document.Add(new iTextSharp.text.Paragraph("\n")); // Ligne vide
+            }
+
+            document.Close();
+
+            // Retourner le contenu du PDF en tant que tableau d'octets
+            return stream.ToArray();
+        }
+
+
+
+
+
+    }
 }

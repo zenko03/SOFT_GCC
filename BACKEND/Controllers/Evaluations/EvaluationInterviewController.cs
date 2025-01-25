@@ -28,6 +28,30 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			return Ok(employees);
 		}
 
+		[HttpGet("employees-finished-evaluations-paginated")]
+		public async Task<IActionResult> GetEmployeesWithFinishedEvalPaginated(
+	int pageNumber = 1,
+	int pageSize = 10,
+	int? position = null,
+	int? department = null,
+	string? search = null)
+		{
+			var (employees, totalPages) = await _evaluationInterviewService.GetEmployeesWithFinishedEvalPaginatedAsync(
+				pageNumber,
+				pageSize,
+				position,
+				department,
+				search);
+
+			return Ok(new
+			{
+				Employees = employees,
+				TotalPages = totalPages,
+				CurrentPage = pageNumber,
+				PageSize = pageSize
+			});
+		}
+
 
 		[HttpGet("positions")]
 		public async Task<IActionResult> GetAllPostes()

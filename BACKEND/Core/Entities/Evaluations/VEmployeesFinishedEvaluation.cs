@@ -15,6 +15,7 @@
         public string? weaknesses { get; set; }
         public string? strengths { get; set; }
         public string? comments {  get; set; }
+        public decimal? overallScore { get; set; }
         public DateTime? InterviewDate {  get; set; }
         public int? InterviewStatus { get; set; }
         public int? evaluationId {  get; set; }

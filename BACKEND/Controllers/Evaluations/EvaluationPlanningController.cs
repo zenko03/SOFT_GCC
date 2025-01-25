@@ -101,6 +101,30 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			return Ok(new { idEvaluation, message = "Rappel avec succes.Un mail a été envoyé" });
 		}
 
+		[HttpGet("employees-without-evaluations-paginated")]
+		public async Task<IActionResult> GetEmployeesWithoutEvaluationsPaginated(
+	int pageNumber = 1,
+	int pageSize = 10,
+	int? position = null,
+	int? department = null,
+	string? search = null)
+		{
+			var (employees, totalPages) = await _evaluationPlanningService.GetEmployeesWithoutEvaluationsPaginatedAsync(
+				pageNumber,
+				pageSize,
+				position,
+				department,
+				search);
+
+			return Ok(new
+			{
+				Employees = employees,
+				TotalPages = totalPages,
+				CurrentPage = pageNumber,
+				PageSize = pageSize
+			});
+		}
+
 
 	}
 

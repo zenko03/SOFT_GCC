@@ -167,6 +167,52 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        public async Task<int> CountAsync(int? department = null)
+        {
+            var query = _context.Users.AsQueryable();
+
+            if (department.HasValue)
+                query = query.Where(u => u.DepartmentId == department.Value);
+
+            return await query.CountAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetUsersPaginatedAsync(int pageNumber, int pageSize, string includeProperties = "")
+        {
+            // Utilise la méthode GetPage du GenericRepository pour récupérer les utilisateurs paginés
+            return _userRepository.GetPage(pageNumber, pageSize, includeProperties);
+        }
+
+        public int GetTotalPages(int pageSize)
+        {
+            // Utilise la méthode GetTotalPages du GenericRepository pour calculer le nombre total de pages
+            return _userRepository.GetTotalPages(pageSize);
+        }
+
+        public async Task<(IEnumerable<User> Users, int TotalPages)> GetUsersWithPaginationAsync(int pageNumber, int pageSize)
+        {
+            var users = await GetUsersPaginatedAsync(pageNumber, pageSize);
+            var totalPages = GetTotalPages(pageSize);
+
+            return (users, totalPages);
+        }
+
+        public async Task<(IEnumerable<VEmployeeDetails> Employees, int TotalPages)> GetVEmployeeDetailsPaginatedAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.VEmployeeDetails.AsQueryable();
+
+            // Calculer le nombre total de pages
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            // Paginer les résultats
+            var employees = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (employees, totalPages);
+        }
 
     }
 }
