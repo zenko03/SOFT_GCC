@@ -119,9 +119,14 @@ function Step3({ ratings, evaluationId, validationData,
                 <div key={index} className="list-group-item">
                   <div className="d-flex justify-content-between align-items-center">
                     <div>
-                      <strong>{item.question}:</strong>  {item.training}
+                      </strong> {item.training}
                     </div>
-                    
+                    <button
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={() => console.log('Formation sélectionnée:', item.training)}
+                    >
+                      Sélectionner
+                    </button>
                   </div>
                 </div>
               ))}

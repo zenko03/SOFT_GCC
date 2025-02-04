@@ -366,10 +366,6 @@ function SalaryListPlanning() {
                         <h5 className="mt-3">Planification réussie !</h5>
                         <p>La planification a été effectuée avec succès.</p>
                       </div>
-                    ) : planningError ? (
-                      <div className="alert alert-danger">
-                        {planningError}
-                      </div>
                     ) : (
                       <form>
                         <div className="form-group">

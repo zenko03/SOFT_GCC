@@ -18,11 +18,6 @@ const EvaluationHistory = () => {
   const [loadingCSV, setLoadingCSV] = useState(false);
   const [loadingExcel, setLoadingExcel] = useState(false);
   const [loadingPDF, setLoadingPDF] = useState(false);
-  const [departments, setDepartments] = useState([]); // État pour stocker les départements
-
-
-
-
   const LoadingBar = () => (
     <div style={{
       width: '100%',
@@ -71,20 +66,6 @@ const EvaluationHistory = () => {
     overallAverage: 0,
   });
 
-  // Fonction pour récupérer les départements
-  const fetchDepartments = async () => {
-    try {
-      const response = await axios.get('https://localhost:7082/api/EvaluationHistory/departments');
-      setDepartments(response.data);
-    } catch (err) {
-      console.error('Erreur lors de la récupération des départements :', err);
-    }
-  };
-
-  // Appeler fetchDepartments au chargement initial
-  useEffect(() => {
-    fetchDepartments();
-  }, []);
   const fetchKpis = async () => {
     try {
       const response = await axios.get(
@@ -108,40 +89,38 @@ const EvaluationHistory = () => {
   }, [filters]);
 
 
-  const fetchEvaluations = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        'https://localhost:7082/api/EvaluationHistory/evaluation-history-paginated',
-        {
-          params: {
-            pageNumber: currentPage,
-            pageSize: pageSize,
-            startDate: filters.evaluationDate || null,
-            evaluationType: '',
-            department: filters.position || '',
-            employeeName: searchQuery || '',
-          },
-        }
-      );
-      setEvaluations(response.data.evaluations); // Données paginées
-      setTotalPages(response.data.totalPages); // Nombre total de pages
-      setError(null);
-    } catch (err) {
-      setError('Erreur lors du chargement des évaluations');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchEvaluations();
-  }, [searchQuery, filters, currentPage, pageSize]);
+    const fetchEvaluations = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          'https://localhost:7082/api/EvaluationHistory/evaluation-history-paginated',
+          {
+            params: {
+              pageNumber: currentPage,
+              pageSize: pageSize,
+              startDate: filters.evaluationDate || null,
+              evaluationType: '',
+              department: filters.position || '',
+              employeeName: searchQuery || '',
+            },
+          }
+        );
+        setEvaluations(response.data.evaluations); // Données paginées
+        setTotalPages(response.data.totalPages); // Nombre total de pages
+        setError(null);
+      } catch (err) {
+        setError('Erreur lors du chargement des évaluations');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleSearchChange = (e) => {
-    const query = e.target.value.trim(); // Supprime les espaces inutiles
-    setSearchQuery(query);
-  }; const handleFilterChange = (e) => {
+    fetchEvaluations();
+  }, [searchQuery, filters, currentPage, pageSize]); // Ajoutez currentPage et pageSize ici
+
+  const handleSearchChange = (e) => setSearchQuery(e.target.value);
+  const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
@@ -337,19 +316,14 @@ const EvaluationHistory = () => {
                   <option value="Terminé">Terminé</option>
                   <option value="En attente">En attente</option>
                 </select>
-                <select
+                <input
+                  type="text"
                   name="position"
                   className="form-control mx-1"
+                  placeholder="Poste"
                   value={filters.position}
                   onChange={handleFilterChange}
-                >
-                  <option value="">Tous les départements</option>
-                  {departments.map((dept) => (
-                    <option key={dept.id} value={dept.name}>
-                      {dept.name}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
           </div>
@@ -379,32 +353,24 @@ const EvaluationHistory = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {evaluations.length > 0 ? (
-                      evaluations.map((emp) => (
-                        <tr key={emp.evaluationId}>
-                          <td>{emp.firstName} {emp.lastName}</td>
-                          <td>{emp.position}</td>
-                          <td>{emp.startDate}</td>
-                          <td>{emp.status}</td>
-                          <td>{emp.overallScore}</td>
-                          <td>{emp.evaluationType}</td>
-                          <td>
-                            <button
-                              className="btn btn-info btn-sm"
-                              onClick={() => handleDetailsClick(emp.evaluationId)}
-                            >
-                              Détails
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="7" className="text-center">
-                          Aucun employé trouvé
+                    {evaluations.map((emp) => (
+                      <tr key={emp.evaluationId}>
+                        <td>{emp.firstName}</td>
+                        <td>{emp.position}</td>
+                        <td>{emp.startDate}</td>
+                        <td>{emp.status}</td>
+                        <td>{emp.overallScore}</td>
+                        <td>{emp.evaluationType}</td>
+                        <td>
+                          <button
+                            className="btn btn-info btn-sm"
+                            onClick={() => handleDetailsClick(emp.evaluationId)}
+                          >
+                            Détails
+                          </button>
                         </td>
                       </tr>
-                    )}
+                    ))}
                   </tbody>
                 </table>
 
@@ -428,7 +394,7 @@ const EvaluationHistory = () => {
                     value={pageSize}
                     onChange={(e) => {
                       setPageSize(Number(e.target.value));
-                      setCurrentPage(1); // Réinitialiser à la première page
+                      setCurrentPage(1); // Réinitialiser à la première page lorsque la taille de la page change
                     }}
                   >
                     <option value={5}>5 par page</option>

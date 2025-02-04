@@ -23,10 +23,8 @@ function SalaryListPlanning() {
   });
   const [showModal, setShowModal] = useState(false);
   const [supervisors, setSupervisors] = useState([]);
-
-  // SUCCES OU ERREUR
   const [planningSuccess, setPlanningSuccess] = useState(false);
-  const [planningError, setPlanningError] = useState('');
+
 
 
   const fetchSupervisors = async () => {
@@ -184,8 +182,6 @@ function SalaryListPlanning() {
     } catch (error) {
       console.error('Erreur lors de la planification :', error);
       alert('Une erreur est survenue lors de la planification.');
-      setPlanningError('Une erreur est survenue lors de la planification.');
-
     }
   };
 
@@ -366,10 +362,6 @@ function SalaryListPlanning() {
                         <h5 className="mt-3">Planification réussie !</h5>
                         <p>La planification a été effectuée avec succès.</p>
                       </div>
-                    ) : planningError ? (
-                      <div className="alert alert-danger">
-                        {planningError}
-                      </div>
                     ) : (
                       <form>
                         <div className="form-group">
@@ -446,7 +438,6 @@ function SalaryListPlanning() {
                           </select>
                         </div>
                       </form>
-                    )}
                   </div>
 
                   <div className="modal-footer">

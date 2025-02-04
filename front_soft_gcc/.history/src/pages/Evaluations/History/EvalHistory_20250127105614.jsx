@@ -337,19 +337,14 @@ const EvaluationHistory = () => {
                   <option value="Terminé">Terminé</option>
                   <option value="En attente">En attente</option>
                 </select>
-                <select
+                <input
+                  type="text"
                   name="position"
                   className="form-control mx-1"
+                  placeholder="Poste"
                   value={filters.position}
                   onChange={handleFilterChange}
-                >
-                  <option value="">Tous les départements</option>
-                  {departments.map((dept) => (
-                    <option key={dept.id} value={dept.name}>
-                      {dept.name}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
           </div>
@@ -379,32 +374,24 @@ const EvaluationHistory = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {evaluations.length > 0 ? (
-                      evaluations.map((emp) => (
-                        <tr key={emp.evaluationId}>
-                          <td>{emp.firstName} {emp.lastName}</td>
-                          <td>{emp.position}</td>
-                          <td>{emp.startDate}</td>
-                          <td>{emp.status}</td>
-                          <td>{emp.overallScore}</td>
-                          <td>{emp.evaluationType}</td>
-                          <td>
-                            <button
-                              className="btn btn-info btn-sm"
-                              onClick={() => handleDetailsClick(emp.evaluationId)}
-                            >
-                              Détails
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="7" className="text-center">
-                          Aucun employé trouvé
+                    {evaluations.map((emp) => (
+                      <tr key={emp.evaluationId}>
+                        <td>{emp.firstName}</td>
+                        <td>{emp.position}</td>
+                        <td>{emp.startDate}</td>
+                        <td>{emp.status}</td>
+                        <td>{emp.overallScore}</td>
+                        <td>{emp.evaluationType}</td>
+                        <td>
+                          <button
+                            className="btn btn-info btn-sm"
+                            onClick={() => handleDetailsClick(emp.evaluationId)}
+                          >
+                            Détails
+                          </button>
                         </td>
                       </tr>
-                    )}
+                    ))}
                   </tbody>
                 </table>
 

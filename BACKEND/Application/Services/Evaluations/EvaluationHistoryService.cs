@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Application.Dtos.EvaluationsDto;
 using soft_carriere_competence.Core.Entities.Evaluations;
+using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Infrastructure.Data;
 using System.Text;
@@ -18,16 +19,21 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly IGenericRepository<VEvaluationHistory> _evaluationHistoryRepository;
         private readonly EvaluationInterviewService _evaluationService;
         private readonly UserService _userService;
+        private readonly IGenericRepository<Department> _departementRepository;
+        private readonly IGenericRepository<Poste> _posteRepository;
+
+
 
 
 
         public EvaluationHistoryService(ApplicationDbContext context, IGenericRepository<VEvaluationHistory> evaluationHistoryRepository, EvaluationInterviewService evaluationService
-            , UserService userService)
+            , UserService userService, IGenericRepository<Department> departementRepository)
         {
             _context = context;
             _evaluationHistoryRepository = evaluationHistoryRepository;
             _evaluationService = evaluationService;
             _userService = userService;
+            _departementRepository = departementRepository;
         }
 
         public async Task<List<EvaluationHistoryDto>> GetEvaluationHistoryAsync(
@@ -52,7 +58,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 query = query.Where(e => e.Department != null && e.Department == department);
 
             if (!string.IsNullOrEmpty(employeeName))
-                query = query.Where(e => e.LastName != null && e.LastName.Contains(employeeName));
+                query = query.Where(e =>
+                    (e.LastName != null && e.LastName.Contains(employeeName)) ||
+                    (e.FirstName != null && e.FirstName.Contains(employeeName))
+                );
 
             return await query.Select(e => new EvaluationHistoryDto
             {
@@ -407,6 +416,26 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return stream.ToArray();
         }
 
+
+        public async Task<Poste> GetPosteByIdAsync(int posteId)
+        {
+            return await _posteRepository.GetByIdAsync(posteId);
+        }
+
+        public async Task<Department> GetDepartmentByIdAsync(int departmentId)
+        {
+            return await _departementRepository.GetByIdAsync(departmentId);
+        }
+
+        public async Task<IEnumerable<Poste>> GetAllPostesAsync()
+        {
+            return await _posteRepository.GetAllAsync();
+        }
+
+        public async Task<IEnumerable<Department>> GetAllDepartmentsAsync()
+        {
+            return await _departementRepository.GetAllAsync();
+        }
 
 
 

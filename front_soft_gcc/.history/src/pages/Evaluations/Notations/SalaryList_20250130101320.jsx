@@ -7,8 +7,6 @@ import Step2 from './Step2';
 import Step3 from './Step3';
 import '../../../assets/css/Evaluations/notationModal.css'; // Styles spécifiques
 import '../../../assets/css/Evaluations/Questions.css'; // Styles spécifiques
-import '../../../assets/css/Evaluations/Steps.css'; // Styles spécifiques
-
 
 function SalaryList() {
   const [employees, setEmployees] = useState([]);

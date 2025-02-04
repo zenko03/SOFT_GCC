@@ -121,7 +121,12 @@ function Step3({ ratings, evaluationId, validationData,
                     <div>
                       <strong>{item.question}:</strong>  {item.training}
                     </div>
-                    
+                    <button
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={() => console.log('Formation sélectionnée:', item.training)}
+                    >
+                      Sélectionner
+                    </button>
                   </div>
                 </div>
               ))}

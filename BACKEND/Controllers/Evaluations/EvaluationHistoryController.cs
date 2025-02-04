@@ -111,5 +111,23 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			var file = await _evaluationHistoryService.ExportDataAsync(format, startDate, endDate);
 			return File(file.Content, file.ContentType, file.FileName);
 		}
+
+		[HttpGet("positions")]
+		public async Task<IActionResult> GetAllPostes()
+		{
+			var positions = await _evaluationHistoryService.GetAllPostesAsync();
+			foreach (var pos in positions)
+			{
+				Console.WriteLine("les postes: " + pos.title);
+			}
+			return Ok(positions);
+		}
+
+		[HttpGet("departments")]
+		public async Task<IActionResult> GetAllDepartments()
+		{
+			var departments = await _evaluationHistoryService.GetAllDepartmentsAsync();
+			return Ok(departments);
+		}
 	}
 }

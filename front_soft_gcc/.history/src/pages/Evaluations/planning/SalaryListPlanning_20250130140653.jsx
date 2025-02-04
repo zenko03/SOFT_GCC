@@ -23,10 +23,8 @@ function SalaryListPlanning() {
   });
   const [showModal, setShowModal] = useState(false);
   const [supervisors, setSupervisors] = useState([]);
-
-  // SUCCES OU ERREUR
   const [planningSuccess, setPlanningSuccess] = useState(false);
-  const [planningError, setPlanningError] = useState('');
+
 
 
   const fetchSupervisors = async () => {
@@ -184,8 +182,6 @@ function SalaryListPlanning() {
     } catch (error) {
       console.error('Erreur lors de la planification :', error);
       alert('Une erreur est survenue lors de la planification.');
-      setPlanningError('Une erreur est survenue lors de la planification.');
-
     }
   };
 
@@ -341,112 +337,113 @@ function SalaryListPlanning() {
                     </button>
                   </div>
                   <div className="modal-body">
-                    {planningSuccess ? (
-                      <div className="text-center">
-                        <div className="success-animation">
-                          <svg
-                            className="checkmark"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 52 52"
-                          >
-                            <circle
-                              className="checkmark__circle"
-                              cx="26"
-                              cy="26"
-                              r="25"
-                              fill="none"
-                            />
-                            <path
-                              className="checkmark__check"
-                              fill="none"
-                              d="M14.1 27.2l7.1 7.2 16.7-16.8"
-                            />
-                          </svg>
+                    <div className="modal-body">
+                      {planningSuccess ? (
+                        <div className="text-center">
+                          <div className="success-animation">
+                            <svg
+                              className="checkmark"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 52 52"
+                            >
+                              <circle
+                                className="checkmark__circle"
+                                cx="26"
+                                cy="26"
+                                r="25"
+                                fill="none"
+                              />
+                              <path
+                                className="checkmark__check"
+                                fill="none"
+                                d="M14.1 27.2l7.1 7.2 16.7-16.8"
+                              />
+                            </svg>
+                          </div>
+                          <h5 className="mt-3">Planification réussie !</h5>
+                          <p>La planification a été effectuée avec succès.</p>
                         </div>
-                        <h5 className="mt-3">Planification réussie !</h5>
-                        <p>La planification a été effectuée avec succès.</p>
+                      ) : (
+                        <form>
+                          {/* Contenu du formulaire */}
+                        </form>
+                      )}
+                    </div>
+                    <form>
+                      <div className="form-group">
+                        <label>Employés sélectionnés :</label>
+                        <ul className="selected-employees-list">
+                          {selectedEmployees.map((employeeId) => {
+                            const employee = employees.find((emp) => emp.employeeId === employeeId);
+                            return (
+                              <li key={employeeId} className="selected-employee-item">
+                                <span>{employee.firstName} {employee.lastName}</span>
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-danger ml-2"
+                                  onClick={() => handleRemoveEmployee(employeeId)}
+                                >
+                                  Retirer
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
                       </div>
-                    ) : planningError ? (
-                      <div className="alert alert-danger">
-                        {planningError}
+                      {/* Champs existants */}
+                      <div className="form-group">
+                        <label>Date de début :</label>
+                        <input
+                          type="date"
+                          name="startDate"
+                          className="form-control"
+                          value={evaluationDetails.startDate}
+                          onChange={handleEvaluationDetailsChange}
+                        />
                       </div>
-                    ) : (
-                      <form>
-                        <div className="form-group">
-                          <label>Employés sélectionnés :</label>
-                          <ul className="selected-employees-list">
-                            {selectedEmployees.map((employeeId) => {
-                              const employee = employees.find((emp) => emp.employeeId === employeeId);
-                              return (
-                                <li key={employeeId} className="selected-employee-item">
-                                  <span>{employee.firstName} {employee.lastName}</span>
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-danger ml-2"
-                                    onClick={() => handleRemoveEmployee(employeeId)}
-                                  >
-                                    Retirer
-                                  </button>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </div>
-                        {/* Champs existants */}
-                        <div className="form-group">
-                          <label>Date de début :</label>
-                          <input
-                            type="date"
-                            name="startDate"
-                            className="form-control"
-                            value={evaluationDetails.startDate}
-                            onChange={handleEvaluationDetailsChange}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>Date de fin :</label>
-                          <input
-                            type="date"
-                            name="endDate"
-                            className="form-control"
-                            value={evaluationDetails.endDate}
-                            onChange={handleEvaluationDetailsChange}
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label>Type d'évaluation :</label>
-                          <select
-                            name="evaluationType"
-                            className="form-control"
-                            value={evaluationDetails.evaluationType}
-                            onChange={handleEvaluationDetailsChange}
-                          >
-                            <option value="">Choisir un type</option>
-                            {evaluationTypes.map((type) => (
-                              <option key={type.evaluationTypeId} value={type.evaluationTypeId}>
-                                {type.designation}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="form-group">
-                          <label>Superviseur :</label>
-                          <select
-                            name="supervisor"
-                            className="form-control"
-                            value={evaluationDetails.supervisor}
-                            onChange={handleEvaluationDetailsChange}
-                          >
-                            <option value="">Choisir un superviseur</option>
-                            {supervisors.map((supervisor) => (
-                              <option key={supervisor.id} value={supervisor.id}>
-                                {supervisor.firstName} {supervisor.lastName}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </form>
-                    )}
+                      <div className="form-group">
+                        <label>Date de fin :</label>
+                        <input
+                          type="date"
+                          name="endDate"
+                          className="form-control"
+                          value={evaluationDetails.endDate}
+                          onChange={handleEvaluationDetailsChange}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Type d'évaluation :</label>
+                        <select
+                          name="evaluationType"
+                          className="form-control"
+                          value={evaluationDetails.evaluationType}
+                          onChange={handleEvaluationDetailsChange}
+                        >
+                          <option value="">Choisir un type</option>
+                          {evaluationTypes.map((type) => (
+                            <option key={type.evaluationTypeId} value={type.evaluationTypeId}>
+                              {type.designation}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label>Superviseur :</label>
+                        <select
+                          name="supervisor"
+                          className="form-control"
+                          value={evaluationDetails.supervisor}
+                          onChange={handleEvaluationDetailsChange}
+                        >
+                          <option value="">Choisir un superviseur</option>
+                          {supervisors.map((supervisor) => (
+                            <option key={supervisor.id} value={supervisor.id}>
+                              {supervisor.firstName} {supervisor.lastName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </form>
                   </div>
 
                   <div className="modal-footer">

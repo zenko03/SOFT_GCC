@@ -120,9 +120,9 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     return (false, "Évaluation non trouvée.", null);
                 }
 
-                // Vérifier si un entretien existe déjà pour cette évaluation
+                // Vérifier si un entretien est déjà planifié dans le futur pour cette évaluation
                 var existingInterview = await _context.evaluationInterviews
-                    .FirstOrDefaultAsync(e => e.EvaluationId == evaluationId);
+                    .FirstOrDefaultAsync(e => e.EvaluationId == evaluationId && e.InterviewDate >= DateTime.Now);
 
                 if (existingInterview != null)
                 {

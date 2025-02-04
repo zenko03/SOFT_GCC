@@ -7,8 +7,6 @@ import Step2 from './Step2';
 import Step3 from './Step3';
 import '../../../assets/css/Evaluations/notationModal.css'; // Styles spécifiques
 import '../../../assets/css/Evaluations/Questions.css'; // Styles spécifiques
-import '../../../assets/css/Evaluations/Steps.css'; // Styles spécifiques
-
 
 function SalaryList() {
   const [employees, setEmployees] = useState([]);
@@ -28,7 +26,7 @@ function SalaryList() {
   const [isEmployeeLoaded, setIsEmployeeLoaded] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [validationSuccess, setValidationSuccess] = useState(false);
-
+  
   // PAGINATION
   const [currentPage, setCurrentPage] = useState(1); // Page actuelle
   const [pageSize, setPageSize] = useState(10); // Nombre d'éléments par page
@@ -45,20 +43,16 @@ function SalaryList() {
   const validateEvaluation = async () => {
     const payload = {
       evaluationId: selectedEmployee.evaluationId,
-      ...validationData,
+      ...validationData
     };
 
     try {
       const response = await axios.post('https://localhost:7082/api/Evaluation/validate-evaluation', payload);
       console.log('Validation response:', response.data);
-      setValidationSuccess(true); // Activer l'affichage de la confirmation
-      setTimeout(() => {
-        setShowModal(false); // Fermer le modal après un délai
-        setValidationSuccess(false); // Réinitialiser l'état de confirmation
-      }, 3000); // Fermer après 3 secondes
+      setIsSaved(true);
+      setShowModal(false); // Fermer le modal après validation
     } catch (err) {
       console.error('Error validating evaluation:', err);
-      setError('Erreur lors de la validation de l\'évaluation.');
     }
   };
 
@@ -296,57 +290,50 @@ function SalaryList() {
               </div>
 
               <div className="modal-body">
-                {validationSuccess ? (
-                  <div className="validation-success">
-                    <div className="success-animation">
-                      <svg
-                        className="checkmark"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 52 52"
-                      >
-                        <circle
-                          className="checkmark__circle"
-                          cx="26"
-                          cy="26"
-                          r="25"
-                          fill="none"
-                        />
-                        <path
-                          className="checkmark__check"
-                          fill="none"
-                          d="M14.1 27.2l7.1 7.2 16.7-16.8"
-                        />
-                      </svg>
-                    </div>
-                    <h5 className="text-center mt-3">Validation réussie !</h5>
-                    <p className="text-center">La notation a été effectuée avec succès.</p>
-                  </div>
-                ) : (
-                  <>
-                    <ul className="step-navigation">
-                      <li style={{ pointerEvents: 'auto' }} onClick={() => setCurrentStep(1)} className={currentStep === 1 ? 'active' : ''}>Étape 1</li>
-                      <li style={{ pointerEvents: allQuestionsRated() ? 'auto' : 'none' }} className={currentStep === 2 ? 'active' : ''}>Étape 2</li>
-                      <li className={currentStep === 3 ? 'active' : ''}>Étape 3</li>
-                    </ul>
-                    {renderStepContent()}
-                  </>
-                )}
+                <ul className="step-navigation">
+                  <li style={{ pointerEvents: 'auto' }} onClick={() => setCurrentStep(1)} className={currentStep === 1 ? 'active' : ''}>Étape 1</li>
+                  <li style={{ pointerEvents: allQuestionsRated() ? 'auto' : 'none' }} className={currentStep === 2 ? 'active' : ''}>Étape 2</li>
+                  <li className={currentStep === 3 ? 'active' : ''}>Étape 3</li>
+                </ul>
+                {renderStepContent()}
               </div>
 
               <div className="modal-footer">
-                {!validationSuccess && (
-                  <>
-                    <button className="btn btn-secondary" onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))} disabled={currentStep === 1}>Précédent</button>
-                    <button className="btn btn-primary" onClick={async () => {
-                      if (currentStep === 2) await saveEvaluationResults();
-                      if (currentStep === 3) await validateEvaluation();
-                      else setCurrentStep(prev => Math.min(prev + 1, 3));
-                    }} disabled={!allQuestionsRated() && currentStep === 1}>
-                      {currentStep === 3 ? 'Valider' : 'Suivant'}
-                    </button>
-                    <button className="btn btn-danger" onClick={handleCloseModal}>Fermer</button>
-                  </>
-                )}
+                {/* Bouton Précédent */}
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
+                  disabled={currentStep === 1}
+                >
+                  Précédent
+                </button>
+
+                {/* Bouton Suivant/Valider */}
+                <button
+                  className="btn btn-primary"
+                  onClick={async () => {
+                    if (currentStep === 2) {
+                      await saveEvaluationResults(); // Sauvegarder les résultats de l'évaluation
+                    }
+                    if (currentStep === 3) {
+                      await validateEvaluation(); // Valider l'évaluation (nouvelle logique)
+                      setShowModal(false); // Fermer le modal après validation
+                    } else {
+                      setCurrentStep(prev => Math.min(prev + 1, 3)); // Passer à l'étape suivante
+                    }
+                  }}
+                  disabled={!allQuestionsRated() && currentStep === 1} // Désactiver si les questions ne sont pas notées
+                >
+                  {currentStep === 3 ? 'Valider' : 'Suivant'}
+                </button>
+
+                {/* Bouton Fermer */}
+                <button
+                  className="btn btn-danger"
+                  onClick={handleCloseModal}
+                >
+                  Fermer
+                </button>
               </div>
             </div>
           </div>

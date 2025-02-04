@@ -46,6 +46,7 @@ function Step1({
         }));
       } catch (error) {
         console.error("Erreur lors de la récupération des questions :", error);
+        setError("Erreur lors de la récupération des questions. Veuillez réessayer.");
       } finally {
         setLoading(false);
       }
@@ -84,6 +85,7 @@ function Step1({
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des questions :", error);
+      setError("Erreur lors de la récupération des questions. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }

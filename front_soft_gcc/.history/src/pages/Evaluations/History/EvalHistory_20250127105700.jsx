@@ -337,6 +337,7 @@ const EvaluationHistory = () => {
                   <option value="Terminé">Terminé</option>
                   <option value="En attente">En attente</option>
                 </select>
+                // Remplacer l'input par un select
                 <select
                   name="position"
                   className="form-control mx-1"
@@ -379,32 +380,24 @@ const EvaluationHistory = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {evaluations.length > 0 ? (
-                      evaluations.map((emp) => (
-                        <tr key={emp.evaluationId}>
-                          <td>{emp.firstName} {emp.lastName}</td>
-                          <td>{emp.position}</td>
-                          <td>{emp.startDate}</td>
-                          <td>{emp.status}</td>
-                          <td>{emp.overallScore}</td>
-                          <td>{emp.evaluationType}</td>
-                          <td>
-                            <button
-                              className="btn btn-info btn-sm"
-                              onClick={() => handleDetailsClick(emp.evaluationId)}
-                            >
-                              Détails
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="7" className="text-center">
-                          Aucun employé trouvé
+                    {evaluations.map((emp) => (
+                      <tr key={emp.evaluationId}>
+                        <td>{emp.firstName}</td>
+                        <td>{emp.position}</td>
+                        <td>{emp.startDate}</td>
+                        <td>{emp.status}</td>
+                        <td>{emp.overallScore}</td>
+                        <td>{emp.evaluationType}</td>
+                        <td>
+                          <button
+                            className="btn btn-info btn-sm"
+                            onClick={() => handleDetailsClick(emp.evaluationId)}
+                          >
+                            Détails
+                          </button>
                         </td>
                       </tr>
-                    )}
+                    ))}
                   </tbody>
                 </table>
 
