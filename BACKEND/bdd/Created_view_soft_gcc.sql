@@ -8,9 +8,14 @@ SELECT
     e.Birthday, 
     d.Department_id, 
     d.Department_name, 
+	d.photo AS department_photo,
     e.hiring_date,
 	e.civilite_id,
-	c.civilite_name
+	c.civilite_name,
+	e.manager_id,
+	(select name from employee where employee_id=e.manager_id) as Manager_name,
+	(select FirstName from employee where employee_id=e.manager_id) as Manager_firstName,
+	e.photo AS employee_photo
 FROM 
     Employee e 
 JOIN 
@@ -19,7 +24,7 @@ ON
     d.Department_id = e.department_id
 JOIN 
 	Civilite c
-ON c.civilite_id=e.civilite_id;
+ON c.civilite_id=e.civilite_id
 
 -- Creation de la vue v_employee_skill (Competence de l'employe)
 CREATE VIEW v_employee_skill AS 
@@ -154,6 +159,7 @@ ON
 CREATE VIEW v_employee_skill_number AS 
 SELECT 
 	employee_id, 
+	MAX(updated_date),
 	COUNT(employee_skill_id) AS skill_number 
 FROM 
 	Employee_skill 
@@ -164,6 +170,7 @@ GROUP BY
 CREATE VIEW v_employee_education_number AS 
 SELECT 
 	employee_id, 
+	MAX(updated_date) AS updated_date,
 	COUNT(employee_education_id) AS education_number 
 FROM 
 	Employee_education 
@@ -174,6 +181,7 @@ GROUP BY
 CREATE VIEW v_employee_language_number AS 
 SELECT 
 	employee_id, 
+	MAX(updated_date) AS updated_date,
 	COUNT(employee_language_id) AS language_number 
 FROM 
 	Employee_language 
@@ -184,6 +192,7 @@ GROUP BY
 CREATE VIEW v_employee_other_formation_number AS
 SELECT 
 	employee_id, 
+	MAX(updated_date) AS  updated_date,
 	COUNT(employee_other_formation_id) as other_formation_number 
 from 
 	Employee_other_formation 
@@ -191,14 +200,46 @@ group by
 	Employee_id;
 
 -- Creation  de la vue v_employee_skills pour afficher la liste des competences employes
-CREATE VIEW v_skills AS SELECT e.Employee_id, e.Registration_number, e.Name, e.FirstName, e.Department_name, e.Birthday, e.Hiring_date,
-COALESCE(ofn.other_formation_number, 0) AS other_formation_number, COALESCE( ee.education_number, 0) AS education_number, 
-COALESCE(es.skill_number, 0) AS skill_number, COALESCE(el.language_number, 0) AS language_number
-FROM v_employee e 
-LEFT join v_employee_other_formation_number ofn ON ofn.employee_id=e.employee_id
-LEFT join v_employee_education_number ee ON ee.Employee_id=e.Employee_id
-LEFT join v_employee_skill_number es ON es.employee_id=e.Employee_id
-LEFT join v_employee_language_number el ON el.employee_id=e.Employee_id;
+CREATE VIEW v_skills AS 
+SELECT 
+    e.Employee_id, 
+    e.Registration_number, 
+    e.Name, 
+    e.FirstName, 
+    e.Department_name, 
+    e.Birthday, 
+    e.Hiring_date,
+    COALESCE(ofn.other_formation_number, 0) AS other_formation_number, 
+    COALESCE(ee.education_number, 0) AS education_number, 
+    COALESCE(es.skill_number, 0) AS skill_number, 
+    COALESCE(el.language_number, 0) AS language_number,
+    -- Calcul de la date maximale pour chaque employé
+    CASE
+        WHEN COALESCE(ofn.updated_date, '1970-01-01') >= COALESCE(ee.updated_date, '1970-01-01')
+         AND COALESCE(ofn.updated_date, '1970-01-01') >= COALESCE(es.updated_date, '1970-01-01')
+         AND COALESCE(ofn.updated_date, '1970-01-01') >= COALESCE(el.updated_date, '1970-01-01') THEN COALESCE(ofn.updated_date, NULL)
+        WHEN COALESCE(ee.updated_date, '1970-01-01') >= COALESCE(ofn.updated_date, '1970-01-01')
+         AND COALESCE(ee.updated_date, '1970-01-01') >= COALESCE(es.updated_date, '1970-01-01')
+         AND COALESCE(ee.updated_date, '1970-01-01') >= COALESCE(el.updated_date, '1970-01-01') THEN COALESCE(ee.updated_date, NULL)
+        WHEN COALESCE(es.updated_date, '1970-01-01') >= COALESCE(ofn.updated_date, '1970-01-01')
+         AND COALESCE(es.updated_date, '1970-01-01') >= COALESCE(ee.updated_date, '1970-01-01')
+         AND COALESCE(es.updated_date, '1970-01-01') >= COALESCE(el.updated_date, '1970-01-01') THEN COALESCE(es.updated_date, NULL)
+        ELSE COALESCE(el.updated_date, '1970-01-01')
+    END AS Updated_date
+FROM 
+    v_employee e
+LEFT JOIN 
+    v_employee_other_formation_number ofn 
+    ON ofn.employee_id = e.employee_id
+LEFT JOIN 
+    v_employee_education_number ee 
+    ON ee.Employee_id = e.Employee_id
+LEFT JOIN 
+    v_employee_skill_number es 
+    ON es.employee_id = e.Employee_id
+LEFT JOIN 
+    v_employee_language_number el 
+    ON el.employee_id = e.Employee_id;
 
 -- Creation de la vue v_assignment_appointment pour afficher la liste des affectations nominations
 CREATE VIEW v_assignment_appointment AS 
@@ -328,7 +369,7 @@ GROUP BY
   e.hiring_date;
 
 -- Creation de la vue v_employee_position pour le dernier poste de chaque employe
-CREATE VIEW v_employee_position AS
+CREATE VIEW v_employee_get_last_position AS
 WITH Ranked_posts AS (
     SELECT 
         Registration_number, 
@@ -391,7 +432,7 @@ SELECT
     ep.Base_salary,
     ep.Net_salary,
 	cpen.career_plan_number
-FROM v_employee_position ep
+FROM v_employee_get_last_position ep
 JOIN v_career_plan_employee_number cpen
 ON ep.Registration_number = cpen.Registration_number;
 
@@ -644,3 +685,34 @@ GROUP BY
 	Department_name, 
 	Position_id, 
 	Position_name
+
+-- Effectif des employes par departement
+CREATE VIEW v_department_effective AS
+SELECT 
+	department_id, 
+	department_name, 
+	department_photo,
+	COALESCE(count(*), 0) AS n_employee
+FROM v_employee 
+GROUP BY department_id, department_name, department_photo
+
+-- Vue pour les details des employes
+CREATE VIEW v_employee_position AS
+select 
+	e.employee_id, 
+	e.registration_number, 
+	e.name, 
+	e.firstName, 
+	e.Department_id,
+	e.Department_name,
+	e.civilite_id,
+	e.civilite_name,
+	e.manager_id,
+	ec.position_id,
+	ec.Position_name,
+	e.hiring_date,
+	e.Birthday,
+    DATEDIFF(YEAR, e.hiring_date, GETDATE()) AS Seniority
+from v_employee e
+left join v_employee_career ec
+on e.Registration_number = ec.Registration_number

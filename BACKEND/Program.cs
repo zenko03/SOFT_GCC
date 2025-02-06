@@ -22,6 +22,9 @@ using soft_carriere_competence.Core.Entities.wish_evolution;
 using soft_carriere_competence.Application.Services.EmailService;
 using soft_carriere_competence.Core.Interface.AuthInterface;
 using soft_carriere_competence.Application.Services.dashboard;
+using soft_carriere_competence.Application.Services.entrepriseOrg;
+using soft_carriere_competence.Core.Entities.history;
+using soft_carriere_competence.Application.Services.history;
 
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
@@ -118,9 +121,12 @@ builder.Services.AddScoped<ICrudRepository<WishEvolutionCareer>, CrudRepository<
 builder.Services.AddScoped<WishTypeService>();
 builder.Services.AddScoped<ICrudRepository<WishType>, CrudRepository<WishType>>();
 
+builder.Services.AddScoped<HistoryService>();
+builder.Services.AddScoped<ICrudRepository<ActivityLog>, CrudRepository<ActivityLog>>();
+
 builder.Services.AddScoped<DashboardService>();
 
-
+builder.Services.AddScoped<OrgService>();
 
 // EVALUATIONS
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();

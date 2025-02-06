@@ -19,8 +19,8 @@ function SalaryProfilePage({ task }) {
   // Gestion des states
   const { idEmployee } = useParams();
   const [employeeDescription, setEmployeeDescription] = useState(null);
-  const [loading, setLoading] = useState(true); // État de chargement
-  const [error, setError] = useState(null); // État de chargement
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); 
 
   // Récupération des données à l'aide de l'API
   useEffect(() => {
@@ -73,14 +73,13 @@ function SalaryProfilePage({ task }) {
   return (
     <Template>
       <PageHeader module={module} action={action} url={url} />
-      <SkillsHistory />
       <SalaryDescription dataEmployeeDescription={employee} />
 
       <h4 className="card-title text-primary">Compétences</h4>
       <CardSkills dataEmployeeDescription={employee} idEmployee={idEmployee} />
 
       <h4 className="card-title text-primary">Graphes des compétences</h4>
-      <SkillSalaryChart />
+      <SkillSalaryChart employeeId={idEmployee} />
     </Template>
   );
 }

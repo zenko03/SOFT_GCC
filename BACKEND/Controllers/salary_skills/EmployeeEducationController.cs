@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using soft_carriere_competence.Application.Services.history;
 using soft_carriere_competence.Application.Services.salary_skills;
+using soft_carriere_competence.Core.Entities.history;
 using soft_carriere_competence.Core.Entities.salary_skills;
 
 namespace soft_carriere_competence.Controllers.salary_skills
@@ -10,10 +12,12 @@ namespace soft_carriere_competence.Controllers.salary_skills
 	public class EmployeeEducationController : ControllerBase
 	{
 		private readonly EmployeeEducationService _employeeEducationService;
+		private readonly HistoryService _historyService;
 
-		public EmployeeEducationController(EmployeeEducationService service)
+		public EmployeeEducationController(EmployeeEducationService service, HistoryService historyService)
 		{
 			_employeeEducationService = service;
+			_historyService = historyService;
 		}
 
 		[HttpGet]
@@ -34,8 +38,18 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		[HttpPost]
 		public async Task<IActionResult> Create(EmployeeEducation employeeEducation)
 		{
-			Console.WriteLine("Tonga");
 			await _employeeEducationService.Add(employeeEducation);
+			var activityLog = new ActivityLog
+			{
+				UserId = 1,
+				Module = 1,
+				Action = "Création",
+				Description = "L'user 1 a crée une nouvelle éducation ID " + employeeEducation.EmployeeEducationId + " pour l'employé ID " + employeeEducation.EmployeeId,
+				Timestamp = DateTime.UtcNow,
+				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
+			};
+
+			await _historyService.Add(activityLog);
 			return CreatedAtAction(nameof(Get), new { id = employeeEducation.EmployeeEducationId }, employeeEducation);
 		}
 
@@ -44,6 +58,17 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		{
 			if (id != employeeEducation.EmployeeEducationId) return BadRequest();
 			await _employeeEducationService.Update(employeeEducation);
+			var activityLog = new ActivityLog
+			{
+				UserId = 1,
+				Module = 1,
+				Action = "Modification",
+				Description = "L'user 1 a modifié l'éducation ID " + employeeEducation.EmployeeEducationId + " pour l'employé ID " + employeeEducation.EmployeeId,
+				Timestamp = DateTime.UtcNow,
+				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
+			};
+
+			await _historyService.Add(activityLog);
 			return NoContent();
 		}
 
@@ -51,6 +76,18 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> Delete(int id)
 		{
 			await _employeeEducationService.Delete(id);
+			var employeeEducation = await _employeeEducationService.GetById(id);
+			var activityLog = new ActivityLog
+			{
+				UserId = 1,
+				Module = 1,
+				Action = "Suppression",
+				Description = "L'user 1 a supprimé l'éducation ID " + employeeEducation.EmployeeEducationId + " pour l'employé ID " + employeeEducation.EmployeeId,
+				Timestamp = DateTime.UtcNow,
+				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
+			};
+
+			await _historyService.Add(activityLog);
 			return NoContent();
 		}
 

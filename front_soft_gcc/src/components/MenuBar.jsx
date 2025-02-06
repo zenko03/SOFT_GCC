@@ -54,17 +54,29 @@ function MenuBar({ task }) {
           </div>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="index.html">
+          <Link className="nav-link" to="/softGcc/effectif">
             <span className="icon-bg"><i className="mdi mdi-cube menu-icon"></i></span>
-            <span className="menu-title">Organigramme</span>
-          </a>
+            <span className="menu-title">Organigramme et effectif</span>
+          </Link>
         </li>
-        <li className="nav-item sidebar-user-actions">
-          <div className="sidebar-user-menu">
-            <a href="#" className="nav-link">
-              <i className="mdi mdi-settings menu-icon"></i>
-              <span className="menu-title">Paramètres</span>
-            </a>
+        <li className="nav-item">
+          <Link className="nav-link" to="/softGcc/activityHistory">
+            <span className="icon-bg"><i className="mdi mdi-cube menu-icon"></i></span>
+            <span className="menu-title">Historiques d'activités</span>
+          </Link>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" data-toggle="collapse" href="#settings" aria-expanded="false" aria-controls="settings">
+            <span className="icon-bg"><i className="mdi mdi-settings menu-icon"></i></span>
+            <span className="menu-title">Paramètres</span>
+            <i className="menu-arrow"></i>
+          </a>
+          <div className="collapse" id="settings">
+            <ul className="nav flex-column sub-menu">
+              <li className="nav-item"> <Link className="nav-link" to="/softGcc/settings/competence">Gestion Compétences</Link></li>
+              <li className="nav-item"> <Link className="nav-link" to="/softGcc/settings/carriere"> Gestion Carrières </Link></li>
+              <li className="nav-item"> <Link className="nav-link" to="/softGcc/settings/employeeManagement/liste"> Gestion employés </Link></li>
+            </ul>
           </div>
         </li>
         <li className="nav-item sidebar-user-actions">

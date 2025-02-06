@@ -26,9 +26,13 @@ INSERT INTO Civilite(Civilite_name) VALUES ('Monsieur'), ('Madame');
 
 -- Creation de la table departement(id, designation)
 CREATE TABLE Department (
-	Department_id INT PRIMARY KEY IDENTITY(1,1),
-	Department_name NVARCHAR(50)
+    Department_id INT PRIMARY KEY IDENTITY(1,1),
+    Department_name NVARCHAR(50),
+    Photo VARBINARY(MAX) NULL
 );
+
+ALTER TABLE department
+ADD photo VARBINARY(MAX) NULL
 
 -- Creation de la table employe(id, matricule, nom, prenom, date_embauche) simule
 CREATE TABLE Employee (
@@ -39,8 +43,29 @@ CREATE TABLE Employee (
 	Birthday DATE NOT NULL,
 	Hiring_date DATE NOT NULL,
 	Department_id INT NOT NULL REFERENCES Department(Department_id),
-	Civilite_id INT NOT NULL REFERENCES Civilite(Civilite_id)
+	Civilite_id INT NOT NULL REFERENCES Civilite(Civilite_id),
+	Manager_id INT NULL REFERENCES Employee(Employee_id),
+	Photo VARBINARY(MAX) NULL
 );
+
+-- Ajout d'une contrainte unique au registration number de employe
+ALTER TABLE Employee
+ADD CONSTRAINT UQ_Employee_RegistrationNumber UNIQUE (Registration_number);
+
+-- Étape 1: Ajouter la colonne Manager_id
+ALTER TABLE Employee
+ADD Manager_id INT NULL;
+
+ALTER TABLE Employee
+ADD Photo VARBINARY(MAX) NULL;
+
+-- Étape 2: Ajouter la contrainte de clé étrangère
+ALTER TABLE Employee
+ADD CONSTRAINT FK_Manager_Employee
+FOREIGN KEY (Manager_id)
+REFERENCES Employee(Employee_id)
+ON DELETE SET NULL; -- Optionnel : définit ce qui arrive si le manager est supprimé
+
 
 -- Creation de la table filiere(id, designation)
 CREATE TABLE Study_path (
@@ -68,8 +93,8 @@ CREATE TABLE Employee_education (
 	School_ID INT NOT NULL REFERENCES School(School_id),
 	Year INT,
 	State INT,
-	Creation_date DATE,
-	Updated_date DATE,
+	Creation_date DATETIME,
+	Updated_date DATETIME,
 	Employee_id INT NOT NULL REFERENCES Employee(Employee_id)
 );
 
@@ -86,8 +111,8 @@ CREATE TABLE Employee_language(
 	Language_id INT NOT NULL REFERENCES Language(Language_id),
 	Level DOUBLE PRECISION NOT NULL,
 	State INT,
-	creation_date DATE,
-	Updated_date DATE,
+	creation_date DATETIME,
+	Updated_date DATETIME,
 	Employee_id INT NOT NULL REFERENCES Employee(Employee_id)
 );
 
@@ -110,8 +135,8 @@ CREATE TABLE Employee_skill (
 	Skill_id INT NOT NULL REFERENCES Skill(Skill_id),
 	Level DOUBLE PRECISION NOT NULL,
 	State INT,
-	Creation_date DATE,
-	Updated_date DATE,
+	Creation_date DATETIME,
+	Updated_date DATETIME,
 	Employee_id INT NOT NULL REFERENCES Employee(Employee_id)
 );
 
@@ -123,8 +148,8 @@ CREATE TABLE Employee_other_formation (
 	End_date DATE NOT NULL,
 	Comment TEXT,
 	State INT,
-	Creation_date DATE,
-	Updated_date DATE,
+	Creation_date DATETIME,
+	Updated_date DATETIME,
 	Employee_id INT NOT NULL REFERENCES Employee(Employee_id)
 );
 
@@ -237,8 +262,8 @@ CREATE TABLE career_plan (
 	End_date DATE NULL,
 	Echelon_id INT NULL REFERENCES Echelon(Echelon_id),
 	State INT,
-	Creation_date Date,
-	Updated_date Date
+	Creation_date DATETIME,
+	Updated_date DATETIME
 );
 
 -------------------------------------------- TABLE POUR GERER LES HISTORIQUES ------------------------------------------------------
@@ -258,6 +283,16 @@ CREATE TABLE History (
 	Creation_date DATETIME DEFAULT GETDATE()
 );
 
+-- Creation de la table historique d'activite
+CREATE TABLE Activity_logs (
+    Activity_log_id INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NOT NULL,
+    Module INT NOT NULL REFERENCES Module(Module_id),
+    Action NVARCHAR(50) NOT NULL,
+    Description NVARCHAR(MAX),
+    Creation_date DATETIME NOT NULL DEFAULT GETDATE(),
+    Metadata NVARCHAR(MAX)
+);
 
 -- Donne d'insertion
 INSERT INTO Module(Module_name) VALUES ('Competences');

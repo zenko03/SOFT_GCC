@@ -1,14 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import PageHeader from '../../components/PageHeader';
-import SearchForm from '../../components/SearchForm';
 import Template from '../Template';
 import pic1 from '/src/assets/images/faces-clipart/pic-1.png';
 import '../../styles/skillsStyle.css';
 import Loader from '../../helpers/Loader';
 import '../../styles/pagination.css';
+import DateDisplayWithTime from '../../helpers/DateDisplayWithTime';
+
+// Fonction debounce pour éviter les appels excessifs
+function debounce(func, delay) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), delay);
+  };
+}
 
 // Page liste des competences
 function ListSkillSalaryPage() {
@@ -16,6 +25,8 @@ function ListSkillSalaryPage() {
   const module = "Compétences";
   const action = "Liste";
   const url = "/competences";
+  const navigate = useNavigate();
+  
 
   // Initialisation des variables de states
   const [skills, setSkills] = useState([]);
@@ -28,22 +39,19 @@ function ListSkillSalaryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchSkills();
-  }, [currentPage, searchTerm]);
-
   // Appliquer le tri chaque fois que `sortDirection` ou `skills` change
   useEffect(() => {
     const sorted = [...skills].sort((a, b) => {
-      const dateA = new Date(a.birthday);
-      const dateB = new Date(b.birthday);
+      const dateA = new Date(a.updatedDate);
+      const dateB = new Date(b.updatedDate);
       return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
     });
     setSortedSkills(sorted);
   }, [sortDirection, skills]);
 
   // Chargement des donnees de competences salaries
-  const fetchSkills = async () => {
+  const fetchSkills = useCallback(
+    async (searchTerm) => {
     setLoading(true);
     setError(null);
 
@@ -61,7 +69,9 @@ function ListSkillSalaryPage() {
     } finally {
       setLoading(false);
     }
-  };
+  },
+  [currentPage, pageSize]
+);
 
   // Gerer les filtres par recherche
   const handleSearch = (term) => {
@@ -98,23 +108,65 @@ function ListSkillSalaryPage() {
     return pages;
   };
 
+
+
+  // Débouncer la recherche avec un délai de 3 secondes
+  const debouncedFetchData = useCallback(debounce(fetchSkills, 3000), [fetchSkills]);
+
+  // Déclencher la recherche à chaque modification des filtres
+  useEffect(() => {
+    debouncedFetchData(searchTerm);
+  }, [searchTerm, debouncedFetchData]);
+
+  // Navigation pour details competences
+  const handleSkillsDetails = (employeeId) => {
+    navigate(`/competences/profil/${employeeId}`);
+  };
+
   return (
     <Template>
       {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
-      
+
+
       <PageHeader module={module} action={action} url={url} />
+      {error && <p className="text-danger">{error}</p>}
+
+      <div className="row">
+        <div className='col-lg-12'>
+          <h4 className="card-title">COMPETENCES DES SALARIES</h4>
+        </div>
+        
+        <div className="col-lg-12 grid-margin stretch-card">
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title subtitle">Filtre de recherche</h5>
+              <form className="form-sample">
+                <div className="form-group row">
+                  <div className="col-sm-12">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Nom, prénom ou matricule"
+                      value={searchTerm}
+                      onChange={(e) => handleSearch(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </form>
+              {error && <p className="text-danger">{error}</p>}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="row">
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
             <div className="card-body">
-              <h4 className="card-title">NOMBRE DES COMPETENCES SALARIES</h4>
-              <SearchForm onSearch={handleSearch} />
-
-              {error && <p className="text-danger">{error}</p>}
-
+              <h5 className="card-title subtitle">Nombre des compétences par employé</h5>
               {!loading && !error && (
                 <>
-                  <table className="table table-striped table-competences">
+                  <table className="table table-competences">
                     <thead>
                       <tr>
                         <th>Employé</th>
@@ -142,14 +194,12 @@ function ListSkillSalaryPage() {
                     <tbody>
                       {sortedSkills.length > 0 ? (
                         sortedSkills.map((item, id) => (
-                          <tr key={id}>
+                          <tr key={id} onClick={() => {handleSkillsDetails(item.employeeId)}}>
                             <td className="py-1">
-                              <Link to={`/competences/profil/${item.employeeId}`}>
-                                <img src={pic1} alt="Profil" />
-                              </Link>
+                              <img src={pic1} alt="Profil" />
                             </td>
                             <td>{item.firstName} {item.name}</td>
-                            <td>{new Date(item.birthday).toLocaleDateString()}</td> {/* Affichez la vraie date de mise à jour */}
+                            <td><DateDisplayWithTime isoDate={item.updatedDate} /></td> {/* Affichez la vraie date de mise à jour */}
                             <td>{item.educationNumber}</td>
                             <td>{item.skillNumber}</td>
                             <td>{item.languageNumber}</td>

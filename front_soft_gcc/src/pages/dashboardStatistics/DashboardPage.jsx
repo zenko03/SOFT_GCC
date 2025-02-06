@@ -72,7 +72,6 @@ function DashboardPage() {
                 ...appliedFilterCareers
             }).toString();
             
-            console.log(queryParamSkills);
             const [skillsResponse, careersResponse] = await Promise.all([
                 axios.get(urlApi(`/Dashboard/employeeSkillByDepartment?${queryParamSkills}`)),
                 axios.get(urlApi(`/Dashboard/employeeCareerByDepartment?${queryParamCareers}`))

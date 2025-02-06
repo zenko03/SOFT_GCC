@@ -36,5 +36,8 @@ namespace soft_carriere_competence.Core.Entities.salary_skills
 
 		[Column("Hiring_date")]
 		public DateTime? HiringDate { get; set; }
+
+		[Column("Updated_date")]
+		public DateTime? UpdatedDate { get; set; }
 	}
 }

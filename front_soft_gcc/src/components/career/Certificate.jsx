@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { Document, Page, Text, View, Image, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 import useSWR from 'swr';
-import Fetcher from '../fetcher';
+import logo from '../../assets/images/Logo/softwellogo.png';
+import Fetcher from '../Fetcher';
 
 // Styles du PDF
 const styles = StyleSheet.create({
@@ -9,10 +10,17 @@ const styles = StyleSheet.create({
     padding: 30,
     fontFamily: 'Helvetica',
   },
+  logo: {
+    width: 60,
+    height: 60,
+    alignSelf: 'left',
+    marginBottom: 1,
+  },
   title: {
     fontSize: 20,
     marginBottom: 10,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   section: {
     marginBottom: 10,
@@ -23,13 +31,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 5,
   },
+  paragraph: {
+    fontSize: 12,
+    marginBottom: 15,
+    textAlign: 'justify',
+  },
 });
 
 // Composant pour générer le PDF
 const MyDocument = ({ data }) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Attestation</Text>
+      <Image style={styles.logo} src={logo} />
+      <Text style={styles.title}>CERTIFICAT DE TRAVAIL</Text>
+      <Text style={styles.paragraph}>
+        Ce document atteste que l'employé mentionné ci-dessous a été employé dans notre société et a rempli ses fonctions avec sérieux et professionnalisme.
+      </Text>
       <View style={styles.section}>
         <Text style={styles.text}>Référence : {data.reference}</Text>
         <Text style={styles.text}>Société : {data.societe}</Text>
@@ -50,8 +67,7 @@ function Certificate() {
     motif: '',
     date: '',
   });
-  const { data: cartificateTypes } = useSWR('/CertificateType', Fetcher);
-
+  const { data: certificateTypes } = useSWR('/CertificateType', Fetcher);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -92,11 +108,11 @@ function Certificate() {
                       onChange={handleInputChange}
                       value={formData.type}
                     >
-                        {cartificateTypes && cartificateTypes.map((item, id) => (
-                            <option key={item.certificateTypeId} value={item.certificateTypeId}>
-                                {item.certificateTypeName}
-                            </option>
-                        ))}                      
+                      {certificateTypes && certificateTypes.map((item) => (
+                        <option key={item.certificateTypeId} value={item.certificateTypeId}>
+                          {item.certificateTypeName}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
