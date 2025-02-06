@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../../../components/PageHeader';
-import SearchForm from '../../../components/SearchForm';
 import Template from '../../Template';
 import pic1 from '/src/assets/images/faces-clipart/pic-1.png';
 import '../../../styles/skillsStyle.css';
@@ -129,49 +128,51 @@ const ListCareerPage = () => {
 
       <div className="card mb-4">
         <div className="card-body">
-          <h5 className="card-title">Filtres</h5>
-          <form>
-            <div className="row">
-              <div className="col-md-4 mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Nom, prénom ou matricule"
-                  name="keyWord"
-                  value={filters.keyWord}
-                  onChange={handleFilterChange}
-                />
-              </div>
-              <div className="col-md-4 mb-3">
-                <select
-                  name="departmentId"
-                  className="form-control"
-                  value={filters.departmentId}
-                  onChange={handleFilterChange}
-                >
-                  <option value="">Filtrer par département</option>
-                  {dataDepartment?.map((dept) => (
-                    <option key={dept.departmentId} value={dept.departmentId}>
-                      {dept.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-4">
-                <select
-                  name="positionId"
-                  className="form-control"
-                  value={filters.positionId}
-                  onChange={handleFilterChange}
-                >
-                  <option value="">Filtrer par poste</option>
-                  {dataPosition?.map((pos) => (
-                    <option key={pos.positionId} value={pos.positionId}>
-                      {pos.positionName}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          <h5 className="card-title subtitle">Filtres</h5>
+
+          <form className="filter-form">
+            <div className="form-group">
+              <label>Nom, prénom ou matricule</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Recherche..."
+                name="keyWord"
+                value={filters.keyWord}
+                onChange={handleFilterChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Département</label>
+              <select
+                name="departmentId"
+                className="form-control"
+                value={filters.departmentId}
+                onChange={handleFilterChange}
+              >
+                <option value="">Tous les département</option>
+                {dataDepartment?.map((dept) => (
+                  <option key={dept.departmentId} value={dept.departmentId}>
+                    {dept.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Poste </label>
+              <select
+                name="positionId"
+                className="form-control"
+                value={filters.positionId}
+                onChange={handleFilterChange}
+              >
+                <option value="">Tous les postes</option>
+                {dataPosition?.map((pos) => (
+                  <option key={pos.positionId} value={pos.positionId}>
+                    {pos.positionName}
+                  </option>
+                ))}
+              </select>
             </div>
           </form>
         </div>
@@ -179,7 +180,7 @@ const ListCareerPage = () => {
 
       <div className="card">
         <div className="card-body">
-          <h5 className="card-title">Carrières</h5>
+          <h5 className="card-title subtitle">Liste des nombres de carrières existants</h5>
           {error && <p className="text-danger">{error}</p>}
           {!loading && (
             <>
