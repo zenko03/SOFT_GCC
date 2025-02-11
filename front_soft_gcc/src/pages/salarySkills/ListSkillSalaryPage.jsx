@@ -4,7 +4,7 @@ import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import PageHeader from '../../components/PageHeader';
 import Template from '../Template';
-import pic1 from '/src/assets/images/faces-clipart/pic-1.png';
+import pic1 from '/src/assets/images/male-default.webp';
 import '../../styles/skillsStyle.css';
 import Loader from '../../helpers/Loader';
 import '../../styles/pagination.css';
@@ -32,6 +32,7 @@ function ListSkillSalaryPage() {
   const [skills, setSkills] = useState([]);
   const [sortedSkills, setSortedSkills] = useState([]);
   const [sortDirection, setSortDirection] = useState('asc');
+  const [sortColumn, setSortColumn] = useState('updatedDate');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -41,13 +42,22 @@ function ListSkillSalaryPage() {
 
   // Appliquer le tri chaque fois que `sortDirection` ou `skills` change
   useEffect(() => {
-    const sorted = [...skills].sort((a, b) => {
-      const dateA = new Date(a.updatedDate);
-      const dateB = new Date(b.updatedDate);
-      return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-    });
-    setSortedSkills(sorted);
-  }, [sortDirection, skills]);
+      const sorted = [...skills].sort((a, b) => {
+        const valueA = a[sortColumn];
+        const valueB = b[sortColumn];
+  
+        if (sortColumn === 'updatedDate') {
+          const dateA = new Date(valueA);
+          const dateB = new Date(valueB);
+          return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+        } else {
+          if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
+          if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
+          return 0;
+        }
+      });
+      setSortedSkills(sorted);
+    }, [sortDirection, skills, sortColumn]);
 
   // Chargement des donnees de competences salaries
   const fetchSkills = useCallback(
@@ -87,8 +97,13 @@ function ListSkillSalaryPage() {
   };
 
   // Gerer le tri par colonne
-  const handleSort = () => {
-    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
   };
 
   // Affichage des numeros de page de pagination
@@ -111,7 +126,7 @@ function ListSkillSalaryPage() {
 
 
   // Débouncer la recherche avec un délai de 3 secondes
-  const debouncedFetchData = useCallback(debounce(fetchSkills, 3000), [fetchSkills]);
+  const debouncedFetchData = useCallback(debounce(fetchSkills, 1000), [fetchSkills]);
 
   // Déclencher la recherche à chaque modification des filtres
   useEffect(() => {
@@ -170,25 +185,24 @@ function ListSkillSalaryPage() {
                     <thead>
                       <tr>
                         <th>Employé</th>
-                        <th>Nom complet</th>
-                        <th 
-                          onClick={handleSort} 
-                          style={{
-                            cursor: 'pointer',
-                            color: '#007bff',
-                            fontWeight: 'bold',
-                          }}
-                          className="sortable-header"
-                        >
-                          Dernière mise à jour
-                          <span style={{ marginLeft: '5px' }}>
-                            {sortDirection === 'asc' ? '▲' : '▼'}
-                          </span>
+                        <th onClick={() => handleSort('firstName')} className="sortable-header">
+                          Nom complet {sortColumn === 'firstName' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
                         </th>
-                        <th>Diplômes & formations</th>
-                        <th>Compétences</th>
-                        <th>Langues</th>
-                        <th>Autres</th>
+                        <th onClick={() => handleSort('updatedDate')} className="sortable-header">
+                          Dernière mise à jour {sortColumn === 'updatedDate' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                        </th>
+                        <th onClick={() => handleSort('educationNumber')} className="sortable-header">
+                          Diplômes & formations {sortColumn === 'educationNumber' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                        </th>
+                        <th onClick={() => handleSort('skillNumber')} className="sortable-header">
+                          Compétences {sortColumn === 'skillNumber' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                        </th>
+                        <th onClick={() => handleSort('languageNumber')} className="sortable-header">
+                          Langues {sortColumn === 'languageNumber' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                        </th>
+                        <th onClick={() => handleSort('otherFormationNumber')} className="sortable-header">
+                          Autres {sortColumn === 'otherFormationNumber' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -196,8 +210,15 @@ function ListSkillSalaryPage() {
                         sortedSkills.map((item, id) => (
                           <tr key={id} onClick={() => {handleSkillsDetails(item.employeeId)}}>
                             <td className="py-1">
-                              <img src={pic1} alt="Profil" />
-                            </td>
+                              {item.photo ? (
+                                <img src={urlApi(`/Employee/photo/${item.employeeId}`)} alt={'Employe '+item.registrationNumber} />
+                              ) : (
+                                <img
+                                  src={pic1}
+                                  alt={item.registrationNumber}
+                                  className="department-image"/>
+                              )}
+                            </td>   
                             <td>{item.firstName} {item.name}</td>
                             <td><DateDisplayWithTime isoDate={item.updatedDate} /></td> {/* Affichez la vraie date de mise à jour */}
                             <td>{item.educationNumber}</td>

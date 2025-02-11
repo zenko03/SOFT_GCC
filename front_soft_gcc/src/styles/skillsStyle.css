@@ -184,11 +184,12 @@
 .pagination button {
   padding: 8px 12px;
   border: none;
-  background: #007bff;
-  color: white;
+  background: white;
+  color: black;
   border-radius: 5px;
   cursor: pointer;
   transition: 0.3s;
+  border: 1px  solid #0056b3;
 }
 
 .pagination button:hover {

@@ -3,67 +3,165 @@ import { Document, Page, Text, View, Image, StyleSheet, PDFViewer } from '@react
 import useSWR from 'swr';
 import logo from '../../assets/images/Logo/softwellogo.png';
 import Fetcher from '../Fetcher';
+import DateDisplayNoTime from '../../helpers/DateDisplayNoTime';
+import DateDisplayWithTime from '../../helpers/DateDisplayWithTime';
 
-// Styles du PDF
+const formatDate = (dateString) => {
+  if (!dateString) return ''; // Vérification pour éviter les erreurs si la date est vide
+
+  const mois = [
+    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
+  ];
+
+  const date = new Date(dateString);
+  const jour = date.getDate();
+  const moisNom = mois[date.getMonth()];
+  const annee = date.getFullYear();
+
+  return `le ${jour} ${moisNom} ${annee}`;
+};
+
+// Styles améliorés du PDF
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    padding: 40,
     fontFamily: 'Helvetica',
   },
+  header: {
+    textAlign: 'center',
+    marginBottom: 20,
+  },
   logo: {
-    width: 60,
-    height: 60,
-    alignSelf: 'left',
-    marginBottom: 1,
+    width: 70,
+    height: 70,
+    marginBottom: 10,
+    alignSelf: 'right',
   },
   title: {
-    fontSize: 20,
-    marginBottom: 10,
+    fontSize: 22,
+    marginBottom: 15,
     textAlign: 'center',
     fontWeight: 'bold',
+    textTransform: 'uppercase',
+    fontFamily: 'Helvetica-Bold'
+  },
+  subtitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10
+  },
+  reference: {
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 20
   },
   section: {
-    marginBottom: 10,
-    padding: 10,
-    border: '1px solid #e4e4e4',
-  },
-  text: {
-    fontSize: 12,
-    marginBottom: 5,
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 15,
   },
   paragraph: {
     fontSize: 12,
-    marginBottom: 15,
+    marginBottom: 10,
     textAlign: 'justify',
+    lineHeight: 1.5,
+  },
+  listItem: {
+    fontSize: 12,
+    marginBottom: 5,
+    marginLeft: 15,
+    textIndent: -10,
+  },
+  signatureContainer: {
+    marginTop: 30,
+    textAlign: 'right',
+    fontSize: 12,
+  },
+  signatureLine: {
+    marginTop: 5,
+    width: 150,
+    height: 1,
+    backgroundColor: '#000',
+    alignSelf: 'flex-end',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 1,
+    fontSize: 10,
+    textAlign: 'center',
+    width: '95%',
+    color: 'gray',
+    padding: '20px',
+    borderTopWidth: 2, 
+    borderTopColor: '#87CEEB', // Bleu ciel
+    borderTopStyle: 'solid', 
+    border: '1px solid black'
   },
 });
 
-// Composant pour générer le PDF
-const MyDocument = ({ data }) => (
+const MyDocument = ({ data, dataEmployee }) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      <Image style={styles.logo} src={logo} />
-      <Text style={styles.title}>CERTIFICAT DE TRAVAIL</Text>
-      <Text style={styles.paragraph}>
-        Ce document atteste que l'employé mentionné ci-dessous a été employé dans notre société et a rempli ses fonctions avec sérieux et professionnalisme.
+      {/* En-tête */}
+      <View style={styles.header}>
+        <Image style={styles.logo} src={logo} />
+        <Text style={styles.title}>Attestation de travail</Text>
+      </View>
+
+      {/* Référence du document */}
+      <Text style={styles.reference}>
+        <Text style={{ fontWeight: 'bold', textDecoration: 'underline' }}>Réf </Text>: {data.reference}
       </Text>
+
+      {/* Contenu principal */}
       <View style={styles.section}>
-        <Text style={styles.text}>Référence : {data.reference}</Text>
-        <Text style={styles.text}>Société : {data.societe}</Text>
-        <Text style={styles.text}>Type : {data.type}</Text>
-        <Text style={styles.text}>Motif : {data.motif}</Text>
-        <Text style={styles.text}>Date : {data.date}</Text>
+        <Text style={styles.paragraph}>
+          Nous,<Text style={{ fontWeight: 'bold', fontFamily: 'Helvetica-Bold' }}> Société {data.societe}</Text>, attestons par la présente que 
+          Monsieur <Text style={{ fontWeight: 'bold', fontFamily: 'Helvetica-Bold' }}>{dataEmployee.name+' '+dataEmployee.firstName}</Text> travaille avec un contrat 
+          à durée indéterminée, au sein de notre établissement en qualité de :
+        </Text>
+        <Text style={styles.listItem}>• <Text style={{ fontWeight: 'bold', fontFamily: 'Helvetica-Bold' }}>{dataEmployee.positionName}</Text> depuis le <Text style={{ fontWeight: 'bold', fontFamily: 'Helvetica-Bold' }}>{formatDate(dataEmployee.assignmentDate)}</Text> à ce jour</Text>
+        <Text style={styles.paragraph}>
+          Monsieur <Text style={{ fontWeight: 'bold', fontFamily: 'Helvetica-Bold' }}>{dataEmployee.name+' '+dataEmployee.firstName}</Text> n'est actuellement ni démissionnaire 
+          ni en procédure de licenciement.
+        </Text>
+        <Text style={styles.paragraph}>
+          En foi de quoi, la présente attestation lui est délivrée pour servir et valoir ce que de droit.
+        </Text>
+      </View>
+
+      {/* Signature */}
+      <View style={styles.signatureContainer}>
+        <Text>Antananarivo, {formatDate(data.date)}.</Text>
+        <Text style={{ marginTop: 20 }}>La Directrice Administrative et Financière</Text>
+        <Text style={{ fontWeight: 'bold', marginTop: 100 }}>RAMAMONJISOA Voahangy Lalao</Text>
+      </View>
+
+      {/* Motif */}
+      <Text style={{ marginTop: 15, fontSize: 12 }}>
+        <Text style={{ fontWeight: 'bold', textDecoration: 'underline', fontFamily: 'Helvetica-Bold' }}>Motif </Text>: Administratif
+      </Text>
+
+      {/* Pied de page */}
+      <View style={styles.footer}>
+        <Text> Lot II H 31 Ter Ankadindramamy Ankerana, Antananarivo Madagascar</Text>
+        <Text>Telephone : 020 22 409 32 | 034 49 107 00</Text>
+        <Text>Email : Marketinng@softwell.mg</Text>
+        <Text>Site web : www.softwell.mg</Text>
+        <Text>Réseau sociaux : Softwell Madagascar</Text>
       </View>
     </Page>
   </Document>
 );
 
-function Certificate() {
+function Certificate({dataEmployee}) {
   const [showPDF, setShowPDF] = useState(false);
   const [formData, setFormData] = useState({
     reference: '',
     societe: '',
-    type: '',
     motif: '',
     date: '',
   });
@@ -83,7 +181,7 @@ function Certificate() {
               <div className="card">
                 <div className="card-body">
                   <div className="form-group">
-                    <label htmlFor="reference">Reference</label>
+                    <label htmlFor="reference">Référence</label>
                     <input
                       type="text"
                       className="form-control"
@@ -99,21 +197,6 @@ function Certificate() {
                       name="societe"
                       onChange={handleInputChange}
                     />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="type">Type d'attestation</label>
-                    <select
-                      className="form-control"
-                      name="type"
-                      onChange={handleInputChange}
-                      value={formData.type}
-                    >
-                      {certificateTypes && certificateTypes.map((item) => (
-                        <option key={item.certificateTypeId} value={item.certificateTypeId}>
-                          {item.certificateTypeName}
-                        </option>
-                      ))}
-                    </select>
                   </div>
                 </div>
               </div>
@@ -145,7 +228,7 @@ function Certificate() {
                       className="btn btn-success btn-fw"
                       onClick={() => setShowPDF(true)}
                     >
-                      Export PDF
+                      Exporter en PDF
                     </button>
                   </div>
                 </div>
@@ -155,16 +238,11 @@ function Certificate() {
         </form>
       ) : (
         <div>
-          <button
-            type="button"
-            className="btn btn-danger btn-fw"
-            onClick={() => setShowPDF(false)}
-            style={{ marginBottom: '10px' }}
-          >
+          <button type="button" className="btn btn-danger btn-fw" onClick={() => setShowPDF(false)}>
             Retour
           </button>
           <PDFViewer style={{ width: '100%', height: '600px' }}>
-            <MyDocument data={formData} />
+            <MyDocument data={formData} dataEmployee={dataEmployee} />
           </PDFViewer>
         </div>
       )}

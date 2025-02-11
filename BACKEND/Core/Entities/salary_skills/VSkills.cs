@@ -39,5 +39,8 @@ namespace soft_carriere_competence.Core.Entities.salary_skills
 
 		[Column("Updated_date")]
 		public DateTime? UpdatedDate { get; set; }
+
+		[Column("employee_photo")]
+		public byte[]? Photo { get; set; }
 	}
 }

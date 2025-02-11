@@ -187,7 +187,7 @@ const ListCareerPage = () => {
               <table className="table table-competences">
                 <thead>
                   <tr>
-                    <th>Employé</th>
+                    <th>Matricule</th>
                     <th>Nom complet</th>
                     <th>Département</th>
                     <th>Poste</th>
@@ -201,9 +201,7 @@ const ListCareerPage = () => {
                   {sortedCareers.length ? (
                     sortedCareers.map((career, id) => (
                       <tr key={id} onClick={() => {handleCareersDetails(career.registrationNumber)}}>
-                        <td>
-                            <img src={pic1} alt="Profil" />
-                        </td>
+                        <td>{career.registrationNumber}</td>
                         <td>
                           {career.firstName} {career.name}
                         </td>

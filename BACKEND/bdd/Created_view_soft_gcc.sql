@@ -209,6 +209,7 @@ SELECT
     e.Department_name, 
     e.Birthday, 
     e.Hiring_date,
+	e.employee_photo,
     COALESCE(ofn.other_formation_number, 0) AS other_formation_number, 
     COALESCE(ee.education_number, 0) AS education_number, 
     COALESCE(es.skill_number, 0) AS skill_number, 
@@ -366,7 +367,8 @@ GROUP BY
   e.Name, 
   e.FirstName, 
   e.Birthday, 
-  e.hiring_date;
+  e.hiring_date,
+  e.civilite_name;
 
 -- Creation de la vue v_employee_position pour le dernier poste de chaque employe
 CREATE VIEW v_employee_get_last_position AS

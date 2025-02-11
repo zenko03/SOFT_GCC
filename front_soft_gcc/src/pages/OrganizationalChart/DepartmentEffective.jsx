@@ -31,7 +31,6 @@ function DepartmentEffective() {
     const [numberEmployeeByDepartment, setNumberEmployeeByDepartment] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null); 
-    const [showModalImport, setShowModalImport] = useState(false);
 
     // Navigation pour ajout
     const handleClickOrg = () => {
@@ -42,9 +41,6 @@ function DepartmentEffective() {
     const handleClickDetails = (departmentId) => {
         navigate(`/softGcc/effectif/details/${departmentId}`);
     };
-    
-  const handleCloseModalImport = () => setShowModalImport(false);
-  const handleShowModalImport = () => setShowModalImport(true);
 
     // Récupération des données à l'aide de l'API
     const fetchData = useCallback(async () => {
@@ -68,21 +64,11 @@ function DepartmentEffective() {
         <Template>
             {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
             {error && <div className="alert alert-danger">{error}</div>} {/* Affichez les erreurs */}
-            
-            <ModalImportEmployee showModalImport={showModalImport} handleCloseModalImport={handleCloseModalImport} />
             <PageHeader module={module} action={action} url={url} />
 
             <div className="row mb-3">
-                <div className="col-lg-8">
+                <div className="col-lg-10">
                     <h2 className="card-title">Effectif par département</h2>
-                </div>
-                <div className="col-lg-2">
-                    <div className="action-buttons text-right my-1">
-                        <button type="button" onClick={handleShowModalImport} className="btn btn-success">
-                            <i className="mdi mdi-import button-logo"></i>
-                            Import employés
-                        </button>
-                    </div>
                 </div>
                 <div className="col-lg-2">
                     <div className="action-buttons text-left my-1">

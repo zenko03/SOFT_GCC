@@ -149,7 +149,8 @@ namespace soft_carriere_competence.Controllers.salary_skills
 					Data = data ?? Enumerable.Empty<object>(),
 					TotalCount = totalCount,
 					TotalPages = data != null && data.Any()
-						? (int)Math.Ceiling((double)totalCount / pageSize)
+						? (int)
+						Math.Ceiling((double)totalCount / pageSize)
 						: 0,
 					CurrentPage = page,
 					PageSize = pageSize

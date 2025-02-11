@@ -11,6 +11,7 @@ import FormattedDate from '../../../helpers/FormattedDate';
 import { urlApi } from '../../../helpers/utils';
 import defaultImg from '../../../assets/images/male-default.webp';
 import '../../../styles/orgChart.css';
+import ModalImportEmployee from '../../../components/organizationalChart/ModalImportEmployee';
 
 // Map des images des départements
 const departmentImages = {
@@ -50,6 +51,10 @@ function ListEmployeePage() {
   const [error, setError] = useState(null);
 
   const { data: dataDepartment } = useSWR('/Department', Fetcher);
+  const [showModalImport, setShowModalImport] = useState(false);
+
+  const handleCloseModalImport = () => setShowModalImport(false);
+  const handleShowModalImport = () => setShowModalImport(true);
 
   // Fonction pour gérer les filtres
   const handleFilterChange = (e) => {
@@ -138,15 +143,24 @@ function ListEmployeePage() {
   return (
     <Template>
       {loading && <Loader />}
+      <ModalImportEmployee showModalImport={showModalImport} handleCloseModalImport={handleCloseModalImport} />
       <PageHeader module={module} action={action} url={url} />
 
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className='row'>
-        <div className='col-lg-6'>
+        <div className='col-lg-8'>
           <h4 className="card-title">LISTE DES EMPLOYES</h4>
         </div>
-        <div className='col-lg-6'>
+        <div className="col-lg-2">
+          <div className="action-buttons text-right my-1">
+            <button type="button" onClick={handleShowModalImport} className="btn btn-success">
+              <i className="mdi mdi-import button-logo"></i>
+              Import employés
+            </button>
+          </div>
+        </div>
+        <div className='col-lg-2'>
           <div className="action-buttons text-right my-1">
             <button type="button" onClick={handleClick} className="btn btn-success">
               <i className='mdi mdi-plus button-logo'></i>

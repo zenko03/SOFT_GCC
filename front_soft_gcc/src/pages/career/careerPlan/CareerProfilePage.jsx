@@ -9,6 +9,7 @@ import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 import Loader from '../../../helpers/Loader';
 import { useParams } from 'react-router-dom';
+import FormattedDate from '../../../helpers/FormattedDate';
 
 
 function CareerProfilePage({ onSearch }) {
@@ -79,7 +80,7 @@ function CareerProfilePage({ onSearch }) {
                         <div className="card-body">
                             <p>Employe : <span className='value-profil'>{dataEmployee.firstName+" "+dataEmployee.name}</span></p>
                             <p>Matricule : <span className='value-profil'>{dataEmployee.registrationNumber}</span></p>
-                            <p>Date naissance : <span className='value-profil'>{new Date(dataEmployee.birthday).toLocaleDateString()}</span></p>
+                            <p>Date naissance : <span className='value-profil'><FormattedDate date={dataEmployee.birthday} /></span></p>
                         </div>
                     </div>
                 </div>
@@ -88,7 +89,7 @@ function CareerProfilePage({ onSearch }) {
                         <div className="card-body">
                             <p>Poste actuel : <span className='value-profil'>{dataEmployee.positionName}</span></p>
                             <p>Salaire : <span className='value-profil'>{dataEmployee.baseSalary} Ar</span></p>
-                            <p>Date d'embauche : <span className='value-profil'>{new Date(dataEmployee.assignmentDate).toLocaleDateString()}</span></p>
+                            <p>Date d'embauche : <span className='value-profil'><FormattedDate date={dataEmployee.assignmentDate} /></span></p>
                         </div>
                     </div>
                 </div>
@@ -112,7 +113,7 @@ function CareerProfilePage({ onSearch }) {
             </div>
 
             {componentToDisplay === 2 ? (
-                <Certificate />
+                <Certificate dataEmployee={dataEmployee}/>
             ) : componentToDisplay === 3 ? (
                 <History registrationNumber={registrationNumber} />
             ) : (
