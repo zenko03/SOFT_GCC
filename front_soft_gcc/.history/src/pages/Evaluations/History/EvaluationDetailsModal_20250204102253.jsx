@@ -11,7 +11,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import '../../../assets/css/Evaluations/EvaluationDetailsModal.css';
+import '../../../assets/css/Evaluations/EvaluationDetailModal.css';
+
 
 // Enregistrement des composants nécessaires pour Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -91,7 +92,7 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
 
       case 3:
         return (
-          <div className="chart-container">
+          <div>
             <h5>Graphique d'Évolution des Scores</h5>
             {evaluation?.questionDetails && evaluation.questionDetails.length > 0 ? (
               <Line data={chartData} options={chartOptions} />
@@ -107,7 +108,7 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
   };
 
   return (
-    <Modal show={true} onHide={onClose} size="lg" centered backdrop="static" className="evaluation-details-modal">
+    <Modal show={true} onHide={onClose} size="lg" centered backdrop="static">
       <Modal.Header closeButton>
         <Modal.Title>Détails de l'Évaluation</Modal.Title>
       </Modal.Header>

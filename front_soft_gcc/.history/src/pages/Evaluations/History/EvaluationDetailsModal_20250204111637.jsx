@@ -11,7 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import '../../../assets/css/Evaluations/EvaluationDetailsModal.css';
+import "./EvaluationDetailsModal.css"; // Importez le fichier CSS
 
 // Enregistrement des composants nécessaires pour Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);

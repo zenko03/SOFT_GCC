@@ -7,6 +7,6 @@
         Completed = 30,     // L'entretien est terminé avec succès
         Rejected = 40,      // L'entretien est rejeté (par le Manager ou le Directeur)
         Cancelled = 50 ,     // L'entretien a été annulé
-        PendingValidation = 25
+        PendingValidation = 25 // en attente de validation
     }
 }

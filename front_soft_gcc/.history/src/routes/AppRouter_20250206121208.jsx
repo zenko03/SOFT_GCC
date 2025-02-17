@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Template from '../pages/Template';
 import SalaryList from '../pages/Evaluations/Notations/SalaryList';
 import Notation from '../pages/Evaluations/Notations/Notation';
@@ -18,7 +18,6 @@ import Login from '../pages/Authentification/Login';
 import Register from '../pages/Authentification/Register';
 import EvaluationInterviewHome from '../pages/Evaluations/EvaluationInterview/EvaluationInterviewHome';
 import ProtectedRoute from '../pages/Authentification/ProtectedRoute';
-import { useNavigate } from "react-router-dom";
 
 
 
@@ -57,7 +56,7 @@ function AppRouter() {
         {/*Gestion retraite */}
         <Route path="/retraite" element={<RetirementPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Template />} />
 
 
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
 
 import { jwtDecode } from 'jwt-decode';
 
@@ -22,33 +21,21 @@ function NavigationBar({ task }) {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        console.log("Decoded Token:", decoded);
+        console.log("Decoded ",decoded);
 
-        // Récupérer l'email depuis le token
-        const userEmail = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-        console.log("Email récupéré du token:", userEmail);
-
-        if (userEmail) {
-          setUserEmail(userEmail);
-
-          // Appel API pour récupérer les détails de l'utilisateur
-          axios.get(`https://localhost:7082/api/Authentification/user?email=${userEmail}`)
-            .then(response => {
-              setUserName(`${response.data.firstName} ${response.data.lastName}`);
-              console.log("Email et prénom récupérés:", response.data.Email, response.data.FirstName);
-            })
-            .catch(error => {
-              console.error("Erreur lors de la récupération de l'utilisateur:", error);
-            });
-        } else {
-          console.error("L'email du token est indéfini.");
-        }
+        setUserEmail(decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
+        
+        // Appel API pour récupérer les détails complets
+        axios.get(`https://localhost:7082/api/Authentification/user?email=${decoded.email}`)
+          .then(response => {
+            setUserName(`${response.data.FirstName} ${response.data.LastName}`);
+            console.log(response.data.email, response.data.FirstName);
+          });
       } catch (error) {
         console.error('Erreur de décodage du token:', error);
       }
     }
   }, []);
-
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">

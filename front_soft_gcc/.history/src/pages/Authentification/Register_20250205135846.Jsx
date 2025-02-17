@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Register = () => {
   const [formData, setFormData] = useState({
+    lastName: "",
+    firstName: "",
     email: "",
     password: "",
+    roleId: 1, // Par défaut, vous pouvez ajuster cela selon vos besoins
+    departementId: 1, // Par défaut, vous pouvez ajuster cela selon vos besoins
   });
 
   const [error, setError] = useState(""); // Pour gérer les erreurs
   const navigate = useNavigate(); // Pour la navigation
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,27 +25,32 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
+    setError(""); // Réinitialiser les erreurs
 
     try {
       const response = await axios.post(
-        "https://localhost:7082/api/Authentification/login",
+        "http://localhost:5000/api/authentification/register",
         formData,
         {
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.status === 200) {
-        localStorage.setItem("token", response.data.token);
-        alert("Connexion réussie !");
-        navigate("/history");
+        alert("Inscription réussie !");
+        navigate("/login"); // Rediriger vers la page de connexion
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Identifiants invalides.");
-    } finally {
-      setLoading(false);
+      if (err.response) {
+        // Erreur provenant du serveur
+        setError(err.response.data.message || "Une erreur s'est produite.");
+      } else {
+        // Erreur réseau ou autre
+        setError("Une erreur s'est produite lors de la communication avec le serveur.");
+      }
+      console.error("Erreur lors de l'inscription :", err);
     }
   };
 
@@ -56,17 +64,41 @@ const Login = () => {
                 <div className="brand-logo">
                   <img src="../../assets/images/logo-dark.svg" alt="logo" />
                 </div>
-                <h4>SOFT GCC</h4>
-                {/* <h6 className="font-weight-light">Sign in to continue.</h6> */}
+                <h4>New here?</h4>
+                <h6 className="font-weight-light">
+                  Signing up is easy. It only takes a few steps
+                </h6>
                 {error && <div className="alert alert-danger">{error}</div>}{" "}
                 {/* Affichage des erreurs */}
                 <form className="pt-3" onSubmit={handleSubmit}>
                   <div className="form-group">
                     <input
+                      type="text"
+                      className="form-control form-control-lg"
+                      name="lastName"
+                      placeholder="Last Name"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      className="form-control form-control-lg"
+                      name="firstName"
+                      placeholder="First Name"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
                       type="email"
                       className="form-control form-control-lg"
                       name="email"
-                      placeholder="email"
+                      placeholder="Email"
                       value={formData.email}
                       onChange={handleChange}
                       required
@@ -77,46 +109,36 @@ const Login = () => {
                       type="password"
                       className="form-control form-control-lg"
                       name="password"
-                      placeholder="Mot de passe"
+                      placeholder="Password"
                       value={formData.password}
                       onChange={handleChange}
                       required
                     />
+                  </div>
+                  <div className="mb-4">
+                    <div className="form-check">
+                      <label className="form-check-label text-muted">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          required
+                        />{" "}
+                        I agree to all Terms & Conditions
+                      </label>
+                    </div>
                   </div>
                   <div className="mt-3">
                     <button
                       type="submit"
                       className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
                     >
-                      Connexion
+                      SIGN UP
                     </button>
                   </div>
-                  <div className="my-2 d-flex justify-content-between align-items-center">
-                    <div className="form-check">
-                      <label className="form-check-label text-muted">
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                        />{" "}
-                        Rester connecté
-                      </label>
-                    </div>
-                    <a href="/forgot-password" className="auth-link text-black">
-                      Mot de passe oublié?
-                    </a>
-                  </div>
-                  {/* <div className="mb-2">
-                    <button
-                      type="button"
-                      className="btn btn-block btn-facebook auth-form-btn"
-                    >
-                      <i className="mdi mdi-facebook mr-2"></i>Connect using Facebook
-                    </button>
-                  </div> */}
                   <div className="text-center mt-4 font-weight-light">
-                    Pas encore de compte?{" "}
-                    <a href="/register" className="text-primary">
-                      Creer
+                    Already have an account?{" "}
+                    <a href="/login" className="text-primary">
+                      Login
                     </a>
                   </div>
                 </form>
@@ -129,4 +151,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

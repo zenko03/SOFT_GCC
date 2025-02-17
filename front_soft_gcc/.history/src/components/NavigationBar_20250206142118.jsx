@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
 
-import { jwtDecode } from 'jwt-decode';
+import jwtDecode from 'jwt-decode'; // Installez avec: npm install jwt-decode
 
 // Affichage de la barre de navigation
 function NavigationBar({ task }) {
@@ -10,8 +9,8 @@ function NavigationBar({ task }) {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
 
-  // Déconnexion
-  const handleLogout = () => {
+   // Déconnexion
+   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
@@ -22,39 +21,24 @@ function NavigationBar({ task }) {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        console.log("Decoded Token:", decoded);
+        setUserEmail(decoded[ClaimTypes.Name]); // Ou decoded.name selon votre implémentation
 
-        // Récupérer l'email depuis le token
-        const userEmail = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-        console.log("Email récupéré du token:", userEmail);
-
-        if (userEmail) {
-          setUserEmail(userEmail);
-
-          // Appel API pour récupérer les détails de l'utilisateur
-          axios.get(`https://localhost:7082/api/Authentification/user?email=${userEmail}`)
-            .then(response => {
-              setUserName(`${response.data.firstName} ${response.data.lastName}`);
-              console.log("Email et prénom récupérés:", response.data.Email, response.data.FirstName);
-            })
-            .catch(error => {
-              console.error("Erreur lors de la récupération de l'utilisateur:", error);
-            });
-        } else {
-          console.error("L'email du token est indéfini.");
-        }
+        // Appel API pour récupérer les détails complets
+        axios.get(`https://localhost:7082/api/Authentification/user?email=${decoded.email}`)
+          .then(response => {
+            setUserName(`${response.data.firstName} ${response.data.lastName}`);
+          });
       } catch (error) {
         console.error('Erreur de décodage du token:', error);
       }
     }
   }, []);
-
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
         <a className="navbar-brand brand-logo" href="index.html">
           <img src="/src/assets/images/Logo/softwellogo.png" alt="logo" />
-        </a>
+        </a>    
         <a className="navbar-brand brand-logo-mini" href="index.html">
           <img src="/src/assets/images/logo-mini.svg" alt="logo" />
         </a>
@@ -63,11 +47,11 @@ function NavigationBar({ task }) {
         <button className="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
           <span className="mdi mdi-menu"></span>
         </button>
-
+        
         <ul className="navbar-nav navbar-nav-right">
 
 
-          <li className="nav-item dropdown">
+        <li className="nav-item dropdown">
             <a className="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
               <i className="mdi mdi-bell-outline"></i>
               <span className="count-symbol bg-danger"></span>
@@ -121,7 +105,7 @@ function NavigationBar({ task }) {
                 <img src="/src/assets/images/faces/face28.png" alt="image" />
               </div>
               <div className="nav-profile-text">
-                <p className="mb-1 text-black">{userName || 'Chargement...'}</p>
+              <p className="mb-1 text-black">{userName || 'Chargement...'}</p>
               </div>
             </a>
             <div className="dropdown-menu navbar-dropdown dropdown-menu-right p-0 border-0 font-size-sm" aria-labelledby="profileDropdown" data-x-placement="bottom-end">
@@ -131,18 +115,19 @@ function NavigationBar({ task }) {
               <div className="p-2">
                 <div role="separator" className="dropdown-divider"></div>
                 <h5 className="dropdown-header text-uppercase pl-2 text-dark mt-2">Actions</h5>
-                <button
-                  className="dropdown-item py-1 d-flex align-items-center justify-content-between"
-                  onClick={handleLogout}
-                >
-                  <span>Se déconnecter</span>
+                <a className="dropdown-item py-1 d-flex align-items-center justify-content-between" href="#">
+                  <span>Deverouiller compte</span>
+                  <i className="mdi mdi-lock ml-1"></i>
+                </a>
+                <a className="dropdown-item py-1 d-flex align-items-center justify-content-between" href="#">
+                  <span>Se deconecter</span>
                   <i className="mdi mdi-logout ml-1"></i>
-                </button>
+                </a>
               </div>
             </div>
           </li>
-
-
+          
+          
         </ul>
         <button className="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
           <span className="mdi mdi-menu"></span>

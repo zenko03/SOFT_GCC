@@ -1,6 +1,7 @@
 import React from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Template from '../pages/Template';
+import LoginPage from '../pages/LoginPage';
 import SalaryList from '../pages/Evaluations/Notations/SalaryList';
 import Notation from '../pages/Evaluations/Notations/Notation';
 import ListSkillSalaryPage from '../pages/salarySkills/ListSkillSalaryPage';
@@ -18,48 +19,46 @@ import Login from '../pages/Authentification/Login';
 import Register from '../pages/Authentification/Register';
 import EvaluationInterviewHome from '../pages/Evaluations/EvaluationInterview/EvaluationInterviewHome';
 import ProtectedRoute from '../pages/Authentification/ProtectedRoute';
-import { useNavigate } from "react-router-dom";
 
 
 
 function AppRouter() {
   return (
-    <Routes>
+    <Routes element={<ProtectedRoute />} >
+      <Route path="/" element={<Login />} />
       {/* Authentification */}
       <Route path="/Register" element={<Register />} />
+
+
+
+      {/*COMPETENCES */}
+      <Route path="/competences" element={<ListSkillSalaryPage />} />
+      <Route path="/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
+      
+      {/* EVALUATIONS */}
+      <Route path="/salary-list" element={<SalaryList />} />
+      <Route path="/notation" element={<Notation />} />
+      <Route path="/planning" element={<SalaryListPlanning />} />
+      <Route path="/history" element={<EvalHistory />} />
+      <Route path="/validation" element={<EvaluationInterviews />} />
+      <Route path="/homeInterview" element={<EvaluationInterviewHome />} />
+
+      {/* AUTHENTIFICATION */}
       <Route path="/login" element={<Login />} />
 
-      <Route element={<ProtectedRoute />}>
-        {/*COMPETENCES */}
-        <Route path="/competences" element={<ListSkillSalaryPage />} />
-        <Route path="/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
-
-        {/* EVALUATIONS */}
-        <Route path="/salary-list" element={<SalaryList />} />
-        <Route path="/notation" element={<Notation />} />
-        <Route path="/planning" element={<SalaryListPlanning />} />
-        <Route path="/history" element={<EvalHistory />} />
-        <Route path="/validation" element={<EvaluationInterviews />} />
-        <Route path="/homeInterview" element={<EvaluationInterviewHome />} />
 
 
 
 
+      {/*CARRIERE */}
+      <Route path="/carriere" element={<ListSalaryPage />} />
+      <Route path="/carriere/creation" element={<CreationCareerPlan />} />
+      <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
+      <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
+      <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
 
-
-        {/*CARRIERE */}
-        <Route path="/carriere" element={<ListSalaryPage />} />
-        <Route path="/carriere/creation" element={<CreationCareerPlan />} />
-        <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
-        <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
-        <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
-
-        {/*Gestion retraite */}
-        <Route path="/retraite" element={<RetirementPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/login" replace />} />
-
-
+      {/*Gestion retraite */}
+      <Route path="/retraite" element={<RetirementPage />} />
 
     </Routes>
   );

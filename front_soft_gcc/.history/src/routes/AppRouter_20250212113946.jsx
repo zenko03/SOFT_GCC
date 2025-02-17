@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Template from '../pages/Template';
 import SalaryList from '../pages/Evaluations/Notations/SalaryList';
 import Notation from '../pages/Evaluations/Notations/Notation';

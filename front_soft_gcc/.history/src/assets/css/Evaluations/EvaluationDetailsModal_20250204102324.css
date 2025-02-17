@@ -1,0 +1,143 @@
+/* EvaluationDetailsModal.css */
+
+:root {
+    --primary-color: #FFD700; /* Jaune moutarde */
+    --secondary-color: #2C3E50; /* Gris anthracite */
+    --background-color: #F4F4F4; /* Blanc cassé */
+    --text-color: #333333; /* Noir */
+    --accent-color: #3498DB; /* Bleu */
+    --success-color: #28a745; /* Vert */
+    --danger-color: #dc3545; /* Rouge */
+  }
+  
+  /* Styles pour le modal */
+  .modal-lg-custom {
+    max-width: 75%;
+    margin: auto;
+    border-radius: 10px;
+  }
+  
+  .modal-content {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: none;
+  }
+  
+  .modal-header {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 10px 10px 0 0;
+    padding: 15px;
+    font-size: 18px;
+  }
+  
+  .modal-title {
+    font-weight: bold;
+  }
+  
+  .modal-body {
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  .modal-footer {
+    background-color: var(--background-color);
+    border-top: 1px solid #dee2e6;
+    border-radius: 0 0 10px 10px;
+    padding: 15px;
+  }
+  
+  /* Styles pour les onglets */
+  .nav-tabs {
+    border-bottom: 2px solid var(--primary-color);
+  }
+  
+  .nav-link {
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 5px 5px 0 0;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+  }
+  
+  .nav-link:hover {
+    background-color: rgba(255, 215, 0, 0.1); /* Jaune moutarde léger */
+  }
+  
+  /* Styles pour les boutons */
+  .btn {
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+  }
+  
+  .btn-primary:hover {
+    background-color: #2980B9; /* Bleu foncé */
+    border-color: #2980B9;
+  }
+  
+  .btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+  }
+  
+  .btn-secondary:hover {
+    background-color: #1C2833; /* Gris plus foncé */
+    border-color: #1C2833;
+  }
+  
+  .btn-danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+  }
+  
+  .btn-danger:hover {
+    background-color: #c82333; /* Rouge plus foncé */
+    border-color: #c82333;
+  }
+  
+  /* Styles pour le graphique */
+  .chart-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Styles pour les étapes */
+  .step-content h5 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: var(--accent-color);
+  }
+  
+  .step-content p {
+    font-size: 14px;
+    color: var(--text-color);
+    line-height: 1.6;
+  }
+  
+  .step-content ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .step-content ul li {
+    font-size: 14px;
+    color: var(--text-color);
+  }

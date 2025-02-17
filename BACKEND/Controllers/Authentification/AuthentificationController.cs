@@ -42,5 +42,17 @@ namespace soft_carriere_competence.Controllers.Authentification
 			var result = await _userService.ResetPasswordAsync(dto);
 			return Ok(new { message = result });
 		}
+
+		// Dans AuthentificationController.cs
+		[HttpGet("user")]
+		public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
+		{
+			var user = await _userService.GetUserByEmailAsync(email);
+			if (user == null) return NotFound();
+			return Ok(user);
+		}
+
+		// Dans UserService.cs
+		
 	}
 }

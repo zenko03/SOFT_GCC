@@ -56,8 +56,8 @@ const Login = () => {
                 <div className="brand-logo">
                   <img src="../../assets/images/logo-dark.svg" alt="logo" />
                 </div>
-                <h4>SOFT GCC</h4>
-                {/* <h6 className="font-weight-light">Sign in to continue.</h6> */}
+                <h4>Hello! Let's get started</h4>
+                <h6 className="font-weight-light">Sign in to continue.</h6>
                 {error && <div className="alert alert-danger">{error}</div>}{" "}
                 {/* Affichage des erreurs */}
                 <form className="pt-3" onSubmit={handleSubmit}>
@@ -105,14 +105,14 @@ const Login = () => {
                       Mot de passe oublié?
                     </a>
                   </div>
-                  {/* <div className="mb-2">
+                  <div className="mb-2">
                     <button
                       type="button"
                       className="btn btn-block btn-facebook auth-form-btn"
                     >
                       <i className="mdi mdi-facebook mr-2"></i>Connect using Facebook
                     </button>
-                  </div> */}
+                  </div>
                   <div className="text-center mt-4 font-weight-light">
                     Pas encore de compte?{" "}
                     <a href="/register" className="text-primary">

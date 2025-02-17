@@ -22,27 +22,36 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
+    setError(""); // Réinitialiser les erreurs
 
     try {
+      console.log("jhfiurhgieg: ",formData);
       const response = await axios.post(
         "https://localhost:7082/api/Authentification/login",
         formData,
+        
         {
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.status === 200) {
-        localStorage.setItem("token", response.data.token);
+        const { token } = response.data; // Récupérer le token JWT
+        localStorage.setItem("token", token); // Stocker le token dans le localStorage
         alert("Connexion réussie !");
-        navigate("/history");
+        navigate("/history"); // Rediriger vers le tableau de bord ou une autre page
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Identifiants invalides.");
-    } finally {
-      setLoading(false);
+      if (err.response) {
+        // Erreur provenant du serveur
+        setError(err.response?.data?.message || "Identifiants invalides.");
+      } else {
+        // Erreur réseau ou autre
+        setError("Une erreur s'est produite lors de la communication avec le serveur.");
+      }
+      console.error("Erreur lors de la connexion :", err);
     }
   };
 
@@ -56,8 +65,8 @@ const Login = () => {
                 <div className="brand-logo">
                   <img src="../../assets/images/logo-dark.svg" alt="logo" />
                 </div>
-                <h4>SOFT GCC</h4>
-                {/* <h6 className="font-weight-light">Sign in to continue.</h6> */}
+                <h4>Hello! Let's get started</h4>
+                <h6 className="font-weight-light">Sign in to continue.</h6>
                 {error && <div className="alert alert-danger">{error}</div>}{" "}
                 {/* Affichage des erreurs */}
                 <form className="pt-3" onSubmit={handleSubmit}>
@@ -66,7 +75,7 @@ const Login = () => {
                       type="email"
                       className="form-control form-control-lg"
                       name="email"
-                      placeholder="email"
+                      placeholder="Email"
                       value={formData.email}
                       onChange={handleChange}
                       required
@@ -77,7 +86,7 @@ const Login = () => {
                       type="password"
                       className="form-control form-control-lg"
                       name="password"
-                      placeholder="Mot de passe"
+                      placeholder="Password"
                       value={formData.password}
                       onChange={handleChange}
                       required
@@ -88,7 +97,7 @@ const Login = () => {
                       type="submit"
                       className="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
                     >
-                      Connexion
+                      SIGN IN
                     </button>
                   </div>
                   <div className="my-2 d-flex justify-content-between align-items-center">
@@ -98,25 +107,25 @@ const Login = () => {
                           type="checkbox"
                           className="form-check-input"
                         />{" "}
-                        Rester connecté
+                        Keep me signed in
                       </label>
                     </div>
                     <a href="/forgot-password" className="auth-link text-black">
-                      Mot de passe oublié?
+                      Forgot password?
                     </a>
                   </div>
-                  {/* <div className="mb-2">
+                  <div className="mb-2">
                     <button
                       type="button"
                       className="btn btn-block btn-facebook auth-form-btn"
                     >
                       <i className="mdi mdi-facebook mr-2"></i>Connect using Facebook
                     </button>
-                  </div> */}
+                  </div>
                   <div className="text-center mt-4 font-weight-light">
-                    Pas encore de compte?{" "}
+                    Don't have an account?{" "}
                     <a href="/register" className="text-primary">
-                      Creer
+                      Create
                     </a>
                   </div>
                 </form>

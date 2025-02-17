@@ -94,13 +94,18 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         // Méthode pour connecter un utilisateur.
         public async Task<string> LoginAsync(LoginDto dto)
         {
+            Console.WriteLine("Tafiditra ato 1");
+
             // Recherche de l'utilisateur par email.
             var user = await _userRepository.GetFirstOrDefaultAsync(u => u.Email == dto.Email);
+            Console.WriteLine("Tafiditra ato 2");
+
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 throw new Exception("Email ou mot de passe incorrect.");
 
             // Génération du token JWT si la connexion est réussie.
             var token = GenerateJwtToken(user);
+            Console.WriteLine("Token: " , token);
             return token;
         }
 
@@ -212,6 +217,15 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 .ToListAsync();
 
             return (employees, totalPages);
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users
+                .Include(u => u.Department)
+                .Include(u => u.Role)
+                .Include(u => u.Poste)
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
 
     }
