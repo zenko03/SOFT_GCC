@@ -33,7 +33,7 @@ namespace soft_carriere_competence.Core.Entities.career_plan
 		public DateTime DecisionDate { get; set; }
 
 		[Column("Description")]
-		public string Description { get; set; }
+		public string? Description { get; set; }
 
 		[Column("Department_id")]
 		public int DepartmentId { get; set; }

@@ -28,6 +28,7 @@ const ListCareerPage = () => {
   const [careers, setCareers] = useState([]);
   const [sortedCareers, setSortedCareers] = useState([]);
   const [sortDirection, setSortDirection] = useState('asc');
+  const [sortColumn, setSortColumn] = useState('updatedDate');  
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -38,6 +39,13 @@ const ListCareerPage = () => {
   const navigate = useNavigate();
   const { data: dataDepartment } = useSWR('/Department', Fetcher);
   const { data: dataPosition } = useSWR('/Position', Fetcher);
+
+  const [paginationResult, setPaginationResult] = useState({
+    totalRecords: 0,
+    pageSize: 0,
+    currentPage: 0,
+    totalPages: 0
+  });
 
   // Fetch des données filtrées
   const fetchFilteredData = useCallback(
@@ -57,6 +65,12 @@ const ListCareerPage = () => {
         if (response.success) {
           setCareers(response.data);
           setTotalPages(response.totalPages || 0);
+          setPaginationResult({
+            totalRecords: response.totalCount,
+            pageSize: response.pageSize,
+            currentPage: response.currentPage,
+            totalPages: response.totalPages
+          });
         } else {
           setError(response.message || 'Erreur lors du chargement.');
           setCareers([]);
@@ -79,14 +93,24 @@ const ListCareerPage = () => {
   }, [filters, debouncedFetchData]);
 
   // Mise à jour des données triées
-  useEffect(() => {
-    const sorted = [...careers].sort((a, b) => {
-      const dateA = new Date(a.assignmentDate);
-      const dateB = new Date(b.assignmentDate);
-      return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-    });
-    setSortedCareers(sorted);
-  }, [careers, sortDirection]);
+  // Appliquer le tri chaque fois que `sortDirection` ou `careers` change
+    useEffect(() => {
+        const sorted = [...careers].sort((a, b) => {
+          const valueA = a[sortColumn];
+          const valueB = b[sortColumn];
+    
+          if (sortColumn === 'assignmentDate') {
+            const dateA = new Date(valueA);
+            const dateB = new Date(valueB);
+            return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+          } else {
+            if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
+            if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+          }
+        });
+        setSortedCareers(sorted);
+      }, [sortDirection, careers, sortColumn]);
 
   // Gestion des filtres
   const handleFilterChange = (e) => {
@@ -101,7 +125,14 @@ const ListCareerPage = () => {
     }
   };
 
-  const handleSort = () => setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
 
   const handleClick = () => navigate('/carriere/creation');
 
@@ -115,21 +146,26 @@ const ListCareerPage = () => {
       {loading && <Loader />}
       <PageHeader module={module} action={action} url={url} />
 
-      <div className="row my-3">
-        <div className="col-lg-10">
-          <h4 className="card-title">PLAN DE CARRIÈRE</h4>
+      <div className="row header-title">
+        <div className="col-lg-10 skill-header">
+          <i className="mdi mdi-map-marker-path skill-icon"></i>
+          <h4 className="skill-title">PLAN DE CARRIÈRE</h4>
         </div>
-        <div className="col-lg-2 text-end">
-          <button className="btn btn-success btn-fw" onClick={handleClick}>
+        <div className="col-lg-2">
+          <button className="btn-add btn-success btn-fw" onClick={handleClick}>
+            <i className="mdi mdi-plus"></i>
             Nouveau Plan
           </button>
-        </div>
+        </div>  
       </div>
-
-      <div className="card mb-4">
+      {error && <div className="alert alert-danger">{error}</div>}
+      <div className="card mb-4 search-card">
+        <div className="card-header title-container">
+          <h5 className="title">
+            <i className="mdi mdi-filter-outline"></i> Filtres
+          </h5>
+        </div>
         <div className="card-body">
-          <h5 className="card-title subtitle">Filtres</h5>
-
           <form className="filter-form">
             <div className="form-group">
               <label>Nom, prénom ou matricule</label>
@@ -179,22 +215,35 @@ const ListCareerPage = () => {
       </div>
 
       <div className="card">
+        <div className="card-header title-container">
+          <h5 className="title">
+            <i className="mdi mdi-format-list-bulleted"></i> Liste des employés ayant des plans de carrières
+          </h5>
+        </div>
         <div className="card-body">
-          <h5 className="card-title subtitle">Liste des nombres de carrières existants</h5>
-          {error && <p className="text-danger">{error}</p>}
           {!loading && (
             <>
               <table className="table table-competences">
                 <thead>
                   <tr>
-                    <th>Matricule</th>
-                    <th>Nom complet</th>
-                    <th>Département</th>
-                    <th>Poste</th>
-                    <th onClick={handleSort} style={{ cursor: 'pointer' }}>
-                      Date d'affectation {sortDirection === 'asc' ? '▲' : '▼'}
+                    <th onClick={() => handleSort('registrationNumber')} className="sortable-header">
+                      Matricule {sortColumn === 'registrationNumber' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
                     </th>
-                    <th>Plan de carrière</th>
+                    <th onClick={() => handleSort('firstName')} className="sortable-header">
+                      Nom complet {sortColumn === 'firstName' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                    <th onClick={() => handleSort('departmentName')} className="sortable-header">
+                      Département {sortColumn === 'departmentName' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                    <th onClick={() => handleSort('positionName')} className="sortable-header">
+                      Poste {sortColumn === 'positionName' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                    <th onClick={() => handleSort('assignmentDate')} className="sortable-header">
+                      Date d'affectation {sortColumn === 'assignmentDate' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                    <th onClick={() => handleSort('careerPlan')} className="sortable-header">
+                      Plan de carrière {sortColumn === 'careerPlan' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -224,6 +273,7 @@ const ListCareerPage = () => {
               </table>
 
               <div className="pagination">
+                <h4>{paginationResult.totalRecords} resultats aux totals</h4>
                 <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
                   Précédent
                 </button>
@@ -239,6 +289,7 @@ const ListCareerPage = () => {
                 <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
                   Suivant
                 </button>
+                <h4>Page {paginationResult.currentPage} sur {paginationResult.totalPages} pour {paginationResult.pageSize} resultats</h4>
               </div>
             </>
           )}

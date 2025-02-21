@@ -39,6 +39,12 @@ function ListSkillSalaryPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [paginationResult, setPaginationResult] = useState({
+      totalRecords: 0,
+      pageSize: 0,
+      currentPage: 0,
+      totalPages: 0
+  });
 
   // Appliquer le tri chaque fois que `sortDirection` ou `skills` change
   useEffect(() => {
@@ -74,6 +80,12 @@ function ListSkillSalaryPage() {
       const response = await axios.get(urlApi(route), { params });
       setSkills(response.data.data);
       setTotalPages(response.data.totalPages);
+      setPaginationResult({
+        totalRecords: response.data.totalRecords,
+        pageSize: response.data.pageSize,
+        currentPage: response.data.currentPage,
+        totalPages: response.data.totalPages
+      });
     } catch (err) {
       setError("Erreur lors de la récupération des données.");
     } finally {
@@ -144,41 +156,51 @@ function ListSkillSalaryPage() {
 
 
       <PageHeader module={module} action={action} url={url} />
-      {error && <p className="text-danger">{error}</p>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="row">
-        <div className='col-lg-12'>
-          <h4 className="card-title">COMPETENCES DES SALARIES</h4>
+        <div className="col-lg-12 skill-header">
+          <i className="mdi mdi-school skill-icon"></i>
+          <h4 className="skill-title">COMPÉTENCES DES SALARIÉS</h4>
         </div>
-        
-        <div className="col-lg-12 grid-margin stretch-card">
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title subtitle">Filtre de recherche</h5>
-              <form className="form-sample">
-                <div className="form-group row">
-                  <div className="col-sm-12">
+                    
+        <div className="col-lg-12 grid-margin">
+            <div className="search-card">
+              <div className="card-header title-container">
+                <h5 className="title">
+                  <i className="mdi mdi-filter-outline"></i> Filtre de recherche
+                </h5>
+                {error && <p className="text-danger search-error">{error}</p>}
+              </div>
+              <div className="card-body">
+                <form className="search-form">
+                  <div className="form-group">
                     <input
                       type="text"
-                      className="form-control"
-                      placeholder="Nom, prénom ou matricule"
+                      className="form-control search-input"
+                      placeholder="🔍 Nom, prénom ou matricule"
                       value={searchTerm}
                       onChange={(e) => handleSearch(e.target.value)}
                     />
                   </div>
-                </div>
-              </form>
-              {error && <p className="text-danger">{error}</p>}
+                </form>
+                {error && <p className="text-danger search-error">{error}</p>}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        
 
       <div className="row">
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
+            <div className="card-header title-container">
+              <h5 className="title">
+                <i className="mdi mdi-format-list-bulleted"></i> Liste des employés avec leur nombre de compétences
+              </h5>
+              {error && <p className="text-danger search-error">{error}</p>}
+            </div>
             <div className="card-body">
-              <h5 className="card-title subtitle">Nombre des compétences par employé</h5>
               {!loading && !error && (
                 <>
                   <table className="table table-competences">
@@ -235,6 +257,7 @@ function ListSkillSalaryPage() {
                     </tbody>
                   </table>
                   <div className="pagination">
+                    <h4>{paginationResult.totalRecords} resultats aux totals</h4>
                     <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
                       Précédent
                     </button>
@@ -242,6 +265,7 @@ function ListSkillSalaryPage() {
                     <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
                       Suivant
                     </button>
+                    <h4>Page {paginationResult.currentPage} sur {paginationResult.totalPages} pour {paginationResult.pageSize} resultats</h4>
                   </div>
                 </>
               )}

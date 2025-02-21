@@ -59,7 +59,7 @@ function CreationCareerPlan({ onSearch }) {
 
     // Gestion état du formulaire
     const [formData, setFormData] = useState({
-        assignmentTypeId: undefined,
+        assignmentTypeId: 1,
         registrationNumber: undefined,
         decisionNumber: undefined,
         decisionDate: undefined,
@@ -156,7 +156,33 @@ function CreationCareerPlan({ onSearch }) {
         };
   
         const response = await axios.post(urlApi('/CareerPlan'), dataToSend);
-        console.log(response.data);
+        setFormData({
+            assignmentTypeId: 1,
+            registrationNumber: undefined,
+            decisionNumber: undefined,
+            decisionDate: undefined,
+            assignmentDate: undefined,
+            description: undefined,
+            establishmentId: undefined,
+            departmentId: undefined,
+            positionId: undefined,
+            employeeTypeId: undefined,
+            socioCategoryProfessionalId: undefined,
+            indicationId: undefined,
+            baseSalary: undefined,
+            netSalary: undefined,
+            professionalCategoryId: undefined,
+            legalClassId: undefined,
+            newsletterTemplateId: undefined,
+            paymentMethodId: undefined,
+            endingContract: undefined,
+            reason: undefined,
+            assigningInstitution: undefined,
+            startDate: undefined,
+            endDate: undefined,
+            echelonId: undefined,
+            state: 1,
+        });
     } catch (error) {
         console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
     } finally {
@@ -203,6 +229,12 @@ function CreationCareerPlan({ onSearch }) {
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
+            <div className="row header-title">
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-map-marker-path skill-icon"></i>
+                    <h4 className="skill-title">CREATION D'UN PLAN DE CARRIÈRE</h4>
+                </div>
+            </div>
             <div className="row">
                 <div className="button-save-profil">
                     <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">Enregistrer</button>

@@ -3,14 +3,14 @@
     text-overflow: ellipsis;
     overflow: hidden; 
     max-width: 150px;
-    padding: 12px;
+    padding: 30px;
     border-bottom: 1px solid #ddd; 
 }
 
 .table-competences th {
-    background: #007bff;
-    color: white;
-    padding: 12px;
+    background: #f3f2f2;
+    color: #333;
+    padding: 30px;
     text-align: left;
     font-weight: bold;
     cursor: pointer;
@@ -30,7 +30,7 @@
 }
 
 .table-competences th.sortable-header:hover {
-    background: #0056b3;
+    background: #ddd;
 }
 
 .table-competences thead tr {
@@ -211,4 +211,101 @@
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.skill-header {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espacement entre l'icône et le texte */
+  padding: 15px;
+}
+
+.skill-icon {
+  font-size: 28px;
+  color: #333; /* Bleu professionnel */
+}
+
+.skill-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.search-card {
+  background: #ffffff;
+  border-radius: 0px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.search-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #B8860B;
+}
+
+.title span {
+  padding-left: 10px;
+}
+
+.title-container i {
+  font-size: 20px;
+  color: #B8860B;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+}
+
+.search-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+.search-error {
+  color: #d9534f;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.btn-add {
+  display: flex;
+  align-items: center; /* Alignement vertical */
+  justify-content: center; /* Alignement horizontal */
+  gap: 8px; /* Espacement entre l'icône et le texte */
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-add i {
+  font-size: 25px; /* Taille de l'icône */
+}
+
+.header-title {
+  margin-bottom: 1px !important;
 }

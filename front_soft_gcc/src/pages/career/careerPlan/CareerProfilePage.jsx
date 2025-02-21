@@ -73,7 +73,12 @@ function CareerProfilePage({ onSearch }) {
         <Template>
             <PageHeader module={module} action={action} url={url} />
 
-            <h4>Description de l'employe</h4>
+            <div className="title-container">
+                <h4 className="title"> 
+                <i className="mdi mdi-note-text"></i> 
+                <span>Description de l'employe</span>
+                </h4>
+            </div>
             <div className="row description">    
                 <div className="col-md-6 grid-margin stretch-card">
                     <div className="card">

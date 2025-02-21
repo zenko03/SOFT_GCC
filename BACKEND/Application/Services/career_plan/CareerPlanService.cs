@@ -137,19 +137,17 @@ namespace soft_carriere_competence.Application.Services.career_plan
 			}
 
 
-			// Ajout de la pagination
-			sql.Append(" ORDER BY Assignment_date OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY");
-			parameters.Add(new SqlParameter("@Offset", (page - 1) * pageSize));
-			parameters.Add(new SqlParameter("@PageSize", pageSize));
+			var filteredQuery = _context.VEmployeeCareer
+				.FromSqlRaw(sql.ToString(), parameters.ToArray());
 
-			// Exécution des requêtes
-			var totalCount = await _context.VEmployeeCareer
-				.FromSqlRaw(countSql.ToString(), parameters.ToArray())
-				.CountAsync(); // La requête COUNT est maintenant correcte
+			var totalCount = await filteredQuery.CountAsync();
 
-			var data = await _context.VEmployeeCareer
-				.FromSqlRaw(sql.ToString(), parameters.ToArray())
+			// Appliquer la pagination aux résultats filtrés
+			var data = await filteredQuery
+				.Skip((page - 1) * pageSize)
+				.Take(pageSize)
 				.ToListAsync();
+
 
 			return (data, totalCount);
 		}
