@@ -128,6 +128,8 @@ builder.Services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepo
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<EvaluationHistoryService>();
+builder.Services.AddScoped<EvaluationPortalService>();
+
 
 #endregion
 

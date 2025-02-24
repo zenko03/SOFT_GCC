@@ -22,7 +22,6 @@ const EvaluationInterviews = () => {
     const ROLE_MANAGER = 2;
     const ROLE_DIRECTOR = 3;
 
-    // console.log('Rôle de l\'utilisateur connecté :', user.roleId, 'Titre du rôle :', user.roleTitle);
     // Gestion des données extraites depuis EvaluationImport
     const handleExtractedData = (data) => {
         console.log('Données extraites :', data);
@@ -31,7 +30,7 @@ const EvaluationInterviews = () => {
 
     // Gestion du contenu des étapes en fonction du rôle
     const renderStepContent = () => {
-        if (user.roleId === 1) {
+        if (user?.role?.roleId === ROLE_RH) {
             switch (currentStep) {
                 case 1:
                     return (
@@ -52,7 +51,7 @@ const EvaluationInterviews = () => {
                 default:
                     return null;
             }
-        } else if (user.roleId === ROLE_MANAGER || user.roleId === ROLE_DIRECTOR) {
+        } else if (user?.role?.roleId === ROLE_MANAGER || user?.role?.roleId === ROLE_DIRECTOR) {
             switch (currentStep) {
                 case 1:
                     return (
@@ -79,8 +78,8 @@ const EvaluationInterviews = () => {
 
     // Vérification des autorisations d'accès aux étapes
     const validateStepAccess = (step) => {
-        if (user.roleId === ROLE_RH && step <= 2) return true; // RH : seulement 2 étapes
-        if ((user.roleId === ROLE_MANAGER || user.roleId === ROLE_DIRECTOR) && step <= 2) return true; // Manager/Director : seulement 2 étapes
+        if (user?.role?.roleId === ROLE_RH && step <= 2) return true; // RH : seulement 2 étapes
+        if ((user?.role?.roleId === ROLE_MANAGER || user?.role?.roleId === ROLE_DIRECTOR) && step <= 2) return true; // Manager/Director : seulement 2 étapes
         return false;
     };
 
@@ -128,7 +127,7 @@ const EvaluationInterviews = () => {
                             className={currentStep === 1 ? 'active' : ''}
                             onClick={() => setCurrentStep(1)}
                         >
-                            {getStepName(user.roleId, 1)}
+                            {getStepName(user?.role?.roleId, 1)}
                         </li>
                     )}
                     {validateStepAccess(2) && (
@@ -136,7 +135,7 @@ const EvaluationInterviews = () => {
                             className={currentStep === 2 ? 'active' : ''}
                             onClick={() => setCurrentStep(2)}
                         >
-                            {getStepName(user.roleId, 2)}
+                            {getStepName(user?.role?.roleId, 2)}
                         </li>
                     )}
                 </ul>
@@ -155,7 +154,7 @@ const EvaluationInterviews = () => {
                     </button>
                     <button
                         className="btn btn-primary"
-                        disabled={currentStep === 2 || (user.roleId === ROLE_RH && !extractedData)}
+                        disabled={currentStep === 2 || (user?.role?.roleId === ROLE_RH && !extractedData)}
                         onClick={handleNextStep}
                     >
                         Suivant

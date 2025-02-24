@@ -52,7 +52,33 @@ namespace soft_carriere_competence.Controllers.Authentification
 			return Ok(user);
 		}
 
+		[HttpGet("current-user")]
+		public async Task<IActionResult> GetCurrentUser()
+		{
+			var userIdClaim = User.FindFirst("userId")?.Value; // Récupération de l'ID utilisateur depuis le token
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
+
+			return Ok(new
+			{
+				id = user.Id,
+				email = user.Email,
+				firstName = user.FirstName,
+				lastName = user.LastName,
+				roleId = user.RoleId,
+				roleTitle = user.Role?.Title ?? "Unknown",
+				postId = user.PostId,
+				departmentId = user.DepartmentId
+			});
+		}
+
+
 		// Dans UserService.cs
-		
+
 	}
 }

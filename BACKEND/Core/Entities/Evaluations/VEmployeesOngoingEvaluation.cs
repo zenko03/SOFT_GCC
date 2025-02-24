@@ -9,7 +9,7 @@
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int? EvaluationId { get; set; }
-        public string? EvaluationType { get; set; }
-        public int? state { get; set; }
+        public string? EvaluationTypeId { get; set; }
+        public int? EvaluationState { get; set; }
     }
 }

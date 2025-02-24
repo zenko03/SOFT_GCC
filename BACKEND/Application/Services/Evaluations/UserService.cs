@@ -157,8 +157,14 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             var claims = new List<Claim>
     {
-        new Claim(ClaimTypes.Name, user.Email),
-        new Claim(ClaimTypes.Role, user.RoleId.ToString())
+        new Claim("userId", user.Id.ToString()), // ID de l'utilisateur
+        new Claim("email", user.Email), // Email de l'utilisateur
+        new Claim("firstName", user.FirstName), // Prénom
+        new Claim("lastName", user.LastName), // Nom
+        new Claim("roleId", user.RoleId.ToString()), // ID du rôle
+        new Claim("roleTitle", user.Role?.Title ?? "Unknown"), // Titre du rôle
+        new Claim("postId", user.PostId.ToString()), // ID du poste
+        new Claim("departmentId", user.DepartmentId.ToString()) // ID du département
     };
 
             var token = new JwtSecurityToken(
@@ -171,6 +177,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
 
         public async Task<int> CountAsync(int? department = null)
         {
@@ -226,6 +233,15 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 .Include(u => u.Role)
                 .Include(u => u.Poste)
                 .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            return await _context.Users
+                .Include(u => u.Department)
+                .Include(u => u.Role)
+                .Include(u => u.Poste)
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
     }

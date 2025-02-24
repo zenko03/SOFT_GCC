@@ -72,11 +72,17 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<EvaluationQuestion> evaluationQuestions {  get; set; }
 	    public DbSet<EvaluationInterviews> evaluationInterviews { get; set; }
         public DbSet<InterviewParticipants> interviewParticipants { get; set; }
+        public DbSet<EvaluationProgress> evaluationProgresses { get; set; }
+
 
         public DbSet<VEmployeeDetails> VEmployeeDetails { get; set; }
         public DbSet<VEmployeeWithoutEvaluation> vEmployeeWithoutEvaluations { get; set; }
         public DbSet<VEmployeesFinishedEvaluation> vEmployeesFinishedEvaluations { get; set; }
         public DbSet<VEvaluationHistory> vEvaluationHistories { get; set; }
+        public DbSet<VEmployeesOngoingEvaluation> vEmployeesOngoingEvaluations { get; set; }
+        public DbSet<VEmployeeEvaluationProgress> vEmployeesEvaluationProgress { get; set; }
+
+
 
 
 
@@ -122,6 +128,10 @@ namespace soft_carriere_competence.Infrastructure.Data
             modelBuilder.Entity<VEmployeeWithoutEvaluation>().HasNoKey().ToView("VEmployeesWithoutEvaluation");
             modelBuilder.Entity<VEmployeesFinishedEvaluation>().HasNoKey().ToView("VEmployeesFinishedEvaluation");
             modelBuilder.Entity<VEvaluationHistory>().HasNoKey().ToView("VEvaluationHistory");
+            modelBuilder.Entity<VEmployeesOngoingEvaluation>().HasNoKey().ToView("VEmployeesOngoingEvaluation");
+            modelBuilder.Entity<VEmployeeEvaluationProgress>().HasNoKey().ToView("VEmployeeEvaluationProgress");
+
+
 
 
             //    // Configuration de la relation EvaluationInterviews - InterviewParticipants

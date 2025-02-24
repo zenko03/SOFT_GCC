@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
 
 const UserContext = createContext();
 
@@ -13,14 +12,19 @@ export const UserProvider = ({ children }) => {
             if (!token) return;
 
             try {
-                const response = await axios.get("https://localhost:7082/api/Authentification/current-user", {
+                const response = await fetch("http://localhost:7273/api/authentification/current-user", {
+                    method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json"
                     }
                 });
 
-                const userData = response.data;
+                if (!response.ok) {
+                    throw new Error("Erreur lors de la récupération de l'utilisateur");
+                }
+
+                const userData = await response.json();
                 console.log("Utilisateur récupéré:", userData);
 
                 setUser(userData);

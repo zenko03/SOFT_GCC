@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { useUser } from "../pages/Evaluations/EvaluationInterview/UserContext"; // Importez le hook useUser
+import { useUser } from './UserContext'; // Importez le hook useUser
 
 // Affichage de la barre de navigation
 function NavigationBar({ task }) {

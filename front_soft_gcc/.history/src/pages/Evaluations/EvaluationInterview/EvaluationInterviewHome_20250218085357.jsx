@@ -39,8 +39,7 @@ function EvaluationInterviewHome() {
   });
 
   const { user } = useUser(); // Récupération de l'objet utilisateur
-  console.log("user: ", user);
-  console.log("userId: ", user.roleId,"roleTitle: ",user.roleTitle); // 'RH', 'Manager', ou 'Director'
+  console.log("userRole: ", user); // 'RH', 'Manager', ou 'Director'
 
   const fetchSelectedEmployee = async (employeeId) => {
     try {

@@ -22,7 +22,7 @@ const EvaluationInterviews = () => {
     const ROLE_MANAGER = 2;
     const ROLE_DIRECTOR = 3;
 
-    // console.log('Rôle de l\'utilisateur connecté :', user.roleId, 'Titre du rôle :', user.roleTitle);
+    console.log('Rôle de l\'utilisateur connecté :', user.roleId, 'Titre du rôle :', user.roleTitle);
     // Gestion des données extraites depuis EvaluationImport
     const handleExtractedData = (data) => {
         console.log('Données extraites :', data);
