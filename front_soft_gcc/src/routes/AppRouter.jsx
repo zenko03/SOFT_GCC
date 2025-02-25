@@ -1,7 +1,6 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Template from '../pages/Template';
-import LoginPage from '../pages/LoginPage';
 import SalaryList from '../pages/Evaluations/Notations/SalaryList';
 import Notation from '../pages/Evaluations/Notations/Notation';
 import ListSkillSalaryPage from '../pages/salarySkills/ListSkillSalaryPage';
@@ -53,14 +52,22 @@ import SocioCategoryProfessionalCrudPage from '../pages/settings/career/SocioCat
 import UploadImage from '../pages/settings/UploadImage';
 import CreateEmployeePage from '../pages/settings/employeeManagement/CreateEmployeePage';
 import ListEmployeePage from '../pages/settings/employeeManagement/ListEmployeePage';
+import EvaluationInterviews from '../pages/Evaluations/EvaluationInterview/EvaluationInterviews';
+import RetirementPage from '../pages/retirement/retirementPage';
+import Login from '../pages/Authentification/Login';
+import Register from '../pages/Authentification/Register';
+import EvaluationInterviewHome from '../pages/Evaluations/EvaluationInterview/EvaluationInterviewHome';
+import ProtectedRoute from '../pages/Authentification/ProtectedRoute';
+import { useNavigate } from "react-router-dom";
+
+
 
 function AppRouter() {
   return (
     <Routes>
-      <Route path="/" element={<Template />} />
       {/* Authentification */}
-      <Route path="/Login" element={<Login />} />
       <Route path="/Register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
 
       {/*COMPETENCES */}
       <Route path="/competences" element={<ListSkillSalaryPage />} />
@@ -79,9 +86,37 @@ function AppRouter() {
       <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
       <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
       <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
+      <Route element={<ProtectedRoute />}>
+        {/*COMPETENCES */}
+        <Route path="/competences" element={<ListSkillSalaryPage />} />
+        <Route path="/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
 
-      {/*Gestion retraite */}
-      <Route path="/retraite" element={<RetirementPage />} />
+        {/* EVALUATIONS */}
+        <Route path="/salary-list" element={<SalaryList />} />
+        <Route path="/notation" element={<Notation />} />
+        <Route path="/planning" element={<SalaryListPlanning />} />
+        <Route path="/history" element={<EvalHistory />} />
+        <Route path="/validation" element={<EvaluationInterviews />} />
+        <Route path="/homeInterview" element={<EvaluationInterviewHome />} />
+
+
+
+
+
+
+        {/*CARRIERE */}
+        <Route path="/carriere" element={<ListSalaryPage />} />
+        <Route path="/carriere/creation" element={<CreationCareerPlan />} />
+        <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
+        <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
+        <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
+
+        {/*Gestion retraite */}
+        <Route path="/retraite" element={<RetirementPage />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/login" replace />} />
+
+
 
       {/*Souhait evolution */}
       <Route path="/softGcc/souhaitEvolution/ajouter" element={<AddWishEvolution />} />

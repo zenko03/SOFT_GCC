@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\BACKEND",
+    "\\BACKEND\\Controllers",
+    "\\BACKEND\\Controllers\\Authentification",
+    "\\BACKEND\\Controllers\\Evaluations",
+    "\\BACKEND\\Infrastructure",
+    "\\BACKEND\\Infrastructure\\Data",
+    "\\BACKEND\\Infrastructure\\Repositories",
+    "\\BACKEND\\Modeles",
+    "\\BACKEND\\Properties"
+  ],
+  "SelectedNode": "\\BACKEND\\Controllers\\Evaluations\\EvaluationHistoryController.cs",
+  "PreviewInSolutionExplorer": false
+}

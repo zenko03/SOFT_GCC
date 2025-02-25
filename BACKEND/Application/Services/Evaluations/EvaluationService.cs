@@ -4,6 +4,10 @@ using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Core.Interface.EvaluationInterface;
 using soft_carriere_competence.Infrastructure.Data;
 using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
+using soft_carriere_competence.Application.Services.EmailService;
+using soft_carriere_competence.Core.Interface.AuthInterface;
+using Microsoft.Extensions.Options;
+
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -15,13 +19,18 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly IGenericRepository<TrainingSuggestion> _trainingSuggestionsRepository;
         private readonly IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaireRepository;
         private readonly IGenericRepository<Evaluation> _evaluationRepository;
-
+        private readonly IGenericRepository<User> _userRepository;
+        private readonly IEmailService _emailService;
+        private readonly ReminderSettings _reminderSettings;
 
 
 
         public EvaluationService(IEvaluationQuestionRepository questionRepository, IGenericRepository<EvaluationType> evaluationType,
             IGenericRepository<EvaluationQuestion> EvaluationQuestion, IGenericRepository<Evaluation> _evaluation,
-            IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaire, IGenericRepository<TrainingSuggestion> _trainingSuggestions
+            IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaire, IGenericRepository<TrainingSuggestion> _trainingSuggestions,
+            IGenericRepository<User> userRepository,
+            IEmailService emailService,
+            IOptions<ReminderSettings> reminderSettings
 
             )
         {
@@ -31,8 +40,12 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             _evaluationRepository = _evaluation;
             _trainingSuggestionsRepository = _trainingSuggestions;
             _evaluationQuestionnaireRepository = _evaluationQuestionnaire; 
+            _userRepository = userRepository;
+            _emailService = emailService;
+            _reminderSettings = reminderSettings.Value; // Get the configured value
+
         }
-     
+
         public async Task<IEnumerable<EvaluationQuestion>> GetEvaluationQuestionsAsync(int evaluationTypeId, int postId)
         {
             return await _questionRepository.GetQuestionsByEvaluationTypeAndPostAsync(evaluationTypeId, postId);
@@ -50,6 +63,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             var total = ratings.Values.Sum();
             var count = ratings.Count;
+            
+            
 
             return (double)total / count;
         }
@@ -91,10 +106,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             return result;
         }
-
-
-
-
+        
         public async Task<bool> ValidateEvaluationAsync(int evaluationId, bool isServiceApproved, bool isDgApproved, DateTime? serviceApprovalDate, DateTime? dgApprovalDate)
         {
             var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
@@ -104,6 +116,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             evaluation.isDgApproved = isDgApproved;
             evaluation.serviceApprovalDate = serviceApprovalDate;
             evaluation.dgApprovalDate = dgApprovalDate;
+            evaluation.state= 20;
 
             await _evaluationRepository.UpdateAsync(evaluation);
             return true;
@@ -129,8 +142,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             evaluation.Comments = generalEvaluation;
             evaluation.strengths = strengths;  // Colonne ajoutée
             evaluation.weaknesses = weaknesses; // Colonne ajoutée
-            
-
 
             await _evaluationRepository.UpdateAsync(evaluation);
 
@@ -145,7 +156,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     EvaluationId = evaluationId,
                     questionId = rating.Key,
                     Score = rating.Value,
-                    state = 1 // Actif
+                    state = 10 // TERMINEE
                 };
                 await _evaluationQuestionnaireRepository.CreateAsync(questionnaire);
             }
@@ -156,6 +167,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, int supervisorId, DateTime startDate, DateTime endDate)
         {
+            
             var newEvaluation = new Evaluation
             {
                 UserId = userId,
@@ -165,9 +177,13 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 EndDate = endDate,
                 OverallScore = 0, // Initialisé à 0, sera mis à jour avec les résultats
                 Comments = null,
-                state = 1 // Actif
+                state = 10 // Actif
             };
             await _evaluationRepository.CreateAsync(newEvaluation);
+            var user = await _userRepository.GetByIdAsync(userId);
+          
+            await _emailService.SendEmailAsync(user.Email, "Planification évaluation",
+                $"Vous avez une évaluation le : {startDate} au {endDate}");
             return newEvaluation.EvaluationId; // Retourner l'ID généré
         }
 
@@ -179,6 +195,74 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return true;
         }
 
+        //public async Task<int> rappelerEvaluation(int evaluation_id)
+        //{
+        //    try
+        //    {
+        //        var evaluation = await _evaluationRepository.GetByIdAsync(evaluation_id);
+        //        int idUser = evaluation.UserId;
+        //        var user = await _userRepository.GetByIdAsync(idUser);
+        //        await _emailService.SendEmailAsync(user.Email, "Rappel évaluation",
+        //            $"Pour rappel , vous avez une évaluation le : {evaluation.StartDate} au {evaluation.EndDate}");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return 0;
+        //    }
+        //    return 1;
+        //}
 
+
+
+        // Method to send reminder emails for evaluations that are due
+        public async Task SendAutomaticRemindersAsync()
+        {
+            var upcomingEvaluations = await GetUpcomingEvaluationsAsync();
+
+            foreach (var evaluation in upcomingEvaluations)
+            {
+                await SendReminderEmailAsync(evaluation.UserId, evaluation.StartDate);
+            }
+        }
+
+
+        // Method to get evaluations that are due for reminders (e.g., 2 days before the evaluation date)
+        public async Task<List<Evaluation>> GetUpcomingEvaluationsAsync()
+        {
+            var today = DateTime.UtcNow;
+            var reminderDate = today.AddDays(_reminderSettings.DaysBefore); // Use the configured days before
+
+            var evaluations = await _evaluationRepository.GetAllAsync();
+            return evaluations.Where(e => e.StartDate.Date == reminderDate.Date).ToList();
+        }
+
+        // Method to send a reminder email to the user
+        public async Task SendReminderEmailAsync(int userId, DateTime evaluationDate)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user != null)
+            {
+                await _emailService.SendEmailAsync(user.Email, "Rappel d'évaluation",
+                    $"Ceci est un rappel que vous avez une évaluation prévue le {evaluationDate.ToShortDateString()}.");
+            }
+        }
+
+        // Existing rappelerEvaluation method (if needed for manual reminders)
+        public async Task<int> rappelerEvaluation(int evaluationId)
+        {
+            try
+            {
+                var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
+                if (evaluation == null) return 0; // Evaluation not found
+
+                int userId = evaluation.UserId;
+                await SendReminderEmailAsync(userId, evaluation.StartDate);
+            }
+            catch (Exception)
+            {
+                return 0; // Error occurred
+            }
+            return 1; // Success
+        }
     }
 }

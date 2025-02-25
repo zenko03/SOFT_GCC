@@ -25,6 +25,9 @@ using soft_carriere_competence.Application.Services.dashboard;
 using soft_carriere_competence.Application.Services.entrepriseOrg;
 using soft_carriere_competence.Core.Entities.history;
 using soft_carriere_competence.Application.Services.history;
+using soft_carriere_competence.Core.Entities.Evaluations;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
@@ -134,17 +137,20 @@ builder.Services.AddScoped<EvaluationService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<EvaluationPlanningService>();
+builder.Services.AddScoped<EvaluationInterviewService>();
 
-
-
-// Enregistrement de IEvaluationQuestionRepository
+builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
 builder.Services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
 
-// Enregistrement de IGenericRepository<>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<EvaluationHistoryService>();
+builder.Services.AddScoped<EvaluationPortalService>();
+builder.Services.AddScoped<ReminderBackgroundService>();
+builder.Services.Configure<ReminderSettings>(builder.Configuration.GetSection("ReminderSettings"));
+
+
+
 #endregion
 
 
@@ -190,6 +196,7 @@ builder.Services.AddCors(options =>
 
 #region Swagger
 builder.Services.AddControllers();
+    
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

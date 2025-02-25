@@ -18,5 +18,7 @@
         public bool? IsDgApproved { get; set; }
         public string? EvaluationType { get; set; }
         public int? posteId {  get; set; }
+
+        public int? state {  get; set; }
     }
 }

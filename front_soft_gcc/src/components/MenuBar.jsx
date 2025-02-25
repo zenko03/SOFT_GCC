@@ -48,7 +48,7 @@ function MenuBar({ task }) {
             <ul className="nav flex-column sub-menu">
               <li className="nav-item"> <Link className="nav-link" to="/salary-list">Notation D'evaluation</Link></li>
               <li className="nav-item"> <Link className="nav-link" to="/planning"> Planning d'evaluations </Link></li>
-              <li className="nav-item"> <Link className="nav-link" to="/validation"> Entretien d'evaluations </Link></li>
+              <li className="nav-item"> <Link className="nav-link" to="/homeInterview"> Entretien d'evaluations </Link></li>
               <li className="nav-item"> <Link className="nav-link" to="/history"> Historique d'evaluations </Link></li>
             </ul>
           </div>
