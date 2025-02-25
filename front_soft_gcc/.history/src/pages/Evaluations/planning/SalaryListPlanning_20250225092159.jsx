@@ -138,7 +138,13 @@ function SalaryListPlanning() {
     setDateError(''); // Reset date error
   };
 
-
+  const handleEvaluationDetailsChange = (e) => {
+    const { name, value } = e.target;
+    setEvaluationDetails((prev) => ({ ...prev, [name]: value }));
+    if (name === 'startDate' || name === 'endDate') {
+      validateDates(); // Validate dates on change
+    }
+  };
 
   const validateDates = () => {
     const today = new Date();
@@ -151,24 +157,14 @@ function SalaryListPlanning() {
       error = 'Les deux dates doivent être définies.';
     } else if (startDate < today) {
       error = 'La date de début ne peut pas être antérieure à aujourd\'hui.';
-    } 
+    } else if (startDate > endDate) {
+      error = 'La date de début doit être antérieure à la date de fin.';
+    }
 
-    setDateError(error); // Met à jour l'état de l'erreur de date
+    setDateError(error); // Set date error state
     return error;
   };
 
-  const handleEvaluationDetailsChange = (e) => {
-    const { name, value } = e.target;
-    setEvaluationDetails((prev) => ({ ...prev, [name]: value }));
-
-    // Valider les dates uniquement si les deux dates sont définies
-    if (name === 'startDate' || name === 'endDate') {
-      const error = validateDates();
-      if (!error) {
-        setDateError(''); // Réinitialiser l'erreur si les dates sont valides
-      }
-    }
-  };
   const handleSendReminderEmail = async () => {
     try {
       await axios.post('https://localhost:7082/api/EvaluationPlanning/send-reminder', {

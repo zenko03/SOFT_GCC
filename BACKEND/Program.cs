@@ -19,6 +19,9 @@ using soft_carriere_competence.Core.Entities.retirement;
 using soft_carriere_competence.Application.Services.retirement;
 using soft_carriere_competence.Application.Services.EmailService;
 using soft_carriere_competence.Core.Interface.AuthInterface;
+using soft_carriere_competence.Core.Entities.Evaluations;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 //Connect base SQLSERVER
@@ -129,6 +132,9 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<EvaluationHistoryService>();
 builder.Services.AddScoped<EvaluationPortalService>();
+builder.Services.AddScoped<ReminderBackgroundService>();
+builder.Services.Configure<ReminderSettings>(builder.Configuration.GetSection("ReminderSettings"));
+
 
 
 #endregion

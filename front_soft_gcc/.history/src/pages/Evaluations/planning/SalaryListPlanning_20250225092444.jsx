@@ -151,7 +151,9 @@ function SalaryListPlanning() {
       error = 'Les deux dates doivent être définies.';
     } else if (startDate < today) {
       error = 'La date de début ne peut pas être antérieure à aujourd\'hui.';
-    } 
+    } else if (startDate > endDate) {
+      error = 'La date de début doit être antérieure à la date de fin.';
+    }
 
     setDateError(error); // Met à jour l'état de l'erreur de date
     return error;

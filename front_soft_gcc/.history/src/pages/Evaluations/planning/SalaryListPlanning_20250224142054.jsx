@@ -12,11 +12,6 @@ function SalaryListPlanning() {
   const [departments, setDepartments] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-
-  const [autoReminderEnabled, setAutoReminderEnabled] = useState(false); // State for automatic reminders
-
-  const [emailSent, setEmailSent] = useState(false); // State for email sent status
-
   const [evaluationDetails, setEvaluationDetails] = useState({
     evaluationType: '',
     supervisor: '',
@@ -138,48 +133,28 @@ function SalaryListPlanning() {
     setDateError(''); // Reset date error
   };
 
-
+  const handleEvaluationDetailsChange = (e) => {
+    const { name, value } = e.target;
+    setEvaluationDetails((prev) => ({ ...prev, [name]: value }));
+    if (name === 'startDate' || name === 'endDate') {
+      validateDates(); // Validate dates on change
+    }
+  };
 
   const validateDates = () => {
     const today = new Date();
     const startDate = new Date(evaluationDetails.startDate);
     const endDate = new Date(evaluationDetails.endDate);
     let error = '';
-
-    // Vérifiez si les dates sont définies
-    if (!evaluationDetails.startDate || !evaluationDetails.endDate) {
-      error = 'Les deux dates doivent être définies.';
-    } else if (startDate < today) {
+    if (startDate < today) {
       error = 'La date de début ne peut pas être antérieure à aujourd\'hui.';
-    } 
-
-    setDateError(error); // Met à jour l'état de l'erreur de date
+    } else if (startDate > endDate) {
+      error = 'La date de début doit être antérieure à la date de fin.';
+    }
+    setDateError(error); // Set date error state
     return error;
   };
 
-  const handleEvaluationDetailsChange = (e) => {
-    const { name, value } = e.target;
-    setEvaluationDetails((prev) => ({ ...prev, [name]: value }));
-
-    // Valider les dates uniquement si les deux dates sont définies
-    if (name === 'startDate' || name === 'endDate') {
-      const error = validateDates();
-      if (!error) {
-        setDateError(''); // Réinitialiser l'erreur si les dates sont valides
-      }
-    }
-  };
-  const handleSendReminderEmail = async () => {
-    try {
-      await axios.post('https://localhost:7082/api/EvaluationPlanning/send-reminder', {
-        employees: selectedEmployees,
-      });
-      alert('Rappel envoyé avec succès !'); // Optional success message
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi de l\'email de rappel :', error);
-      alert('Une erreur est survenue lors de l\'envoi du rappel.');
-    }
-  };
   const handleMassPlanning = async () => {
     const dateError = validateDates();
     if (dateError) {
@@ -203,7 +178,6 @@ function SalaryListPlanning() {
 
       await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation', payload);
       setPlanningSuccess(true);
-      setEmailSent(true); // Set email sent status to true
       setTimeout(() => {
         setShowModal(false);
         setPlanningSuccess(false);
@@ -220,8 +194,6 @@ function SalaryListPlanning() {
     <Template>
       <div className="salary-list-planning">
         <h4 className="title">Planification des évaluations</h4>
-
-
 
         {/* Barre de recherche et filtres */}
         <div className="filters card p-3 mb-4">
@@ -264,24 +236,12 @@ function SalaryListPlanning() {
 
         {/* Tableau des employés */}
         <div className="card">
-
           <div className="card-body">
-            {/* Toggle for Automatic Reminders */}
-            <div className="form-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={autoReminderEnabled}
-                  onChange={() => setAutoReminderEnabled(!autoReminderEnabled)}
-                />
-                Activer les rappels automatiques
-              </label>
-            </div>
             {loading ? (
               <div className="text-center">Chargement des employés...</div>
             ) : (
               <>
-                <table className="table table-bordered">
+ <table className="table table-bordered">
                   <thead className="thead-light">
                     <tr>
                       <th>
@@ -323,13 +283,10 @@ function SalaryListPlanning() {
                     )}
                   </tbody>
                 </table>
+
                 <div className="text-right mt-3">
                   <button className="btn btn-primary" onClick={handleOpenModal} disabled={selectedEmployees.length === 0}>
                     Planifier
-                  </button>
-
-                  <button className="btn btn-success" onClick={handleSendReminderEmail} disabled={selectedEmployees.length === 0}>
-                    Envoyer un rappel par email
                   </button>
                 </div>
 
@@ -366,7 +323,6 @@ function SalaryListPlanning() {
             )}
           </div>
         </div>
-        {emailSent && <p>Email envoyé avec succès !</p>} {/* Indication d'email envoyé */}
 
         {/* Modal */}
         {showModal && (
@@ -427,7 +383,7 @@ function SalaryListPlanning() {
                                   <span>{employee.firstName} {employee.lastName}</span>
                                   <button
                                     type="button"
-                                    className="btn btn-sm btn-danger ml-2"
+                                    className ="btn btn-sm btn-danger ml-2"
                                     onClick={() => handleRemoveEmployee(employeeId)}
                                   >
                                     Retirer
@@ -499,7 +455,6 @@ function SalaryListPlanning() {
                     <button className="btn btn-primary" onClick={handleMassPlanning} disabled={!!dateError}>
                       Planifier
                     </button>
-
                     <button className="btn btn-secondary" onClick={handleCloseModal}>
                       Fermer
                     </button>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import './Login.css'; // Importation du fichier CSS
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -9,8 +8,8 @@ const Login = () => {
     password: "",
   });
 
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [error, setError] = useState(""); // Pour gérer les erreurs
+  const navigate = useNavigate(); // Pour la navigation
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {

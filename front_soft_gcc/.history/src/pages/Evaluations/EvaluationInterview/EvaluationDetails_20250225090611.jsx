@@ -11,7 +11,7 @@ const EvaluationDetails = ({interview }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { user } = useUser(); // Récupération de l'objet utilisateur
-    console.log("userRole: ", user); // 'RH', 'Manager', ou 'Director'
+    console.log("userRole: ", userRole); // 'RH', 'Manager', ou 'Director'
 
     useEffect(() => {
         const fetchInterviewDetails = async () => {

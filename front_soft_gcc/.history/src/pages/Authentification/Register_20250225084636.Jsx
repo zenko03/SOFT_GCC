@@ -109,7 +109,16 @@ const Register = () => {
               required
             />
           </div>
-          
+          <div className="form-check">
+            <label className="form-check-label">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                required
+              />{" "}
+              J'accepte tous les Termes et Conditions
+            </label>
+          </div>
           <div className="mt-3">
             <button
               type="submit"

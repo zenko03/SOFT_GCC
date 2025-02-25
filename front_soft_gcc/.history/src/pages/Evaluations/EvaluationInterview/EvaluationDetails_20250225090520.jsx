@@ -16,7 +16,7 @@ const EvaluationDetails = ({interview }) => {
     useEffect(() => {
         const fetchInterviewDetails = async () => {
             try {
-                const response = await axios.get(`https://localhost:7082/api/EvaluationInterview/interview-details/${interview.interviewId}`);
+                const response = await axios.get(`https://localhost:7082/api/EvaluationInterview/interview-details/${interviewId}`);
                 setInterviewDetails(response.data);
             } catch (err) {
                 setError(err.response?.data || 'Erreur lors du chargement des détails');
@@ -24,9 +24,11 @@ const EvaluationDetails = ({interview }) => {
                 setLoading(false);
             }
         };
-
-        fetchInterviewDetails();
-    }, [interviewId]);
+    
+        if (interviewId) {
+            fetchInterviewDetails();
+        }
+    }, [interviewId]); // Assurez-vous que interviewId est bien défini
 
     if (loading) {
         return <p>Chargement des détails de l'entretien...</p>;

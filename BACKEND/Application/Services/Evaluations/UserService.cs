@@ -104,6 +104,14 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 throw new Exception("Email ou mot de passe incorrect.");
 
             // Génération du token JWT si la connexion est réussie.
+
+            string mdp = "test";
+
+            // Hachage du mot de passe
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(mdp);
+
+            // Affichage du mot de passe haché
+            Console.WriteLine("Mot de passe haché : " + hashedPassword);
             var token = GenerateJwtToken(user);
             Console.WriteLine("Token: " , token);
             return token;

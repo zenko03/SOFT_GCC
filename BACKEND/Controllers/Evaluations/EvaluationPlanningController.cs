@@ -33,9 +33,9 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		public async Task<IActionResult> GetAllPostes()
 		{
 			var positions = await _evaluationPlanningService.GetAllPostesAsync();
-			foreach(var pos in positions)
+			foreach (var pos in positions)
 			{
-				Console.WriteLine("les postes: "+pos.title);
+				Console.WriteLine("les postes: " + pos.title);
 			}
 			return Ok(positions);
 		}
@@ -87,7 +87,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 
 			return Ok(evaluationTypes);
 		}
-		
+
 		[HttpGet("rappel-evaluation")]
 		public async Task<IActionResult> rappelerEvaluation([FromQuery] int idEvaluation)
 		{
@@ -125,8 +125,22 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			});
 		}
 
+		[HttpPost("send-automatic-reminders")]
+		public async Task<IActionResult> SendAutomaticReminders()
+		{
+			try
+			{
+				await _evaluationService.SendAutomaticRemindersAsync();
+				return Ok(new { message = "Rappels automatiques envoyés avec succès." });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		
 
 	}
-
 
 }
