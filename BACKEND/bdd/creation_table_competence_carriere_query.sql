@@ -48,6 +48,37 @@ CREATE TABLE Employee (
 	Photo VARBINARY(MAX) NULL
 );
 
+-- Insérer des employés avec des données de test
+-- Pour cet exemple, nous allons supposer que l'Employee_id 1 est un manager
+INSERT INTO Employee (Registration_number, Name, FirstName, Birthday, Hiring_date, Department_id, 
+Civilite_id, Manager_id, Photo)
+VALUES 
+('REG001', 'Dupont', 'Jean', '1985-01-15', '2020-06-01', 3, 1, NULL, NULL),
+('REG002', 'Martin', 'Sophie', '1990-03-22', '2021-07-15', 2, 2, 1, NULL),
+('REG003', 'Bernard', 'Pierre', '1988-05-30', '2019-05-20', 3, 1, 1, NULL),
+('REG004', 'Durand', 'Claire', '1992-07-12', '2022-01-10', 4, 2, 1, NULL),
+('REG005', 'Leroy', 'Luc', '1980-09-25', '2018-11-05', 5, 1, 1, NULL),
+('REG006', 'Moreau', 'Alice', '1995-11-18', '2020-02-20', 1, 2, 1, NULL),
+('REG007', 'Simon', 'Julien', '1983-12-05', '2017-03-15', 2, 1, 2, NULL),
+('REG008', 'Michel', 'Laura', '1991-04-10', '2021-08-01', 3, 2, 3, NULL),
+('REG009', 'Lemoine', 'Thomas', '1987-06-20', '2019-09-30', 4, 1, 4, NULL),
+('REG010', 'Garnier', 'Emma', '1994-08-15', '2020-10-10', 5, 2, 5, NULL),
+('REG011', 'Roux', 'Antoine', '1986-02-28', '2018-12-12', 1, 1, 1, NULL),
+('REG012', 'Blanc', 'Chloé', '1993-03-15', '2021-01-20', 2, 2, 2, NULL),
+('REG013', 'Fournier', 'Nicolas', '1989-05-05', '2019-06-25', 3, 1, 3, NULL),
+('REG014', 'Giraud', 'Camille', '1992-07-30', '2020-04-15', 4, 2, 4, NULL),
+('REG015', 'Lemoine', 'Victor', '1984-09-10', '2018-11-01', 5, 1, 5, NULL),
+('REG016', 'Pires', 'Inès', '1991-10-20', '2019-02-05', 1, 2, 1, NULL),
+('REG017', 'Boucher', 'Louis', '1985-11-30', '2019-03-10', 2, 1, 1, NULL),
+('REG018', 'Gautier', 'Léa', '1990-12-15', '2020-05-25', 3, 2, 3, NULL),
+('REG019', 'Lemoine', 'Paul', '1988-01-05', '2018-07-20', 4, 1, 4, NULL),
+('REG020', 'Lemoine', 'Sarah', '1994-02-10', '2021-09-15', 5, 2, 5, NULL),
+('REG021', 'Renaud', 'Juliette', '1986-03-25', '2019-10-30', 1, 1, 1, NULL),
+('REG022', 'Bourgeois', 'Gabriel', '1993-04-15', '2020-11-05', 2, 2, 2, NULL),
+('REG023', 'Lemoine', 'Anaïs', '1989-05-20', '2018-12-15', 3, 1, 3, NULL),
+('REG024', 'Garnier', 'Maxime', '1992-06-30', '2021-01-10', 4, 2, 4, NULL),
+('REG025', 'Dupuis', 'Sophie', '1985-07-15', '2019-08-20', 5, 1, 5, NULL);
+
 -- Ajout d'une contrainte unique au registration number de employe
 ALTER TABLE Employee
 ADD CONSTRAINT UQ_Employee_RegistrationNumber UNIQUE (Registration_number);

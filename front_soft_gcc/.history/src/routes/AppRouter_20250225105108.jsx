@@ -12,14 +12,14 @@ import CareerProfilePage from '../pages/career/careerPlan/CareerProfilePage';
 import EditAffectation from '../pages/career/careerPlan/EditAffectation';
 import DetailAssignment from '../pages/career/careerPlan/DetailAssignment';
 import EvalHistory from '../pages/Evaluations/History/EvalHistory';
-import EvaluationInterviews from '../pages/Evaluations/EvaluationInterview/EvaluationInterviews'; // Gardez cette ligne
+import EvaluationInterviews from '../pages/Evaluations/EvaluationInterview/EvaluationInterviews';
 import RetirementPage from '../pages/retirement/RetirementPage';
 import FollowedWishEvolution from '../pages/wishEvolution/FollowedWishEvolution';
 import DetailsWishEvolution from '../pages/wishEvolution/DetailsWishEvolution';
 import AddWishEvolution from '../pages/wishEvolution/addWishEvolution';
 import EditWishEvolution from '../pages/wishEvolution/EditWishEvolution';
 import Login from '../pages/Authentification/Login';
-import Register from '../pages/Authentification/Register';
+import Register from '../pages/Authentification/Register.Jsx';
 import DashboardPage from '../pages/dashboardStatistics/DashboardPage';
 import EmployeeOrgChart from '../pages/OrganizationalChart/EmployeeOrgChart';
 import DepartmentEffective from '../pages/OrganizationalChart/DepartmentEffective';
@@ -52,9 +52,14 @@ import SocioCategoryProfessionalCrudPage from '../pages/settings/career/SocioCat
 import UploadImage from '../pages/settings/UploadImage';
 import CreateEmployeePage from '../pages/settings/employeeManagement/CreateEmployeePage';
 import ListEmployeePage from '../pages/settings/employeeManagement/ListEmployeePage';
+import EvaluationInterviews from '../pages/Evaluations/EvaluationInterview/EvaluationInterviews';
+import RetirementPage from '../pages/retirement/retirementPage';
+import Register from '../pages/Authentification/Register';
 import EvaluationInterviewHome from '../pages/Evaluations/EvaluationInterview/EvaluationInterviewHome';
 import ProtectedRoute from '../pages/Authentification/ProtectedRoute';
 import { useNavigate } from "react-router-dom";
+
+
 
 function AppRouter() {
   return (
@@ -93,6 +98,11 @@ function AppRouter() {
         <Route path="/validation" element={<EvaluationInterviews />} />
         <Route path="/homeInterview" element={<EvaluationInterviewHome />} />
 
+
+
+
+
+
         {/*CARRIERE */}
         <Route path="/carriere" element={<ListSalaryPage />} />
         <Route path="/carriere/creation" element={<CreationCareerPlan />} />
@@ -104,6 +114,8 @@ function AppRouter() {
         <Route path="/retraite" element={<RetirementPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
+
+
 
       {/*Souhait evolution */}
       <Route path="/softGcc/souhaitEvolution/ajouter" element={<AddWishEvolution />} />

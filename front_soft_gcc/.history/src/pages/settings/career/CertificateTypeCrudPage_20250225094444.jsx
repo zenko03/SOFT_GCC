@@ -75,7 +75,7 @@ function CertificateTypeCrudPage() {
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
-            <h4>ENTITÉ TYPE DE CERTIFICAT</h4>
+            <h4>ENTITÉ TYPE D'AFFECTATION</h4>
             {isLoading && <Loader />}
             {error && <div className="alert alert-danger">{error}</div>}
             <form className="forms-sample" onSubmit={handleSubmit}>

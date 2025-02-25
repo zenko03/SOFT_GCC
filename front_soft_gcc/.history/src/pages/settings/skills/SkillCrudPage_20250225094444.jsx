@@ -6,7 +6,7 @@ import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 
-function CertificateTypeCrudPage() {
+function SkillCrudPage() {
     const module = 'Plan de carrière';
     const action = 'Création';
     const url = '/carriere';
@@ -16,14 +16,14 @@ function CertificateTypeCrudPage() {
     const [data, setData] = useState([]);
     
     const [formData, setFormData] = useState({
-        certificateTypeName: ''
+        name: ''
     });
 
     const fetchData = async () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await axios.get(urlApi('/CertificateType'));
+            const response = await axios.get(urlApi('/Skill'));
             setData(response.data || []);
         } catch (err) {
             setError(`Erreur lors de la récupération des données : ${err.message}`);
@@ -49,9 +49,9 @@ function CertificateTypeCrudPage() {
         setIsLoading(true);
         setError(null);
         try {
-            await axios.post(urlApi('/CertificateType'), formData);
+            await axios.post(urlApi('/Skill'), formData);
             fetchData();
-            setFormData({ certificateTypeName: '' });
+            setFormData({ name: '' });
         } catch (error) {
             setError(`Erreur lors de l'insertion : ${error.response?.data || error.message}`);
         } finally {
@@ -63,7 +63,7 @@ function CertificateTypeCrudPage() {
         setIsLoading(true);
         setError(null);
         try {
-            await axios.delete(urlApi(`/CertificateType/${itemToDelete}`));
+            await axios.delete(urlApi(`/Skill/${itemToDelete}`));
             fetchData();
         } catch (error) {
             setError(`Erreur lors de la suppression : ${error.message}`);
@@ -75,7 +75,7 @@ function CertificateTypeCrudPage() {
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
-            <h4>ENTITÉ TYPE DE CERTIFICAT</h4>
+            <h4>ENTITÉ ECOLE</h4>
             {isLoading && <Loader />}
             {error && <div className="alert alert-danger">{error}</div>}
             <form className="forms-sample" onSubmit={handleSubmit}>
@@ -86,11 +86,11 @@ function CertificateTypeCrudPage() {
                                 <h5 className="card-title subtitle">Formulaire d'ajout</h5>
                                 <div className="form-group">
                                     <label htmlFor="name">Désignation</label>
-                                    <input type="text" name="certificateTypeName" value={formData.certificateTypeName} onChange={handleChange} className="form-control" id="name" required />
+                                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="form-control" id="name" required />
                                 </div>
                                 <div className="button-save-profil">
                                     <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Créer</button>
-                                    <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ certificateTypeName: '' })}>Annuler</button>
+                                    <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ name: '' })}>Annuler</button>
                                 </div>
                             </div>
                         </div>
@@ -109,12 +109,12 @@ function CertificateTypeCrudPage() {
                                     </thead>
                                     <tbody>
                                         {data.map((item, id) => (
-                                            <tr key={item.certificateTypeId}>
-                                                <td className="text-center">{item.certificateTypeId}</td>
-                                                <td>{item.certificateTypeName}</td>
+                                            <tr key={item.skillId}>
+                                                <td className="text-center">{item.skillId}</td>
+                                                <td>{item.name}</td>
                                                 <td>
                                                     <Button
-                                                        onClick={() => handleDeleteConfirmed(item.certificateTypeId)}
+                                                        onClick={() => handleDeleteConfirmed(item.skillId)}
                                                         className="btn btn-danger btn-sm"
                                                         style={{backgroundColor: 'white'}}
                                                     >
@@ -135,4 +135,4 @@ function CertificateTypeCrudPage() {
     );
 }
 
-export default CertificateTypeCrudPage;
+export default SkillCrudPage;
