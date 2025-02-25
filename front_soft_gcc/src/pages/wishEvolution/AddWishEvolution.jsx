@@ -23,6 +23,7 @@ function AddWishEvolution({ onSearch }) {
     // Initialisation des states 
     const [isLoading, setIsLoading] = useState(false); 
     const [error, setError] = useState(false); 
+    const [success, setSuccess] = useState(""); 
     const [selectedItem, setSelectedItem] = useState(null); 
     const [dataSuggestionPosition, setDataSuggestionPosition] = useState([]); 
 
@@ -49,9 +50,20 @@ function AddWishEvolution({ onSearch }) {
             };
 
             const response = await axios.post(urlApi('/WishEvolution'), dataToSend);
+            setFormData({
+                positionId: '',
+                employeeId: '',
+                wishTypeId: '',
+                motivation: '',
+                disponibility: '',
+                priority: '',
+                requestDate: '',
+                state: 1,
+            });
+            setSuccess("Insertion de la nouvelle demande reussie");
+
         } catch (error) {
-            console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
-            setError('Erreur lors de l\'insertion : '+error);
+            setError('Erreur lors de l\'insertion : '+error.message);
         } finally {
             setIsLoading(false);
       }
@@ -69,7 +81,7 @@ function AddWishEvolution({ onSearch }) {
                 setDataSuggestionPosition(suggestionPositionResponse.data || []);
             }
         } catch (error) {
-            setError(`Erreur lors de la recuperation des donnees : ${error}`);
+            setError(`Erreur lors de la recuperation des donnees : ${error.message}`);
         } finally {
             setIsLoading(false);
         }
@@ -87,31 +99,41 @@ function AddWishEvolution({ onSearch }) {
     const handleSelectChange = (event) => {
         setSelectedItem(event.target.value);
         handleChange(event);
-        fetchData();
     };
 
-    if (isLoading) {
-        return <div>
-            <Loader />
-        </div>;
-    }
+    useEffect(() => {
+        fetchData();
+    }, [selectedItem]);
 
-    /// Gestion d'affichage d'erreur
-    if (error) {
-        return <div>Erreur: {error.message}</div>;
-    }
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => {
+                setSuccess("");
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
+
 
     return (
         <Template>
+            {isLoading && <Loader />}
             <PageHeader module={module} action={action} url={url} />
-            <h4>AJOUT D'UN SOUHAIT D'ÉVALUATION</h4>
+            {success && <div className="alert alert-success">{success}</div>}
+            {error && <div className="alert alert-danger">{error}</div>}
+            <div className="skill-header">
+                <h4 className="skill-title">AJOUT D'UN SOUHAIT D'ÉVALUATION</h4>
+            </div>
             <form className="forms-sample">
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
+                            <div className="card-header title-container">
+                                <h5 className="title">
+                                    <i className="mdi mdi-file-document-edit "></i> Formulaire d'ajout
+                                </h5>
+                            </div>
                             <div className="card-body">
-                                <h5 className="card-title subtitle">Formulaire d'ajout d'un souhait d'évaluation</h5>
-                                <br></br>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputUsername1">Employe</label>
                                     <select name="employeeId" value={formData.employeeId} onChange={handleSelectChange} className="form-control" id="exampleSelectGender">
@@ -176,8 +198,12 @@ function AddWishEvolution({ onSearch }) {
                     </div>
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
+                            <div className="card-header title-container">
+                                <h5 className="title">
+                                    <i className="mdi mdi-playlist-star"></i> Liste de Suggestions
+                                </h5>
+                            </div>
                             <div className="card-body">
-                            <h5 className="card-title subtitle">Suggestions des postes</h5>
                             <table className="table table-bordered table-skill">
                                     <tr>
                                         <th>#</th>

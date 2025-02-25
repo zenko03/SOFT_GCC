@@ -47,6 +47,7 @@ function RetirementPage() {
   const { data: dataCivilite } = useSWR('/Civilite', Fetcher);
   const { data: dataDepartment } = useSWR('/Department', Fetcher);
   const { data: dataPosition } = useSWR('/Position', Fetcher); 
+  
   const [paginationResult, setPaginationResult] = useState({
     totalRecords: 0,
     pageSize: 0,

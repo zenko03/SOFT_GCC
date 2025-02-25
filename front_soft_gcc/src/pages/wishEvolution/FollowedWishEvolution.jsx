@@ -53,6 +53,14 @@ function FollowedWishEvolution() {
   const [wishesEvolutionGraph, setWishesEvolutionGraph] = useState([]);
   const [dataGraph, setDataGraph] = useState([]);
   const currentYear = new Date().getFullYear();
+  const [pageSize] = useState(10);
+
+  const [paginationResult, setPaginationResult] = useState({
+    totalRecords: 0,
+    pageSize: 0,
+    currentPage: 0,
+    totalPages: 0
+  });
 
   // États pour les filtres
   const [filters, setFilters] = useState({
@@ -86,11 +94,19 @@ function FollowedWishEvolution() {
         const queryParams = new URLSearchParams({
           ...appliedFilters,
           page: currentPage,
+          pageSize,
         }).toString();
+
         const response = await Fetcher(`/WishEvolution/filter?${queryParams}`);
         if (response.success) {
           setWishesEvolution(response.data);
           setTotalPages(response.totalPages);
+          setPaginationResult({
+            totalRecords: response.totalCount,
+            pageSize: response.pageSize,
+            currentPage: response.currentPage,
+            totalPages: response.totalPages
+          });
         } else {
           setWishesEvolution([]);
           setError(response.message);
@@ -157,21 +173,16 @@ function FollowedWishEvolution() {
     navigate('/softGcc/souhaitEvolution/ajouter');
   };
 
-  // Pagination
-  const renderPageNumbers = () => {
-    const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(
-        <button
-          key={i}
-          className={`pagination-button ${i === currentPage ? 'active' : ''}`}
-          onClick={() => setCurrentPage(i)}
-        >
-          {i}
-        </button>
-      );
+  // Navigation pour details souhait evolution
+  const handleWishEvolutionDetails = (wishEvolutionId) => {
+    navigate(`/softGcc/souhaitEvolution/details/${wishEvolutionId}`);
+  };
+
+  // Gestion de la pagination
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
     }
-    return pages;
   };
 
     return (
@@ -179,25 +190,29 @@ function FollowedWishEvolution() {
           {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
           
           <PageHeader module={module} action={action} url={url} />
+          {error && <div className="alert alert-danger">{error}</div>}
           <div className='row'>
-            <div className='col-lg-6'>
-              <h4 className="card-title">DEMANDES DES SOUHAITS D'ÉVOLUTION</h4>
+            <div className="col-lg-10 skill-header">
+              <i className="mdi mdi-trending-up skill-icon"></i>
+              <h4 className="skill-title">SOUHAIT D'ÉVOLUTION</h4>
             </div>
-            <div className='col-lg-6'>
-              <div className="action-buttons text-right my-1">
-                <button type="button" onClick={handleClick} className="btn btn-success">
-                  <i className='mdi mdi-plus button-logo'></i>
-                  Ajouter
+            <div className="col-lg-2">
+              <button className="btn-add btn-success btn-fw" onClick={handleClick}>
+                <i className="mdi mdi-plus"></i>
+                Ajouter
                 </button>
-              </div>
-            </div>
+            </div>  
           </div>
 
           <div className="row">
             <div className="col-lg-12 grid-margin stretch-card">
-              <div className="card">
+              <div className="card search-card">
+                <div className="card-header title-container">
+                  <h5 className="title">
+                    <i className="mdi mdi-filter-outline"></i> Filtres
+                  </h5>
+                </div>
                 <div className="card-body">
-                  <h5 className="card-title subtitle">Filtre</h5>
                   <form className="form-sample">
                     <div className="form-group row">
                       <div className="col-sm-6">
@@ -299,8 +314,12 @@ function FollowedWishEvolution() {
           <div className="row">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
+                <div className="card-header title-container">
+                  <h5 className="title">
+                    <i className="mdi mdi-format-list-bulleted"></i> Liste des demandes
+                  </h5>
+                </div>
                 <div className="card-body">
-                  <h5 className="card-title subtitle">Liste</h5>
                   <table className="table table-competences">
                     <thead>
                       <tr>
@@ -316,10 +335,8 @@ function FollowedWishEvolution() {
                     <tbody>
                       {wishesEvolution?.length > 0 ? (
                         wishesEvolution.map((item) => (
-                          <tr key={item.wishEvolutionCareerId}>
-                            <Link to={`/softGcc/souhaitEvolution/details/${item.wishEvolutionCareerId}`}>
-                              <td>{item.registrationNumber}</td>
-                            </Link>
+                          <tr key={item.wishEvolutionCareerId} onClick={() => {handleWishEvolutionDetails(item.wishEvolutionCareerId)}}>
+                            <td>{item.registrationNumber}</td>
                             <td>{item.firstName} {item.name}</td>
                             <td>{item.wishTypeName}</td>
                             <td style={{color: '#B8860B'}}>{item.wishPositionName}</td>
@@ -344,13 +361,23 @@ function FollowedWishEvolution() {
                     </tbody>
                   </table>
                   <div className="pagination">
+                    <h4>{paginationResult.totalRecords} resultats aux totals</h4>
                     <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
                       Précédent
                     </button>
-                    {renderPageNumbers()}
-                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                        Suivant
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <button
+                        key={i + 1}
+                        className={`pagination-button ${i + 1 === currentPage ? 'active' : ''}`}
+                        onClick={() => handlePageChange(i + 1)}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                      Suivant
                     </button>
+                    <h4>Page {paginationResult.currentPage} sur {paginationResult.totalPages} pour {paginationResult.pageSize} resultats</h4>
                   </div>
                 </div>
               </div>
@@ -360,8 +387,13 @@ function FollowedWishEvolution() {
           <div className="row justify-content-center">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card shadow-sm border-0">
+                <div className="card-header title-container">
+                  <h4 className="title"> 
+                    <i className="mdi mdi-chart-bar"></i> 
+                    <span>Analyse des demandes par mois</span>
+                  </h4>
+                </div>
                 <div className="card-body">
-                  <h4 className="card-title text-left subtitle">Analyse des demandes par mois</h4>
                   <p className="card-description text-left">Un aperçu des demandes au cours de l'année</p>
                   <div className="form-group row">
                     <div className="col-sm-3">

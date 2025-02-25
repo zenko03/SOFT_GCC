@@ -28,6 +28,7 @@ function EditWishEvolution({ onSearch }) {
     const [selectedItem, setSelectedItem] = useState(null); 
     const [dataSuggestionPosition, setDataSuggestionPosition] = useState([]); 
     const [wishEvolutionToEdit, setWishEvolutionToEdit] = useState(null); 
+    const [success, setSuccess] = useState(""); 
 
     // Pour les saisies de donnees
     const [formData, setFormData] = useState({
@@ -59,6 +60,7 @@ function EditWishEvolution({ onSearch }) {
             
             console.log(dataToSend);
             const response = await axios.put(urlApi(`/WishEvolution/${WishEvolutionId}`), dataToSend);
+            setSuccess("Modification de la demande reussie");
         } catch (error) {
             console.error('Erreur lors de la modification du souhait d\'evaluation : '+error);
             setError('Erreur lors de la modification du souhait d\'evaluation : '+error);
@@ -120,28 +122,36 @@ function EditWishEvolution({ onSearch }) {
         }
     }, [wishEvolutionToEdit]);
 
-    if (isLoading) {
-        return <div>
-            <Loader />
-        </div>;
-    }
 
-    /// Gestion d'affichage d'erreur
-    if (error) {
-        return <div>{error}</div>;
-    }
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => {
+                setSuccess("");
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [success]);
 
     return (
         <Template>
+            {isLoading && <Loader />}
             <PageHeader module={module} action={action} url={url} />
-            <h4>Modifcation D'UN SOUHAIT D'ÉVALUATION</h4>
+            {success && <div className="alert alert-success">{success}</div>}
+            {error && <div className="alert alert-danger">{error}</div>}
+            <div className="col-lg-12 skill-header">
+              <i className="mdi mdi-pencil-outline skill-icon"></i>
+              <h4 className="skill-title">MODIFICATION DU SOUHAIT D'ÉVALUATION ID {WishEvolutionId}</h4>
+            </div>
             <form className="forms-sample">
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
+                            <div className="card-header title-container">
+                                <h5 className="title">
+                                    <i className="mdi mdi-file-document-edit "></i> Formulaire d'ajout
+                                </h5>
+                            </div>
                             <div className="card-body">
-                                <h5 className="card-title subtitle">Formulaire de modification du souhait d'évaluation</h5>
-                                <br></br>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputUsername1">Employe</label>
                                     <select name="employeeId" value={formData.employeeId} className="form-control" id="exampleSelectGender">
@@ -191,16 +201,26 @@ function EditWishEvolution({ onSearch }) {
                                     <input type="date" value={formData.requestDate} onChange={handleChange} name="requestDate" className="form-control" id="exampleInputEmail1"/>
                                 </div>
                                 <div className="button-save-profil">
-                                    <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">Modifier</button>
-                                    <button type="button" className="btn btn-light btn-fw">Annuler</button>
+                                    <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">
+                                        <i className='mdi mdi-check-circle button-logo'></i>
+                                        Valider
+                                    </button>
+                                    <button type="button" className="btn btn-light btn-fw">
+                                        <i className='mdi mdi-close-circle-outline button-logo'></i>
+                                        Annuler
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
+                            <div className="card-header title-container">
+                                <h5 className="title">
+                                    <i className="mdi mdi-playlist-star"></i> Liste de Suggestions
+                                </h5>
+                            </div>
                             <div className="card-body">
-                            <h5 className="card-title subtitle">Suggestions des postes</h5>
                                 <table className="table table-bordered table-skill">
                                     <tr>
                                         <th>#</th>

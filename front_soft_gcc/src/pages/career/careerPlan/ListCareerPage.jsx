@@ -145,6 +145,7 @@ const ListCareerPage = () => {
     <Template>
       {loading && <Loader />}
       <PageHeader module={module} action={action} url={url} />
+      {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="row header-title">
         <div className="col-lg-10 skill-header">
@@ -158,7 +159,6 @@ const ListCareerPage = () => {
           </button>
         </div>  
       </div>
-      {error && <div className="alert alert-danger">{error}</div>}
       <div className="card mb-4 search-card">
         <div className="card-header title-container">
           <h5 className="title">
