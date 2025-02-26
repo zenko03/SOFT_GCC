@@ -178,6 +178,7 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<VDepartmentEffective>().HasNoKey();
 		}
 	}
+<<<<<<< Updated upstream
 
 
 
@@ -196,6 +197,9 @@ namespace soft_carriere_competence.Infrastructure.Data
         }
     
 
+=======
+}
+>>>>>>> Stashed changes
 
 
 			
