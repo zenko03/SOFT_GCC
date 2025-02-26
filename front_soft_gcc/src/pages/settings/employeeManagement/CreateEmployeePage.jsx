@@ -63,7 +63,6 @@ function CreateEmployeePage({ onSearch }) {
             errors.hiring_date = "La date d'embauche ne peut pas être dans le futur";
         }
         if (!formData.civiliteId) errors.civiliteId = "La civilité est requise";
-        if (!formData.managerId) errors.managerId = "Le manager est requis";
         if (!formData.photo) errors.photo = "Le photo est requis";
 
         setFormErrors(errors);
@@ -190,7 +189,6 @@ function CreateEmployeePage({ onSearch }) {
                                             </option>
                                         ))}
                                     </select>  
-                                    {formErrors.managerId && <div className="error-text">{formErrors.managerId}</div>}  
                                 </div>
                                 <div className="form-group">
                                     <label>Photo</label>
