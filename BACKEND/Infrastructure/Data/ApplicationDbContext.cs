@@ -178,9 +178,6 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<VDepartmentEffective>().HasNoKey();
 		}
 	}
-<<<<<<< Updated upstream
-
-
 
             //    // Configuration de la relation EvaluationInterviews - InterviewParticipants
             //    modelBuilder.Entity<InterviewParticipants>()
@@ -194,12 +191,7 @@ namespace soft_carriere_competence.Infrastructure.Data
             //        .WithMany()
             //        .HasForeignKey(p => p.UserId)
             //        .OnDelete(DeleteBehavior.Restrict); // Pas de suppression d'utilisateur si le participant est supprimé
-        }
-    
-
-=======
 }
->>>>>>> Stashed changes
 
 
 			

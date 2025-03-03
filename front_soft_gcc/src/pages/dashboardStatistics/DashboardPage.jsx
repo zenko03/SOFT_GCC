@@ -175,48 +175,53 @@ function DashboardPage() {
             {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
           
             <PageHeader module={module} action={action} url={url} />
-            <div className='row'>
-                <h2 className="card-title">Tableau de bord</h2>                
+            <div className="row header-title">
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-view-grid skill-icon"></i>
+                    <h4 className="skill-title">Taleau de bord</h4>
+                </div>
             </div>
 
             <div className="row">
-                <div className="col-lg-3 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-body">
+                <div className="col-lg-3 col-md-6">
+                    <div className="card stats-card">
+                        <div className="card-body text-center">
+                            <i className="mdi mdi-account-group stats-icon"></i>
                             <h5 className="card-title">
-                                <span 
-                                    style={{ fontSize: '50px'}}
-                                >
-                                    {employeeTotal }
-                                </span> 
-                                &nbsp;employés
+                                <span className="stats-number">{employeeTotal}</span>
+                                <br />
+                                Employés
                             </h5>
                         </div>
                     </div>
                 </div>
 
-                <div className="col-lg-3 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-body">
+                <div className="col-lg-3 col-md-6">
+                    <div className="card stats-card">
+                        <div className="card-body text-center">
+                            <i className="mdi mdi-trending-up stats-icon"></i>
                             <h5 className="card-title">
-                                <span 
-                                    style={{ fontSize: '50px'}}
-                                >
-                                    {wishEvolutionTotal }
-                                </span> 
-                                &nbsp;souhaits evolution
+                                <span className="stats-number">{wishEvolutionTotal}</span>
+                                <br />
+                                Souhaits d'évolution
                             </h5>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <h2 className="card-title">Compétences</h2>
+            <div className="col-lg-12 skill-header">
+                <i className="mdi mdi-school skill-icon"></i>
+                <h4 className="skill-title">COMPÉTENCES</h4>
+            </div>
             <div className="row">
                 <div className="col-lg-12 grid-margin stretch-card">
                     <div className="card">
                         <div className="card-body">
-                            <h4 className="card-title text-left subtitle">Graphe</h4>
+                            <div className="skill-header subtitle">
+                                <i className="mdi mdi-chart-bar icon-sub"></i>
+                                <h4 className="sub">Graphe</h4>
+                            </div>
                             <p className="card-description text-left">Nombre des employés par compétences dans un département</p>
                             <div className="form-group row">
                                 <div className="col-sm-3">
@@ -250,7 +255,10 @@ function DashboardPage() {
                             </div>
                             <BarChart datas = {datasSkills} states = {renderStatus(statusSkills)} labelLetter = {'Compétences'} />
 
-                            <h5 className="card-title subtitle">Liste</h5>
+                            <div className="skill-header subtitle">
+                                <i className="mdi mdi-format-list-bulleted icon-sub"></i>
+                                <h6 className="sub">Liste</h6>
+                            </div>
                             <table className="table table-competences">
                                 <thead>
                                 <tr>
@@ -276,12 +284,18 @@ function DashboardPage() {
                 </div>
             </div>  
 
-            <h2 className="card-title">Carrières</h2>
+            <div className="col-lg-12 skill-header">
+                <i className="mdi mdi-map-marker-path skill-icon"></i>
+                <h4 className="skill-title">CARRIÈRES</h4>
+            </div>
             <div className="row">
                 <div className="col-lg-12 grid-margin stretch-card">
                     <div className="card">
                         <div className="card-body">
-                            <h4 className="card-title text-left subtitle">Graphe</h4>
+                            <div className="skill-header subtitle">
+                                <i className="mdi mdi-chart-bar icon-sub"></i>
+                                <h4 className="sub">Graphe</h4>
+                            </div>
                             <p className="card-description text-left">Rapport nombre total des employés dans des postes de carrières par département</p>
                             <div className="form-group row">
                                 <div className="col-sm-3">
@@ -301,7 +315,11 @@ function DashboardPage() {
                                 </div>
                             </div>
                             <BarChart datas = {datasCareer} states = {renderStatus(statusCareer)} labelLetter={'Poste de carrière'} />
-                            <h5 className="card-title subtitle">Liste</h5>
+
+                            <div className="skill-header subtitle">
+                                <i className="mdi mdi-format-list-bulleted icon-sub"></i>
+                                <h6 className="sub">Liste</h6>
+                            </div>
                             <table className="table table-competences">
                                 <thead>
                                 <tr>

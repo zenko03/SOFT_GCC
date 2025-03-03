@@ -225,10 +225,22 @@
   color: #333; /* Bleu professionnel */
 }
 
+.icon-sub {
+  font-size: 20px;
+  color: c; /* Bleu professionnel */
+}
+
 .skill-title {
   font-size: 22px;
   font-weight: bold;
   color: #333;
+  margin: 0;
+}
+
+.sub {
+  font-size: 18px;
+  font-weight: bold;
+  color: #B8860B;
   margin: 0;
 }
 
@@ -308,4 +320,27 @@
 
 .header-title {
   margin-bottom: 1px !important;
+}
+
+.stats-card {
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.stats-icon {
+  font-size: 40px;
+  color: #4CAF50; /* Couleur verte */
+  margin-bottom: 10px;
+}
+
+.stats-number {
+  font-size: 50px;
+  font-weight: bold;
+  color: #333;
 }

@@ -44,7 +44,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 			[FromForm] int department_id,
 			[FromForm] DateTime hiring_date,
 			[FromForm] int civiliteId,
-			[FromForm] int managerId,
+			[FromForm] int? managerId,
 			[FromForm] IFormFile? photo)
 		{
 			byte[]? photoBytes = null;
