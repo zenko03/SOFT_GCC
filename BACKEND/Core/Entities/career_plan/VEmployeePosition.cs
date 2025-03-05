@@ -42,5 +42,8 @@ namespace soft_carriere_competence.Core.Entities.career_plan
 
 		[Column("Seniority")]
 		public int? Seniority { get; set; }
-	}
+
+        [Column("employee_photo")]
+        public byte[]? Photo { get; set; }
+    }
 }

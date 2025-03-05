@@ -715,6 +715,7 @@ select
 	ec.Position_name,
 	e.hiring_date,
 	e.Birthday,
+	e.employee_photo,
     DATEDIFF(YEAR, e.hiring_date, GETDATE()) AS Seniority
 from v_employee e
 left join v_employee_career ec

@@ -225,6 +225,16 @@
   color: #333; /* Bleu professionnel */
 }
 
+.settings-icon {
+  font-size: 25px;
+  color: #333; /* Bleu professionnel */
+}
+
+.settings-title {
+  padding-left: 10px;
+  font-size: 20px;
+}
+
 .icon-sub {
   font-size: 20px;
   color: c; /* Bleu professionnel */
@@ -254,6 +264,16 @@
 }
 
 .search-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.settings-card {
+  background-color: #fde826;
+  text-align: center;
+}
+
+.settings-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }

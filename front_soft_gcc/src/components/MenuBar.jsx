@@ -8,7 +8,7 @@ function MenuBar({ task }) {
       <ul className="nav">
         <li className="nav-item">
           <Link className="nav-link" to="/softGcc/tableauBord">
-            <span className="icon-bg"><i className="mdi mdi-cube menu-icon"></i></span>
+            <span className="icon-bg"><i className="mdi mdi-view-grid menu-icon"></i></span>
             <span className="menu-title">Tableau de bord</span>
           </Link>
         </li>
@@ -55,14 +55,14 @@ function MenuBar({ task }) {
         </li>
         <li className="nav-item">
           <Link className="nav-link" to="/softGcc/effectif">
-            <span className="icon-bg"><i className="mdi mdi-cube menu-icon"></i></span>
+            <span className="icon-bg"><i className="mdi mdi-sitemap menu-icon"></i></span>
             <span className="menu-title">Organigramme et effectif</span>
           </Link>
         </li>
         <li className="nav-item">
           <Link className="nav-link" to="/softGcc/activityHistory">
-            <span className="icon-bg"><i className="mdi mdi-cube menu-icon"></i></span>
-            <span className="menu-title">Historiques d'activités</span>
+            <span className="icon-bg"><i className="mdi mdi-history menu-icon"></i></span>
+            <span className="menu-title">Historiques des activités</span>
           </Link>
         </li>
         <li className="nav-item">

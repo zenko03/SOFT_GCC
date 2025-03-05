@@ -62,17 +62,20 @@ function DetailDepartment() {
                     <PageHeader module={module} action={action} url={url} />
 
                     <div className="row mb-3">
-                        <div className="col-lg-8">
-                            <h2 className="card-title">
-                                Département : {department.name || "Inconnu"}
-                            </h2>
+                        <div className="col-lg-12 skill-header">
+                            <i className="mdi mdi-domain skill-icon"></i>
+                            <h4 className="skill-title"> Département : {department.name || "Inconnu"}</h4>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-lg-12 grid-margin stretch-card">
                             <div className="card">
+                                <div className="card-header title-container">
+                                    <h5 className="title">
+                                        <i className="mdi mdi-format-list-bulleted"></i> Liste des employés
+                                    </h5>
+                                </div>
                                 <div className="card-body">
-                                    <h5 className="card-title subtitle">Liste des employés</h5>
                                     <table className="table table-competences">
                                         <thead>
                                             <tr>
@@ -88,13 +91,17 @@ function DetailDepartment() {
                                             {employeeList.length > 0 ? (
                                                 employeeList.map((item, index) => (
                                                     <tr key={index}>
-                                                        <td>
-                                                            <img src={pic1} alt="Profil" />
-                                                        </td>
+                                                        <td className="py-1">
+                                                            {item.photo ? (
+                                                                <img src={urlApi(`/Employee/photo/${item.employeeId}`)} alt={'Employe '+item.registrationNumber} />
+                                                            ) : (
+                                                                <p>Aucun photo</p>
+                                                                )}
+                                                        </td>  
                                                         <td>{item.registrationNumber}</td>
                                                         <td>{`${item.name} ${item.firstName}`}</td>
                                                         <td>{item.positionName}</td>
-                                                        <td>{new Date(item.birthday).toLocaleDateString()}</td>
+                                                        <td>{new Date(item.hiringDate).toLocaleDateString()}</td>
                                                         <td style={{color: '#44ce42'}}>{item.seniority} ans</td>
                                                     </tr>
                                                 ))

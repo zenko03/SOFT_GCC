@@ -19,8 +19,8 @@ const Node = ({ data }) => {
             {showDetails && (
                 <div className="node-details">
                     <p>Civilite: {data.civilite || 'Not Specified'}</p>
-                    <p>Departement: {data.department || 'Unknown'}</p>
-                    <p>Poste: {data.position || 'Unknown'}</p>
+                    <p>Departement: {data.department || 'Inconnu'}</p>
+                    <p>Poste: {data.position || 'Inconnu'}</p>
                 </div>
             )}
             {data.children && (
