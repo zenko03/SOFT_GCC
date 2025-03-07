@@ -17,6 +17,88 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			_evaluationService = evaluationService;
 		}
 
+		// Create a new evaluation question
+		[HttpPost("questions")]
+		public async Task<IActionResult> CreateEvaluationQuestion([FromBody] EvaluationQuestion question)
+		{
+			if (question == null)
+			{
+				return BadRequest("Question data is required.");
+			}
+
+			try
+			{
+				await _evaluationService.CreateEvaluationQuestionAsync(question);
+				return CreatedAtAction(nameof(GetEvaluationQuestionById), new { id = question.questiondId }, question);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+		// Get all evaluation questions
+		[HttpGet("questionsAll")]
+		public async Task<IActionResult> GetAllEvaluationQuestions()
+		{
+			var questions = await _evaluationService.GetAllEvaluationQuestionsAsync();
+			return Ok(questions);
+		}
+
+		// Delete an evaluation question
+		[HttpDelete("questions/{id}")]
+		public async Task<IActionResult> DeleteEvaluationQuestion(int id)
+		{
+			try
+			{
+				var deleted = await _evaluationService.DeleteEvaluationQuestionAsync(id);
+				if (!deleted)
+				{
+					return NotFound($"Question with ID {id} not found.");
+				}
+				return NoContent(); // 204 No Content
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+
+		// Update an existing evaluation question
+		[HttpPut("questions/{id}")]
+		public async Task<IActionResult> UpdateEvaluationQuestion(int id, [FromBody] EvaluationQuestion question)
+		{
+			if (question == null || question.questiondId != id)
+			{
+				return BadRequest("Invalid question data.");
+			}
+
+			try
+			{
+				var updated = await _evaluationService.UpdateEvaluationQuestionAsync(question);
+				if (!updated)
+				{
+					return NotFound($"Question with ID {id} not found.");
+				}
+				return NoContent(); // 204 No Content
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		// Get a specific evaluation question by ID
+		[HttpGet("questions/{id}")]
+		public async Task<IActionResult> GetEvaluationQuestionById(int id)
+		{
+			var question = await _evaluationService.GetEvaluationQuestionByIdAsync(id);
+			if (question == null)
+			{
+				return NotFound($"Question with ID {id} not found.");
+			}
+			return Ok(question);
+		}
 		[HttpGet("questions")]
 		public async Task<IActionResult> GetEvaluationQuestions([FromQuery] int evaluationTypeId, [FromQuery] int postId)
 		{
@@ -59,6 +141,16 @@ namespace soft_carriere_competence.Controllers.Evaluations
 				return NotFound("No evaluation types found.");
 
 			return Ok(evaluationTypes);
+		}
+
+		[HttpGet("postes")]
+		public async Task<IActionResult> GetPostes()
+		{
+			var posts = await _evaluationService.GetPostesAsync(); // Assuming you have a method in your service to get posts
+			if (posts == null || !posts.Any())
+				return NotFound("No posts found.");
+
+			return Ok(posts);
 		}
 
 		[HttpPost("calculate-average")]
