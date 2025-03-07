@@ -75,15 +75,22 @@ function EstablishmentCrudPage() {
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
-            <h4>ENTITÉ ETABLISSEMENT</h4>
+            <div className="col-lg-12 skill-header">
+                <i className="mdi mdi-domain skill-icon"></i>
+                <h4 className="skill-title">ENTITÉ ETABLISSEMENT</h4>
+            </div> 
             {isLoading && <Loader />}
             {error && <div className="alert alert-danger">{error}</div>}
             <form className="forms-sample" onSubmit={handleSubmit}>
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
+                            <div className="card-header title-container">
+                                <h5 className="title">
+                                    <i className="mdi mdi-file-document-edit"></i> Formulaire d'ajout
+                                </h5>
+                            </div>
                             <div className="card-body">
-                                <h5 className="card-title subtitle">Formulaire d'ajout</h5>
                                 <div className="form-group">
                                     <label htmlFor="establishmentName">Désignation</label>
                                     <input type="text" name="establishmentName" value={formData.establishmentName} onChange={handleChange} className="form-control" id="name" required />
@@ -97,8 +104,12 @@ function EstablishmentCrudPage() {
                     </div>
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
+                            <div className="card-header title-container">
+                                <h5 className="title">
+                                    <i className="mdi mdi-format-list-bulleted"></i> Liste enregistrée
+                                </h5>
+                            </div>
                             <div className="card-body">
-                                <h5 className="card-title subtitle">Liste enregistrée</h5>
                                 <table className="table table-hover table-bordered">
                                     <thead className="bg-primary text-white">
                                         <tr>

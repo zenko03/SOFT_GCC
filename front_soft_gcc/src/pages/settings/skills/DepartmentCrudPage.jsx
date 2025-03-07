@@ -113,7 +113,7 @@ function DepartmentCrudPage() {
                     </div>
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
-                           <div className="card-header title-container">
+                            <div className="card-header title-container">
                                 <h5 className="title">
                                     <i className="mdi mdi-format-list-bulleted"></i> Liste enregistrée
                                 </h5>
