@@ -14,10 +14,17 @@ function PositionCrudPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
+    const [isModifiedPage, setIsModifiedPage] = useState(false);
+    const [idItem, setIdItem] = useState(0);
     
     const [formData, setFormData] = useState({
         positionName: ''
     });
+
+    const handleChangeToModifiedPage = (id) => {
+        setIsModifiedPage(true);
+        getDataForModifiedPage(id);
+    };
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -65,8 +72,41 @@ function PositionCrudPage() {
         try {
             await axios.delete(urlApi(`/Position/${itemToDelete}`));
             fetchData();
+            setIsModifiedPage(false);
+            setFormData({ positionName: '' });
         } catch (error) {
             setError(`Erreur lors de la suppression : ${error.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSubmitModified = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(null);
+        try {
+            await axios.put(urlApi(`/Position/${idItem}`), formData);
+            fetchData();
+        } catch (error) {
+            setError(`Erreur lors de l'insertion : ${error.response?.data || error.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const getDataForModifiedPage = async (id) => { 
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get(urlApi(`/Position/${id}`)); 
+            setIdItem(id);
+            setFormData({
+                positionId: response.data.positionId,
+                positionName: response.data.positionName 
+            });
+        } catch (err) {
+            setError(`Erreur lors de la récupération des données : ${err.message}`);
         } finally {
             setIsLoading(false);
         }
@@ -81,26 +121,49 @@ function PositionCrudPage() {
             </div> 
             {isLoading && <Loader />}
             {error && <div className="alert alert-danger">{error}</div>}
-            <form className="forms-sample" onSubmit={handleSubmit}>
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
-                        <div className="card">
-                            <div className="card-header title-container">
-                                <h5 className="title">
-                                    <i className="mdi mdi-file-document-edit"></i> Formulaire d'ajout
-                                </h5>
+                        {isModifiedPage ? (
+                            <div className="card">
+                                <form className="forms-sample" onSubmit={handleSubmitModified}>
+                                    <div className="card-header title-container">
+                                        <h5 className="title">
+                                            <i className="mdi mdi-file-document-edit"></i> Formulaire de modification
+                                        </h5>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="form-group">
+                                            <label htmlFor="positionName">Désignation</label>
+                                            <input type="text" name="positionName" value={formData.positionName} onChange={handleChange} className="form-control" id="name" required />
+                                        </div>
+                                        <div className="button-save-profil">
+                                            <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Modifier</button>
+                                            <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ positionName: '' })}>Annuler</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div className="card-body">
-                                <div className="form-group">
-                                    <label htmlFor="positionName">Désignation</label>
-                                    <input type="text" name="positionName" value={formData.positionName} onChange={handleChange} className="form-control" id="name" required />
-                                </div>
-                                <div className="button-save-profil">
-                                    <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Créer</button>
-                                    <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ positionName: '' })}>Annuler</button>
-                                </div>
+                        ) : (
+                            <div className="card">
+                                <form className="forms-sample" onSubmit={handleSubmit}>
+                                    <div className="card-header title-container">
+                                        <h5 className="title">
+                                            <i className="mdi mdi-file-document-edit"></i> Formulaire d'ajout
+                                        </h5>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="form-group">
+                                            <label htmlFor="positionName">Désignation</label>
+                                            <input type="text" name="positionName" value={formData.positionName} onChange={handleChange} className="form-control" id="name" required />
+                                        </div>
+                                        <div className="button-save-profil">
+                                            <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Créer</button>
+                                            <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ positionName: '' })}>Annuler</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </div>
+                        )}
                     </div>
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
@@ -125,9 +188,16 @@ function PositionCrudPage() {
                                                 <td>{item.positionName}</td>
                                                 <td>
                                                     <Button
-                                                        onClick={() => handleDeleteConfirmed(item.positionId)}
+                                                        onClick={() => handleChangeToModifiedPage(item.positionId)}
                                                         className="btn btn-danger btn-sm"
                                                         style={{backgroundColor: 'white'}}
+                                                    >
+                                                        <i className="mdi mdi-pencil icon-edit" style={{ fontSize: '20px' }}></i>
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => handleDeleteConfirmed(item.positionId)}
+                                                        className="btn btn-danger btn-sm"
+                                                        style={{backgroundColor: 'white', margin: '20px'}}
                                                     >
                                                         <i className="mdi mdi-delete icon-delete" 
                                                         style={{fontSize: '20px'}}></i>
@@ -141,7 +211,6 @@ function PositionCrudPage() {
                         </div>
                     </div>
                 </div>                
-            </form>
         </Template>
     );
 }
