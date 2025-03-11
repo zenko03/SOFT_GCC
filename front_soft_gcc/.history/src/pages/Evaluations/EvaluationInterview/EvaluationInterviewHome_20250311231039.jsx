@@ -338,9 +338,9 @@ function EvaluationInterviewHome() {
   const renderActionButton = useCallback((employee) => {
     if (!user) return null;
 
-    const isManager = user.roleId === 2;
-    const isDirector = user.roleId === 4;
-    const isRH = user.roleId === 1;
+    const isManager = user.roleId === 3;
+    const isDirector = user.roleId === 1;
+    const isRH = user.roleId === 2;
 
     const canManagerValidate =
       isManager &&

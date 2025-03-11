@@ -59,8 +59,8 @@ const Register = () => {
     <div className="register-container">
       <div className="register-card">
         <div className="register-header">
-          <div className="logo-container">
-            <FaUserPlus className="logo-icon" />
+          <div className="brand-logo">
+            <img src="../../assets/images/logo-dark.svg" alt="logo" />
           </div>
           <h1 className="app-title">Créer un compte</h1>
           <p className="app-subtitle">L'inscription est facile et rapide.</p>

@@ -36,31 +36,6 @@ const LoadingBar = () => (
   </div>
 );
 
-<style>
-  {`
-    .fa-spin {
-      animation: fa-spin 2s infinite linear;
-    }
-    @keyframes fa-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .mr-2 {
-      margin-right: 0.5rem;
-    }
-  `}
-</style>
-// Définition du composant KpiCard qui était manquant
-const KpiCard = ({ title, value, icon, color }) => (
-  <div className="kpi-card">
-    <h6>{title}</h6>
-    <p className="kpi-value" style={{ color: color || 'inherit' }}>
-      {value}
-    </p>
-    {icon && <div className="kpi-icon">{icon}</div>}
-  </div>
-);
-
 const EvaluationHistory = () => {
   const [format, setFormat] = useState("csv"); // Format par défaut
   const [loadingCSV, setLoadingCSV] = useState(false);
@@ -172,35 +147,6 @@ const EvaluationHistory = () => {
     setShowModal(false);
   };
 
-  const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(evaluations.map(emp => ({
-      Nom: emp.firstName,
-      Poste: emp.position,
-      "Date d'évaluation": emp.startDate,
-      Statut: emp.status,
-      Note: emp.overallScore,
-      "Type d'évaluation": emp.evaluationType,
-    })));
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Evaluations");
-    XLSX.writeFile(workbook, "evaluations.xlsx");
-  };
-
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
-    doc.autoTable({
-      head: [['Nom', 'Poste', 'Date d\'évaluation', 'Note', 'Type d\'évaluation']],
-      body: evaluations.map(emp => [
-        `${emp.firstName} ${emp.lastName}`,
-        emp.position,
-        emp.startDate,
-        emp.overallScore,
-        emp.evaluationType,
-      ]),
-    });
-    doc.save('evaluations.pdf');
-  };
-
   return (
     <Template>
       <div className="container mt-4">
@@ -231,7 +177,7 @@ const EvaluationHistory = () => {
         {/* Fin de la section KPI */}
 
         {/* Section des exports */}
-        < div className="card shadow mb-4">
+        <div className="card shadow mb-4">
           <div className="card-header" style={{ position: 'relative' }}>
             <div className="btn-group">
               <CSVLink
@@ -251,33 +197,13 @@ const EvaluationHistory = () => {
                   setTimeout(() => setLoadingCSV(false), 2000);
                 }}
               >
-                {loadingCSV ? (
-                  <span><FaSync className="fa-spin mr-2" /> Export en cours...</span>
-                ) : (
-                  <span><FaFileCsv className="mr-2" /> Exporter en CSV</span>
-                )}
+                {loadingCSV ? 'Export en cours...' : 'Exporter en CSV'}
               </CSVLink>
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={handleExportExcel}
-                disabled={loadingExcel}
-              >
-                {loadingExcel ? (
-                  <span><FaSync className="fa-spin mr-2" /> Export en cours...</span>
-                ) : (
-                  <span><FaFileExcel className="mr-2" /> Exporter en Excel</span>
-                )}
+              <button className="btn btn-outline-primary btn-sm" onClick={handleExportExcel} disabled={loadingExcel}>
+                {loadingExcel ? 'Export en cours...' : 'Exporter en Excel'}
               </button>
-              <button
-                className="btn btn-outline-success btn-sm"
-                onClick={handleExportPDF}
-                disabled={loadingPDF}
-              >
-                {loadingPDF ? (
-                  <span><FaSync className="fa-spin mr-2" /> Export en cours...</span>
-                ) : (
-                  <span><FaFilePdf className="mr-2" /> Exporter en PDF</span>
-                )}
+              <button className="btn btn-outline-success btn-sm" onClick={handleExportPDF} disabled={loadingPDF}>
+                {loadingPDF ? 'Export en cours...' : 'Exporter en PDF'}
               </button>
             </div>
             {(loadingCSV || loadingExcel || loadingPDF) && <LoadingBar />}
@@ -357,13 +283,7 @@ const EvaluationHistory = () => {
                         <tr key={emp.evaluationId}>
                           <td>{emp.firstName} {emp.lastName}</td>
                           <td>{emp.position}</td>
-                          <td>
-                            {emp.startDate ? new Date(emp.startDate).toLocaleDateString('fr-FR', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            }) : 'N/A'}
-                          </td>
+                          <td>{emp.startDate}</td>
                           <td>{emp.overallScore}</td>
                           <td>{emp.evaluationType}</td>
                           <td>

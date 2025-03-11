@@ -83,13 +83,10 @@ const Login = () => {
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <div className="input-with-icon">
-                  <div className="input-icon">
-                    <FaEnvelope />
-                  </div>
+                  <FaEnvelope className="input-icon" />
                   <input
                     type="email"
                     name="email"
-                    placeholder="Adresse email"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -99,15 +96,12 @@ const Login = () => {
 
               <div className="form-group">
                 <div className="input-with-icon">
-                  <div className="input-icon">
-                    <FaLock />
-                  </div>
+                  <FaLock className="input-icon" />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Mot de passe"
-                    value={formData.password}
-                    onChange={handleChange}
+                    value={formData.password} onChange={handleChange}
                     required
                   />
                   <span className="toggle-password" onClick={() => setShowPassword(!showPassword)}>

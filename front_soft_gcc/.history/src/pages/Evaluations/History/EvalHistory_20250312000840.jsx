@@ -357,13 +357,7 @@ const EvaluationHistory = () => {
                         <tr key={emp.evaluationId}>
                           <td>{emp.firstName} {emp.lastName}</td>
                           <td>{emp.position}</td>
-                          <td>
-                            {emp.startDate ? new Date(emp.startDate).toLocaleDateString('fr-FR', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            }) : 'N/A'}
-                          </td>
+                          <td>{emp.startDate}</td>
                           <td>{emp.overallScore}</td>
                           <td>{emp.evaluationType}</td>
                           <td>

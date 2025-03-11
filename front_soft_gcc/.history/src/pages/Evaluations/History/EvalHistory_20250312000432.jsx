@@ -36,20 +36,6 @@ const LoadingBar = () => (
   </div>
 );
 
-<style>
-  {`
-    .fa-spin {
-      animation: fa-spin 2s infinite linear;
-    }
-    @keyframes fa-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .mr-2 {
-      margin-right: 0.5rem;
-    }
-  `}
-</style>
 // Définition du composant KpiCard qui était manquant
 const KpiCard = ({ title, value, icon, color }) => (
   <div className="kpi-card">
@@ -251,33 +237,13 @@ const EvaluationHistory = () => {
                   setTimeout(() => setLoadingCSV(false), 2000);
                 }}
               >
-                {loadingCSV ? (
-                  <span><FaSync className="fa-spin mr-2" /> Export en cours...</span>
-                ) : (
-                  <span><FaFileCsv className="mr-2" /> Exporter en CSV</span>
-                )}
+                {loadingCSV ? 'Export en cours...' : 'Exporter en CSV'}
               </CSVLink>
-              <button
-                className="btn btn-outline-primary btn-sm"
-                onClick={handleExportExcel}
-                disabled={loadingExcel}
-              >
-                {loadingExcel ? (
-                  <span><FaSync className="fa-spin mr-2" /> Export en cours...</span>
-                ) : (
-                  <span><FaFileExcel className="mr-2" /> Exporter en Excel</span>
-                )}
+              <button className="btn btn-outline-primary btn-sm" onClick={handleExportExcel} disabled={loadingExcel}>
+                {loadingExcel ? 'Export en cours...' : 'Exporter en Excel'}
               </button>
-              <button
-                className="btn btn-outline-success btn-sm"
-                onClick={handleExportPDF}
-                disabled={loadingPDF}
-              >
-                {loadingPDF ? (
-                  <span><FaSync className="fa-spin mr-2" /> Export en cours...</span>
-                ) : (
-                  <span><FaFilePdf className="mr-2" /> Exporter en PDF</span>
-                )}
+              <button className="btn btn-outline-success btn-sm" onClick={handleExportPDF} disabled={loadingPDF}>
+                {loadingPDF ? 'Export en cours...' : 'Exporter en PDF'}
               </button>
             </div>
             {(loadingCSV || loadingExcel || loadingPDF) && <LoadingBar />}
@@ -357,13 +323,7 @@ const EvaluationHistory = () => {
                         <tr key={emp.evaluationId}>
                           <td>{emp.firstName} {emp.lastName}</td>
                           <td>{emp.position}</td>
-                          <td>
-                            {emp.startDate ? new Date(emp.startDate).toLocaleDateString('fr-FR', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            }) : 'N/A'}
-                          </td>
+                          <td>{emp.startDate}</td>
                           <td>{emp.overallScore}</td>
                           <td>{emp.evaluationType}</td>
                           <td>

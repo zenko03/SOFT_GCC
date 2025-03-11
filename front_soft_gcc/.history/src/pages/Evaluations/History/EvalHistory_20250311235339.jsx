@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Template from '../../Template';
 import PerformanceGraph from './PerformanceGraph';
 import GlobalPerformanceGraph from './GlobalPerformanceGraph';
@@ -9,69 +9,46 @@ import { CSVLink } from 'react-csv';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { FaFileExcel, FaFilePdf, FaFileCsv, FaSearch, FaFilter, FaChartBar, FaAngleLeft, FaAngleRight, FaSync } from 'react-icons/fa';
-
-const API_BASE_URL = 'https://localhost:7082/api/EvaluationHistory';
-
-const LoadingBar = () => (
-  <div style={{
-    width: '100%',
-    height: '4px',
-    backgroundColor: '#FFD700', // Jaune moutarde
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    zIndex: 1000,
-    animation: 'loading 2s infinite',
-  }}>
-    <style>
-      {`
-        @keyframes loading {
-          0% { width: 0%; }
-          50% { width: 50%; }
-          100% { width: 100%; }
-        }
-      `}
-    </style>
-  </div>
-);
-
-<style>
-  {`
-    .fa-spin {
-      animation: fa-spin 2s infinite linear;
-    }
-    @keyframes fa-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .mr-2 {
-      margin-right: 0.5rem;
-    }
-  `}
-</style>
-// Définition du composant KpiCard qui était manquant
-const KpiCard = ({ title, value, icon, color }) => (
-  <div className="kpi-card">
-    <h6>{title}</h6>
-    <p className="kpi-value" style={{ color: color || 'inherit' }}>
-      {value}
-    </p>
-    {icon && <div className="kpi-icon">{icon}</div>}
-  </div>
-);
 
 const EvaluationHistory = () => {
   const [format, setFormat] = useState("csv"); // Format par défaut
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  // LOADING
   const [loadingCSV, setLoadingCSV] = useState(false);
   const [loadingExcel, setLoadingExcel] = useState(false);
   const [loadingPDF, setLoadingPDF] = useState(false);
-  const [departments, setDepartments] = useState([]);
+  const [departments, setDepartments] = useState([]); // État pour stocker les départements
 
+
+
+
+  const LoadingBar = () => (
+    <div style={{
+      width: '100%',
+      height: '4px',
+      backgroundColor: '#FFD700', // Jaune moutarde
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      zIndex: 1000,
+      animation: 'loading 2s infinite',
+    }}>
+      <style>
+        {`
+          @keyframes loading {
+            0% { width: 0%; }
+            50% { width: 50%; }
+            100% { width: 100%; }
+          }
+        `}
+      </style>
+    </div>
+  );
   // PAGINATION
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1); // Page actuelle
+  const [pageSize, setPageSize] = useState(10); // Nombre d'éléments par page
+  const [totalPages, setTotalPages] = useState(0); // Nombre total de pages
 
   const [selectedEvaluation, setSelectedEvaluation] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -80,10 +57,12 @@ const EvaluationHistory = () => {
     status: '',
     position: '',
   });
+  const itemsPerPage = 10;
 
   const [evaluations, setEvaluations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [showModal, setShowModal] = useState(false);
 
   const [kpiData, setKpiData] = useState({
@@ -93,77 +72,159 @@ const EvaluationHistory = () => {
   });
 
   // Fonction pour récupérer les départements
-  const fetchDepartments = useCallback(async () => {
+  const fetchDepartments = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/departments`);
+      const response = await axios.get('https://localhost:7082/api/EvaluationHistory/departments');
       setDepartments(response.data);
     } catch (err) {
       console.error('Erreur lors de la récupération des départements :', err);
     }
-  }, []);
+  };
 
-  // Récupération des KPIs
-  const fetchKpis = useCallback(async () => {
+  // Appeler fetchDepartments au chargement initial
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
+  const fetchKpis = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/kpis`, {
-        params: {
-          startDate: filters.evaluationDate || null,
-          department: filters.position || '',
-        },
-      });
+      const response = await axios.get(
+        'https://localhost:7082/api/EvaluationHistory/kpis',
+        {
+          params: {
+            startDate: filters.evaluationDate || null,
+            department: filters.position || '',
+          },
+        }
+      );
       setKpiData(response.data);
     } catch (err) {
       console.error('Erreur lors de la récupération des KPI :', err);
     }
+  };
+
+  // Appeler les KPI au chargement initial
+  useEffect(() => {
+    fetchKpis();
   }, [filters]);
 
-  // Récupération des évaluations
-  const fetchEvaluations = useCallback(async () => {
+
+  const fetchEvaluations = async () => {
     setLoading(true);
-    setError(null);
     try {
-      const response = await axios.get(`${API_BASE_URL}/evaluation-history-paginated`, {
-        params: {
-          pageNumber: currentPage,
-          pageSize: pageSize,
-          startDate: filters.evaluationDate || null,
-          evaluationType: '',
-          department: filters.position || '',
-          employeeName: searchQuery || '',
-        },
-      });
-      setEvaluations(response.data.evaluations);
-      setTotalPages(response.data.totalPages);
+      const response = await axios.get(
+        'https://localhost:7082/api/EvaluationHistory/evaluation-history-paginated',
+        {
+          params: {
+            pageNumber: currentPage,
+            pageSize: pageSize,
+            startDate: filters.evaluationDate || null,
+            evaluationType: '',
+            department: filters.position || '',
+            employeeName: searchQuery || '',
+          },
+        }
+      );
+      setEvaluations(response.data.evaluations); // Données paginées
+      setTotalPages(response.data.totalPages); // Nombre total de pages
+      setError(null);
     } catch (err) {
-      setError('Erreur lors de la récupération des évaluations.');
+      setError('Erreur lors du chargement des évaluations');
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, filters, currentPage, pageSize]);
-
-  useEffect(() => {
-    fetchDepartments();
-    fetchKpis();
-    fetchEvaluations();
-  }, [fetchDepartments, fetchKpis, fetchEvaluations]);
-
-  const handleSearchChange = (e) => {
-    const query = e.target.value.trim();
-    setSearchQuery(query);
   };
 
-  const handleFilterChange = (e) => {
+  useEffect(() => {
+    fetchEvaluations();
+  }, [searchQuery, filters, currentPage, pageSize]);
+
+  const handleSearchChange = (e) => {
+    const query = e.target.value.trim(); // Supprime les espaces inutiles
+    setSearchQuery(query);
+  }; const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
+
+
   const handleDetailsClick = async (evaluationId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/detail/${evaluationId}`);
+      // Remplacez par l'URL correcte de votre API
+      const response = await axios.get(`https://localhost:7082/api/EvaluationHistory/detail/${evaluationId}`);
+
+      console.log("Données récupérées :", response.data);
+
+      // Mettez à jour l'état avec les détails de l'évaluation
       setSelectedEvaluation(response.data);
+
+      // Affichez la modal
       setShowModal(true);
     } catch (error) {
       console.error("Erreur lors du chargement des détails :", error);
+    }
+  };
+
+  if (error) {
+    return (
+      <Template>
+        <div className="alert alert-danger">{error}</div>
+      </Template>
+    );
+  }
+  // Données à exporter
+  const exportData = evaluations.map(emp => ({
+    Nom: emp.firstName,
+    Poste: emp.position,
+    "Date d'évaluation": emp.startDate,
+    Statut: emp.status,
+    Note: emp.overallScore,
+    "Type d'évaluation": emp.evaluationType,
+  }));
+
+  // Exporter en Excel
+  const handleExportExcel = async () => {
+    setLoadingExcel(true); // Activer le chargement pour Excel
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Evaluations");
+      XLSX.writeFile(wb, "evaluations.xlsx");
+    } catch (error) {
+      console.error("Erreur lors de l'exportation Excel :", error);
+    } finally {
+      setLoadingExcel(false); // Désactiver le chargement pour Excel
+    }
+  };
+
+  // Exporter en PDF
+  const handleExportPDF = async () => {
+    setLoadingPDF(true); // Activer le chargement pour PDF
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const doc = new jsPDF();
+      const data = exportData.map(emp => [
+        emp.Nom,
+        emp.Poste,
+        emp["Date d'évaluation"],
+        emp.Statut,
+        emp.Note,
+        emp["Type d'évaluation"],
+      ]);
+
+      doc.autoTable({
+        head: [['Nom', 'Poste', "Date d'évaluation", 'Statut', 'Note', "Type d'évaluation"]],
+        body: data,
+      });
+
+      doc.save('evaluations.pdf');
+    } catch (error) {
+      console.error("Erreur lors de l'exportation PDF :", error);
+    } finally {
+      setLoadingPDF(false); // Désactiver le chargement pour PDF
     }
   };
 
@@ -171,36 +232,6 @@ const EvaluationHistory = () => {
     setSelectedEvaluation(null);
     setShowModal(false);
   };
-
-  const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(evaluations.map(emp => ({
-      Nom: emp.firstName,
-      Poste: emp.position,
-      "Date d'évaluation": emp.startDate,
-      Statut: emp.status,
-      Note: emp.overallScore,
-      "Type d'évaluation": emp.evaluationType,
-    })));
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Evaluations");
-    XLSX.writeFile(workbook, "evaluations.xlsx");
-  };
-
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
-    doc.autoTable({
-      head: [['Nom', 'Poste', 'Date d\'évaluation', 'Note', 'Type d\'évaluation']],
-      body: evaluations.map(emp => [
-        `${emp.firstName} ${emp.lastName}`,
-        emp.position,
-        emp.startDate,
-        emp.overallScore,
-        emp.evaluationType,
-      ]),
-    });
-    doc.save('evaluations.pdf');
-  };
-
   return (
     <Template>
       <div className="container mt-4">
@@ -210,74 +241,68 @@ const EvaluationHistory = () => {
         <div className="card shadow mb-4">
           <div className="card-header d-flex justify-content-between align-items-center">
             <h5 className="mb-0">Indicateurs Clés de Performance (KPI)</h5>
-            <button className="btn btn-outline-primary btn-sm" onClick={fetchKpis}>
+            <button
+              className="btn btn-outline-primary btn-sm"
+              onClick={() => fetchKpis()}
+            >
               Rafraîchir
             </button>
           </div>
           <div className="card-body">
             <div className="row text-center">
               <div className="col-md-4">
-                <KpiCard title="Taux de Participation" value={`${kpiData.participationRate.toFixed(2)}%`} icon={<FaChartBar />} color="#4caf50" />
+                <div className="kpi-card">
+                  <h6>Taux de Participation</h6>
+                  <p className="kpi-value">
+                    {kpiData.participationRate.toFixed(2)}%
+                  </p>
+                </div>
               </div>
               <div className="col-md-4">
-                <KpiCard title="Taux d'Approbation" value={`${kpiData.approvalRate.toFixed(2)}%`} icon={<FaChartBar />} color="#2196f3" />
+                <div className="kpi-card">
+                  <h6>Taux d'Approbation</h6>
+                  <p className="kpi-value">{kpiData.approvalRate.toFixed(2)}%</p>
+                </div>
               </div>
               <div className="col-md-4">
-                <KpiCard title="Moyenne Générale" value={kpiData.overallAverage.toFixed(2)} icon={<FaChartBar />} color="#ff9800" />
+                <div className="kpi-card">
+                  <h6>Moyenne Générale</h6>
+                  <p className="kpi-value">{kpiData.overallAverage.toFixed(2)}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
         {/* Fin de la section KPI */}
-
         {/* Section des exports */}
-        < div className="card shadow mb-4">
+        <div className="card shadow mb-4">
           <div className="card-header" style={{ position: 'relative' }}>
             <div className="btn-group">
               <CSVLink
-                data={evaluations.map(emp => ({
-                  Nom: emp.firstName,
-                  Poste: emp.position,
-                  "Date d'évaluation": emp.startDate,
-                  Statut: emp.status,
-                  Note: emp.overallScore,
-                  "Type d'évaluation": emp.evaluationType,
-                }))}
+                data={exportData}
                 filename={"evaluations.csv"}
                 className="btn btn-outline-secondary btn-sm"
                 asyncOnClick={true}
                 onClick={() => {
                   setLoadingCSV(true);
-                  setTimeout(() => setLoadingCSV(false), 2000);
+                  setTimeout(() => setLoadingCSV(false), 2000); // Simuler un délai
                 }}
               >
-                {loadingCSV ? (
-                  <span><FaSync className="fa-spin mr-2" /> Export en cours...</span>
-                ) : (
-                  <span><FaFileCsv className="mr-2" /> Exporter en CSV</span>
-                )}
+                {loadingCSV ? 'Export en cours...' : 'Exporter en CSV'}
               </CSVLink>
               <button
                 className="btn btn-outline-primary btn-sm"
                 onClick={handleExportExcel}
                 disabled={loadingExcel}
               >
-                {loadingExcel ? (
-                  <span><FaSync className="fa-spin mr-2" /> Export en cours...</span>
-                ) : (
-                  <span><FaFileExcel className="mr-2" /> Exporter en Excel</span>
-                )}
+                {loadingExcel ? 'Export en cours...' : 'Exporter en Excel'}
               </button>
               <button
                 className="btn btn-outline-success btn-sm"
                 onClick={handleExportPDF}
                 disabled={loadingPDF}
               >
-                {loadingPDF ? (
-                  <span><FaSync className="fa-spin mr-2" /> Export en cours...</span>
-                ) : (
-                  <span><FaFilePdf className="mr-2" /> Exporter en PDF</span>
-                )}
+                {loadingPDF ? 'Export en cours...' : 'Exporter en PDF'}
               </button>
             </div>
             {(loadingCSV || loadingExcel || loadingPDF) && <LoadingBar />}
@@ -347,7 +372,8 @@ const EvaluationHistory = () => {
                       <th>Poste</th>
                       <th>Date d'évaluation</th>
                       <th>Note</th>
-                      <th>Type d'évaluation</th>
+                      <th>Type d'evaluation</th>
+
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -357,13 +383,7 @@ const EvaluationHistory = () => {
                         <tr key={emp.evaluationId}>
                           <td>{emp.firstName} {emp.lastName}</td>
                           <td>{emp.position}</td>
-                          <td>
-                            {emp.startDate ? new Date(emp.startDate).toLocaleDateString('fr-FR', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            }) : 'N/A'}
-                          </td>
+                          <td>{emp.startDate}</td>
                           <td>{emp.overallScore}</td>
                           <td>{emp.evaluationType}</td>
                           <td>
@@ -378,7 +398,7 @@ const EvaluationHistory = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="text-center">
+                        <td colSpan="7" className="text-center">
                           Aucun employé trouvé
                         </td>
                       </tr>
@@ -406,7 +426,7 @@ const EvaluationHistory = () => {
                     value={pageSize}
                     onChange={(e) => {
                       setPageSize(Number(e.target.value));
-                      setCurrentPage(1);
+                      setCurrentPage(1); // Réinitialiser à la première page
                     }}
                   >
                     <option value={5}>5 par page</option>
@@ -415,17 +435,21 @@ const EvaluationHistory = () => {
                     <option value={50}>50 par page</option>
                   </select>
                 </div>
+                {/* Details de l'evaluation */}
                 {showModal && selectedEvaluation && (
                   <EvaluationDetailsModal
                     evaluation={selectedEvaluation}
                     onClose={closeModal}
                   />
                 )}
+
+
               </div>
             )}
           </div>
         </div>
 
+        {/* Placeholder for Future Graphs */}
         <div className="card shadow mb-4">
           <div className="card-header">
             <h5 className="mb-0">Graphiques de Performance</h5>
@@ -435,6 +459,9 @@ const EvaluationHistory = () => {
             <GlobalPerformanceGraph />
           </div>
         </div>
+
+
+
       </div>
     </Template>
   );

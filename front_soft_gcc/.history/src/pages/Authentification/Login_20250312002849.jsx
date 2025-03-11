@@ -83,13 +83,11 @@ const Login = () => {
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <div className="input-with-icon">
-                  <div className="input-icon">
-                    <FaEnvelope />
-                  </div>
+                  <FaEnvelope className="input-icon" />
                   <input
                     type="email"
                     name="email"
-                    placeholder="Adresse email"
+                    placeholder="Adresse email" /* Ajout du placeholder qui manquait */
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -99,13 +97,11 @@ const Login = () => {
 
               <div className="form-group">
                 <div className="input-with-icon">
-                  <div className="input-icon">
-                    <FaLock />
-                  </div>
+                  <FaLock className="input-icon" />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
-                    placeholder="Mot de passe"
+                    placeholder="Mot de passe" /* Ajout du placeholder qui manquait */
                     value={formData.password}
                     onChange={handleChange}
                     required

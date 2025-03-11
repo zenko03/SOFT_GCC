@@ -339,7 +339,7 @@ function EvaluationInterviewHome() {
     if (!user) return null;
 
     const isManager = user.roleId === 2;
-    const isDirector = user.roleId === 4;
+    const isDirector = user.roleId === 3;
     const isRH = user.roleId === 1;
 
     const canManagerValidate =

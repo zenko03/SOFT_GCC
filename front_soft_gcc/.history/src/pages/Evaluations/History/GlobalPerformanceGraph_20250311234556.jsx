@@ -14,7 +14,7 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaChartBar, FaFilter, FaSync } from 'react-icons/fa';
-import '../../../assets/css/Evaluations/GlobalPerformance.css'; // Vous devrez créer ce fichier CSS
+import './GlobalPerformanceGraph.css'; // Vous devrez créer ce fichier CSS
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {

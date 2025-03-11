@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import './Register.css';
-import { FaUser, FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa'; // Ajout des icônes
-
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -59,8 +57,8 @@ const Register = () => {
     <div className="register-container">
       <div className="register-card">
         <div className="register-header">
-          <div className="logo-container">
-            <FaUserPlus className="logo-icon" />
+          <div className="brand-logo">
+            <img src="../../assets/images/logo-dark.svg" alt="logo" />
           </div>
           <h1 className="app-title">Créer un compte</h1>
           <p className="app-subtitle">L'inscription est facile et rapide.</p>
@@ -71,9 +69,6 @@ const Register = () => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <div className="input-with-icon">
-              <div className="input-icon">
-                <FaUser />
-              </div>
               <input
                 type="text"
                 name="lastName"
@@ -84,14 +79,10 @@ const Register = () => {
               />
             </div>
           </div>
-
           <div className="form-group">
             <div className="input-with-icon">
-              <div className="input-icon">
-                <FaUser />
-              </div>
               <input
-                type="text"
+                type ="text"
                 name="firstName"
                 placeholder="Prénom"
                 value={formData.firstName}
@@ -100,12 +91,8 @@ const Register = () => {
               />
             </div>
           </div>
-
           <div className="form-group">
             <div className="input-with-icon">
-              <div className="input-icon">
-                <FaEnvelope />
-              </div>
               <input
                 type="email"
                 name="email"
@@ -116,12 +103,8 @@ const Register = () => {
               />
             </div>
           </div>
-
           <div className="form-group">
             <div className="input-with-icon">
-              <div className="input-icon">
-                <FaLock />
-              </div>
               <input
                 type="password"
                 name="password"
@@ -132,7 +115,7 @@ const Register = () => {
               />
             </div>
           </div>
-
+          
           <div className="mt-3">
             <button
               type="submit"

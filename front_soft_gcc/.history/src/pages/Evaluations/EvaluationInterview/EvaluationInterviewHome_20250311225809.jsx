@@ -338,9 +338,9 @@ function EvaluationInterviewHome() {
   const renderActionButton = useCallback((employee) => {
     if (!user) return null;
 
-    const isManager = user.roleId === 2;
-    const isDirector = user.roleId === 4;
-    const isRH = user.roleId === 1;
+    const isManager = user.roleId === 3;
+    const isDirector = user.roleId === 1;
+    const isRH = user.roleId === 2;
 
     const canManagerValidate =
       isManager &&
@@ -380,12 +380,7 @@ function EvaluationInterviewHome() {
           // Entretien planifié pour aujourd'hui
           return (
             <div className="d-flex align-items-center">
-              <button
-                className="btn btn-success btn-sm me-2"
-                onClick={() => startInterview(employee.employeeId)}
-              >
-                Démarrer l'entretien
-              </button>
+              <span className="text-success me-2">Aujourd'hui</span>
               <button className="btn btn-outline-primary btn-sm me-1" onClick={() => getAndEditInterview(employee.employeeId)}>
                 <FontAwesomeIcon icon={faEdit} />
               </button>

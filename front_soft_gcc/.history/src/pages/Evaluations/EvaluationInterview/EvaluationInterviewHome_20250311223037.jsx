@@ -9,20 +9,9 @@ import { useUser } from './UserContext'; // Assurez-vous que le chemin d'importa
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSync, faChevronLeft, faChevronRight, faTimes, faEdit, faCheck } from '@fortawesome/free-solid-svg-icons';
-
 function EvaluationInterviewHome() {
   const navigate = useNavigate();
   const { user, loading: userLoading } = useUser();
-
-  // Constantes
-  const INTERVIEW_STATUS = {
-    PLANNED: 10,
-    IN_PROGRESS: 20,
-    PENDING_VALIDATION: 25,
-    COMPLETED: 30,
-    REJECTED: 40,
-    CANCELLED: 50
-  };
 
   // États de base
   const [dateError, setDateError] = useState("");
@@ -47,14 +36,21 @@ function EvaluationInterviewHome() {
   const [showModal, setShowModal] = useState(false);
   const [today, setToday] = useState(new Date().toISOString().split('T')[0]);
 
-  // Gestion centralisée des erreurs - Fonction de base qui ne dépend d'aucune autre fonction
+
+  const INTERVIEW_STATUS = {
+    PLANNED: 10,
+    IN_PROGRESS: 20,
+    PENDING_VALIDATION: 25,
+    COMPLETED: 30,
+    REJECTED: 40,
+    CANCELLED: 50
+  };
+  // Gestion centralisée des erreurs
   const handleError = useCallback((error, customMsg = "Une erreur est survenue. Veuillez réessayer.") => {
     console.error(error);
     const message = error.response?.data?.message || customMsg;
     toast.error(message);
   }, []);
-
-  // ====== FONCTIONS DE RÉCUPÉRATION DE DONNÉES ======
 
   // Récupération des participants
   const fetchParticipants = useCallback(async () => {
@@ -69,21 +65,42 @@ function EvaluationInterviewHome() {
     }
   }, [handleError]);
 
+  useEffect(() => {
+    // Ne récupérer les participants que si l'utilisateur est chargé
+    if (!userLoading && user) {
+      fetchParticipants();
+    }
+  }, [fetchParticipants, userLoading, user]);
+
+  // Mise à jour des participants sélectionnés
+  useEffect(() => {
+    selectedEmployees.forEach((empId) => {
+      if (!evaluationDetails.participants.includes(empId)) {
+        setEvaluationDetails((prev) => ({
+          ...prev,
+          participants: [...prev.participants, empId],
+        }));
+      }
+    });
+  }, [selectedEmployees, evaluationDetails.participants]);
+
   // Récupération des employés sans évaluations
   const fetchEmployeesWithoutEvaluations = useCallback(async () => {
     if (!user) return; // Ne pas charger si l'utilisateur n'est pas disponible
 
     setLoading(true);
     try {
-      const response = await axios.get('https://localhost:7082/api/EvaluationInterview/employees-finished-evaluations-paginated', {
-        params: {
-          pageNumber: currentPage,
-          pageSize: pageSize,
-          position: filters.position,
-          department: filters.department,
-          search: searchQuery,
-        },
-      });
+      const response = await axios.get('https://localhost:7082/api/EvaluationInterview/employees-finished-evaluations-paginated',
+        {
+          params: {
+            pageNumber: currentPage,
+            pageSize: pageSize,
+            position: filters.position,
+            department: filters.department,
+            search: searchQuery,
+          },
+        }
+      );
       setEmployees(response.data.employees);
       setFilteredEmployees(response.data.employees);
       setTotalPages(response.data.totalPages);
@@ -110,14 +127,6 @@ function EvaluationInterviewHome() {
     }
   }, [handleError, user]);
 
-  // ====== EFFETS ======
-
-  useEffect(() => {
-    if (!userLoading && user) {
-      fetchParticipants();
-    }
-  }, [fetchParticipants, userLoading, user]);
-
   useEffect(() => {
     if (!userLoading && user) {
       fetchEmployeesWithoutEvaluations();
@@ -125,8 +134,7 @@ function EvaluationInterviewHome() {
     }
   }, [filters, searchQuery, currentPage, pageSize, fetchEmployeesWithoutEvaluations, fetchFilterOptions, userLoading, user]);
 
-  // ====== GESTION DES ÉVÉNEMENTS ======
-
+  // Gestion des événements
   const handleSearch = useCallback((e) => {
     setSearchQuery(e.target.value.toLowerCase());
   }, []);
@@ -246,7 +254,116 @@ function EvaluationInterviewHome() {
     }
   }, [navigate, handleError]);
 
+
+
+  const renderActionButton = useCallback((employee) => {
+    if (!user) return null;
+
+
+
+    const isManager = user.roleId === 3;
+    const isDirector = user.roleId === 1;
+    const isRH = user.roleId === 2;
+
+    const canManagerValidate =
+      isManager &&
+      employee.interviewStatus === INTERVIEW_STATUS.PENDING_VALIDATION &&
+      (employee.managerApproval === null || employee.managerComments === null);
+
+    const canDirectorValidate =
+      isDirector &&
+      employee.interviewStatus === INTERVIEW_STATUS.PENDING_VALIDATION &&
+      (employee.directorApproval === null || employee.directorComments === null);
+
+    const managerValidated =
+      employee.managerApproval !== null && employee.managerComments !== null;
+    const directorValidated =
+      employee.directorApproval !== null && employee.directorComments !== null;
+    const interviewCompleted = managerValidated && directorValidated;
+
+    // Comparaison des dates
+    const isToday = compareDates(employee.interviewDate, today);
+    const isFutureDate = employee.interviewDate && new Date(employee.interviewDate) > new Date(today);
+    const isPastDate = employee.interviewDate && new Date(employee.interviewDate) < new Date(today) && !isToday;
+
+    // 1. Vérifier les statuts terminaux d'abord
+    if (employee.interviewStatus === INTERVIEW_STATUS.COMPLETED) {
+      return <span className="text-success">Entretien terminé</span>;
+    }
+
+    if (employee.interviewStatus === INTERVIEW_STATUS.REJECTED) {
+      return <span className="text-danger">Entretien rejeté</span>;
+    }
+
+    if (employee.interviewStatus === INTERVIEW_STATUS.CANCELLED) {
+      return <span className="text-secondary">Entretien annulé</span>;
+    }
+
+    // 2. Entretiens en attente de validation
+    if (employee.interviewStatus === INTERVIEW_STATUS.PENDING_VALIDATION) {
+      if (isRH) {
+        return (
+          <div className="d-flex align-items-center">
+            <span className="text-warning me-2">En attente de validation</span>
+            <button
+              className="btn btn-outline-secondary btn-sm me-1"
+              onClick={() => handleCancelInterview(employee.interviewId)}
+              aria-label="Annuler l'entretien"
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </div>
+        );
+      }
+
+      if (canManagerValidate || canDirectorValidate) {
+        return (
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => ValidateInterview(employee.employeeId)}
+            aria-label={`Valider l'entretien pour ${employee.firstName} ${employee.lastName}`}
+          >
+            <FontAwesomeIcon icon={faCheck} className="me-1" /> Valider
+          </button>
+        );
+      }
+    }
+
+    // 3. Entretiens planifiés
+    if (employee.interviewStatus === INTERVIEW_STATUS.PLANNED) {
+      if (isRH) {
+        return (
+          <div className="d-flex align-items -center">
+            <button
+              className="btn btn-outline-primary btn-sm me-1"
+              onClick={() => handleEditInterview(employee.interviewId)}
+              aria-label="Modifier l'entretien"
+            >
+              <FontAwesomeIcon icon={faEdit} />
+            </button>
+            <button
+              className="btn btn-outline-danger btn-sm"
+              onClick={() => handleCancelInterview(employee.interviewId)}
+              aria-label="Annuler l'entretien"
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </div>
+        );
+      }
+    }
+
+    // 4. Entretiens en cours
+    if (employee.interviewStatus === INTERVIEW_STATUS.IN_PROGRESS) {
+      return <span className="text-info">Entretien en cours</span>;
+    }
+
+    return null; // Aucun bouton d'action à afficher
+  }, [user, today]);
+
+  // Mise à jour de la fonction handleCancelInterview
   const handleCancelInterview = useCallback(async (interviewId) => {
+    // Vérifier que l'ID d'entretien est défini
     if (!interviewId) {
       toast.error("Identifiant d'entretien manquant.");
       return;
@@ -267,7 +384,9 @@ function EvaluationInterviewHome() {
         }
       } catch (error) {
         console.error("Erreur lors de l'annulation de l'entretien:", error);
+        // Afficher les détails de l'erreur si disponibles
         if (error.response && error.response.data) {
+          console.log('Erreur détaillée:', error.response.data);
           toast.error(error.response.data.title || "Une erreur s'est produite.");
         } else {
           toast.error("Une erreur s'est produite. Veuillez réessayer.");
@@ -276,207 +395,30 @@ function EvaluationInterviewHome() {
     }
   }, [INTERVIEW_STATUS, fetchEmployeesWithoutEvaluations]);
 
-  const getAndCancelInterview = useCallback(async (employeeId) => {
-    try {
-      const interviewResponse = await axios.get(
-        `https://localhost:7082/api/EvaluationInterview/get-interview-by-participant/${employeeId}`
-      );
-
-      const interview = interviewResponse.data;
-      if (!interview || !interview.interviewId) {
-        toast.error("Aucun entretien trouvé pour cet employé.");
-        return;
-      }
-
-      await handleCancelInterview(interview.interviewId);
-
-    } catch (error) {
-      handleError(error, "Erreur lors de la récupération des informations d'entretien.");
-    }
-  }, [handleCancelInterview, handleError]);
-
+  // Ne pas oublier d'ajouter handleEditInterview qui manque
   const handleEditInterview = useCallback(async (interviewId) => {
     try {
       const interviewResponse = await axios.get(
         `https://localhost:7082/api/EvaluationInterview/interview-details/${interviewId}`
       );
 
+      // Récupérer les détails de l'entretien
       const interview = interviewResponse.data;
 
+      // Configurer le formulaire avec les détails actuels
       setEvaluationDetails({
         evaluationId: interview.evaluationId,
-        scheduledDate: interview.interviewDate?.split('Z')[0] || '',
+        scheduledDate: interview.interviewDate?.split('Z')[0] || '', // Formater pour input datetime-local
         participants: interview.participants?.map(p => p.userId) || [],
-        selectedEmployee: null,
+        selectedEmployee: null, // Vous pouvez charger l'employé si nécessaire
       });
 
+      // Ouvrir le modal
       setShowModal(true);
     } catch (error) {
       handleError(error, "Erreur lors de la récupération des détails de l'entretien.");
     }
   }, [handleError]);
-
-  const getAndEditInterview = useCallback(async (employeeId) => {
-    try {
-      const interviewResponse = await axios.get(
-        `https://localhost:7082/api/EvaluationInterview/get-interview-by-participant/${employeeId}`
-      );
-
-      const interview = interviewResponse.data;
-      if (!interview || !interview.interviewId) {
-        toast.error("Aucun entretien trouvé pour cet employé.");
-        return;
-      }
-
-      await handleEditInterview(interview.interviewId);
-
-    } catch (error) {
-      handleError(error, "Erreur lors de la récupération des informations d'entretien.");
-    }
-  }, [handleEditInterview, handleError]);
-
-  const renderActionButton = useCallback((employee) => {
-    if (!user) return null;
-
-    const isManager = user.roleId === 2;
-    const isDirector = user.roleId === 4;
-    const isRH = user.roleId === 1;
-
-    const canManagerValidate =
-      isManager &&
-      employee.interviewStatus === INTERVIEW_STATUS.PENDING_VALIDATION &&
-      (employee.managerApproval === null || employee.managerComments === null);
-
-    const canDirectorValidate =
-      isDirector &&
-      employee.interviewStatus === INTERVIEW_STATUS.PENDING_VALIDATION &&
-      (employee.directorApproval === null || employee.directorComments === null);
-
-    const managerValidated =
-      employee.managerApproval !== null && employee.managerComments !== null;
-    const directorValidated =
-      employee.directorApproval !== null && employee.directorComments !== null;
-    const interviewCompleted = managerValidated && directorValidated;
-
-    const isToday = compareDates(employee.interviewDate, today);
-    const isFutureDate = employee.interviewDate && new Date(employee.interviewDate) > new Date(today);
-    const isPastDate = employee.interviewDate && new Date(employee.interviewDate) < new Date(today) && !isToday;
-    if (employee.interviewStatus === INTERVIEW_STATUS.PLANNED) {
-      if (isRH) {
-        if (isPastDate) {
-          // Entretien planifié dans le passé mais non réalisé
-          return (
-            <div className="d-flex align-items-center">
-              <span className="text-danger me-2">Entretien manqué</span>
-              <button className="btn btn-outline-primary btn-sm me-1" onClick={() => getAndEditInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => getAndCancelInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-          );
-        } else if (isToday) {
-          // Entretien planifié pour aujourd'hui
-          return (
-            <div className="d-flex align-items-center">
-              <button
-                className="btn btn-success btn-sm me-2"
-                onClick={() => startInterview(employee.employeeId)}
-              >
-                Démarrer l'entretien
-              </button>
-              <button className="btn btn-outline-primary btn-sm me-1" onClick={() => getAndEditInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => getAndCancelInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-          );
-        } else if (isFutureDate) {
-          // Entretien planifié pour une date future
-          return (
-            <div className="d-flex align-items-center">
-              <span className="text-info me-2">Planifié</span>
-              <button className="btn btn-outline-primary btn-sm me-1" onClick={() => getAndEditInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => getAndCancelInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-          );
-        }
-      } else {
-        // Non-RH : affichage différent selon la date
-        if (isPastDate) {
-          return <span className="text-danger">Entretien manqué</span>;
-        } else if (isToday) {
-          return <span className="text -success">Aujourd'hui</span>;
-        } else if (isFutureDate) {
-          return <span className="text-info">Planifié</span>;
-        }
-      }
-    }
-    if (employee.interviewStatus === INTERVIEW_STATUS.COMPLETED) {
-      return <span className="text-success">Entretien terminé</span>;
-    }
-
-    if (employee.interviewStatus === INTERVIEW_STATUS.REJECTED) {
-      return <span className="text-danger">Entretien rejeté</span>;
-    }
-
-    if (employee.interviewStatus === INTERVIEW_STATUS.CANCELLED) {
-      return <span className="text-secondary">Entretien annulé</span>;
-    }
-
-    if (employee.interviewStatus === INTERVIEW_STATUS.PENDING_VALIDATION) {
-      if (isRH) {
-        return (
-          <div className="d-flex align-items-center">
-            <span className="text-warning me-2">En attente de validation</span>
-            <button
-              className="btn btn-outline-secondary btn-sm me-1"
-              onClick={() => getAndCancelInterview(employee.employeeId)}
-              aria-label="Annuler l'entretien"
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </div>
-        );
-      }
-    }
-
-    if (employee.interviewStatus === INTERVIEW_STATUS.PLANNED) {
-      if (isRH) {
-        return (
-          <div className="d-flex align-items-center">
-            <button
-              className="btn btn-outline-primary btn-sm me-1"
-              onClick={() => getAndEditInterview(employee.employeeId)}
-              aria-label="Modifier l'entretien"
-            >
-              <FontAwesomeIcon icon={faEdit} />
-            </button>
-            <button
-              className="btn btn-outline-danger btn-sm"
-              onClick={() => getAndCancelInterview(employee.employeeId)}
-              aria-label="Annuler l'entretien"
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </div>
-        );
-      }
-    }
-
-    if (employee.interviewStatus === INTERVIEW_STATUS.IN_PROGRESS) {
-      return <span className="text-info">Entretien en cours</span>;
-    }
-
-    return null;
-  }, [user, today, getAndCancelInterview, getAndEditInterview]);
 
   return (
     <Template>

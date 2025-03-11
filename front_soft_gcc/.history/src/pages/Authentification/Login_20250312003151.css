@@ -1,7 +1,9 @@
 /* Variables pour faciliter la cohérence des couleurs */
 :root {
   --primary-color: #F9B208;
+  /* Jaune moutarde plus doux */
   --secondary-color: #325288;
+  /* Bleu professionnel */
   --neutral-dark: #2D3748;
   --neutral-medium: #718096;
   --neutral-light: #EDF2F7;
@@ -18,7 +20,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.register-container {
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,7 +32,7 @@ body {
   position: relative;
 }
 
-.register-container::before {
+.login-container::before {
   content: '';
   position: absolute;
   top: 0;
@@ -41,17 +43,24 @@ body {
   opacity: 0.2;
 }
 
-.register-card-container {
+.login-layout {
+  display: flex;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 600px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-card-container {
   flex: 1;
   padding: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
-  z-index: 1;
 }
 
-.register-card {
+.login-card {
   background: var(--white);
   border-radius: 20px;
   box-shadow: var(--card-shadow);
@@ -61,7 +70,7 @@ body {
   position: relative;
 }
 
-.register-card::after {
+.login-card::after {
   content: '';
   position: absolute;
   top: 0;
@@ -71,11 +80,11 @@ body {
   background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
 }
 
-.register-card-content {
+.login-card-content {
   padding: 40px 40px 50px 40px;
 }
 
-.register-header {
+.login-header {
   text-align: center;
   margin-bottom: 40px;
   position: relative;
@@ -116,7 +125,7 @@ body {
 }
 
 .form-group {
-  margin-bottom:  24px;
+  margin-bottom: 24px;
 }
 
 .input-with-icon {
@@ -134,31 +143,52 @@ body {
   box-shadow: 0 0 0 3px rgba(249, 178, 8, 0.2);
 }
 
+/* Style du champ input */
 .input-with-icon input {
   width: 100%;
   padding: 14px;
-  border: none;
+  border: none; /* Pas de bordure car le conteneur parent en a déjà une */
   font-size: 1rem;
   background-color: transparent;
   color: var(--neutral-dark);
 }
 
+/* Style de l'icône dans un conteneur distinct */
 .input-icon {
   position: static;
+  /* Ne plus utiliser positioning absolu */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 12px;
   color: var(--neutral-medium);
   min-width: 40px;
+  /* Largeur fixe pour l'icône */
   border-right: 1px solid #E2E8F0;
+  /* Séparateur visuel */
 }
 
+/* Ajouter un style pour les placeholders */
 .input-with-icon input::placeholder {
   color: #A0AEC0;
+  /* Couleur plus claire pour les placeholders */
 }
 
-.register-button {
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--neutral-medium);
+}
+
+.input-with-icon input:focus {
+  outline: none;
+  /* La mise en évidence se fait au niveau du conteneur parent */
+}
+
+.login-button {
   width: 100%;
   padding: 16px;
   background: var(--primary-color);
@@ -171,11 +201,11 @@ body {
   transition: all 0.3s ease;
 }
 
-.register-button:hover {
+.login-button:hover {
   background: #FFC800;
 }
 
-.register-button:disabled {
+.login-button:disabled {
   background: #E5E7EB;
   cursor: not-allowed;
 }
@@ -187,12 +217,38 @@ body {
   margin: 20px 0 30px 0;
 }
 
-.login-link {
+.remember-me {
+  color: var(--neutral-medium);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.forgot-password {
   color: var(--neutral-dark);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.signup-link {
+  text-align: center;
+  color: var(--neutral-medium);
+  margin-top: 30px;
+}
+
+.signup-link a {
+  color: var(--neutral-dark);
+  font-weight: 500;
   text-decoration: none;
 }
 
-.login-link:hover {
+.signup-link a:hover {
   text-decoration: underline;
 }
 

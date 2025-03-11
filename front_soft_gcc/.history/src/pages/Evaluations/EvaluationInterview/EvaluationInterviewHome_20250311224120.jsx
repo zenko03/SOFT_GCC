@@ -55,7 +55,7 @@ function EvaluationInterviewHome() {
   }, []);
 
   // ====== FONCTIONS DE RÉCUPÉRATION DE DONNÉES ======
-
+  
   // Récupération des participants
   const fetchParticipants = useCallback(async () => {
     setLoading(true);
@@ -75,7 +75,7 @@ function EvaluationInterviewHome() {
 
     setLoading(true);
     try {
-      const response = await axios.get('https://localhost:7082/api/EvaluationInterview/employees-finished-evaluations-paginated', {
+      const response = await axios.get('https://localhost:7082/api/EvaluationInterview/employees-finished-evalu ations-paginated', {
         params: {
           pageNumber: currentPage,
           pageSize: pageSize,
@@ -111,7 +111,7 @@ function EvaluationInterviewHome() {
   }, [handleError, user]);
 
   // ====== EFFETS ======
-
+  
   useEffect(() => {
     if (!userLoading && user) {
       fetchParticipants();
@@ -126,7 +126,7 @@ function EvaluationInterviewHome() {
   }, [filters, searchQuery, currentPage, pageSize, fetchEmployeesWithoutEvaluations, fetchFilterOptions, userLoading, user]);
 
   // ====== GESTION DES ÉVÉNEMENTS ======
-
+  
   const handleSearch = useCallback((e) => {
     setSearchQuery(e.target.value.toLowerCase());
   }, []);
@@ -209,7 +209,7 @@ function EvaluationInterviewHome() {
     } catch (error) {
       handleError(error, "Erreur lors de la planification de l'entretien.");
     }
-  }, [evaluationDetails, handleError]);
+  }, [evaluationDetails , handleError]);
 
   const startInterview = useCallback(async (employeeId) => {
     try {
@@ -338,9 +338,9 @@ function EvaluationInterviewHome() {
   const renderActionButton = useCallback((employee) => {
     if (!user) return null;
 
-    const isManager = user.roleId === 2;
-    const isDirector = user.roleId === 4;
-    const isRH = user.roleId === 1;
+    const isManager = user.roleId === 3;
+    const isDirector = user.roleId === 1;
+    const isRH = user.roleId === 2;
 
     const canManagerValidate =
       isManager &&
@@ -361,64 +361,7 @@ function EvaluationInterviewHome() {
     const isToday = compareDates(employee.interviewDate, today);
     const isFutureDate = employee.interviewDate && new Date(employee.interviewDate) > new Date(today);
     const isPastDate = employee.interviewDate && new Date(employee.interviewDate) < new Date(today) && !isToday;
-    if (employee.interviewStatus === INTERVIEW_STATUS.PLANNED) {
-      if (isRH) {
-        if (isPastDate) {
-          // Entretien planifié dans le passé mais non réalisé
-          return (
-            <div className="d-flex align-items-center">
-              <span className="text-danger me-2">Entretien manqué</span>
-              <button className="btn btn-outline-primary btn-sm me-1" onClick={() => getAndEditInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => getAndCancelInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-          );
-        } else if (isToday) {
-          // Entretien planifié pour aujourd'hui
-          return (
-            <div className="d-flex align-items-center">
-              <button
-                className="btn btn-success btn-sm me-2"
-                onClick={() => startInterview(employee.employeeId)}
-              >
-                Démarrer l'entretien
-              </button>
-              <button className="btn btn-outline-primary btn-sm me-1" onClick={() => getAndEditInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => getAndCancelInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-          );
-        } else if (isFutureDate) {
-          // Entretien planifié pour une date future
-          return (
-            <div className="d-flex align-items-center">
-              <span className="text-info me-2">Planifié</span>
-              <button className="btn btn-outline-primary btn-sm me-1" onClick={() => getAndEditInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button className="btn btn-outline-danger btn-sm" onClick={() => getAndCancelInterview(employee.employeeId)}>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-            </div>
-          );
-        }
-      } else {
-        // Non-RH : affichage différent selon la date
-        if (isPastDate) {
-          return <span className="text-danger">Entretien manqué</span>;
-        } else if (isToday) {
-          return <span className="text -success">Aujourd'hui</span>;
-        } else if (isFutureDate) {
-          return <span className="text-info">Planifié</span>;
-        }
-      }
-    }
+
     if (employee.interviewStatus === INTERVIEW_STATUS.COMPLETED) {
       return <span className="text-success">Entretien terminé</span>;
     }
@@ -525,8 +468,7 @@ function EvaluationInterviewHome() {
 
         <div className="card">
           <div className="card-body">
-            <table className="table table-bordered">
-              <thead className="thead-light">
+            <table className="table table-bordered <thead className=thead-light">
                 <tr>
                   <th>Nom</th>
                   <th>Poste</th>
@@ -534,7 +476,6 @@ function EvaluationInterviewHome() {
                   <th>Date d'entretien</th>
                   <th>Action</th>
                 </tr>
-              </thead>
               <tbody>
                 {filteredEmployees.length > 0 ? (
                   filteredEmployees.map((employee) => (
