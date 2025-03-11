@@ -8,7 +8,7 @@ function Evaluations() {
         navigate("/EvaluationQuestionSettings"); // Navigate to the CRUD page
     };
     const handleFormationClick = () => {
-        navigate("/EvaluationFormationSettings"); // Navigate to the CRUD page
+        navigate("/EvaluationQuestionSettings"); // Navigate to the CRUD page
     };
 
     return (

@@ -5,7 +5,7 @@ import '../../../assets/css/Evaluations/SalaryListPlanning.css';
 import { formatDate, isValidInterviewDate, compareDates } from '../../../services/Evaluations/utils';
 import ParticipantsSelector from './ParticipantSelector';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from './UserContext'; // Assurez-vous que le chemin d'importation est correct
+import { useUser } from '../../../contexts/UserContext'; // Assurez-vous que le chemin d'importation est correct
 import { toast } from 'react-toastify';
 
 function EvaluationInterviewHome() {
@@ -80,7 +80,7 @@ function EvaluationInterviewHome() {
     
     setLoading(true);
     try {
-      const response = await axios.get ('https://localhost:7082/api/EvaluationInterview/employees-finished-evaluations-paginated',
+      const response = await axios.get ('https://localhost:7082/api/EvaluationInterview/employees-finished-evaluations-paginated'),
         {
           params: {
             pageNumber: currentPage,
@@ -247,9 +247,9 @@ function EvaluationInterviewHome() {
   const renderActionButton = useCallback((employee) => {
     if (!user) return null;
 
-    const isManager = user.roleId === 3;
-    const isDirector = user.roleId === 1;
-    const isRH = user.roleId === 2;
+    const isManager = user.roleId === 1;
+    const isDirector = user.roleId === 2;
+    const isRH = user.roleId === 3;
 
     const canManagerValidate =
       isManager &&
@@ -332,7 +332,7 @@ function EvaluationInterviewHome() {
               className="form-control w-25 mx-2"
               value={filters.position}
               onChange={handleFilterChange}
-              aria-label="Filtrer par poste">
+              aria-label="Filtrer par poste"
             <option value="">Tous les postes</option>
               {positions.map((pos) => (
                 <option key={pos.posteId} value={String(pos.posteId)}>

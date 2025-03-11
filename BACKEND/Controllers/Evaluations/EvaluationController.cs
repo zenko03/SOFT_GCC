@@ -277,5 +277,144 @@ namespace soft_carriere_competence.Controllers.Evaluations
 				return StatusCode(500, new { error = ex.Message });
 			}
 		}
+
+
+
+
+		//CRUD TRAINING SUGGESTIONS
+		// Get all training suggestions
+		[HttpGet("training-suggestions")]
+		public async Task<IActionResult> GetAllTrainingSuggestions()
+		{
+			try
+			{
+				var suggestions = await _evaluationService.GetAllTrainingSuggestionsAsync();
+				return Ok(suggestions);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		// Get a specific training suggestion by ID
+		[HttpGet("training-suggestions/{id}")]
+		public async Task<IActionResult> GetTrainingSuggestionById(int id)
+		{
+			try
+			{
+				var suggestion = await _evaluationService.GetTrainingSuggestionByIdAsync(id);
+				if (suggestion == null)
+				{
+					return NotFound($"Training suggestion with ID {id} not found.");
+				}
+				return Ok(suggestion);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		// Update an existing training suggestion
+		[HttpPut("training-suggestions/{id}")]
+		public async Task<IActionResult> UpdateTrainingSuggestion(int id, [FromBody] TrainingSuggestionCreationDto dto)
+		{
+			try
+			{
+				var suggestion = new TrainingSuggestion
+				{
+					TrainingSuggestionId = id,
+					evaluationTypeId = dto.EvaluationTypeId,
+					questionId = dto.QuestionId,
+					Training = dto.Training,
+					Details = dto.Details,
+					scoreThreshold = dto.ScoreThreshold,
+					state = dto.State
+				};
+
+				var updated = await _evaluationService.UpdateTrainingSuggestionAsync(suggestion);
+				if (!updated)
+				{
+					return NotFound($"Training suggestion with ID {id} not found.");
+				}
+				return NoContent(); // 204 No Content
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		// Delete a training suggestion
+		[HttpDelete("training-suggestions/{id}")]
+		public async Task<IActionResult> DeleteTrainingSuggestion(int id)
+		{
+			try
+			{
+				var deleted = await _evaluationService.DeleteTrainingSuggestionAsync(id);
+				if (!deleted)
+				{
+					return NotFound($"Training suggestion with ID {id} not found.");
+				}
+				return NoContent(); // 204 No Content
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+
+		[HttpGet("training-suggestions/paginated")]
+		public IActionResult GetPaginatedTrainingSuggestions([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+		{
+			try
+			{
+				if (pageNumber < 1) pageNumber = 1;
+				if (pageSize < 1) pageSize = 10;
+				if (pageSize > 100) pageSize = 100; // Limite supérieure pour éviter les requêtes excessives
+
+				var (items, totalPages) = _evaluationService.GetPaginatedTrainingSuggestionsAsync(pageNumber, pageSize).Result;
+
+				return Ok(new
+				{
+					Items = items,
+					PageNumber = pageNumber,
+					PageSize = pageSize,
+					TotalPages = totalPages
+				});
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		[HttpGet("questions/paginated")]
+		public IActionResult GetPaginatedEvaluationQuestions([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+		{
+			try
+			{
+				if (pageNumber < 1) pageNumber = 1;
+				if (pageSize < 1) pageSize = 10;
+				if (pageSize > 100) pageSize = 100; // Limite supérieure pour éviter les requêtes excessives
+
+				var (items, totalPages) = _evaluationService.GetPaginatedEvaluationQuestionsAsync(pageNumber, pageSize).Result;
+
+				return Ok(new
+				{
+					Items = items,
+					PageNumber = pageNumber,
+					PageSize = pageSize,
+					TotalPages = totalPages
+				});
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
 	}
 }

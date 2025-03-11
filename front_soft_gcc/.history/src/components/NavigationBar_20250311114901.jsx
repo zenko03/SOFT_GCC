@@ -10,23 +10,18 @@ function NavigationBar({ task }) {
 
   // Déconnexion
   const handleLogout = () => {
-    // Idéalement, utilisez la fonction logout du contexte utilisateur
-    // Si votre contexte a une fonction logout, utilisez-la ici
     localStorage.removeItem('token');
     navigate('/login');
   };
+
   // Récupérer les infos utilisateur
   useEffect(() => {
-    if (!userLoading && user) {
-      // Mettre à jour le nom de l'utilisateur une fois le chargement terminé
+    if (user) {
+      // Mettre à jour le nom de l'utilisateur
       setUserName(`${user.firstName} ${user.lastName}`);
-    } else if (!userLoading && !user) {
-      // Si le chargement est terminé mais qu'il n'y a pas d'utilisateur
-      setUserName('Non connecté');
-      // Optionnel: rediriger vers la page de connexion
-      navigate('/login');
     }
-  }, [user, userLoading, navigate]);
+  }, [user]);
+
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
@@ -97,9 +92,7 @@ function NavigationBar({ task }) {
                 <img src="/src/assets/images/faces/face28.png" alt="image" />
               </div>
               <div className="nav-profile-text">
-                <p className="mb-1 text-black">
-                  {userLoading ? 'Chargement...' : userName || 'Non connecté'}
-                </p>
+                <p className="mb-1 text-black">{userName || 'Chargement...'}</p>
               </div>
             </a>
             <div className="dropdown-menu navbar-dropdown dropdown-menu-right p-0 border-0 font-size-sm" aria-labelledby="profileDropdown" data-x-placement="bottom-end">
@@ -109,16 +102,13 @@ function NavigationBar({ task }) {
               <div className="p-2">
                 <div role="separator" className="dropdown-divider"></div>
                 <h5 className="dropdown-header text-uppercase pl-2 text-dark mt-2">Actions</h5>
-                {/* Vous pourriez aussi conditionner l'affichage du bouton de déconnexion */}
-                {!userLoading && user && (
-                  <button
-                    className="dropdown-item py-1 d-flex align-items-center justify-content-between"
-                    onClick={handleLogout}
-                  >
-                    <span>Se déconnecter</span>
-                    <i className="mdi mdi-logout ml-1"></i>
-                  </button>
-                )}
+                <button
+                  className="dropdown-item py-1 d-flex align-items-center justify-content-between"
+                  onClick={handleLogout}
+                >
+                  <span>Se déconnecter</span>
+                  <i className="mdi mdi-logout ml-1"></i>
+                </button>
               </div>
             </div>
           </li>

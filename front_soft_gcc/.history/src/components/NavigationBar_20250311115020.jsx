@@ -109,16 +109,13 @@ function NavigationBar({ task }) {
               <div className="p-2">
                 <div role="separator" className="dropdown-divider"></div>
                 <h5 className="dropdown-header text-uppercase pl-2 text-dark mt-2">Actions</h5>
-                {/* Vous pourriez aussi conditionner l'affichage du bouton de déconnexion */}
-                {!userLoading && user && (
-                  <button
-                    className="dropdown-item py-1 d-flex align-items-center justify-content-between"
-                    onClick={handleLogout}
-                  >
-                    <span>Se déconnecter</span>
-                    <i className="mdi mdi-logout ml-1"></i>
-                  </button>
-                )}
+                <button
+                  className="dropdown-item py-1 d-flex align-items-center justify-content-between"
+                  onClick={handleLogout}
+                >
+                  <span>Se déconnecter</span>
+                  <i className="mdi mdi-logout ml-1"></i>
+                </button>
               </div>
             </div>
           </li>

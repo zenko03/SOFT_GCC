@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../Evaluations/EvaluationInterview/UserContext"; // Ajout de cette ligne pour importer useUser
 import './Login.css'; // Importation du fichier CSS
 
 const Login = () => {
@@ -13,7 +12,6 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const { setUser } = useUser(); // Maintenant cela fonctionnera correctement
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +20,7 @@ const Login = () => {
       [name]: value,
     });
   };
+  const { setUser  } = useUser (); // Assurez-vous que vous avez une fonction pour mettre à jour l'utilisateur
 
   const handleSubmit = async (e) => {
     e.preventDefault();

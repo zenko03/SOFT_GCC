@@ -7,9 +7,6 @@ function Evaluations() {
     const handleQuestionsClick = () => {
         navigate("/EvaluationQuestionSettings"); // Navigate to the CRUD page
     };
-    const handleFormationClick = () => {
-        navigate("/EvaluationFormationSettings"); // Navigate to the CRUD page
-    };
 
     return (
         <Template>
@@ -30,7 +27,7 @@ function Evaluations() {
             </div>
             <div className="row">
                 <div className="col-lg-3 grid-margin stretch-card">
-                    <div className="card" style={{ backgroundColor: '#0062ff' }} onClick={handleFormationClick}>
+                    <div className="card" style={{ backgroundColor: '#0062ff' }} onClick={handleQuestionsClick}>
                         <div className="card-body">
                             <h5 className="card-title">
                                 <span>Suggestions de Formations</span>

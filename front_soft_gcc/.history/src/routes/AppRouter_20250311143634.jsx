@@ -57,7 +57,6 @@ import ProtectedRoute from '../pages/Authentification/ProtectedRoute';
 import { useNavigate } from "react-router-dom";
 import Evaluations from '../pages/settings/evaluations/Evaluations';
 import QuestionEvaluation from '../pages/settings/evaluations/Questionnaires/QuestionEvaluation';
-import FormationSuggestions from '../pages/settings/evaluations/FormationSuggestion/FormationSuggestions';
 
 function AppRouter() {
   return (
@@ -98,7 +97,7 @@ function AppRouter() {
         <Route path="/EvaluationSettings" element={<Evaluations />} />
 
         <Route path="/EvaluationQuestionSettings" element={<QuestionEvaluation />} />
-        <Route path="/EvaluationFormationSettings" element={<FormationSuggestions />} />
+        <Route path="/EvaluationFormationSettings" element={<QuestionEvaluation />} />
 
 
 

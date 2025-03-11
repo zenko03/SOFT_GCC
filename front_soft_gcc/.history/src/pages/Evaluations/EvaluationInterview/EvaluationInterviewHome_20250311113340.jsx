@@ -5,7 +5,7 @@ import '../../../assets/css/Evaluations/SalaryListPlanning.css';
 import { formatDate, isValidInterviewDate, compareDates } from '../../../services/Evaluations/utils';
 import ParticipantsSelector from './ParticipantSelector';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from './UserContext'; // Assurez-vous que le chemin d'importation est correct
+import { useUser } from '../../../contexts/UserContext'; // Assurez-vous que le chemin d'importation est correct
 import { toast } from 'react-toastify';
 
 function EvaluationInterviewHome() {
@@ -247,9 +247,9 @@ function EvaluationInterviewHome() {
   const renderActionButton = useCallback((employee) => {
     if (!user) return null;
 
-    const isManager = user.roleId === 3;
-    const isDirector = user.roleId === 1;
-    const isRH = user.roleId === 2;
+    const isManager = user.roleId === 1;
+    const isDirector = user.roleId === 2;
+    const isRH = user.roleId === 3;
 
     const canManagerValidate =
       isManager &&

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Template from '../../../Template';
+import axios from 'axios'; // Make sure to install axios for API calls
+import Template from '../../../Template'; // Import your Template component
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSync, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faSync } from '@fortawesome/free-solid-svg-icons';
 
-function QuestionEvaluation() {
+function FormationSuggestions() {
     const [questions, setQuestions] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState(null);
     const [formData, setFormData] = useState({ question: '', evaluationTypeId: 0, postId: 0 });
@@ -15,23 +15,16 @@ function QuestionEvaluation() {
     const [filterEvaluationType, setFilterEvaluationType] = useState('');
     const [filterPost, setFilterPost] = useState('');
 
-    // Pagination states
-    const [pageNumber, setPageNumber] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
-    const [totalPages, setTotalPages] = useState(0);
-
     useEffect(() => {
         fetchQuestions();
         fetchEvaluationTypes();
         fetchPosts();
-    }, [pageNumber, pageSize]);
+    }, []);
 
     const fetchQuestions = async () => {
         try {
-            // Nous allons supposer que vous avez ajouté cet endpoint dans votre contrôleur
-            const response = await axios.get(`https://localhost:7082/api/Evaluation/questions/paginated?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-            setQuestions(response.data.items);
-            setTotalPages(response.data.totalPages);
+            const response = await axios.get('https://localhost:7082/api/Evaluation/questionsAll'); // Adjust the API endpoint as needed
+            setQuestions(response.data);
         } catch (error) {
             console.error("Error fetching questions:", error);
         }
@@ -39,7 +32,7 @@ function QuestionEvaluation() {
 
     const fetchEvaluationTypes = async () => {
         try {
-            const response = await axios.get('https://localhost:7082/api/Evaluation/types');
+            const response = await axios.get('https://localhost:7082/api/Evaluation/types'); // Adjust the API endpoint as needed
             setEvaluationTypes(response.data);
         } catch (error) {
             console.error("Error fetching evaluation types:", error);
@@ -48,7 +41,7 @@ function QuestionEvaluation() {
 
     const fetchPosts = async () => {
         try {
-            const response = await axios.get('https://localhost:7082/api/Evaluation/postes');
+            const response = await axios.get('https://localhost:7082/api/Evaluation/postes'); // Adjust the API endpoint as needed
             setPosts(response.data);
         } catch (error) {
             console.error("Error fetching posts:", error);
@@ -72,25 +65,28 @@ function QuestionEvaluation() {
                 question: formData.question,
                 evaluationTypeId: parseInt(formData.evaluationTypeId),
                 postId: parseInt(formData.postId),
+                // Inclure les objets complets
                 EvaluationType: evaluationType || { designation: '' },
                 poste: post || { title: '' }
             };
 
             if (currentQuestion) {
+                // Update 
                 await axios.put(`https://localhost:7082/api/Evaluation/questions/${currentQuestion.questiondId}`, requestData);
             } else {
+                // Create 
                 await axios.post('https://localhost:7082/api/Evaluation/questions', requestData);
             }
-            fetchQuestions();
-            setFormData({ question: '', evaluationTypeId: 0, postId: 0 });
-            setCurrentQuestion(null);
+            fetchQuestions(); // Refresh the list
+            setFormData({ question: '', evaluationTypeId: 0, postId: 0 }); // Reset form
+            setCurrentQuestion(null); // Reset current question
         } catch (error) {
             console.error("Error saving question:", error);
-            if (error.response && error.response.data) { console.error("Error response data:", error.response.data);
+            if (error.response && error.response.data) {
+                console.error("Error response data:", error.response.data);
             }
         }
     };
-
     const handleEdit = (question) => {
         setCurrentQuestion(question);
         setFormData({ question: question.question, evaluationTypeId: question.evaluationTypeId, postId: question.postId });
@@ -99,7 +95,7 @@ function QuestionEvaluation() {
     const handleDelete = async (id) => {
         try {
             await axios.delete(`https://localhost:7082/api/Evaluation/questions/${id}`);
-            fetchQuestions();
+            fetchQuestions(); // Refresh the list
         } catch (error) {
             console.error("Error deleting question:", error);
         }
@@ -110,23 +106,19 @@ function QuestionEvaluation() {
         setCurrentQuestion(null);
     };
 
-    const handleNextPage = () => {
-        if (pageNumber < totalPages) {
-            setPageNumber(prev => prev + 1);
-        }
-    };
+    // Fonction de tri
+    const sortedQuestions = [...questions].sort((a, b) => {
+        // Ajoutez votre logique de tri ici si nécessaire
+        return 0; // Remplacez par votre logique de tri
+    });
 
-    const handlePreviousPage = () => {
-        if (pageNumber > 1) {
-            setPageNumber(prev => prev - 1);
-        }
-    };
-
-    const filteredQuestions = questions.filter(question => {
+    //   filtres 
+    const filteredQuestions = sortedQuestions.filter(question => {
         const matchesEvaluationType = filterEvaluationType ? question.evaluationTypeId === Number(filterEvaluationType) : true;
         const matchesPost = filterPost ? question.postId === Number(filterPost) : true;
         return matchesEvaluationType && matchesPost;
     });
+
 
     return (
         <Template>
@@ -184,6 +176,7 @@ function QuestionEvaluation() {
                     <button type="submit" className="btn btn-primary">
                         {currentQuestion ? 'Mettre à jour la question' : 'Ajouter une question'}
                     </button>
+
                     <button
                         type="button"
                         onClick={handleReset}
@@ -222,7 +215,7 @@ function QuestionEvaluation() {
                             >
                                 <option value="">Tous</option>
                                 {posts.map(post => (
-                                    <option key={post.posteId} value={post .posteId}>
+                                    <option key={post.posteId} value={post.posteId}>
                                         {post.title}
                                     </option>
                                 ))}
@@ -247,19 +240,9 @@ function QuestionEvaluation() {
                         </li>
                     ))}
                 </ul>
-
-                <div className="pagination mt-4">
-                    <button onClick={handlePreviousPage} disabled={pageNumber === 1} className="btn btn-secondary">
-                        Précédent
-                    </button>
-                    <span className="mx-2">Page {pageNumber} sur {totalPages}</span>
-                    <button onClick={handleNextPage} disabled={pageNumber === totalPages} className="btn btn-secondary">
-                        Suivant
-                    </button>
-                </div>
             </div>
         </Template>
     );
 }
 
-export default QuestionEvaluation;
+export default FormationSuggestions;

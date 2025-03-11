@@ -24,7 +24,7 @@ function NavigationBar({ task }) {
       // Si le chargement est terminé mais qu'il n'y a pas d'utilisateur
       setUserName('Non connecté');
       // Optionnel: rediriger vers la page de connexion
-      navigate('/login');
+       navigate('/login');
     }
   }, [user, userLoading, navigate]);
   return (
@@ -97,9 +97,7 @@ function NavigationBar({ task }) {
                 <img src="/src/assets/images/faces/face28.png" alt="image" />
               </div>
               <div className="nav-profile-text">
-                <p className="mb-1 text-black">
-                  {userLoading ? 'Chargement...' : userName || 'Non connecté'}
-                </p>
+                <p className="mb-1 text-black">{userName || 'Chargement...'}</p>
               </div>
             </a>
             <div className="dropdown-menu navbar-dropdown dropdown-menu-right p-0 border-0 font-size-sm" aria-labelledby="profileDropdown" data-x-placement="bottom-end">
@@ -109,16 +107,13 @@ function NavigationBar({ task }) {
               <div className="p-2">
                 <div role="separator" className="dropdown-divider"></div>
                 <h5 className="dropdown-header text-uppercase pl-2 text-dark mt-2">Actions</h5>
-                {/* Vous pourriez aussi conditionner l'affichage du bouton de déconnexion */}
-                {!userLoading && user && (
-                  <button
-                    className="dropdown-item py-1 d-flex align-items-center justify-content-between"
-                    onClick={handleLogout}
-                  >
-                    <span>Se déconnecter</span>
-                    <i className="mdi mdi-logout ml-1"></i>
-                  </button>
-                )}
+                <button
+                  className="dropdown-item py-1 d-flex align-items-center justify-content-between"
+                  onClick={handleLogout}
+                >
+                  <span>Se déconnecter</span>
+                  <i className="mdi mdi-logout ml-1"></i>
+                </button>
               </div>
             </div>
           </li>

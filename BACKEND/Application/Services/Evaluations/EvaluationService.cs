@@ -313,5 +313,79 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         {
             return await _posteRepository.GetAllAsync(); // Assuming you have a repository for posts
         }
+
+        //METHOD FOR CRUD TRAINING SUGGESTIONS
+        // Get all training suggestions
+        public async Task<IEnumerable<TrainingSuggestion>> GetAllTrainingSuggestionsAsync()
+        {
+            return await _context.TrainingSuggestions
+                .Include(ts => ts.evaluationType)
+                .Include(ts => ts.evaluationQuestion)
+                .ToListAsync();
+        }
+
+        // Get a specific training suggestion by ID
+        public async Task<TrainingSuggestion> GetTrainingSuggestionByIdAsync(int id)
+        {
+            return await _context.TrainingSuggestions
+                .Include(ts => ts.evaluationType)
+                .Include(ts => ts.evaluationQuestion)
+                .FirstOrDefaultAsync(ts => ts.TrainingSuggestionId == id);
+        }
+
+        // Update an existing training suggestion
+        public async Task<bool> UpdateTrainingSuggestionAsync(TrainingSuggestion suggestion)
+        {
+            if (suggestion == null) throw new ArgumentNullException(nameof(suggestion));
+
+            var existingSuggestion = await _trainingSuggestionsRepository.GetByIdAsync(suggestion.TrainingSuggestionId);
+            if (existingSuggestion == null) return false; // Not found
+
+            existingSuggestion.evaluationTypeId = suggestion.evaluationTypeId;
+            existingSuggestion.questionId = suggestion.questionId;
+            existingSuggestion.Training = suggestion.Training;
+            existingSuggestion.Details = suggestion.Details;
+            existingSuggestion.scoreThreshold = suggestion.scoreThreshold;
+            existingSuggestion.state = suggestion.state;
+
+            await _trainingSuggestionsRepository.UpdateAsync(existingSuggestion);
+            return true;
+        }
+
+        // Delete a training suggestion
+        public async Task<bool> DeleteTrainingSuggestionAsync(int id)
+        {
+            var suggestion = await _trainingSuggestionsRepository.GetByIdAsync(id);
+            if (suggestion == null) return false; // Not found
+
+            await _trainingSuggestionsRepository.DeleteAsync(suggestion);
+            return true;
+        }
+
+        // Get paginated training suggestions
+        public async Task<(IEnumerable<TrainingSuggestion> Items, int TotalPages)> GetPaginatedTrainingSuggestionsAsync(int pageNumber, int pageSize)
+        {
+            // Utilisez la méthode de pagination de votre repository
+            var items = _trainingSuggestionsRepository.GetPage(pageNumber, pageSize, "evaluationType,evaluationQuestion");
+
+            // Obtenez le nombre total de pages
+            var totalPages = _trainingSuggestionsRepository.GetTotalPages(pageSize);
+
+            return (items, totalPages);
+        }
+
+        // Get paginated evaluation questions
+        public async Task<(IEnumerable<EvaluationQuestion> Items, int TotalPages)> GetPaginatedEvaluationQuestionsAsync(int pageNumber, int pageSize)
+        {
+            // Utilisez la méthode de pagination de votre repository
+            var items = _evaluationQuestion.GetPage(pageNumber, pageSize, "EvaluationType,poste");
+
+            // Obtenez le nombre total de pages
+            var totalPages = _evaluationQuestion.GetTotalPages(pageSize);
+
+            return (items, totalPages);
+        }
     }
+
+
 }
