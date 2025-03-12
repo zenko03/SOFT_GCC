@@ -137,7 +137,7 @@ function NewsLetterTemplateCrudPage() {
                                             <input type="text" name="newsletterTemplateName" value={formData.newsletterTemplateName} onChange={handleChange} className="form-control" id="name" required />
                                         </div>
                                         <div className="button-save-profil">
-                                            <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Modification</button>
+                                            <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Modifier</button>
                                             <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ newsletterTemplateName: '' })}>Annuler</button>
                                         </div>
                                     </div>
