@@ -59,8 +59,6 @@ import Evaluations from '../pages/settings/evaluations/Evaluations';
 import QuestionEvaluation from '../pages/settings/evaluations/Questionnaires/QuestionEvaluation';
 import FormationSuggestions from '../pages/settings/evaluations/FormationSuggestion/FormationSuggestions';
 import EvaluationLogin from '../pages/Evaluations/SalaryEval/EvaluationLogin';
-import EvaluationPage from '../pages/Evaluations/SalaryEval/EvaluationPage';
-
 
 function AppRouter() {
   return (
@@ -86,11 +84,6 @@ function AppRouter() {
       <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
       <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
       <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
-
-      <Route path="/EvaluationLogin" element={<EvaluationLogin />} />
-      <Route path="/employee-evaluation" element={<EvaluationPage />} />
-
-
       <Route element={<ProtectedRoute />}>
         {/*COMPETENCES */}
         <Route path="/competences" element={<ListSkillSalaryPage />} />
@@ -108,6 +101,7 @@ function AppRouter() {
         <Route path="/EvaluationQuestionSettings" element={<QuestionEvaluation />} />
         <Route path="/EvaluationFormationSettings" element={<FormationSuggestions />} />
 
+        <Route path="/EvaluationLogin" element={<EvaluationLogin />} />
 
 
 
