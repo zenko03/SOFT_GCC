@@ -105,13 +105,13 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             // Génération du token JWT si la connexion est réussie.
 
-            string mdp = "test";
+            string mdp = "fanja";
 
             // Hachage du mot de passe
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(mdp);
 
             // Affichage du mot de passe haché
-            Console.WriteLine("Mot de passe haché : " + hashedPassword);
+            Console.WriteLine("Mot de passe haché pour : "+ mdp+" "+ hashedPassword);
             var token = GenerateJwtToken(user);
             Console.WriteLine("Token: " , token);
             return token;

@@ -11,11 +11,17 @@ namespace soft_carriere_competence.Controllers.Evaluations
 	{
 		private readonly EvaluationService _evaluationService;
 		private readonly EvaluationInterviewService _evaluationInterviewService;
+		private readonly ILogger<EvaluationInterviewController> _logger;
 
-		public EvaluationInterviewController(EvaluationService evaluationService, EvaluationInterviewService evaluationInterviewService)
+
+		public EvaluationInterviewController(
+		EvaluationService evaluationService,
+		EvaluationInterviewService evaluationInterviewService,
+		ILogger<EvaluationInterviewController> logger)
 		{
 			_evaluationService = evaluationService;
 			_evaluationInterviewService = evaluationInterviewService;
+			_logger = logger;
 		}
 
 		[HttpGet("employees-finished-evaluations")]
@@ -163,17 +169,16 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetEmployee(int id)
 		{
-			Console.WriteLine("avant la fonction getEmployeeAsync");
+			_logger.LogInformation("Fetching employee with ID: {Id}", id);
 			var employee = await _evaluationInterviewService.GetEmployeeAsync(id);
-			Console.WriteLine("apres la fonction getEmployeeAsync");
-
 
 			if (employee == null)
 			{
+				_logger.LogWarning("Employee with ID: {Id} not found", id);
 				return NotFound("L'employé n'existe pas.");
 			}
 
-			Console.WriteLine($"id and name of selected salary {employee.EmployeeId}, {employee.FirstName}");
+			_logger.LogInformation("Employee found: {Employee}", employee);
 			return Ok(employee);
 		}
 

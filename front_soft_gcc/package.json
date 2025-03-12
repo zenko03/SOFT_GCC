@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-pdf/renderer": "^4.1.5",
     "axios": "^1.7.9",
@@ -42,6 +44,7 @@
     "react-orgchart": "^1.0.5",
     "react-paginate": "^8.2.0",
     "react-router-dom": "^7.1.0",
+    "react-toastify": "^11.0.5",
     "react-tooltip": "^5.28.0",
     "recharts": "^2.15.1",
     "swr": "^2.2.5",
