@@ -30,7 +30,7 @@ const EvaluationPage = () => {
     localStorage.removeItem('evaluationToken');
     localStorage.removeItem('evaluationId');
     toast.info('Vous avez été déconnecté.');
-    navigate('/EvaluationLogin');
+    navigate('/evaluation-login');
   };
 
   // Récupérer les données d'évaluation au chargement

@@ -30,7 +30,7 @@ const EvaluationPage = () => {
     localStorage.removeItem('evaluationToken');
     localStorage.removeItem('evaluationId');
     toast.info('Vous avez été déconnecté.');
-    navigate('/EvaluationLogin');
+    navigate('/evaluation-login');
   };
 
   // Récupérer les données d'évaluation au chargement
@@ -52,15 +52,15 @@ const EvaluationPage = () => {
         setEvaluationData(response.data);
         
         // Initialiser les réponses avec des valeurs par défaut
-        // const initialAnswers = {};
-        // if (response.data.questions && response.data.questions.length > 0) {
-        //   response.data.questions.forEach(question => {
-        //     initialAnswers[question.questionId] = 0;
-        //   });
-        //   setAnswers(initialAnswers);
-        // } else {
-        //   setError('Aucune question disponible pour cette évaluation.');
-        // }
+        const initialAnswers = {};
+        if (response.data.questions && response.data.questions.length > 0) {
+          response.data.questions.forEach(question => {
+            initialAnswers[question.questionId] = 0;
+          });
+          setAnswers(initialAnswers);
+        } else {
+          setError('Aucune question disponible pour cette évaluation.');
+        }
         
       } catch (err) {
         console.error('Error fetching evaluation data:', err);

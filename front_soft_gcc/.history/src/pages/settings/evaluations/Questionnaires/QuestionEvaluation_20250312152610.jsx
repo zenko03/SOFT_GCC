@@ -64,34 +64,30 @@ function QuestionEvaluation() {
         e.preventDefault();
 
         try {
-            // Make sure IDs are properly parsed
+            // Make sure these IDs are properly parsed as integers
             const evaluationTypeId = parseInt(formData.evaluationTypeId);
             const postId = parseInt(formData.postId);
 
-            // For create (new questions), send a simpler object structure
-            // For update, keep the more complex structure that's working
-            const requestData = currentQuestion
-                ? {
-                    questiondId: currentQuestion.questiondId,
-                    question: formData.question,
+            // Find the corresponding objects
+            const evaluationType = evaluationTypes.find(type => type.evaluationTypeId === evaluationTypeId);
+            const post = posts.find(p => p.posteId === postId);
+
+            // Create a properly formatted request object - include minimal navigation properties
+            const requestData = {
+                questiondId: currentQuestion?.questiondId || 0,
+                question: formData.question,
+                evaluationTypeId: evaluationTypeId,
+                postId: postId,
+                // Include empty navigation properties with only the required fields
+                evaluationType: {
                     evaluationTypeId: evaluationTypeId,
-                    postId: postId,
-                    // Include navigation properties that might be needed for update
-                    evaluationType: {
-                        evaluationTypeId: evaluationTypeId,
-                        designation: evaluationTypes.find(t => t.evaluationTypeId === evaluationTypeId)?.designation || ''
-                    },
-                    poste: {
-                        posteId: postId,
-                        title: posts.find(p => p.posteId === postId)?.title || ''
-                    }
+                    designation: evaluationType?.designation || ''
+                },
+                poste: {
+                    posteId: postId,
+                    title: post?.title || ''
                 }
-                : {
-                    // For create, use a minimal structure
-                    question: formData.question,
-                    evaluationTypeId: evaluationTypeId,
-                    postId: postId
-                };
+            };
 
             console.log('Sending data to API:', requestData);
 
@@ -109,8 +105,14 @@ function QuestionEvaluation() {
             // Enhanced error logging
             if (error.response) {
                 console.error("Status:", error.response.status);
-                console.error("Error details:", error.response.data);
-                alert(`Error: ${error.response.data.error || "An unknown error occurred"}`);
+                console.error("Error response data:", error.response.data);
+
+                // Show a more user-friendly error message
+                if (error.response.data && error.response.data.error) {
+                    alert(`Error: ${error.response.data.error}`);
+                } else {
+                    alert("An error occurred while saving the question. Please try again.");
+                }
             }
         }
     };
