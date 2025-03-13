@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using soft_carriere_competence.Application.Services.history;
 using soft_carriere_competence.Application.Services.salary_skills;
+using soft_carriere_competence.Core.Entities.history;
 using soft_carriere_competence.Core.Entities.salary_skills;
 
 namespace soft_carriere_competence.Controllers.salary_skills
@@ -10,10 +12,12 @@ namespace soft_carriere_competence.Controllers.salary_skills
 	public class EmployeeLanguageController : ControllerBase
 	{
 		private readonly EmployeeLanguageService _employeeLanguageService;
+		private readonly HistoryService _historyService;
 
-		public EmployeeLanguageController(EmployeeLanguageService service)
+		public EmployeeLanguageController(EmployeeLanguageService service, HistoryService historyService)
 		{
 			_employeeLanguageService = service;
+			_historyService = historyService;
 		}
 
 		[HttpGet]
@@ -35,6 +39,17 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> Create(EmployeeLanguage employeeLanguage)
 		{
 			await _employeeLanguageService.Add(employeeLanguage);
+			var activityLog = new ActivityLog
+			{
+				UserId = 1,
+				Module = 1,
+				Action = "Création",
+				Description = "L'user 1 a crée une nouvelle language ID " + employeeLanguage.EmployeeLanguageId + " pour l'employé ID " + employeeLanguage.EmployeeId,
+				Timestamp = DateTime.UtcNow,
+				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
+			};
+
+			await _historyService.Add(activityLog);
 			return CreatedAtAction(nameof(Get), new { id = employeeLanguage.EmployeeLanguageId }, employeeLanguage);
 		}
 
@@ -43,6 +58,17 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		{
 			if (id != employeeLanguage.EmployeeLanguageId) return BadRequest();
 			await _employeeLanguageService.Update(employeeLanguage);
+			var activityLog = new ActivityLog
+			{
+				UserId = 1,
+				Module = 1,
+				Action = "Modification",
+				Description = "L'user 1 a modifié la language ID " + employeeLanguage.EmployeeLanguageId + " pour l'employé ID " + employeeLanguage.EmployeeId,
+				Timestamp = DateTime.UtcNow,
+				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
+			};
+
+			await _historyService.Add(activityLog);
 			return NoContent();
 		}
 
@@ -50,6 +76,18 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> Delete(int id)
 		{
 			await _employeeLanguageService.Delete(id);
+			var employeeLanguage = await _employeeLanguageService.GetById(id);
+			var activityLog = new ActivityLog
+			{
+				UserId = 1,
+				Module = 1,
+				Action = "Suppression",
+				Description = "L'user 1 a supprimé la language ID " + employeeLanguage.EmployeeLanguageId + " pour l'employé ID " + employeeLanguage.EmployeeId,
+				Timestamp = DateTime.UtcNow,
+				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
+			};
+
+			await _historyService.Add(activityLog);
 			return NoContent();
 		}
 

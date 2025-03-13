@@ -111,6 +111,13 @@ namespace soft_carriere_competence.Application.Services.salary_skills
 				.ToListAsync();
 		}
 
+		// Avoir le niveau des competences de l'employe
+		public async Task<List<VEmployeeSkill>> GetSkillLevel(int idEmployee, int state)
+		{
+			return await _context.VEmployeeSkill
+				.FromSqlRaw("SELECT * FROM v_employee_skill WHERE Employee_id = {0} AND State = {1}", idEmployee, state)
+				.ToListAsync();
+		}
 
 		public async Task<string> IsSkillEmployeeExist(int idEmployee, int domainSkillId, int skillId)
 		{

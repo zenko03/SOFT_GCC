@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
+using soft_carriere_competence.Application.Services.history;
 using soft_carriere_competence.Application.Services.salary_skills;
+using soft_carriere_competence.Core.Entities.history;
 using soft_carriere_competence.Core.Entities.salary_skills;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace soft_carriere_competence.Controllers.salary_skills
 {
@@ -10,10 +15,15 @@ namespace soft_carriere_competence.Controllers.salary_skills
 	public class EmployeeSkillsController : ControllerBase
 	{
 		private readonly EmployeeSkillService _employeeSkillService;
+		private readonly HistoryService _historyService;
+		private readonly SkillService _skillService;
 
-		public EmployeeSkillsController(EmployeeSkillService service)
+
+		public EmployeeSkillsController(EmployeeSkillService service, HistoryService historyService, SkillService skillService)
 		{
 			_employeeSkillService = service;
+			_historyService = historyService;
+			_skillService = skillService;
 		}
 
 		[HttpGet]
@@ -35,6 +45,18 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> Create(EmployeeSkill employeeSkill)
 		{
 			await _employeeSkillService.Add(employeeSkill);
+			Skill skill = await _skillService.GetById(employeeSkill.SkillId);
+			var activityLog = new ActivityLog
+			{
+				UserId = 1,
+				Module = 1,
+				Action = "Création",
+				Description = "L'user 1 a crée une nouvelle compétence "+skill.Name+ " pour l'employé ID "+employeeSkill.EmployeeId,
+				Timestamp = DateTime.UtcNow,
+				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
+			};
+
+			await _historyService.Add(activityLog);
 			return CreatedAtAction(nameof(Get), new { id = employeeSkill.EmployeeSkillId }, employeeSkill);
 		}
 
@@ -43,6 +65,18 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		{
 			if (id != employeeSkill.EmployeeSkillId) return BadRequest();
 			await _employeeSkillService.Update(employeeSkill);
+			Skill skill = await _skillService.GetById(employeeSkill.SkillId);
+			var activityLog = new ActivityLog
+			{
+				UserId = 1,
+				Module = 1,
+				Action = "Modification",
+				Description = "L'user 1 a modifié la compétence " + skill.Name + " pour l'employé ID " + employeeSkill.EmployeeId,
+				Timestamp = DateTime.UtcNow,
+				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
+			};
+
+			await _historyService.Add(activityLog);
 			return NoContent();
 		}
 
@@ -50,6 +84,19 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> Delete(int id)
 		{
 			await _employeeSkillService.Delete(id);
+			var employeeSkill = await _employeeSkillService.GetById(id);
+			Skill skill = await _skillService.GetById(employeeSkill.SkillId);
+			var activityLog = new ActivityLog
+			{
+				UserId = 1,
+				Module = 1,
+				Action = "Suppression",
+				Description = "L'user 1 a supprimé la compétence " + skill.Name + " pour l'employé ID " + employeeSkill.EmployeeId,
+				Timestamp = DateTime.UtcNow,
+				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
+			};
+
+			await _historyService.Add(activityLog);
 			return NoContent();
 		}
 
@@ -85,6 +132,15 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> GetEmployeeDescription(int employeeId)
 		{
 			var employeeDescription = await _employeeSkillService.GetEmployeeDescription(employeeId);
+			if (employeeDescription == null) return NotFound();
+			return Ok(employeeDescription);
+		}
+
+		[HttpGet]
+		[Route("skillLevel")]
+		public async Task<IActionResult> GetSkillLevel(int employeeId, int state)
+		{
+			var employeeDescription = await _employeeSkillService.GetSkillLevel(employeeId, state);
 			if (employeeDescription == null) return NotFound();
 			return Ok(employeeDescription);
 		}

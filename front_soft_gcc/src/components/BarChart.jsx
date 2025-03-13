@@ -64,11 +64,14 @@ function BarChart({ datas, states, labelLetter }) {
           y: {
             beginAtZero: true,
             ticks: {
-              stepSize: 1,
+              stepSize: 10, // Les valeurs de l'axe des y seront des multiples de 10
+              callback: function (value) {
+                return value; // Affiche uniquement les multiples de 10
+              },
             },
           },
         },
-      },
+      }
     });
 
     // Cleanup : détruire l'instance du graphique quand le composant est démonté

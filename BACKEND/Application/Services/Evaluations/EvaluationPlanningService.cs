@@ -71,5 +71,42 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         }
 
 
+        public async Task<(IEnumerable<VEmployeeWithoutEvaluation> Employees, int TotalPages)> GetEmployeesWithoutEvaluationsPaginatedAsync(
+    int pageNumber = 1,
+    int pageSize = 10,
+    int? position = null,
+    int? department = null,
+    string? search = null)
+        {
+            var query = _context.vEmployeeWithoutEvaluations.AsQueryable();
+
+            // Appliquer les filtres
+            if (position.HasValue)
+                query = query.Where(e => e.postId == position);
+
+            if (department.HasValue)
+                query = query.Where(e => e.DepartmentId == department);
+
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(e =>
+                    (e.FirstName + " " + e.LastName).Contains(search) ||
+                    e.FirstName.Contains(search) ||
+                    e.LastName.Contains(search));
+
+            // Calculer le nombre total d'éléments
+            var totalItems = await query.CountAsync();
+
+            // Calculer le nombre total de pages
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            // Paginer les résultats
+            var employees = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (employees, totalPages);
+        }
+
     }
 }

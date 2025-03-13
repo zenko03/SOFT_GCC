@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using soft_carriere_competence.Application.Services.salary_skills;
 using soft_carriere_competence.Core.Entities.salary_skills;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace soft_carriere_competence.Controllers.salary_skills
 {
@@ -32,18 +34,31 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(Department department)
+		public async Task<IActionResult> Create([FromForm] string name, [FromForm] IFormFile? photo)
 		{
-			await _departmentService.Add(department);
+			byte[]? photoBytes = null;
+			if (photo != null)
+			{
+				using (var memoryStream = new MemoryStream())
+				{
+					await photo.CopyToAsync(memoryStream);
+					photoBytes = memoryStream.ToArray();
+				}
+			}
+
+			var department = new Department { Name = name };
+			await _departmentService.Add(department, photoBytes);
+
 			return CreatedAtAction(nameof(Get), new { id = department.DepartmentId }, department);
 		}
 
-		[HttpPut("{id}")]
-		public async Task<IActionResult> Update(int id, Department department)
+		[HttpGet("photo/{id}")]
+		public async Task<IActionResult> GetPhoto(int id)
 		{
-			if (id != department.DepartmentId) return BadRequest();
-			await _departmentService.Update(department);
-			return NoContent();
+			var department = await _departmentService.GetById(id);
+			if (department == null || department.Photo == null) return NotFound();
+
+			return File(department.Photo, "image/jpeg"); // Assurez-vous que c'est bien un JPEG ou PNG
 		}
 
 		[HttpDelete("{id}")]

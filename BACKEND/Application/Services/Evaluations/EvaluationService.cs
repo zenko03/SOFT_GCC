@@ -4,6 +4,11 @@ using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Core.Interface.EvaluationInterface;
 using soft_carriere_competence.Infrastructure.Data;
 using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
+using soft_carriere_competence.Application.Services.EmailService;
+using soft_carriere_competence.Core.Interface.AuthInterface;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -15,13 +20,23 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly IGenericRepository<TrainingSuggestion> _trainingSuggestionsRepository;
         private readonly IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaireRepository;
         private readonly IGenericRepository<Evaluation> _evaluationRepository;
+        private readonly IGenericRepository<User> _userRepository;
+        private readonly IGenericRepository<Poste> _posteRepository;
+        private readonly ApplicationDbContext _context;
 
+        private readonly IEmailService _emailService;
+        private readonly ReminderSettings _reminderSettings;
 
 
 
         public EvaluationService(IEvaluationQuestionRepository questionRepository, IGenericRepository<EvaluationType> evaluationType,
             IGenericRepository<EvaluationQuestion> EvaluationQuestion, IGenericRepository<Evaluation> _evaluation,
-            IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaire, IGenericRepository<TrainingSuggestion> _trainingSuggestions
+            IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaire, IGenericRepository<TrainingSuggestion> _trainingSuggestions,
+            IGenericRepository<User> userRepository,
+            IEmailService emailService,
+            IOptions<ReminderSettings> reminderSettings,
+            IGenericRepository<Poste> poste,
+            ApplicationDbContext context
 
             )
         {
@@ -31,8 +46,50 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             _evaluationRepository = _evaluation;
             _trainingSuggestionsRepository = _trainingSuggestions;
             _evaluationQuestionnaireRepository = _evaluationQuestionnaire; 
+            _userRepository = userRepository;
+            _emailService = emailService;
+            _reminderSettings = reminderSettings.Value; // Get the configured value
+            _posteRepository = poste;
+            _context = context;
+
         }
-     
+
+        // Create a new evaluation question
+        public async Task<bool> CreateEvaluationQuestionAsync(EvaluationQuestion question)
+        {
+            if (question == null) throw new ArgumentNullException(nameof(question));
+            await _evaluationQuestion.CreateAsync(question);
+            return true;
+        }
+
+        // Get all evaluation questions
+        public async Task<IEnumerable<EvaluationQuestion>> GetAllEvaluationQuestionsAsync()
+        {
+            return await _context.evaluationQuestions.Include(p => p.poste).Include(et => et.EvaluationType).ToListAsync();
+        }
+        // Get a specific evaluation question by ID
+        public async Task<EvaluationQuestion> GetEvaluationQuestionByIdAsync(int id)
+        {
+            return await _evaluationQuestion.GetByIdAsync(id);
+        }
+        // Update an existing evaluation question
+        public async Task<bool> UpdateEvaluationQuestionAsync(EvaluationQuestion question)
+        {
+            if (question == null) throw new ArgumentNullException(nameof(question));
+            await _evaluationQuestion.UpdateAsync(question);
+            return true;
+        }
+
+        // Delete an evaluation question
+        public async Task<bool> DeleteEvaluationQuestionAsync(int id)
+        {
+            var question = await _evaluationQuestion.GetByIdAsync(id);
+            if (question == null) return false; // Not found
+
+            await _evaluationQuestion.DeleteAsync(question);
+            return true;
+        }
+
         public async Task<IEnumerable<EvaluationQuestion>> GetEvaluationQuestionsAsync(int evaluationTypeId, int postId)
         {
             return await _questionRepository.GetQuestionsByEvaluationTypeAndPostAsync(evaluationTypeId, postId);
@@ -50,6 +107,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             var total = ratings.Values.Sum();
             var count = ratings.Count;
+            
+            
 
             return (double)total / count;
         }
@@ -91,10 +150,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             return result;
         }
-
-
-
-
+        
         public async Task<bool> ValidateEvaluationAsync(int evaluationId, bool isServiceApproved, bool isDgApproved, DateTime? serviceApprovalDate, DateTime? dgApprovalDate)
         {
             var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
@@ -104,6 +160,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             evaluation.isDgApproved = isDgApproved;
             evaluation.serviceApprovalDate = serviceApprovalDate;
             evaluation.dgApprovalDate = dgApprovalDate;
+            evaluation.state= 20;
 
             await _evaluationRepository.UpdateAsync(evaluation);
             return true;
@@ -129,8 +186,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             evaluation.Comments = generalEvaluation;
             evaluation.strengths = strengths;  // Colonne ajoutée
             evaluation.weaknesses = weaknesses; // Colonne ajoutée
-            
-
 
             await _evaluationRepository.UpdateAsync(evaluation);
 
@@ -145,7 +200,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     EvaluationId = evaluationId,
                     questionId = rating.Key,
                     Score = rating.Value,
-                    state = 1 // Actif
+                    state = 10 // TERMINEE
                 };
                 await _evaluationQuestionnaireRepository.CreateAsync(questionnaire);
             }
@@ -156,6 +211,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, int supervisorId, DateTime startDate, DateTime endDate)
         {
+            
             var newEvaluation = new Evaluation
             {
                 UserId = userId,
@@ -165,9 +221,13 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 EndDate = endDate,
                 OverallScore = 0, // Initialisé à 0, sera mis à jour avec les résultats
                 Comments = null,
-                state = 1 // Actif
+                state = 10 // Actif
             };
             await _evaluationRepository.CreateAsync(newEvaluation);
+            var user = await _userRepository.GetByIdAsync(userId);
+          
+            await _emailService.SendEmailAsync(user.Email, "Planification évaluation",
+                $"Vous avez une évaluation le : {startDate} au {endDate}");
             return newEvaluation.EvaluationId; // Retourner l'ID généré
         }
 
@@ -179,6 +239,153 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return true;
         }
 
+        //public async Task<int> rappelerEvaluation(int evaluation_id)
+        //{
+        //    try
+        //    {
+        //        var evaluation = await _evaluationRepository.GetByIdAsync(evaluation_id);
+        //        int idUser = evaluation.UserId;
+        //        var user = await _userRepository.GetByIdAsync(idUser);
+        //        await _emailService.SendEmailAsync(user.Email, "Rappel évaluation",
+        //            $"Pour rappel , vous avez une évaluation le : {evaluation.StartDate} au {evaluation.EndDate}");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return 0;
+        //    }
+        //    return 1;
+        //}
 
+
+
+        // Method to send reminder emails for evaluations that are due
+        public async Task SendAutomaticRemindersAsync()
+        {
+            var upcomingEvaluations = await GetUpcomingEvaluationsAsync();
+
+            foreach (var evaluation in upcomingEvaluations)
+            {
+                await SendReminderEmailAsync(evaluation.UserId, evaluation.StartDate);
+            }
+        }
+
+
+        // Method to get evaluations that are due for reminders (e.g., 2 days before the evaluation date)
+        public async Task<List<Evaluation>> GetUpcomingEvaluationsAsync()
+        {
+            var today = DateTime.UtcNow;
+            var reminderDate = today.AddDays(_reminderSettings.DaysBefore); // Use the configured days before
+
+            var evaluations = await _evaluationRepository.GetAllAsync();
+            return evaluations.Where(e => e.StartDate.Date == reminderDate.Date).ToList();
+        }
+
+        // Method to send a reminder email to the user
+        public async Task SendReminderEmailAsync(int userId, DateTime evaluationDate)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user != null)
+            {
+                await _emailService.SendEmailAsync(user.Email, "Rappel d'évaluation",
+                    $"Ceci est un rappel que vous avez une évaluation prévue le {evaluationDate.ToShortDateString()}.");
+            }
+        }
+
+        // Existing rappelerEvaluation method (if needed for manual reminders)
+        public async Task<int> rappelerEvaluation(int evaluationId)
+        {
+            try
+            {
+                var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
+                if (evaluation == null) return 0; // Evaluation not found
+
+                int userId = evaluation.UserId;
+                await SendReminderEmailAsync(userId, evaluation.StartDate);
+            }
+            catch (Exception)
+            {
+                return 0; // Error occurred
+            }
+            return 1; // Success
+        }
+
+        public async Task<IEnumerable<Poste>> GetPostesAsync()
+        {
+            return await _posteRepository.GetAllAsync(); // Assuming you have a repository for posts
+        }
+
+        //METHOD FOR CRUD TRAINING SUGGESTIONS
+        // Get all training suggestions
+        public async Task<IEnumerable<TrainingSuggestion>> GetAllTrainingSuggestionsAsync()
+        {
+            return await _context.TrainingSuggestions
+                .Include(ts => ts.evaluationType)
+                .Include(ts => ts.evaluationQuestion)
+                .ToListAsync();
+        }
+
+        // Get a specific training suggestion by ID
+        public async Task<TrainingSuggestion> GetTrainingSuggestionByIdAsync(int id)
+        {
+            return await _context.TrainingSuggestions
+                .Include(ts => ts.evaluationType)
+                .Include(ts => ts.evaluationQuestion)
+                .FirstOrDefaultAsync(ts => ts.TrainingSuggestionId == id);
+        }
+
+        // Update an existing training suggestion
+        public async Task<bool> UpdateTrainingSuggestionAsync(TrainingSuggestion suggestion)
+        {
+            if (suggestion == null) throw new ArgumentNullException(nameof(suggestion));
+
+            var existingSuggestion = await _trainingSuggestionsRepository.GetByIdAsync(suggestion.TrainingSuggestionId);
+            if (existingSuggestion == null) return false; // Not found
+
+            existingSuggestion.evaluationTypeId = suggestion.evaluationTypeId;
+            existingSuggestion.questionId = suggestion.questionId;
+            existingSuggestion.Training = suggestion.Training;
+            existingSuggestion.Details = suggestion.Details;
+            existingSuggestion.scoreThreshold = suggestion.scoreThreshold;
+            existingSuggestion.state = suggestion.state;
+
+            await _trainingSuggestionsRepository.UpdateAsync(existingSuggestion);
+            return true;
+        }
+
+        // Delete a training suggestion
+        public async Task<bool> DeleteTrainingSuggestionAsync(int id)
+        {
+            var suggestion = await _trainingSuggestionsRepository.GetByIdAsync(id);
+            if (suggestion == null) return false; // Not found
+
+            await _trainingSuggestionsRepository.DeleteAsync(suggestion);
+            return true;
+        }
+
+        // Get paginated training suggestions
+        public async Task<(IEnumerable<TrainingSuggestion> Items, int TotalPages)> GetPaginatedTrainingSuggestionsAsync(int pageNumber, int pageSize)
+        {
+            // Utilisez la méthode de pagination de votre repository
+            var items = _trainingSuggestionsRepository.GetPage(pageNumber, pageSize, "evaluationType,evaluationQuestion");
+
+            // Obtenez le nombre total de pages
+            var totalPages = _trainingSuggestionsRepository.GetTotalPages(pageSize);
+
+            return (items, totalPages);
+        }
+
+        // Get paginated evaluation questions
+        public async Task<(IEnumerable<EvaluationQuestion> Items, int TotalPages)> GetPaginatedEvaluationQuestionsAsync(int pageNumber, int pageSize)
+        {
+            // Utilisez la méthode de pagination de votre repository
+            var items = _evaluationQuestion.GetPage(pageNumber, pageSize, "EvaluationType,poste");
+
+            // Obtenez le nombre total de pages
+            var totalPages = _evaluationQuestion.GetTotalPages(pageSize);
+
+            return (items, totalPages);
+        }
     }
+
+
 }

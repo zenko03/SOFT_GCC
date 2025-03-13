@@ -27,10 +27,6 @@ function CreationCareerPlan({ onSearch }) {
     const [dataEmployee, setDataEmployee] = useState([]); 
     const [dataAssignmentType, setDataAssignmentType] = useState([]); 
 
-    //const { data: dataEmployee } = useSWR('/Employee', Fetcher);
-    //const { data: dataAssignmentType } = useSWR('/AssignmentType', Fetcher);
-
-
     // Chargement des donnees depuis l'api 
     const fetchData = async () => {
         setIsLoading(true);
@@ -63,7 +59,7 @@ function CreationCareerPlan({ onSearch }) {
 
     // Gestion état du formulaire
     const [formData, setFormData] = useState({
-        assignmentTypeId: undefined,
+        assignmentTypeId: 1,
         registrationNumber: undefined,
         decisionNumber: undefined,
         decisionDate: undefined,
@@ -92,43 +88,106 @@ function CreationCareerPlan({ onSearch }) {
 
   // Gérer les changements dans les champs du formulaire
   const handleChange = (e) => {
-      const { name, value } = e.target;
-      setFormData((prevData) => ({
-          ...prevData,
-          [name]: value,
-      }));
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+    }));
+
+    if (formErrors[name]) {
+        // Revalider le champ en temps réel
+        validateField(name, value);
+    }
   };
 
- /* // Gestion de la validation du formulaire
+
+  const validateField = (fieldName, value) => {
+    let error = '';
+    if (fieldName === 'registrationNumber' && !value) {
+      error = 'La matricule est obligatoire.';
+    } else if (fieldName === 'assignmentTypeId' && !value) {
+      error = 'Le type d’affectation est obligatoire.';
+    } else if (fieldName === 'decisionNumber' && !value.trim()) {
+      error = 'Le numéro de décision est obligatoire.';
+    } else if (
+      (fieldName === 'decisionDate' || fieldName === 'assignmentDate') &&
+      !value
+    ) {
+      error = `La date est obligatoire.`;
+    }
+    setFormErrors((prevErrors) => ({ ...prevErrors, [fieldName]: error }));
+  };
+
   const validateForm = () => {
     const errors = {};
-    
-    if (!formData.language_id) errors.language_id = 'Veuillez sélectionner une langue.';
-    if (!formData.level) errors.level = 'Veuillez entrer un nombre entre 0 et 100.';
-    if (!formData.state) errors.state = 'Veuillez sélectionner un état.';
-    else if (formData.level < 0 || formData.level > 100) errors.year = 'Veuillez entrer un nombre entre 0 et 100.';
-
+    if (!formData.registrationNumber) {
+      errors.registrationNumber = 'La matricule est obligatoire.';
+    }
+    if (!formData.assignmentTypeId) {
+      errors.assignmentTypeId = 'Le type d’affectation est obligatoire.';
+    }
+    if (!formData.decisionNumber) {
+      errors.decisionNumber = 'Le numéro de décision est obligatoire.';
+    }
+    if (!formData.decisionDate) {
+      errors.decisionDate = 'La date de décision est obligatoire.';
+    }
+    if (!formData.assignmentDate) {
+      errors.assignmentDate = 'La date d’affectation est obligatoire.';
+    }
     setFormErrors(errors);
-    return Object.keys(errors).length === 0; // Retourne `true` si aucune erreur
-  };*/
+    return Object.keys(errors).length === 0;
+  };
+
+
 
   // Gérer la soumission du formulaire
   const handleSubmit = async () => {
-      setIsLoading(true);
-        try {
-            const dataToSend = {
-                ...formData,
-                creationDate: new Date().toISOString(),
-                updatedDate: new Date().toISOString(),
-            };
+    if (!validateForm()) {
+        return; // Empêche la soumission si le formulaire n’est pas valide
+    }
+
+    setIsLoading(true);
+    try {
+        const dataToSend = {
+            ...formData,
+            creationDate: new Date().toISOString(),
+            updatedDate: new Date().toISOString(),
+        };
   
-            const response = await axios.post(urlApi('/CareerPlan'), dataToSend);
-            console.log(response.data);
-        } catch (error) {
-            console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
-        } finally {
-            setIsLoading(false);
-        }
+        const response = await axios.post(urlApi('/CareerPlan'), dataToSend);
+        setFormData({
+            assignmentTypeId: 1,
+            registrationNumber: undefined,
+            decisionNumber: undefined,
+            decisionDate: undefined,
+            assignmentDate: undefined,
+            description: undefined,
+            establishmentId: undefined,
+            departmentId: undefined,
+            positionId: undefined,
+            employeeTypeId: undefined,
+            socioCategoryProfessionalId: undefined,
+            indicationId: undefined,
+            baseSalary: undefined,
+            netSalary: undefined,
+            professionalCategoryId: undefined,
+            legalClassId: undefined,
+            newsletterTemplateId: undefined,
+            paymentMethodId: undefined,
+            endingContract: undefined,
+            reason: undefined,
+            assigningInstitution: undefined,
+            startDate: undefined,
+            endDate: undefined,
+            echelonId: undefined,
+            state: 1,
+        });
+    } catch (error) {
+        console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
+    } finally {
+        setIsLoading(false);
+    }
   };
         
     const initializeForm = () => {
@@ -170,6 +229,12 @@ function CreationCareerPlan({ onSearch }) {
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
+            <div className="row header-title">
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-map-marker-path skill-icon"></i>
+                    <h4 className="skill-title">CREATION D'UN PLAN DE CARRIÈRE</h4>
+                </div>
+            </div>
             <div className="row">
                 <div className="button-save-profil">
                     <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">Enregistrer</button>
@@ -191,7 +256,10 @@ function CreationCareerPlan({ onSearch }) {
                                                 {item.registrationNumber}
                                             </option>
                                         ))}
-                                    </select>    
+                                    </select>   
+                                    {formErrors.registrationNumber && (
+                                        <p className="text-danger">{formErrors.registrationNumber}</p>
+                                    )} 
                                 </div>
                             </div>
                         </div>
@@ -208,19 +276,31 @@ function CreationCareerPlan({ onSearch }) {
                                                 {item.assignmentTypeName}
                                             </option>
                                         ))}
-                                    </select>    
+                                    </select>   
+                                    {formErrors.assignmentTypeId && (
+                                        <p className="text-danger">{formErrors.assignmentTypeId}</p>
+                                    )} 
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Numero de decision</label>
                                     <input type="text" name="decisionNumber" value={formData.decisionNumber} onChange={handleChange} className="form-control" id="exampleInputEmail1"/>
+                                    {formErrors.decisionNumber && (
+                                        <p className="text-danger">{formErrors.decisionNumber}</p>
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Date de decision</label>
                                     <input type="date" name="decisionDate" value={formData.decisionDate} onChange={handleChange} className="form-control" id="exampleInputEmail1"/>
+                                    {formErrors.decisionDate && (
+                                        <p className="text-danger">{formErrors.decisionDate}</p>
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Date d'affectation</label>
                                     <input type="date" name="assignmentDate" value={formData.assignmentDate} onChange={handleChange} className="form-control" id="exampleInputEmail1"/>
+                                    {formErrors.assignmentDate && (
+                                        <p className="text-danger">{formErrors.assignmentDate}</p>
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputEmail1">Description</label>

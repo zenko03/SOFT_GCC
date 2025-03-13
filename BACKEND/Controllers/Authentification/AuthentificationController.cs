@@ -42,5 +42,43 @@ namespace soft_carriere_competence.Controllers.Authentification
 			var result = await _userService.ResetPasswordAsync(dto);
 			return Ok(new { message = result });
 		}
+
+		// Dans AuthentificationController.cs
+		[HttpGet("user")]
+		public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
+		{
+			var user = await _userService.GetUserByEmailAsync(email);
+			if (user == null) return NotFound();
+			return Ok(user);
+		}
+
+		[HttpGet("current-user")]
+		public async Task<IActionResult> GetCurrentUser()
+		{
+			var userIdClaim = User.FindFirst("userId")?.Value; // Récupération de l'ID utilisateur depuis le token
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
+
+			return Ok(new
+			{
+				id = user.Id,
+				email = user.Email,
+				firstName = user.FirstName,
+				lastName = user.LastName,
+				roleId = user.RoleId,
+				roleTitle = user.Role?.Title ?? "Unknown",
+				postId = user.PostId,
+				departmentId = user.DepartmentId
+			});
+		}
+
+
+		// Dans UserService.cs
+
 	}
 }

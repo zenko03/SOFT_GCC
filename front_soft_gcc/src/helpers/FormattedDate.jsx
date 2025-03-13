@@ -8,7 +8,7 @@ function FormattedDate({ date }) {
         return <span>Date invalide</span>; 
     }
 
-    const formattedDate = format(parsedDate, 'yyyy-MM-dd');
+    const formattedDate = format(parsedDate, 'dd/MM/yyyy');
     return <span>{formattedDate}</span>;
 }
 
