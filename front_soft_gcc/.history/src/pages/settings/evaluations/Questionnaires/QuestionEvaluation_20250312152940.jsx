@@ -64,34 +64,17 @@ function QuestionEvaluation() {
         e.preventDefault();
 
         try {
-            // Make sure IDs are properly parsed
             const evaluationTypeId = parseInt(formData.evaluationTypeId);
             const postId = parseInt(formData.postId);
 
-            // For create (new questions), send a simpler object structure
-            // For update, keep the more complex structure that's working
-            const requestData = currentQuestion
-                ? {
-                    questiondId: currentQuestion.questiondId,
-                    question: formData.question,
-                    evaluationTypeId: evaluationTypeId,
-                    postId: postId,
-                    // Include navigation properties that might be needed for update
-                    evaluationType: {
-                        evaluationTypeId: evaluationTypeId,
-                        designation: evaluationTypes.find(t => t.evaluationTypeId === evaluationTypeId)?.designation || ''
-                    },
-                    poste: {
-                        posteId: postId,
-                        title: posts.find(p => p.posteId === postId)?.title || ''
-                    }
-                }
-                : {
-                    // For create, use a minimal structure
-                    question: formData.question,
-                    evaluationTypeId: evaluationTypeId,
-                    postId: postId
-                };
+            // Try matching the C# model's likely property naming
+            const requestData = {
+                // Capitalize the first letter of property names
+                QuestiondId: currentQuestion?.questiondId || 0,
+                Question: formData.question,
+                EvaluationTypeId: evaluationTypeId,
+                PostId: postId
+            };
 
             console.log('Sending data to API:', requestData);
 
@@ -106,7 +89,6 @@ function QuestionEvaluation() {
             setCurrentQuestion(null);
         } catch (error) {
             console.error("Error saving question:", error);
-            // Enhanced error logging
             if (error.response) {
                 console.error("Status:", error.response.status);
                 console.error("Error details:", error.response.data);

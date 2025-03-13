@@ -64,34 +64,14 @@ function QuestionEvaluation() {
         e.preventDefault();
 
         try {
-            // Make sure IDs are properly parsed
-            const evaluationTypeId = parseInt(formData.evaluationTypeId);
-            const postId = parseInt(formData.postId);
-
-            // For create (new questions), send a simpler object structure
-            // For update, keep the more complex structure that's working
-            const requestData = currentQuestion
-                ? {
-                    questiondId: currentQuestion.questiondId,
-                    question: formData.question,
-                    evaluationTypeId: evaluationTypeId,
-                    postId: postId,
-                    // Include navigation properties that might be needed for update
-                    evaluationType: {
-                        evaluationTypeId: evaluationTypeId,
-                        designation: evaluationTypes.find(t => t.evaluationTypeId === evaluationTypeId)?.designation || ''
-                    },
-                    poste: {
-                        posteId: postId,
-                        title: posts.find(p => p.posteId === postId)?.title || ''
-                    }
-                }
-                : {
-                    // For create, use a minimal structure
-                    question: formData.question,
-                    evaluationTypeId: evaluationTypeId,
-                    postId: postId
-                };
+            // Create a properly formatted request object
+            const requestData = {
+                questiondId: currentQuestion?.questiondId || 0,
+                question: formData.question,
+                evaluationTypeId: parseInt(formData.evaluationTypeId),
+                postId: parseInt(formData.postId)
+                // Remove the EvaluationType and poste objects
+            };
 
             console.log('Sending data to API:', requestData);
 
@@ -109,11 +89,24 @@ function QuestionEvaluation() {
             // Enhanced error logging
             if (error.response) {
                 console.error("Status:", error.response.status);
-                console.error("Error details:", error.response.data);
-                alert(`Error: ${error.response.data.error || "An unknown error occurred"}`);
+                console.error("Error response data:", error.response.data);
+
+                // Show a more user-friendly error message
+                if (error.response.data && error.response.data.error) {
+                    alert(`Error: ${error.response.data.error}`);
+                } else {
+                    alert("An error occurred while saving the question. Please try again.");
+                }
+            } else if (error.request) {
+                console.error("No response received:", error.request);
+                alert("No response from server. Please check your connection.");
+            } else {
+                console.error("Error setting up request:", error.message);
+                alert("Error preparing request. Please try again.");
             }
         }
     };
+
     const handleEdit = (question) => {
         setCurrentQuestion(question);
         setFormData({ question: question.question, evaluationTypeId: question.evaluationTypeId, postId: question.postId });

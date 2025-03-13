@@ -3470,6 +3470,7 @@
         "node": ">=0.8"
       }
     },
+<<<<<<< HEAD
     "node_modules/fsevents": {
       "version": "2.3.3",
       "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz",
@@ -3482,7 +3483,8 @@
         "darwin"
       ],
       "engines": {
-        "node": "^8.16.0 || ^10.6.0 || >=11.0.0",
+        "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
+=======
     "node_modules/framer-motion": {
       "version": "12.5.0",
       "resolved": "https://registry.npmjs.org/framer-motion/-/framer-motion-12.5.0.tgz",
@@ -3508,6 +3510,7 @@
         "react-dom": {
           "optional": true
         }
+>>>>>>> sprint3_2
       }
     },
     "node_modules/function-bind": {

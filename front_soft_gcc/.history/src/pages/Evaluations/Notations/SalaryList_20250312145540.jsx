@@ -8,8 +8,6 @@ import Step3 from './Step3';
 import '../../../assets/css/Evaluations/notationModal.css'; // Styles spécifiques
 import '../../../assets/css/Evaluations/Questions.css'; // Styles spécifiques
 import '../../../assets/css/Evaluations/Steps.css'; // Styles spécifiques
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
 
 
 function SalaryList() {
@@ -30,7 +28,6 @@ function SalaryList() {
 
 
   // Ajouter cette fonction dans votre composant SalaryList
-  // Fonction améliorée pour générer un PDF d'évaluation avec un design professionnel
   const generateEvaluationPDF = () => {
     if (!selectedEmployee || !ratings || Object.keys(ratings).length === 0) {
       console.error("Données insuffisantes pour générer le PDF");
@@ -40,121 +37,66 @@ function SalaryList() {
     const doc = new jsPDF();
     const average = calculateAverage();
 
-    // Couleurs (style corporate)
-    const primaryColor = [41, 128, 185]; // Bleu
-    const secondaryColor = [44, 62, 80]; // Gris foncé
-    const accentColor = [46, 204, 113]; // Vert
+    // En-tête du document
+    doc.setFontSize(18);
+    doc.text('Fiche d\'Évaluation', 105, 15, { align: 'center' });
 
-    // Marge
-    const margin = 14;
-
-    // Métadonnées du document
-    doc.setProperties({
-      title: `Évaluation de ${selectedEmployee.firstName} ${selectedEmployee.lastName}`,
-      subject: 'Rapport d\'évaluation professionnelle',
-      author: 'Système d\'Évaluation des Employés',
-      keywords: 'évaluation, performance, employé',
-      creator: 'Application RH'
-    });
-
-    // ===== HEADER =====
-    // Logo ou image d'en-tête (optionnel)
-    // doc.addImage(companyLogo, 'PNG', margin, 10, 40, 20);
-
-    // Titre principal
-    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 30, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
-    doc.text('FICHE D\'ÉVALUATION PROFESSIONNELLE', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
-
-    // Type d'évaluation (mis en évidence)
-    doc.setFillColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.rect(0, 30, doc.internal.pageSize.getWidth(), 12, 'F');
+    // Informations de l'employé
     doc.setFontSize(12);
-    doc.setTextColor(255, 255, 255);
-    doc.text(`TYPE D'ÉVALUATION: ${selectedEvaluationType?.designation || "Non spécifié"}`, doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
+    doc.text(`Nom: ${selectedEmployee.firstName} ${selectedEmployee.lastName}`, 14, 30);
+    doc.text(`Poste: ${selectedEmployee.position}`, 14, 40);
+    doc.text(`Département: ${selectedEmployee.department}`, 14, 50);
+    doc.text(`Date d'évaluation: ${new Date().toLocaleDateString()}`, 14, 60);
+    doc.text(`Type d'évaluation: ${selectedEvaluationType?.designation || "Non spécifié"}`, 14, 70);
 
-    // ===== INFORMATIONS DE L'EMPLOYÉ =====
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'bold');
-
-    // Section info employé avec cadre
-    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.setLineWidth(0.5);
-    doc.roundedRect(margin, 50, doc.internal.pageSize.getWidth() - (margin * 2), 50, 3, 3, 'S');
-
-    doc.setFontSize(14);
-    doc.text("INFORMATIONS DE L'EMPLOYÉ", margin + 5, 60);
-    doc.setFontSize(12);
-    doc.setFont(undefined, 'normal');
-
-    // Colonnes pour informations employé
-    const colWidth = (doc.internal.pageSize.getWidth() - (margin * 2) - 10) / 2;
-
-    // Colonne gauche
-    doc.text("Nom complet:", margin + 5, 70);
-    doc.text("Poste:", margin + 5, 80);
-    doc.text("Date d'évaluation:", margin + 5, 90);
-    doc.text("Département:", margin + 5, 100);
-
-    // Colonne droite
-    doc.text(`${selectedEmployee.firstName} ${selectedEmployee.lastName}`, margin + colWidth, 70);
-    doc.text(selectedEmployee.position, margin + colWidth, 80);
-    doc.text(new Date().toLocaleDateString(), margin + colWidth, 90);
-    doc.text(selectedEmployee.department, margin + colWidth, 100);
-
-    // ===== TABLEAU DES COMPÉTENCES ÉVALUÉES =====
+    // Tableau des compétences évaluées
     const tableColumn = ["Compétence", "Note"];
-    const tableRows = questions.map(question => {
+    const tableRows = [];
+
+    // Préparation des données pour le tableau
+    questions.forEach(question => {
       const score = ratings[question.questionId] || "N/A";
-      return [question.text, score];
+      tableRows.push([question.text, score]);
     });
 
     // Ajout du tableau au document
     doc.autoTable({
-      startY: 120,
+      startY: 80,
       head: [tableColumn],
       body: tableRows,
-      theme: 'grid',
-      styles: { cellPadding: 3, fontSize: 10 },
-      headStyles: { fillColor: primaryColor, textColor: 255, fontSize: 12 },
-      alternateRowStyles: { fillColor: [240, 240, 240] },
     });
 
     // Note moyenne
     const finalY = doc.lastAutoTable.finalY || 120;
-    doc.setFontSize(12);
-    doc.text(`Note moyenne: ${average}/5`, margin, finalY + 10);
+    doc.text(`Note moyenne: ${average}/5`, 14, finalY + 10);
 
-    // ===== REMARQUES =====
-    const remarksY = finalY + 20;
+    // Remarques
     if (remarks.generalEvaluation) {
-      doc.text("Remarques générales:", margin, remarksY);
+      doc.text("Remarques générales:", 14, finalY + 20);
       doc.setFontSize(10);
-      const splitText = doc.splitTextToSize(remarks.generalEvaluation, doc.internal.pageSize.getWidth() - (margin * 2));
-      doc.text(splitText, margin, remarksY + 10);
+      const splitText = doc.splitTextToSize(remarks.generalEvaluation, 180);
+      doc.text(splitText, 14, finalY + 30);
     }
 
     // Points forts
     if (remarks.strengths) {
-      const strengthY = remarksY + (remarks.generalEvaluation ? 30 : 10);
+      const strengthY = finalY + (remarks.generalEvaluation ? 50 : 20);
       doc.setFontSize(12);
-      doc.text("Points forts:", margin, strengthY);
+      doc.text("Points forts:", 14, strengthY);
       doc.setFontSize(10);
-      const splitStrengths = doc.splitTextToSize(remarks.strengths, doc.internal.pageSize.getWidth() - (margin * 2));
-      doc.text(splitStrengths, margin, strengthY + 10);
+      const splitStrengths = doc.splitTextToSize(remarks.strengths, 180);
+      doc.text(splitStrengths, 14, strengthY + 10);
     }
 
     // Points à améliorer
     if (remarks.weaknesses) {
-      const weaknessY = remarksY + (remarks.generalEvaluation ? 50 : 30) + (remarks.strengths ? 20 : 0);
-      doc.setFontSize(12);
-      doc.text("Points à améliorer:", margin, weaknessY);
+      const weaknessY = finalY +
+        (remarks.generalEvaluation ? 70 : 40) +
+        (remarks.strengths ? 20 : 0);
+      doc.text("Points à améliorer:", 14, weaknessY);
       doc.setFontSize(10);
-      const splitWeaknesses = doc.splitTextToSize(remarks.weaknesses, doc.internal.pageSize.getWidth() - (margin * 2));
-      doc.text(splitWeaknesses, margin, weaknessY + 10);
+      const splitWeaknesses = doc.splitTextToSize(remarks.weaknesses, 180);
+      doc.text(splitWeaknesses, 14, weaknessY + 10);
     }
 
     // Sauvegarde du PDF
@@ -168,11 +110,6 @@ function SalaryList() {
     await validateEvaluation();
     generateEvaluationPDF(); // Générer le PDF après validation
   };
-
-
-
-
-
   const [isEmployeeLoaded, setIsEmployeeLoaded] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [validationSuccess, setValidationSuccess] = useState(false);
@@ -268,22 +205,6 @@ function SalaryList() {
     setSearchQuery(query_text.trim());
   };
 
-  // Ajouter cet useEffect pour gérer la génération de PDF après validation
-  useEffect(() => {
-    if (validationSuccess) {
-      generateEvaluationPDF();
-      // Vous pouvez ajouter un toast ici si vous utilisez react-toastify
-      // toast.success("Fiche d'évaluation générée et téléchargée");
-
-      // Optionnel: Réinitialiser après un délai
-      const timer = setTimeout(() => {
-        setValidationSuccess(false);
-        setShowModal(false);
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [validationSuccess]);
   const filteredEmployees = employees.filter((employee) => {
     const fullName = `${employee.firstName} ${employee.lastName}`.toLowerCase();
     return fullName.includes(searchQuery);
@@ -500,35 +421,15 @@ function SalaryList() {
               <div className="modal-footer">
                 {!validationSuccess && (
                   <>
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))}
-                      disabled={currentStep === 1}
-                    >
-                      Précédent
+                    <button className="btn btn-secondary" onClick={() => setCurrentStep(prev => Math.max(prev - 1, 1))} disabled={currentStep === 1}>Précédent</button>
+                    <button className="btn btn-primary" onClick={async () => {
+                      if (currentStep === 2) await saveEvaluationResults();
+                      if (currentStep === 3) await validateEvaluation();
+                      else setCurrentStep(prev => Math.min(prev + 1, 3));
+                    }} disabled={!allQuestionsRated() && currentStep === 1}>
+                      {currentStep === 3 ? 'Valider' : 'Suivant'}
                     </button>
-                    <button
-                      className="btn btn-primary"
-                      onClick={async () => {
-                        if (currentStep === 2) {
-                          await saveEvaluationResults();
-                          // Avancer à l'étape 3 après avoir sauvegardé
-                          setCurrentStep(3);
-                        } else if (currentStep === 3) {
-                          await validateEvaluation();
-                          // La génération du PDF se fera dans useEffect qui surveille validationSuccess
-                          generateEvaluationPDF();
-                        } else {
-                          setCurrentStep(prev => Math.min(prev + 1, 3));
-                        }
-                      }}
-                      disabled={!allQuestionsRated() && currentStep === 1}
-                    >
-                      {currentStep === 3 ? 'Valider et Générer PDF' : 'Suivant'}
-                    </button>
-                    <button className="btn btn-danger" onClick={handleCloseModal}>
-                      Fermer
-                    </button>
+                    <button className="btn btn-danger" onClick={handleCloseModal}>Fermer</button>
                   </>
                 )}
               </div>

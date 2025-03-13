@@ -147,7 +147,10 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<EvaluationHistoryService>();
 builder.Services.AddScoped<EvaluationPortalService>();
 builder.Services.AddScoped<ReminderBackgroundService>();
+builder.Services.AddScoped<TemporaryAccountService>();
+
 builder.Services.Configure<ReminderSettings>(builder.Configuration.GetSection("ReminderSettings"));
+
 
 
 
