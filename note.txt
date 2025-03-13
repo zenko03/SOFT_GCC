@@ -1,0 +1,9 @@
+9h30 : Analyse base de donnée sur les tables existants
+10h30 : Implémentation base de donnee pour implementer l'historique d'activite
+11h30 : Creation de l'entite ActivityLog et du service pour enregistrer les historiques d'activite dans la partie metier 
+12h30 : Ajout de l'enregistrement automatique de l'historique dans les controlleurs d'action pour la partie gestion des
+competences
+14h30 : Tester le resultat pour la partie competence et correction des erreurs de bugs
+15h30 : Creation d'affichage pour voir les historiques sur les competences
+16h30: Integration des historiques sur les competences
+17h30 : Test et correction des bugs sur les historiques des competences.

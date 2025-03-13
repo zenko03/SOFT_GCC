@@ -135,18 +135,18 @@ namespace soft_carriere_competence.Application.Services.retirement
 				}
 			}
 
-			// Ajout de la pagination
-			sql.Append(" ORDER BY date_retirement OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY");
-			parameters.Add(new SqlParameter("@Offset", (page - 1) * pageSize));
-			parameters.Add(new SqlParameter("@PageSize", pageSize));
+			// Utilisation de la requête SQL avec des paramètres pour éviter les injections SQL
+			var filteredQuery = _context.VRetirement
+				.FromSqlRaw(sql.ToString(), parameters.ToArray());
 
-			// Exécution des requêtes
-			var totalCount = await _context.VRetirement
-				.FromSqlRaw(countSql.ToString(), parameters.ToArray())
-				.CountAsync(); // La requête COUNT est maintenant correcte
+			// Compter le nombre total de résultats correspondant au filtre
+			var totalCount = await filteredQuery.CountAsync();
 
-			var data = await _context.VRetirement
-				.FromSqlRaw(sql.ToString(), parameters.ToArray())
+
+			// Appliquer la pagination aux résultats filtrés
+			var data= await filteredQuery
+				.Skip((page - 1) * pageSize)
+				.Take(pageSize)
 				.ToListAsync();
 
 			return (data, totalCount);

@@ -1,5 +1,7 @@
 ﻿using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace soft_carriere_competence.Application.Services.salary_skills
 {
@@ -22,13 +24,21 @@ namespace soft_carriere_competence.Application.Services.salary_skills
 			return await _repository.GetById(id);
 		}
 
-		public async Task Add(Department department)
+		public async Task Add(Department department, byte[]? photo)
 		{
+			if (photo != null)
+			{
+				department.Photo = photo;
+			}
 			await _repository.Add(department);
 		}
 
-		public async Task Update(Department department)
+		public async Task Update(Department department, byte[]? photo)
 		{
+			if (photo != null)
+			{
+				department.Photo = photo;
+			}
 			await _repository.Update(department);
 		}
 

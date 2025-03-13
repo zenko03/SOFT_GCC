@@ -139,14 +139,20 @@ function DetailsWishEvolution() {
         <button type="button" onClick={handleCareer} className="btn btn-outline-primary mx-2">Carrières</button>
       </div>
       <hr></hr>
-
-        <h4 className="section-title text-left text-uppercase mb-4">DETAILS DE LA DEMANDE</h4>
+      <div className="col-lg-10 skill-header">
+        <i className="mdi mdi-information-outline skill-icon"></i>
+        <h4 className="skill-title">DETAILS DE LA DEMANDE</h4>
+      </div>
         {dataDescription ? (
           <div className="row g-4">
             <div className="col-md-6">
               <div className="card shadow-sm border-0">
+                <div className="card-header title-container">
+                  <h5 className="title">
+                    <i className="mdi mdi-note-text"></i> Description
+                  </h5>
+                </div>
                 <div className="card-body">
-                  <h5 className="card-title subtitle">Description</h5>
                   <p><strong>Référence employé :</strong> {dataDescription.registrationNumber}</p>
                   <p><strong>Employé demandant :</strong> {`${dataDescription.name} ${dataDescription.firstName}`}</p>
                   <p><strong>Type de souhait :</strong> {dataDescription.wishTypeName}</p>
@@ -158,8 +164,12 @@ function DetailsWishEvolution() {
             </div>
             <div className="col-md-6">
               <div className="card shadow-sm border-0">
+                <div className="card-header title-container">
+                  <h5 className="title">
+                    <i className="mdi mdi-note-text"></i> Description
+                  </h5>
+                </div>
                 <div className="card-body">
-                  <h5 className="card-title subtitle">Description</h5>
                   <p><strong>Création de la demande :</strong> {new Date(dataDescription.creationDate).toLocaleDateString()}</p>
                   <p><strong>Dernière modification :</strong> {new Date(dataDescription.updatedDate).toLocaleDateString()}</p>
                   <p><strong>Disponibilité :</strong> {new Date(dataDescription.disponibility).toLocaleDateString()}</p>
@@ -195,15 +205,18 @@ function DetailsWishEvolution() {
         <div className="row g-4">
           <div className="col-md-8">
             <div className="card shadow-sm border-0">
+              <div className="card-header title-container">
+                <h5 className="title">
+                  <i className="mdi mdi-checkbox-marked-outline"></i> Vérification des compétences nécessaires
+                </h5>
+              </div>
               <div className="card-body">
-                <h5 className="card-title subtitle" 
-                >Vérification des compétences nécessaires</h5>
                 <table className="table table-hover">
                   <thead>
                     <tr>
-                      <th>Skill ID</th>
-                      <th>Skill Name</th>
-                      <th>State</th>
+                      <th>ID</th>
+                      <th>Compétence</th>
+                      <th>Etat</th>
                     </tr>
                   </thead>
                   <tbody>

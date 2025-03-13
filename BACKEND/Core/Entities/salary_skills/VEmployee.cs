@@ -29,5 +29,19 @@ namespace soft_carriere_competence.Core.Entities.salary_skills
 		[Column("hiring_date")]
 		public DateTime? HiringDate { get; set; }
 
+		[Column("Civilite_name")]
+		public String? CiviliteName { get; set; }
+
+		[Column("Manager_id")]
+		public int? ManagerId { get; set; }
+
+		[Column("Manager_name")]
+		public string? ManagerName { get; set; }
+
+		[Column("Manager_firstName")]
+		public string? ManagerFirstName { get; set; }
+
+		[Column("employee_photo")]
+		public byte[]? Photo { get; set; }
 	}
 }

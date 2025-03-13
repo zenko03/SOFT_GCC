@@ -53,6 +53,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return await _context.postes.FindAsync(postId);
         }
 
+        public async Task<IEnumerable<User>> GetManagerAndDirector()
+        {
+            return await _context.Users.Where(u => u.RoleId == 2 || u.RoleId ==4).ToListAsync();
+        }
 
         // --------------------------------------AUTHENTIFICATION--------------------------------------- //
 
@@ -90,13 +94,26 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         // Méthode pour connecter un utilisateur.
         public async Task<string> LoginAsync(LoginDto dto)
         {
+            Console.WriteLine("Tafiditra ato 1");
+
             // Recherche de l'utilisateur par email.
             var user = await _userRepository.GetFirstOrDefaultAsync(u => u.Email == dto.Email);
+            Console.WriteLine("Tafiditra ato 2");
+
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 throw new Exception("Email ou mot de passe incorrect.");
 
             // Génération du token JWT si la connexion est réussie.
+
+            string mdp = "fanja";
+
+            // Hachage du mot de passe
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(mdp);
+
+            // Affichage du mot de passe haché
+            Console.WriteLine("Mot de passe haché pour : "+ mdp+" "+ hashedPassword);
             var token = GenerateJwtToken(user);
+            Console.WriteLine("Token: " , token);
             return token;
         }
 
@@ -148,8 +165,14 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             var claims = new List<Claim>
     {
-        new Claim(ClaimTypes.Name, user.Email),
-        new Claim(ClaimTypes.Role, user.RoleId.ToString())
+        new Claim("userId", user.Id.ToString()), // ID de l'utilisateur
+        new Claim("email", user.Email), // Email de l'utilisateur
+        new Claim("firstName", user.FirstName), // Prénom
+        new Claim("lastName", user.LastName), // Nom
+        new Claim("roleId", user.RoleId.ToString()), // ID du rôle
+        new Claim("roleTitle", user.Role?.Title ?? "Unknown"), // Titre du rôle
+        new Claim("postId", user.PostId.ToString()), // ID du poste
+        new Claim("departmentId", user.DepartmentId.ToString()) // ID du département
     };
 
             var token = new JwtSecurityToken(
@@ -163,6 +186,71 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+
+        public async Task<int> CountAsync(int? department = null)
+        {
+            var query = _context.Users.AsQueryable();
+
+            if (department.HasValue)
+                query = query.Where(u => u.DepartmentId == department.Value);
+
+            return await query.CountAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetUsersPaginatedAsync(int pageNumber, int pageSize, string includeProperties = "")
+        {
+            // Utilise la méthode GetPage du GenericRepository pour récupérer les utilisateurs paginés
+            return _userRepository.GetPage(pageNumber, pageSize, includeProperties);
+        }
+
+        public int GetTotalPages(int pageSize)
+        {
+            // Utilise la méthode GetTotalPages du GenericRepository pour calculer le nombre total de pages
+            return _userRepository.GetTotalPages(pageSize);
+        }
+
+        public async Task<(IEnumerable<User> Users, int TotalPages)> GetUsersWithPaginationAsync(int pageNumber, int pageSize)
+        {
+            var users = await GetUsersPaginatedAsync(pageNumber, pageSize);
+            var totalPages = GetTotalPages(pageSize);
+
+            return (users, totalPages);
+        }
+
+        public async Task<(IEnumerable<VEmployeeDetails> Employees, int TotalPages)> GetVEmployeeDetailsPaginatedAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.VEmployeeDetails.AsQueryable();
+
+            // Calculer le nombre total de pages
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            // Paginer les résultats
+            var employees = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (employees, totalPages);
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users
+                .Include(u => u.Department)
+                .Include(u => u.Role)
+                .Include(u => u.Poste)
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            return await _context.Users
+                .Include(u => u.Department)
+                .Include(u => u.Role)
+                .Include(u => u.Poste)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
 
     }
 }

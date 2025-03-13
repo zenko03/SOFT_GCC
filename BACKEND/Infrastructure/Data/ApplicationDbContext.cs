@@ -2,9 +2,11 @@
 using soft_carriere_competence.Core.Entities.career_plan;
 using soft_carriere_competence.Core.Entities.crud_career;
 using soft_carriere_competence.Core.Entities.dashboard;
+using soft_carriere_competence.Core.Entities.entrepriseOrg;
 using soft_carriere_competence.Core.Entities.Evaluations;
 
 using soft_carriere_competence.Core.Entities.Evaluations;
+using soft_carriere_competence.Core.Entities.history;
 using soft_carriere_competence.Core.Entities.retirement;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Entities.wish_evolution;
@@ -37,6 +39,7 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<VEmployeeLanguage> VEmployeeLanguage { get; set; }
 		public DbSet<VEmployeeOtherSkill> VEmployeeOtherSkill { get; set; }
 		public DbSet<VSkills> VSkills { get; set; }
+		public DbSet<ImageEntity> ImageEntity { get; set; }
 
 		// Carriere
 		public DbSet<CareerPlan> CareerPlan { get; set; }
@@ -59,6 +62,7 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<VEmployeeCareer> VEmployeeCareer { get; set; }
 		public DbSet<History> History { get; set; }
 		public DbSet<Civilite> Civilite { get; set; }
+		public DbSet<VEmployeePosition> VEmployeePosition { get; set; }
 
 		//EVALUATIONS
 		public DbSet<Role> Roles { get; set; }
@@ -72,8 +76,21 @@ namespace soft_carriere_competence.Infrastructure.Data
         public DbSet<PerformanceEvolution> PerformanceEvolutions { get; set; }
 		public DbSet<Poste> postes { get; set; }
 		public DbSet<EvaluationQuestion> evaluationQuestions {  get; set; }
-		public DbSet<VEmployeeDetails> VEmployeeDetails { get; set; }
+	    public DbSet<EvaluationInterviews> evaluationInterviews { get; set; }
+        public DbSet<InterviewParticipants> interviewParticipants { get; set; }
+        public DbSet<EvaluationProgress> evaluationProgresses { get; set; }
+
+
+        public DbSet<VEmployeeDetails> VEmployeeDetails { get; set; }
         public DbSet<VEmployeeWithoutEvaluation> vEmployeeWithoutEvaluations { get; set; }
+        public DbSet<VEmployeesFinishedEvaluation> vEmployeesFinishedEvaluations { get; set; }
+        public DbSet<VEvaluationHistory> vEvaluationHistories { get; set; }
+        public DbSet<VEmployeesOngoingEvaluation> vEmployeesOngoingEvaluations { get; set; }
+        public DbSet<VEmployeeEvaluationProgress> vEmployeesEvaluationProgress { get; set; }
+
+
+
+
 
 
         // RETRAITE
@@ -92,6 +109,13 @@ namespace soft_carriere_competence.Infrastructure.Data
 		// DASHBOARD
 		public DbSet<VNEmployeeSkillByDepartment> VNEmployeeSkillByDepartment { get; set; }
 		public DbSet<VNEmployeeCareerByDepartment> VNEmployeeCareerByDepartment { get; set; }
+
+		// Organigramme et effectif
+		public DbSet<VDepartmentEffective> VDepartmentEffective { get; set; }
+		public DbSet<TestCsv> TestCsv { get; set; }
+
+		// Historique d'activite
+		public DbSet<ActivityLog> ActivityLog { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -130,19 +154,47 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<PcdSuggestionPosition>().HasNoKey();
 			modelBuilder.Entity<VSkillPosition>().ToView("v_skill_position");
 			modelBuilder.Entity<VSkillPosition>().HasNoKey();
+			modelBuilder.Entity<VEmployeePosition>().ToView("v_employee_position");
+			modelBuilder.Entity<VEmployeePosition>().HasNoKey();
+
+				
 
 			//------------------EVALUATIONS-----------------------------------------//
 			modelBuilder.Entity<VEmployeeDetails>().HasNoKey().ToView("VEmployeeDetails");
             modelBuilder.Entity<VEmployeeWithoutEvaluation>().HasNoKey().ToView("VEmployeesWithoutEvaluation");
+            modelBuilder.Entity<VEmployeesFinishedEvaluation>().HasNoKey().ToView("VEmployeesFinishedEvaluation");
+            modelBuilder.Entity<VEvaluationHistory>().HasNoKey().ToView("VEvaluationHistory");
+            modelBuilder.Entity<VEmployeesOngoingEvaluation>().HasNoKey().ToView("VEmployeesOngoingEvaluation");
+            modelBuilder.Entity<VEmployeeEvaluationProgress>().HasNoKey().ToView("VEmployeeEvaluationProgress");
 
 			//------------------DASHBOARD-------------------------------------------//
 			modelBuilder.Entity<VNEmployeeSkillByDepartment>().ToView("v_n_employee_skill_by_department");
 			modelBuilder.Entity<VNEmployeeSkillByDepartment>().HasNoKey();
 			modelBuilder.Entity<VNEmployeeCareerByDepartment>().ToView("v_n_employee_career_by_department");
 			modelBuilder.Entity<VNEmployeeCareerByDepartment>().HasNoKey();
+
+			//------------------ORGANIGRAMME ET EFFECTIF-------------------------------------------//
+			modelBuilder.Entity<VDepartmentEffective>().ToView("v_department_effective");
+			modelBuilder.Entity<VDepartmentEffective>().HasNoKey();
 		}
 	}
+
+            //    // Configuration de la relation EvaluationInterviews - InterviewParticipants
+            //    modelBuilder.Entity<InterviewParticipants>()
+            //        .HasOne(p => p.Interview)
+            //        .WithMany(i => i.Participants)
+            //        .HasForeignKey(p => p.InterviewId)
+            //        .OnDelete(DeleteBehavior.Cascade); // Cascade si nécessaire
+
+            //    modelBuilder.Entity<InterviewParticipants>()
+            //        .HasOne(p => p.User)
+            //        .WithMany()
+            //        .HasForeignKey(p => p.UserId)
+            //        .OnDelete(DeleteBehavior.Restrict); // Pas de suppression d'utilisateur si le participant est supprimé
 }
+        
+    
+
 
 
 			

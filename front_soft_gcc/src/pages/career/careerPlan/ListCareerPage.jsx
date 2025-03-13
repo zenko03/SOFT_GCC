@@ -1,193 +1,302 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { urlApi } from '../../../helpers/utils';
 import PageHeader from '../../../components/PageHeader';
-import SearchForm from '../../../components/SearchForm';
 import Template from '../../Template';
 import pic1 from '/src/assets/images/faces-clipart/pic-1.png';
 import '../../../styles/skillsStyle.css';
 import Loader from '../../../helpers/Loader';
 import '../../../styles/pagination.css';
+import FormattedDate from '../../../helpers/FormattedDate';
+import useSWR from 'swr';
+import Fetcher from '../../../components/Fetcher';
 
-// Page liste des competences
-function ListCareerPage() {
-    // Url d'en-tete de page
-    const module = "Plan de carrière";
-    const action = "Liste";
-    const url = "/carriere";
+// Fonction debounce pour éviter les appels excessifs
+const debounce = (func, delay) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), delay);
+  };
+};
 
-    // Initialisation des variables de states
-    const [careers, setCareers] = useState([]);
-    const [sortedCareers, setSortedCareers] = useState([]);
-    const [sortDirection, setSortDirection] = useState('asc');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize] = useState(10);
-    const [totalPages, setTotalPages] = useState(0);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const navigate = useNavigate();
+// Page liste des compétences
+const ListCareerPage = () => {
+  const module = 'Plan de carrière';
+  const action = 'Liste';
+  const url = '/carriere';
 
-     useEffect(() => {
-        fetchCareers();
-    }, [currentPage, searchTerm]);
+  const [careers, setCareers] = useState([]);
+  const [sortedCareers, setSortedCareers] = useState([]);
+  const [sortDirection, setSortDirection] = useState('asc');
+  const [sortColumn, setSortColumn] = useState('updatedDate');  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [filters, setFilters] = useState({ keyWord: '', departmentId: '', positionId: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    // Appliquer le tri chaque fois que `sortDirection` ou `skills` change
+  const navigate = useNavigate();
+  const { data: dataDepartment } = useSWR('/Department', Fetcher);
+  const { data: dataPosition } = useSWR('/Position', Fetcher);
+
+  const [paginationResult, setPaginationResult] = useState({
+    totalRecords: 0,
+    pageSize: 0,
+    currentPage: 0,
+    totalPages: 0
+  });
+
+  // Fetch des données filtrées
+  const fetchFilteredData = useCallback(
+    async (appliedFilters) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const queryParams = new URLSearchParams({
+          ...appliedFilters,
+          page: currentPage,
+          pageSize,
+        }).toString();
+
+        const response = await Fetcher(`/CareerPlan/filter?${queryParams}`);
+
+        if (response.success) {
+          setCareers(response.data);
+          setTotalPages(response.totalPages || 0);
+          setPaginationResult({
+            totalRecords: response.totalCount,
+            pageSize: response.pageSize,
+            currentPage: response.currentPage,
+            totalPages: response.totalPages
+          });
+        } else {
+          setError(response.message || 'Erreur lors du chargement.');
+          setCareers([]);
+        }
+      } catch (err) {
+        setError(`Erreur inattendue : ${err.message}`);
+        setCareers([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentPage, pageSize]
+  );
+
+  const debouncedFetchData = useCallback(debounce(fetchFilteredData, 300), [fetchFilteredData]);
+
+  // Mise à jour des données au changement de filtres
+  useEffect(() => {
+    debouncedFetchData(filters);
+  }, [filters, debouncedFetchData]);
+
+  // Mise à jour des données triées
+  // Appliquer le tri chaque fois que `sortDirection` ou `careers` change
     useEffect(() => {
         const sorted = [...careers].sort((a, b) => {
-        const dateA = new Date(a.assignmentDate);
-        const dateB = new Date(b.assignmentDate);
-        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+          const valueA = a[sortColumn];
+          const valueB = b[sortColumn];
+    
+          if (sortColumn === 'assignmentDate') {
+            const dateA = new Date(valueA);
+            const dateB = new Date(valueB);
+            return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+          } else {
+            if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
+            if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+          }
         });
         setSortedCareers(sorted);
-    }, [sortDirection, careers]);
-    
-    // Chargement des donnees de competences salaries
-    const fetchCareers = async () => {
-        setLoading(true);
-        setError(null);
+      }, [sortDirection, careers, sortColumn]);
 
-        try {
-          const route = searchTerm ? '/CareerPlan/filter' : '/CareerPlan/careers';
-          const params = searchTerm
-            ? { keyWord: searchTerm, pageNumber: currentPage, pageSize }
-            : { pageNumber: currentPage, pageSize };
-    
-          const response = await axios.get(urlApi(route), { params });
-          setCareers(response.data.data);
-          setTotalPages(response.data.totalPages);
-        } catch (err) {
-            setError("Erreur lors de la récupération des données.");
-        } finally {
-            setLoading(false);
-        }
-    };
+  // Gestion des filtres
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+  };
 
-    // Gerer les filtres par recherche
-    const handleSearch = (term) => {
-        setSearchTerm(term);
-        setCurrentPage(1);
-    };
+  // Gestion de la pagination
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
-    //Gerer le changement de page par pagination
-    const handlePageChange = (newPage) => {
-        if (newPage >= 1 && newPage <= totalPages) {
-        setCurrentPage(newPage);
-        }
-    };
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
 
-    // Gerer le tri par colonne
-    const handleSort = () => {
-        setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    };
+  const handleClick = () => navigate('/carriere/creation');
 
-    // Affichage des numeros de page de pagination
-    const renderPageNumbers = () => {
-        const pages = [];
-        for (let i = 1; i <= totalPages; i++) {
-        pages.push(
-            <button
-            key={i}
-            className={`pagination-button ${i === currentPage ? 'active' : ''}`}
-            onClick={() => handlePageChange(i)}
-            >
-            {i}
-            </button>
-        );
-        }
-        return pages;
-    };
-
-
-    const handleClick = () => {
-        navigate('/carriere/creation'); 
-    };
+  // Navigation pour details carrieres
+  const handleCareersDetails = (registrationNumber) => {
+    navigate(`/carriere/fiche/${registrationNumber}`);
+  };
 
   return (
     <Template>
-      {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
-      
+      {loading && <Loader />}
       <PageHeader module={module} action={action} url={url} />
-      <div className="row">
-        <div className="button-save-profil">
-            <button type="button" onClick={handleClick} className="btn btn-success btn-fw">Plan de carrière</button>
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      <div className="row header-title">
+        <div className="col-lg-10 skill-header">
+          <i className="mdi mdi-map-marker-path skill-icon"></i>
+          <h4 className="skill-title">PLAN DE CARRIÈRE</h4>
         </div>
-        <div className="col-lg-12 grid-margin stretch-card">
-          <div className="card">
-            <div className="card-body">
-            <h4 className="card-title">NOMBRE DES CARRIERES SALARIES</h4>
-
-              <SearchForm onSearch={handleSearch} />
-
-              {error && <p className="text-danger">{error}</p>}
-
-              {!loading && !error && (
-                <>
-                  <table className="table table-striped table-competences">
-                    <thead>
-                      <tr>
-                        <th>Employé</th>
-                        <th>Nom complet</th>
-                        <th>Departement</th>
-                        <th>Poste</th>
-                        <th 
-                          onClick={handleSort} 
-                          style={{
-                            cursor: 'pointer',
-                            color: '#007bff',
-                            fontWeight: 'bold',
-                          }}
-                          className="sortable-header"
-                        >
-                          Date d'affectation
-                          <span style={{ marginLeft: '5px' }}>
-                            {sortDirection === 'asc' ? '▲' : '▼'}
-                          </span>
-                        </th>
-                        <th>Plan de carriere</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedCareers.length > 0 ? (
-                        sortedCareers.map((item, id) => (
-                          <tr key={id}>
-                            <td className="py-1">
-                              <Link to={`/carriere/fiche/${item.registrationNumber}`}>
-                                <img src={pic1} alt="Profil" />
-                              </Link>
-                            </td>
-                            <td>{item.firstName} {item.name}</td>
-                            <td>{item.departmentName}</td>
-                            <td>{item.positionName}</td>
-                            <td>{new Date(item.assignmentDate).toLocaleDateString()}</td>
-                            <td>{item.careerPlanNumber}</td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="7" className="text-center">Aucun résultat trouvé.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                  <div className="pagination">
-                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                      Précédent
-                    </button>
-                    {renderPageNumbers()}
-                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                      Suivant
-                    </button>
-                  </div>
-                </>
-              )}
+        <div className="col-lg-2">
+          <button className="btn-add btn-success btn-fw" onClick={handleClick}>
+            <i className="mdi mdi-plus"></i>
+            Nouveau Plan
+          </button>
+        </div>  
+      </div>
+      <div className="card mb-4 search-card">
+        <div className="card-header title-container">
+          <h5 className="title">
+            <i className="mdi mdi-filter-outline"></i> Filtres
+          </h5>
+        </div>
+        <div className="card-body">
+          <form className="filter-form">
+            <div className="form-group">
+              <label>Nom, prénom ou matricule</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Recherche..."
+                name="keyWord"
+                value={filters.keyWord}
+                onChange={handleFilterChange}
+              />
             </div>
-          </div>
+            <div className="form-group">
+              <label>Département</label>
+              <select
+                name="departmentId"
+                className="form-control"
+                value={filters.departmentId}
+                onChange={handleFilterChange}
+              >
+                <option value="">Tous les département</option>
+                {dataDepartment?.map((dept) => (
+                  <option key={dept.departmentId} value={dept.departmentId}>
+                    {dept.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Poste </label>
+              <select
+                name="positionId"
+                className="form-control"
+                value={filters.positionId}
+                onChange={handleFilterChange}
+              >
+                <option value="">Tous les postes</option>
+                {dataPosition?.map((pos) => (
+                  <option key={pos.positionId} value={pos.positionId}>
+                    {pos.positionName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header title-container">
+          <h5 className="title">
+            <i className="mdi mdi-format-list-bulleted"></i> Liste des employés ayant des plans de carrières
+          </h5>
+        </div>
+        <div className="card-body">
+          {!loading && (
+            <>
+              <table className="table table-competences">
+                <thead>
+                  <tr>
+                    <th onClick={() => handleSort('registrationNumber')} className="sortable-header">
+                      Matricule {sortColumn === 'registrationNumber' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                    <th onClick={() => handleSort('firstName')} className="sortable-header">
+                      Nom complet {sortColumn === 'firstName' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                    <th onClick={() => handleSort('departmentName')} className="sortable-header">
+                      Département {sortColumn === 'departmentName' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                    <th onClick={() => handleSort('positionName')} className="sortable-header">
+                      Poste {sortColumn === 'positionName' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                    <th onClick={() => handleSort('assignmentDate')} className="sortable-header">
+                      Date d'affectation {sortColumn === 'assignmentDate' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                    <th onClick={() => handleSort('careerPlan')} className="sortable-header">
+                      Plan de carrière {sortColumn === 'careerPlan' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedCareers.length ? (
+                    sortedCareers.map((career, id) => (
+                      <tr key={id} onClick={() => {handleCareersDetails(career.registrationNumber)}}>
+                        <td>{career.registrationNumber}</td>
+                        <td>
+                          {career.firstName} {career.name}
+                        </td>
+                        <td>{career.departmentName}</td>
+                        <td>{career.positionName}</td>
+                        <td>
+                          <FormattedDate date={career.assignmentDate} />
+                        </td>
+                        <td>{career.careerPlanNumber}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-center">
+                        Aucun résultat trouvé.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              <div className="pagination">
+                <h4>{paginationResult.totalRecords} resultats aux totals</h4>
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                  Précédent
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i + 1}
+                    className={`pagination-button ${i + 1 === currentPage ? 'active' : ''}`}
+                    onClick={() => handlePageChange(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                  Suivant
+                </button>
+                <h4>Page {paginationResult.currentPage} sur {paginationResult.totalPages} pour {paginationResult.pageSize} resultats</h4>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </Template>
   );
-}
+};
 
 export default ListCareerPage;

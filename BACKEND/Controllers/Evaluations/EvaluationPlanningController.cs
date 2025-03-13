@@ -33,9 +33,9 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		public async Task<IActionResult> GetAllPostes()
 		{
 			var positions = await _evaluationPlanningService.GetAllPostesAsync();
-			foreach(var pos in positions)
+			foreach (var pos in positions)
 			{
-				Console.WriteLine("les postes: "+pos.title);
+				Console.WriteLine("les postes: " + pos.title);
 			}
 			return Ok(positions);
 		}
@@ -49,19 +49,26 @@ namespace soft_carriere_competence.Controllers.Evaluations
 
 
 		[HttpPost("create-evaluation")]
-		public async Task<IActionResult> CreateEvaluation([FromBody] CreateEvaluationDto dto)
+		public async Task<IActionResult> CreateEvaluation([FromBody] List<CreateEvaluationDto> dtos)
 		{
 			try
 			{
-				var evaluationId = await _evaluationService.CreateEvaluationAsync(
-					dto.UserId,
-					dto.EvaluationTypeId,
-					dto.SupervisorId,
-					dto.StartDate,
-					dto.EndDate
-				);
+				var evaluationIds = new List<int>();
 
-				return Ok(new { evaluationId, message = "Evaluation created successfully." });
+				foreach (var dto in dtos)
+				{
+					var evaluationId = await _evaluationService.CreateEvaluationAsync(
+						dto.UserId,
+						dto.EvaluationTypeId,
+						dto.SupervisorId,
+						dto.StartDate,
+						dto.EndDate
+					);
+					// Send email to user
+					evaluationIds.Add(evaluationId);
+				}
+
+				return Ok(new { evaluationIds, message = "Evaluations created successfully." });
 			}
 			catch (Exception ex)
 			{
@@ -70,7 +77,8 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		}
 
 
-		[HttpGet("types")]
+
+		[HttpGet("evaluation-types")]
 		public async Task<IActionResult> GetEvaluationTypes()
 		{
 			var evaluationTypes = await _evaluationService.GetEvaluationTypeAsync();
@@ -80,8 +88,59 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			return Ok(evaluationTypes);
 		}
 
+		[HttpGet("rappel-evaluation")]
+		public async Task<IActionResult> rappelerEvaluation([FromQuery] int idEvaluation)
+		{
+
+			int state_result = await _evaluationService.rappelerEvaluation(idEvaluation);
+			if (state_result == 0)
+			{
+				return StatusCode(500, new { error = "Erreur lors du rappel de l'evaluation" });
+			}
+
+			return Ok(new { idEvaluation, message = "Rappel avec succes.Un mail a été envoyé" });
+		}
+
+		[HttpGet("employees-without-evaluations-paginated")]
+		public async Task<IActionResult> GetEmployeesWithoutEvaluationsPaginated(
+	int pageNumber = 1,
+	int pageSize = 10,
+	int? position = null,
+	int? department = null,
+	string? search = null)
+		{
+			var (employees, totalPages) = await _evaluationPlanningService.GetEmployeesWithoutEvaluationsPaginatedAsync(
+				pageNumber,
+				pageSize,
+				position,
+				department,
+				search);
+
+			return Ok(new
+			{
+				Employees = employees,
+				TotalPages = totalPages,
+				CurrentPage = pageNumber,
+				PageSize = pageSize
+			});
+		}
+
+		[HttpPost("send-automatic-reminders")]
+		public async Task<IActionResult> SendAutomaticReminders()
+		{
+			try
+			{
+				await _evaluationService.SendAutomaticRemindersAsync();
+				return Ok(new { message = "Rappels automatiques envoyés avec succès." });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		
 
 	}
-
 
 }

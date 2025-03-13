@@ -11,5 +11,6 @@
         public DateTime? startDate {  get; set; }
         public DateTime? endDate { get; set; }
         public int? DepartmentId {  get; set; }
+        public int? state {  get; set; }
     }
 }
