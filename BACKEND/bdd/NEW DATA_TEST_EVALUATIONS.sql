@@ -1,13 +1,14 @@
-
+-- 1. Départements
 INSERT INTO Department (Department_name)
 VALUES
     ('Informatique'),
-    ( 'Marketing'),
+    ('Marketing'),
     ('Direction'),
-    ( 'Vente et commerce'),
+    ('Vente et commerce'),
     ('Reseaux et techniques');
-	use BaseGcc_presentation
-INSERT INTO Postes (title,state)
+
+-- 2. Postes
+INSERT INTO Postes (title, state)
 VALUES
     ('Developpeur', 0),             -- Poste_id = 1
     ('Administrateur Syst�me' ,0),    -- Poste_id = 2
@@ -27,26 +28,22 @@ VALUES
     ('Manager'),       -- Role_id = 2 
     ('Employee'),      -- Role_id = 3 
     ('Director');      -- Role_id = 4
----------------------------
--- 1. Administrateur
----------------------------
+
+-- 4. Utilisateurs
+-- 4.1 Administrateur
 INSERT INTO Users 
     (last_name, first_name, email, password, role_id, departmentid, postId, creation_date, created_by, deletion_date, deleted_by, state)
 VALUES 
     ('Rasoanirina', 'Andrianina', 'admin.mg@example.com', 'passAdmin', 1, 1, 2, GETUTCDATE(), 1, NULL, NULL, 1);
 
----------------------------
--- 2. Managers
----------------------------
+-- 4.2 Managers
 INSERT INTO Users 
     (last_name, first_name, email, password, role_id, departmentid, postId, creation_date, created_by, deletion_date, deleted_by, state)
 VALUES 
     ('Rakotoarisoa', 'Fanja', 'fanja.mg@example.com', 'passManager1', 2, 2, 4, GETUTCDATE(), 1, NULL, NULL, 1),
     ('Randrianarisoa', 'Mialy', 'mialy.mg@example.com', 'passManager2', 2, 4, 8, GETUTCDATE(), 1, NULL, NULL, 1);
 
----------------------------
--- 3. Directeurs
----------------------------
+-- 4.3 Directeurs
 INSERT INTO Users 
     (last_name, first_name, email, password, role_id, departmentid, postId, creation_date, created_by, deletion_date, deleted_by, state)
 VALUES 
@@ -97,14 +94,10 @@ VALUES
     ('Rabarison', 'Feno', 'feno.mg@example.com', 'passEmployee18', 3, 1, 3, GETUTCDATE(), 1, NULL, NULL, 1),
     
     -- Dernier groupe en Marketing
-    ('Rafitoharisoa', 'Nirina', 'nirina.mg@example.com', 'passEmployee19', 3, 2, 5, GETUTCDATE(), 1, NULL, NULL, 1),
+    (' Rafitoharisoa', 'Nirina', 'nirina.mg@example.com', 'passEmployee19', 3, 2, 5, GETUTCDATE(), 1, NULL, NULL, 1),
     ('Rasolofonirina', 'Faniry', 'faniry.mg@example.com', 'passEmployee20', 3, 2, 5, GETUTCDATE(), 1, NULL, NULL, 1);
 
-
-
-	----------------------------
--- Evaluation_type
-----------------------------
+-- 5. Types d'évaluation
 INSERT INTO Evaluation_type (designation, state)
 VALUES
     ('�valuation annuelle', 1),
@@ -133,9 +126,7 @@ VALUES
     (1, 20, 2, '2023-09-01', '2023-09-15', 4.00, 
     'Satisfait les attentes',  1, 1, '2023-09-18', '2023-09-20', 1);
 
-----------------------------
--- Evaluation_questions
-----------------------------
+-- 7. Questions d'évaluation
 INSERT INTO Evaluation_questions (evaluationTypeId, postId, question, state)
 VALUES
     -- Questions pour �valuation annuelle (type 1)
@@ -152,8 +143,7 @@ VALUES
     (3, 1, 'Respect des d�lais', 1),
     (3, 5, 'Gestion du budget allou�', 1);
 
-
-	INSERT INTO Evaluation_questions (evaluationTypeId, postId, question, state)
+INSERT INTO Evaluation_questions (evaluationTypeId, postId, question, state)
 VALUES
     (1, 4, 'D�veloppement et mise en �uvre de strat�gies marketing', 1),
     (1, 4, 'Analyse des tendances du march� et adaptation des campagnes', 1),
@@ -161,10 +151,7 @@ VALUES
     (1, 4, 'Optimisation des budgets marketing et retour sur investissement', 1),
     (1, 4, 'Suivi et am�lioration de la notori�t� de la marque', 1);
 
-
-----------------------------
--- Evaluation_questionnaire
-----------------------------
+-- 8. Questionnaire d'évaluation
 INSERT INTO Evaluation_questionnaire (evaluationId, questionId, score, comments, state)
 VALUES
     (1, 1, 4.5, 'Excellente ma�trise de React et Node.js', 1),
@@ -176,17 +163,14 @@ VALUES
     (4, 7, 4.75, 'Livraison 2 jours avant la deadline', 1),
     (4, 8, 4.25, 'D�passement budg�taire de 5% justifi�', 1);
 
-----------------------------
--- Training_suggestions
-----------------------------
+-- 9. Suggestions de formation
 INSERT INTO Training_suggestions (evaluationTypeId, questionId, training, details, scoreThreshold, state)
 VALUES
     (1, 2, 'Clean Code Workshop', 'Formation aux bonnes pratiques de codage', 3.0, 1),
     (1, 3, 'Formation Marketing Digital', 'Cr�ation de campagnes multi-canaux', 3.5, 1),
     (2, 5, 'Team Building', 'Ateliers de collaboration inter-�quipes', 2.5, 1);
 
-
-	INSERT INTO Training_suggestions (evaluationTypeId, questionId, training, details, scoreThreshold, state)
+INSERT INTO Training_suggestions (evaluationTypeId, questionId, training, details, scoreThreshold, state)
 VALUES
     (1, 9, 'Strat�gies Marketing Avanc�es', 'Approfondissement des strat�gies marketing et techniques de mise en �uvre', 3, 1),
     (1, 10, 'Analyse de March� et Veille Concurrentielle', 'Techniques pour analyser les tendances et s�adapter au march�', 3, 1),
@@ -194,18 +178,14 @@ VALUES
     (1, 12, 'Optimisation Budg�taire et ROI', 'Techniques pour maximiser l''efficacit� des budgets marketing', 3, 1),
     (1, 13, 'Branding et Notori�t� de Marque', 'Strat�gies pour am�liorer et suivre l''image de marque', 3, 1);
 
-----------------------------
--- Evaluation_interviews
-----------------------------
+-- 10. Interviews d'évaluation
 INSERT INTO Evaluation_interviews (evaluationId, scheduled_date, status, notes, manager_approval, manager_comments, director_approval, director_comments)
 VALUES
     (1, '2023-05-25T14:00:00', 2, 'Entretien constructif avec objectifs clairs', 1, 'Validation des axes d''am�lioration', 1, 'Accord sur le plan de formation'),
     (3, '2023-07-20T10:30:00', 1, 'N�cessit� de mettre en place un suivi RH', 0, NULL, 0, NULL),
     (4, '2023-08-30T09:00:00', 2, 'Reconnaissance des performances exceptionnelles', 1, 'Proposition de promotion', 1, 'Promotion valid�e pour Q4');
 
-----------------------------
--- InterviewParticipants
-----------------------------
+-- 11. Participants aux interviews
 INSERT INTO InterviewParticipants (InterviewId, UserId)
 VALUES
     (1, 7),  -- Employ� �valu�

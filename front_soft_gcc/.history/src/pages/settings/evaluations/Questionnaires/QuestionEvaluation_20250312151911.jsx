@@ -64,56 +64,33 @@ function QuestionEvaluation() {
         e.preventDefault();
 
         try {
-            // Make sure IDs are properly parsed
-            const evaluationTypeId = parseInt(formData.evaluationTypeId);
-            const postId = parseInt(formData.postId);
+            const evaluationType = evaluationTypes.find(type => type.evaluationTypeId === parseInt(formData.evaluationTypeId));
+            const post = posts.find(p => p.posteId === parseInt(formData.postId));
 
-            // For create (new questions), send a simpler object structure
-            // For update, keep the more complex structure that's working
-            const requestData = currentQuestion
-                ? {
-                    questiondId: currentQuestion.questiondId,
-                    question: formData.question,
-                    evaluationTypeId: evaluationTypeId,
-                    postId: postId,
-                    // Include navigation properties that might be needed for update
-                    evaluationType: {
-                        evaluationTypeId: evaluationTypeId,
-                        designation: evaluationTypes.find(t => t.evaluationTypeId === evaluationTypeId)?.designation || ''
-                    },
-                    poste: {
-                        posteId: postId,
-                        title: posts.find(p => p.posteId === postId)?.title || ''
-                    }
-                }
-                : {
-                    // For create, use a minimal structure
-                    question: formData.question,
-                    evaluationTypeId: evaluationTypeId,
-                    postId: postId
-                };
-
-            console.log('Sending data to API:', requestData);
+            const requestData = {
+                questiondId: currentQuestion?.questiondId || 0,
+                question: formData.question,
+                evaluationTypeId: parseInt(formData.evaluationTypeId),
+                postId: parseInt(formData.postId),
+                EvaluationType: evaluationType || { designation: '' },
+                poste: post || { title: '' }
+            };
 
             if (currentQuestion) {
                 await axios.put(`https://localhost:7082/api/Evaluation/questions/${currentQuestion.questiondId}`, requestData);
             } else {
                 await axios.post('https://localhost:7082/api/Evaluation/questions', requestData);
             }
-
             fetchQuestions();
             setFormData({ question: '', evaluationTypeId: 0, postId: 0 });
             setCurrentQuestion(null);
         } catch (error) {
             console.error("Error saving question:", error);
-            // Enhanced error logging
-            if (error.response) {
-                console.error("Status:", error.response.status);
-                console.error("Error details:", error.response.data);
-                alert(`Error: ${error.response.data.error || "An unknown error occurred"}`);
+            if (error.response && error.response.data) { console.error("Error response data:", error.response.data);
             }
         }
     };
+
     const handleEdit = (question) => {
         setCurrentQuestion(question);
         setFormData({ question: question.question, evaluationTypeId: question.evaluationTypeId, postId: question.postId });
@@ -245,7 +222,7 @@ function QuestionEvaluation() {
                             >
                                 <option value="">Tous</option>
                                 {posts.map(post => (
-                                    <option key={post.posteId} value={post.posteId}>
+                                    <option key={post.posteId} value={post .posteId}>
                                         {post.title}
                                     </option>
                                 ))}

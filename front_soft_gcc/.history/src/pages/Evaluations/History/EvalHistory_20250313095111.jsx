@@ -53,11 +53,8 @@ const EvaluationHistory = () => {
   const [loadingExcel, setLoadingExcel] = useState(false);
   const [loadingPDF, setLoadingPDF] = useState(false);
   const [departments, setDepartments] = useState([]);
+  const [showKpiFilters, setShowKpiFilters] = useState(false);
   const [loadingKpi, setLoadingKpi] = useState(false);
-
-  // Année pour les KPIs
-  const [kpiYear, setKpiYear] = useState(new Date().getFullYear());
-  const availableYears = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
   // PAGINATION
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,7 +78,8 @@ const EvaluationHistory = () => {
   const [aggregationPeriod, setAggregationPeriod] = useState('month');
 
   const [evaluations, setEvaluations] = useState([]);
-  const [loading, setLoading] = useState(true); const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const [kpiData, setKpiData] = useState({
@@ -90,7 +88,7 @@ const EvaluationHistory = () => {
     overallAverage: 0,
   });
 
-  // Fonction pour récupérer les départements
+  // Fonctionpour récupérer les départements
   const fetchDepartments = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/departments`);
@@ -106,8 +104,8 @@ const EvaluationHistory = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/kpis`, {
         params: {
-          startDate: new Date(kpiYear, 0, 1).toISOString(),
-          endDate: new Date(kpiYear, 11, 31).toISOString(),
+          startDate: filters.startDate || null,
+          endDate: filters.endDate || null,
           department: filters.position || '',
         },
       });
@@ -117,7 +115,7 @@ const EvaluationHistory = () => {
     } finally {
       setLoadingKpi(false);
     }
-  }, [kpiYear, filters]);
+  }, [filters]);
 
   // Récupération des évaluations
   const fetchEvaluations = useCallback(async () => {
@@ -213,26 +211,9 @@ const EvaluationHistory = () => {
         <div className="card shadow mb-4">
           <div className="card-header d-flex justify-content-between align-items-center">
             <h5 className="mb-0">Indicateurs Clés de Performance (KPI)</h5>
-            <div className="d-flex align-items-center">
-              <div className="input-group mr-2" style={{ width: '150px' }}>
-                <select
-                  id="kpiYear"
-                  className="form-control form-control-sm"
-                  value={kpiYear}
-                  onChange={(e) => setKpiYear(e.target.value)}
-                  style={{ borderRadius: '4px', border: '1px solid #ced4da' }}
-                >
-                  {availableYears.map(year => <option key={year} value={year}>{year}</option>)}
-                </select>
-              </div>
-              <button
-                className="btn btn-outline-primary btn-sm d-flex align-items-center"
-                onClick={fetchKpis}
-              >
-                <FaSync className={loadingKpi ? "mr-1 fa-spin" : "mr-1"} />
-                {loadingKpi ? 'Chargement...' : 'Rafraîchir'}
-              </button>
-            </div>
+            <button className="btn btn-outline-primary btn-sm" onClick={fetchKpis}>
+              Rafraîchir
+            </button>
           </div>
           <div className="card-body">
             <div className="row text-center">
@@ -246,6 +227,31 @@ const EvaluationHistory = () => {
                 <KpiCard title="Moyenne Générale" value={kpiData.overallAverage.toFixed(2)} icon={<FaChartBar />} color="#ff9800" />
               </div>
             </div>
+            <button className="btn btn-link" onClick={() => setShowKpiFilters(!showKpiFilters)}>
+              {showKpiFilters ? 'Masquer les filtres' : 'Afficher les filtres'}
+            </button>
+            {showKpiFilters && (
+              <div className="row mt-3">
+                <div className="col-md-6">
+                  <input
+                    type="date"
+                    name="startDate"
+                    className="form-control"
+                    value={filters.startDate}
+                    onChange={handleFilterChange}
+                  />
+                </div>
+                <div className="col-md-6">
+                  <input
+                    type="date"
+                    name="endDate"
+                    className="form-control"
+                    value={filters.endDate}
+                    onChange={handleFilterChange}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
         {/* Fin de la section KPI */}
@@ -452,8 +458,8 @@ const EvaluationHistory = () => {
           </div>
           <div className="card-body">
             <PerformanceGraph />
-            <GlobalPerformanceGraph
-              filters={{ startDate: filters.startDate, endDate: filters.endDate, department: filters.position, evaluationType: filters.evaluationType }}
+            <GlobalPerformanceGraph 
+              filters={{ startDate: filters.startDate, endDate: filters.endDate, department: filters.position, evaluationType: filters.evaluationType }} 
             />
           </div>
         </div>

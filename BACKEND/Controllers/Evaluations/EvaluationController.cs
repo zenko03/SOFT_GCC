@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Application.Dtos.EvaluationsDto;
 using soft_carriere_competence.Application.Services.Evaluations;
 using soft_carriere_competence.Core.Entities.Evaluations;
+using soft_carriere_competence.Infrastructure.Data;
 
 namespace soft_carriere_competence.Controllers.Evaluations
 {
@@ -11,10 +13,13 @@ namespace soft_carriere_competence.Controllers.Evaluations
 	public class EvaluationController : ControllerBase
 	{
 		private readonly EvaluationService _evaluationService;
+		private readonly ApplicationDbContext _context;
 
-		public EvaluationController(EvaluationService evaluationService)
+
+		public EvaluationController(EvaluationService evaluationService, ApplicationDbContext context)
 		{
 			_evaluationService = evaluationService;
+			_context = context;
 		}
 
 		// Create a new evaluation question
@@ -416,5 +421,76 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			}
 		}
 
+
+		//EVALUATIONSALARY LOGIN
+
+		[HttpGet("validate-token")]
+		public IActionResult ValidateToken()
+		{
+			// Le jeton est déjà validé par le middleware d'authentification
+			// Si cette méthode est atteinte, c'est que le jeton est valide
+			return Ok(new { valid = true });
+		}
+
+		[HttpGet("{id}")]
+		public async Task<IActionResult> GetEvaluationDetails(int id)
+		{
+			try
+			{
+				// Récupérer l'évaluation
+				var evaluation = await _context.Evaluations
+					.Include(e => e.EvaluationType)
+					.FirstOrDefaultAsync(e => e.EvaluationId == id);
+
+				if (evaluation == null)
+					return NotFound($"Évaluation avec ID {id} non trouvée");
+
+				// Récupérer l'utilisateur
+				var user = await _context.Users
+					.Include(u => u.Poste)
+					.Include(u => u.Department) // Ajouté pour récupérer le département
+					.FirstOrDefaultAsync(u => u.Id == evaluation.UserId);
+
+				if (user == null)
+					return NotFound("Utilisateur associé à l'évaluation non trouvé");
+
+				// Ajoutez du journalisation pour déboguer
+				Console.WriteLine($"UserId: {user.Id}, PostId: {user.PostId}, EvaluationTypeId: {evaluation.EvaluationTypeId}");
+
+				// Récupérer les questions pour ce type d'évaluation et ce poste
+				// Note: Assurez-vous que les noms des propriétés correspondent exactement
+				var questions = await _context.evaluationQuestions
+					.Where(q => q.evaluationTypeId == evaluation.EvaluationTypeId &&
+						   q.postId == user.PostId) // Assurez-vous que c'est le bon nom de propriété
+					.Select(q => new {
+						questionId = q.questiondId,
+						text = q.question,
+						evaluationTypeId = q.evaluationTypeId,
+						postId = q.postId
+					})
+					.ToListAsync();
+
+				// Journalisation du nombre de questions trouvées
+				Console.WriteLine($"Nombre de questions trouvées: {questions.Count}");
+
+				// Construire la réponse
+				var response = new
+				{
+					evaluationId = evaluation.EvaluationId,
+					title = evaluation.EvaluationType.Designation, // Vérifiez que c'est le bon nom
+					description = $"Évaluation du {evaluation.StartDate.ToShortDateString()} au {evaluation.EndDate.ToShortDateString()}",
+					employeeName = $"{user.FirstName} {user.LastName}",
+					position = user.Poste?.title,
+					department = user.Department.Name, // Ajouté pour inclure le département
+					questions = questions
+				};
+
+				return Ok(response);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
 	}
 }

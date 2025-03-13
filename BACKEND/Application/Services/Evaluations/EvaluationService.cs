@@ -23,6 +23,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly IGenericRepository<User> _userRepository;
         private readonly IGenericRepository<Poste> _posteRepository;
         private readonly ApplicationDbContext _context;
+        private readonly TemporaryAccountService _temporaryAccountService;
+
 
         private readonly IEmailService _emailService;
         private readonly ReminderSettings _reminderSettings;
@@ -36,7 +38,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             IEmailService emailService,
             IOptions<ReminderSettings> reminderSettings,
             IGenericRepository<Poste> poste,
-            ApplicationDbContext context
+            ApplicationDbContext context,
+            TemporaryAccountService temporaryAccountService
 
             )
         {
@@ -51,6 +54,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             _reminderSettings = reminderSettings.Value; // Get the configured value
             _posteRepository = poste;
             _context = context;
+            _temporaryAccountService = temporaryAccountService;
 
         }
 
@@ -211,7 +215,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, int supervisorId, DateTime startDate, DateTime endDate)
         {
-            
             var newEvaluation = new Evaluation
             {
                 UserId = userId,
@@ -219,16 +222,32 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 SupervisorId = supervisorId,
                 StartDate = startDate,
                 EndDate = endDate,
-                OverallScore = 0, // Initialisé à 0, sera mis à jour avec les résultats
+                OverallScore = 0,
                 Comments = null,
                 state = 10 // Actif
             };
+
             await _evaluationRepository.CreateAsync(newEvaluation);
+
+            // Récupérer l'utilisateur
             var user = await _userRepository.GetByIdAsync(userId);
-          
-            await _emailService.SendEmailAsync(user.Email, "Planification évaluation",
-                $"Vous avez une évaluation le : {startDate} au {endDate}");
-            return newEvaluation.EvaluationId; // Retourner l'ID généré
+
+            // Créer un compte temporaire pour l'évaluation
+            var tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(userId, newEvaluation.EvaluationId);
+
+            // Envoyer un email avec les identifiants temporaires
+            await _emailService.SendEmailAsync(
+                user.Email,
+                "Planification évaluation",
+                $"Vous avez une évaluation programmée du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}.\n\n" +
+                $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
+                $"Login : {tempAccount.TempLogin}\n" +
+                $"Mot de passe : {tempAccount.TempPassword}\n\n" +
+                $"Ces identifiants ne seront valides qu'à partir du {startDate.ToShortDateString()}.\n" +
+                $"Lien pour vous connecter : https://votre-application.com/evaluation-login"
+            );
+
+            return newEvaluation.EvaluationId;
         }
 
         public async Task<bool> CreateTrainingSuggestionAsync(TrainingSuggestion suggestion)
@@ -284,11 +303,41 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         public async Task SendReminderEmailAsync(int userId, DateTime evaluationDate)
         {
             var user = await _userRepository.GetByIdAsync(userId);
-            if (user != null)
+            if (user == null) return;
+
+            // Récupérer l'évaluation en cours pour cet utilisateur
+            var evaluation = await _evaluationRepository.FindAsync(e =>
+                e.UserId == userId &&
+                e.StartDate == evaluationDate &&
+                e.state == 10);
+
+            if (evaluation == null || !evaluation.Any()) return;
+
+            var currentEvaluation = evaluation.First();
+
+            // Récupérer le compte temporaire existant ou en créer un nouveau
+            var tempAccount = await _context.temporaryAccounts
+                .FirstOrDefaultAsync(ta =>
+                    ta.UserId == userId &&
+                    ta.Evaluations_id == currentEvaluation.EvaluationId);
+
+            if (tempAccount == null)
             {
-                await _emailService.SendEmailAsync(user.Email, "Rappel d'évaluation",
-                    $"Ceci est un rappel que vous avez une évaluation prévue le {evaluationDate.ToShortDateString()}.");
+                // Si pas de compte existant, en créer un nouveau
+                tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(userId, currentEvaluation.EvaluationId);
             }
+
+            // Envoyer l'email de rappel avec les identifiants
+            await _emailService.SendEmailAsync(
+                user.Email,
+                "Rappel d'évaluation",
+                $"Ceci est un rappel que vous avez une évaluation prévue le {evaluationDate.ToShortDateString()}.\n\n" +
+                $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
+                $"Login : {tempAccount.TempLogin}\n" +
+                $"Mot de passe : {tempAccount.TempPassword}\n\n" +
+                $"Ces identifiants ne seront valides qu'à partir du {currentEvaluation.StartDate.ToShortDateString()}.\n" +
+                $"Lien pour vous connecter : http://localhost:5173/EvaluationLogin"
+            );
         }
 
         // Existing rappelerEvaluation method (if needed for manual reminders)
