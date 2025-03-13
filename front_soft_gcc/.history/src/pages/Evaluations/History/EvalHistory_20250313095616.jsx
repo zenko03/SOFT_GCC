@@ -209,30 +209,22 @@ const EvaluationHistory = () => {
       <div className="container mt-4">
         <h2 className="mb-4">Historique des Évaluations</h2>
 
+        {/* Filtre d'année pour les KPI */}
+        <div className="mb-3">
+          <label htmlFor="kpiYear" className="form-label">Sélectionnez l'année pour les KPI :</label>
+          <select id="kpiYear" className="form-select" value={kpiYear} onChange={(e) => setKpiYear(e.target.value)}>
+            {availableYears.map(year => <option key={year} value={year}>{year}</option>
+            )}
+          </select>
+        </div>
+
         {/* Section KPI */}
         <div className="card shadow mb-4">
           <div className="card-header d-flex justify-content-between align-items-center">
             <h5 className="mb-0">Indicateurs Clés de Performance (KPI)</h5>
-            <div className="d-flex align-items-center">
-              <div className="input-group mr-2" style={{ width: '150px' }}>
-                <select
-                  id="kpiYear"
-                  className="form-control form-control-sm"
-                  value={kpiYear}
-                  onChange={(e) => setKpiYear(e.target.value)}
-                  style={{ borderRadius: '4px', border: '1px solid #ced4da' }}
-                >
-                  {availableYears.map(year => <option key={year} value={year}>{year}</option>)}
-                </select>
-              </div>
-              <button
-                className="btn btn-outline-primary btn-sm d-flex align-items-center"
-                onClick={fetchKpis}
-              >
-                <FaSync className={loadingKpi ? "mr-1 fa-spin" : "mr-1"} />
-                {loadingKpi ? 'Chargement...' : 'Rafraîchir'}
-              </button>
-            </div>
+            <button className="btn btn-outline-primary btn-sm" onClick={fetchKpis}>
+              Rafraîchir
+            </button>
           </div>
           <div className="card-body">
             <div className="row text-center">
