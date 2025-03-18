@@ -112,6 +112,10 @@ function EchelonCrudPage() {
         }
     };
 
+    const handleAnnulation = async () => {
+        setIsModifiedPage(false);
+        setFormData({ echelonName: '' });
+    };
 
     return (
         <Template>
@@ -139,7 +143,7 @@ function EchelonCrudPage() {
                                         </div>
                                         <div className="button-save-profil">
                                             <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Modifier</button>
-                                            <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ echelonName: '' })}>Annuler</button>
+                                            <button type="reset" className="btn btn-light btn-fw" onClick={handleAnnulation}>Annuler</button>
                                         </div>
                                     </div>
                                 </form>
@@ -159,7 +163,7 @@ function EchelonCrudPage() {
                                         </div>
                                         <div className="button-save-profil">
                                             <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Créer</button>
-                                            <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ echelonName: '' })}>Annuler</button>
+                                            <button type="reset" className="btn btn-light btn-fw" onClick={handleAnnulation}>Annuler</button>
                                         </div>
                                     </div>
                                 </form>

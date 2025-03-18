@@ -40,9 +40,10 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<VEmployeeOtherSkill> VEmployeeOtherSkill { get; set; }
 		public DbSet<VSkills> VSkills { get; set; }
 		public DbSet<ImageEntity> ImageEntity { get; set; }
+        public DbSet<VStateNumber> VStateNumber { get; set; }
 
-		// Carriere
-		public DbSet<CareerPlan> CareerPlan { get; set; }
+        // Carriere
+        public DbSet<CareerPlan> CareerPlan { get; set; }
 		public DbSet<AssignmentType> AssignmentType { get; set; }
 		public DbSet<Echelon> Echelon { get; set; }
 		public DbSet<EmployeeType> EmployeeType { get; set; }
@@ -160,11 +161,13 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<VSkillPosition>().HasNoKey();
 			modelBuilder.Entity<VEmployeePosition>().ToView("v_employee_position");
 			modelBuilder.Entity<VEmployeePosition>().HasNoKey();
+            modelBuilder.Entity<VStateNumber>().ToView("v_state_number");
+            modelBuilder.Entity<VStateNumber>().HasNoKey();
 
-				
 
-			//------------------EVALUATIONS-----------------------------------------//
-			modelBuilder.Entity<VEmployeeDetails>().HasNoKey().ToView("VEmployeeDetails");
+
+            //------------------EVALUATIONS-----------------------------------------//
+            modelBuilder.Entity<VEmployeeDetails>().HasNoKey().ToView("VEmployeeDetails");
             modelBuilder.Entity<VEmployeeWithoutEvaluation>().HasNoKey().ToView("VEmployeesWithoutEvaluation");
             modelBuilder.Entity<VEmployeesFinishedEvaluation>().HasNoKey().ToView("VEmployeesFinishedEvaluation");
             modelBuilder.Entity<VEvaluationHistory>().HasNoKey().ToView("VEvaluationHistory");

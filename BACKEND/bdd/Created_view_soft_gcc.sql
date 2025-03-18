@@ -61,6 +61,19 @@ JOIN
 ON
 	e.Employee_id = es.Employee_id;
 
+-- Vue pour avoir le nombre de status de compétences
+CREATE VIEW v_state_number AS
+SELECT
+	employee_id, 
+	state, 
+	count(*) as number,
+	CASE
+		WHEN state = 1 THEN 'Non validé'
+		WHEN state = 5 THEN 'Validé par evaluation' 
+	END AS State_letter
+FROM v_employee_skill 
+GROUP BY state, employee_id;
+
 -- Creation de la vue v_employee_education (diplomes et formations de l'employe)
 CREATE VIEW v_employee_education AS 
 SELECT 

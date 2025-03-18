@@ -14,7 +14,7 @@ namespace soft_carriere_competence.Core.Entities.salary_skills
 		public int Language_id { get; set; }
 
 		[Column("Level")]
-		public double Level { get; set; }
+		public double Level { get; set; } = 0;
 
 		[Column("State")]
 		public int State { get; set; }

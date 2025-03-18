@@ -14,9 +14,21 @@ function AppointmentForm({ formData, setFormData }) {
   const { data: dataLegalClass } = useSWR('/LegalClass', Fetcher);
   const { data: dataNewsLetterTemplate } = useSWR('/NewsLetterTemplate', Fetcher);
   const { data: dataPaymentMethod } = useSWR('/PaymentMethod', Fetcher);
+  const [formDateEndContract, setFormDateEndContract] = useState(false); 
 
   // Gérer les changements dans les champs du formulaire
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+    }));
+  };
+
+  const handleChangeContractType = (e) => {
+    if(e.target.value === '1') setFormDateEndContract(true);
+    else setFormDateEndContract(false);
+
     const { name, value } = e.target;
     setFormData((prevData) => ({
         ...prevData,
@@ -71,9 +83,9 @@ function AppointmentForm({ formData, setFormData }) {
                     </select>    
                   </div>
                   <div className="form-group">
-                    <label htmlFor="exampleInputUsername1">Type de salarie</label>
-                    <select name="employeeTypeId" value={formData.employeeTypeId} onChange={handleChange} className="form-control" id="exampleSelectGender">
-                      <option value="">Sélectionner un type de salarie</option>
+                    <label htmlFor="exampleInputUsername1">Type de contrat</label>
+                    <select name="employeeTypeId" value={formData.employeeTypeId} onChange={handleChangeContractType} className="form-control" id="exampleSelectGender">
+                      <option value="">Sélectionner un type de contrat</option>
                       {dataEmployeeType && dataEmployeeType.map((item, id) => (
                         <option key={item.employeeTypeId} value={item.employeeTypeId}>
                           {item.employeeTypeName}
@@ -169,10 +181,15 @@ function AppointmentForm({ formData, setFormData }) {
                       ))}
                     </select>    
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="exampleInputEmail1">Fin contrat</label>
-                    <input type="date" name="endingContract" value={formData.endingContract} onChange={handleChange} className="form-control" id="decimalInput" />
-                  </div>
+
+                  {formDateEndContract ? (
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Fin contrat</label>
+                      <input type="date" name="endingContract" value={formData.endingContract} onChange={handleChange} className="form-control" id="decimalInput" />
+                    </div>
+                  ) : (
+                    <div className="form-group"></div>
+                  )}
                 </div>
               </div>
             </div>

@@ -3,6 +3,7 @@ import { Button, Modal, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
+import FormattedDate from '../../helpers/FormattedDate';
 
 // Pour lister les types d'affectation
 function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement, dataAssignmentAvailability, fetchData }) {
@@ -132,8 +133,8 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                                     <td>{item.departmentName}</td>
                                                     <td>{item.positionName}</td>
                                                     <td>{item.employeeTypeName}</td>
-                                                    <td>{new Date(item.assignmentDate).toLocaleDateString()}</td>
-                                                    <td>{new Date(item.endingContract).toLocaleDateString()}</td>
+                                                    <td><FormattedDate date={item.assignmentDate} /></td>
+                                                    <td><FormattedDate date={item.endingContract} /></td>
                                                     <td>{item.netSalary}</td>
                                                     <td>{item.careerState}</td>
                                                     

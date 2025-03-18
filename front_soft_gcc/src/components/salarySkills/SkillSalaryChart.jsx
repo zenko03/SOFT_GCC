@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import '../../styles/skillsStyle.css';
 import '../../styles/pagination.css';
 import BarChart from '../../components/BarChart';
@@ -21,38 +21,48 @@ function SkillSalaryChart({ employeeId }) {
 
   const [filter, setFilter] = useState({
     employeeId: employeeId,
-    state: 10
+    state: 1
   });
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilter((prevFilters) => ({ ...prevFilters, [name]: value }));
+    setFilter((prevFilters) => ({
+      ...prevFilters,
+      [name]: value
+    }));
   };
 
   const fetchFilteredData = useCallback(async (appliedFilter) => {
+    if (!appliedFilter.employeeId) return; // Évite les appels inutiles si employeeId est null
+
     setLoading(true);
     setError(null);
+
     try {
-      const queryParams = new URLSearchParams({ ...appliedFilter }).toString();
+      const queryParams = new URLSearchParams(appliedFilter).toString();
       const response = await axios.get(urlApi(`/EmployeeSkills/skillLevel?${queryParams}`));
       setDatasLevelSkills(response.data || []);
     } catch (err) {
       setDatasLevelSkills([]);
-      setError('Erreur lors de la récupération des données : ' + err.message);
+      setError(`Erreur lors de la récupération des données : ${err.message}`);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const debouncedFetchData = useCallback(debounce(fetchFilteredData, 1000), [fetchFilteredData]);
+  const debouncedFetchData = useRef(debounce(fetchFilteredData, 1000)).current;
 
   useEffect(() => {
     debouncedFetchData(filter);
   }, [filter, debouncedFetchData]);
 
+  // Conversion de filter.state en nombre pour éviter les incohérences de types
+  const stateFilter = Number(filter.state);
+
+  // Transformation des données pour l'affichage dans le graphique
   const preparedDatas = datasLevelSkills.map(item => ({
-    label: item.skillName,
-    value: item.level,
+    label: stateFilter === 0 ? item.stateLetter : item.skillName,
+    value: stateFilter === 0 ? item.number : item.level,
     color: item.state === 1 ? 'rgba(255, 99, 132, 0.7)' : item.state === 5 ? 'rgba(255, 206, 86, 0.7)' : 'rgba(75, 192, 192, 0.7)',
     borderColor: item.state === 1 ? 'rgba(255, 99, 132, 1)' : item.state === 5 ? 'rgba(255, 206, 86, 1)' : 'rgba(75, 192, 192, 1)'
   }));
@@ -63,8 +73,8 @@ function SkillSalaryChart({ employeeId }) {
     { label: 'Confirmé', backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)' }
   ];
 
-  const renderStatusSkills = () => {
-    return statusSkills.map((status, index) => (
+  const renderStatusSkills = () => (
+    statusSkills.map((status, index) => (
       <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
         <div 
           style={{
@@ -77,12 +87,14 @@ function SkillSalaryChart({ employeeId }) {
         />
         <span>{status.label}</span>
       </div>
-    ));
-  };
+    ))
+  );
 
   return (
     <div className="row">
       {loading && <LoaderComponent />}
+      {error && <p className="error-message">{error}</p>}
+      
       <div className="col-lg-12 grid-margin stretch-card">
         <div className="card">
           <div className="card-body">
@@ -95,10 +107,9 @@ function SkillSalaryChart({ employeeId }) {
                   onChange={handleFilterChange} 
                   className="form-control"
                 >
-                  <option value="">Sélectionner un état</option>
+                  <option value="0">Tous</option>
                   <option value="1">Non validé</option>
                   <option value="5">Validé par évaluation</option>
-                  <option value="10">Confirmé</option>
                 </select>
               </div>
             </div>

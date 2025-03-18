@@ -112,6 +112,11 @@ function NewsLetterTemplateCrudPage() {
         }
     };
 
+    const handleAnnulation = async () => {
+        setIsModifiedPage(false);
+        setFormData({ newsletterTemplateName: '' });
+    };
+
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
@@ -138,7 +143,7 @@ function NewsLetterTemplateCrudPage() {
                                         </div>
                                         <div className="button-save-profil">
                                             <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Modifier</button>
-                                            <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ newsletterTemplateName: '' })}>Annuler</button>
+                                            <button type="reset" className="btn btn-light btn-fw" onClick={handleAnnulation}>Annuler</button>
                                         </div>
                                     </div>
                                 </form>
@@ -158,7 +163,7 @@ function NewsLetterTemplateCrudPage() {
                                         </div>
                                         <div className="button-save-profil">
                                             <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Créer</button>
-                                            <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ newsletterTemplateName: '' })}>Annuler</button>
+                                            <button type="reset" className="btn btn-light btn-fw" onClick={handleAnnulation}>Annuler</button>
                                         </div>
                                     </div>
                                 </form>

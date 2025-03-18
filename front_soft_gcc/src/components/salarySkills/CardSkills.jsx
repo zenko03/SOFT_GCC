@@ -384,7 +384,13 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
                           Array.isArray(data.language) && data.language.map((item, id) => (
                             <tr key={id}>
                               <td>{item.languageName}</td>
-                              <td>{item.level} %</td>
+                              <td>
+                                {item.level == 0 ? (
+                                  <span>NULL</span>
+                                ) : (
+                                  <span>{item.level} %</span>
+                                )}
+                              </td>
                               <td>
                                 <label className={getBadgeState(item.state)}>
                                   {getStateLetter(item.state)}
@@ -476,7 +482,13 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
                             <tr key={id}>
                               <td>{item.domainSkillName}</td>
                               <td>{item.skillName}</td>
-                              <td>{item.level} %</td>
+                              <td>
+                                {item.level == 0 ? (
+                                  <span>NULL</span>
+                                ) : (
+                                  <span>{item.level} %</span>
+                                )}
+                              </td>
                               <td>
                                 <label className={getBadgeState(item.state)}>
                                   {getStateLetter(item.state)}

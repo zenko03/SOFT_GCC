@@ -142,6 +142,11 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		{
 			var employeeDescription = await _employeeSkillService.GetSkillLevel(employeeId, state);
 			if (employeeDescription == null) return NotFound();
+			if (state == 0) {
+				var stateNumber = await _employeeSkillService.GetStateNumber(employeeId);
+				if (stateNumber == null) return NotFound();
+				return Ok(stateNumber);
+			}
 			return Ok(employeeDescription);
 		}
 	}

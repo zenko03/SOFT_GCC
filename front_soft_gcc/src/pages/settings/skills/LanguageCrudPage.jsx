@@ -14,10 +14,17 @@ function LanguageCrudPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
+    const [idItem, setIdItem] = useState(0);
+    const [isModifiedPage, setIsModifiedPage] = useState(false);
     
     const [formData, setFormData] = useState({
         name: ''
     });
+
+    const handleChangeToModifiedPage = (id) => {
+        setIsModifiedPage(true);
+        getDataForModifiedPage(id); // Passer directement l'id ici
+    };
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -62,6 +69,8 @@ function LanguageCrudPage() {
     const handleDeleteConfirmed = async (itemToDelete) => {
         setIsLoading(true);
         setError(null);
+        setIsModifiedPage(false);
+        setFormData({ name: '' });
         try {
             await axios.delete(urlApi(`/Language/${itemToDelete}`));
             fetchData();
@@ -70,6 +79,42 @@ function LanguageCrudPage() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleSubmitModified = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(null);
+        try {
+            await axios.put(urlApi(`/Language/${idItem}`), formData);
+            fetchData();
+        } catch (error) {
+            setError(`Erreur lors de l'insertion : ${error.response?.data || error.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const getDataForModifiedPage = async (id) => { // Recevoir l'id en paramètre
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await axios.get(urlApi(`/Language/${id}`)); // Utiliser l'id passé
+            setIdItem(id);
+            setFormData({
+                languageId: response.data.languageId,
+                name: response.data.name // Prendre directement la bonne valeur
+            });
+        } catch (err) {
+            setError(`Erreur lors de la récupération des données : ${err.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleAnnulation = async () => {
+        setIsModifiedPage(false);
+        setFormData({ name: '' });
     };
 
     return (
@@ -81,26 +126,49 @@ function LanguageCrudPage() {
             </div>  
             {isLoading && <Loader />}
             {error && <div className="alert alert-danger">{error}</div>}
-            <form className="forms-sample" onSubmit={handleSubmit}>
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
-                        <div className="card">
-                            <div className="card-header title-container">
-                                <h5 className="title">
-                                    <i className="mdi mdi-file-document-edit"></i> Formulaire d'ajout
-                                </h5>
+                        {isModifiedPage ? (
+                            <div className="card">
+                                <form className="forms-sample" onSubmit={handleSubmitModified}>
+                                    <div className="card-header title-container">
+                                        <h5 className="title">
+                                            <i className="mdi mdi-file-document-edit"></i> Formulaire de modification
+                                        </h5>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="form-group">
+                                            <label htmlFor="name">Désignation</label>
+                                            <input type="text" name="name" value={formData.name} onChange={handleChange} className="form-control" id="name" required />
+                                        </div>
+                                        <div className="button-save-profil">
+                                            <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Modifier</button>
+                                            <button type="reset" className="btn btn-light btn-fw" onClick={handleAnnulation}>Annuler</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div className="card-body">
-                                <div className="form-group">
-                                    <label htmlFor="name">Désignation</label>
-                                    <input type="text" name="name" value={formData.name} onChange={handleChange} className="form-control" id="name" required />
-                                </div>
-                                <div className="button-save-profil">
-                                    <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Créer</button>
-                                    <button type="reset" className="btn btn-light btn-fw" onClick={() => setFormData({ name: '' })}>Annuler</button>
-                                </div>
+                        ) : (
+                            <div className="card">
+                                <form className="forms-sample" onSubmit={handleSubmit}>
+                                    <div className="card-header title-container">
+                                        <h5 className="title">
+                                            <i className="mdi mdi-file-document-edit"></i> Formulaire d'ajout
+                                        </h5>
+                                    </div>
+                                    <div className="card-body">
+                                        <div className="form-group">
+                                            <label htmlFor="name">Désignation</label>
+                                            <input type="text" name="name" value={formData.name} onChange={handleChange} className="form-control" id="name" required />
+                                        </div>
+                                        <div className="button-save-profil">
+                                            <button type="submit" className="btn btn-success btn-fw" disabled={isLoading}>Créer</button>
+                                            <button type="reset" className="btn btn-light btn-fw" onClick={handleAnnulation}>Annuler</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </div>
+                        )}
                     </div>
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
@@ -125,9 +193,16 @@ function LanguageCrudPage() {
                                                 <td>{item.name}</td>
                                                 <td>
                                                     <Button
-                                                        onClick={() => handleDeleteConfirmed(item.languageId)}
+                                                        onClick={() => handleChangeToModifiedPage(item.languageId)}
                                                         className="btn btn-danger btn-sm"
                                                         style={{backgroundColor: 'white'}}
+                                                    >
+                                                        <i className="mdi mdi-pencil icon-edit" style={{ fontSize: '20px' }}></i>
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => handleDeleteConfirmed(item.languageId)}
+                                                        className="btn btn-danger btn-sm"
+                                                        style={{backgroundColor: 'white', margin: '20px'}}
                                                     >
                                                         <i className="mdi mdi-delete icon-delete" 
                                                         style={{fontSize: '20px'}}></i>
@@ -141,7 +216,6 @@ function LanguageCrudPage() {
                         </div>
                     </div>
                 </div>                
-            </form>
         </Template>
     );
 }

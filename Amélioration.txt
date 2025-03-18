@@ -10,6 +10,7 @@
 - CRUD poste : détails de poste pour consulter les compétences requises dans ce poste
 - Historique des activités : historiques des activités devient historiques des actions
 - Graphe des compétences : ajout d'un nouveau filtre tous pour comparer le niveau de compétence validé et non validé
+- Paramètre de l'id du type de contrat et type d'affectation dans plan de carrière
 
 
 

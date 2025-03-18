@@ -67,7 +67,7 @@ namespace soft_carriere_competence.Application.Services.career_plan
 				.FromSqlRaw("SELECT * FROM History where Module_id=2 AND  Registration_number = {0} ORDER BY Creation_date DESC", registrationNumber)
 				.ToListAsync();
 		}
-		
+
 		// Recuperer les mises en disponibilites d'un employe
 		public async Task<VEmployeeCareer?> GetCareerByEmployee(string registrationNumber)
 		{
@@ -292,5 +292,24 @@ namespace soft_carriere_competence.Application.Services.career_plan
 				return false;
 			}
 		}
-	}
+
+        // Récuperer la dernière ligne enregistré pour l'employé et le type de contrat correspondant
+        public async Task<CareerPlan?> GetByEmployeeAndContractType(string? registrationNumber, int? contractTypeId)
+        {
+            if (string.IsNullOrEmpty(registrationNumber) || contractTypeId == null)
+            {
+                return null;
+            }
+
+            return await _context.Set<CareerPlan>()
+                .FromSqlRaw(@"
+            SELECT TOP 1 * 
+            FROM career_plan
+            WHERE Registration_number = @p0 
+            AND Employee_type_id = @p1 
+            ORDER BY Career_plan_id DESC",
+                    registrationNumber, contractTypeId)
+                .FirstOrDefaultAsync();
+        }
+    }
 }

@@ -13,15 +13,19 @@ function ModalAddSkill({ showSkill, handleCloseSkill, idEmployee, fetchData, err
     const [formData, setFormData] = useState({
         domainSkillId: '',
         skillId: '',
-        level: '',
+        level: 0,
         state: '',
         employeeId: idEmployee,
     });
 
     const [formErrors, setFormErrors] = useState({});
     const [submitError, setSubmitError] = useState(''); 
+    const [formLevel, setFormLevel] = useState(false); 
 
     const handleChange = (e) => {
+        if(e.target.value === '1')  setFormLevel( false );
+        if(e.target.value === '5')  setFormLevel( true );
+
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
@@ -34,7 +38,7 @@ function ModalAddSkill({ showSkill, handleCloseSkill, idEmployee, fetchData, err
         
         if (!formData.domainSkillId) errors.domainSkillId = "Le domaine est requis.";
         if (!formData.skillId) errors.skillId = "La compétence est requise.";
-        if (!formData.level || formData.level < 0 || formData.level > 100) errors.level = "Le niveau doit être compris entre 1 et 100.";
+        if (formLevel && (!formData.level || formData.level < 0 || formData.level > 100)) errors.level = "Le niveau doit être compris entre 1 et 100.";
         if (!formData.state) errors.state = "L'état est requis.";
 
         setFormErrors(errors);
@@ -54,6 +58,13 @@ function ModalAddSkill({ showSkill, handleCloseSkill, idEmployee, fetchData, err
             handleCloseSkill();
             await fetchData();
             dataEmployeeDescription.skillNumber++;
+            setFormData({
+                domainSkillId: '',
+                skillId: '',
+                level: 0,
+                state: '',
+                employeeId: idEmployee,
+            });
         } catch (error) {
             setSubmitError({ submit: `Erreur lors de l'insertion de la compétence : ${error.message}` });
         }
@@ -99,21 +110,25 @@ function ModalAddSkill({ showSkill, handleCloseSkill, idEmployee, fetchData, err
                             {formErrors.skillId && <div className="text-danger">{formErrors.skillId}</div>}
                         </div>
                         <div className="form-group">
-                            <label>Niveau (en %)</label>
-                            <input type="number" name="level" value={formData.level} onChange={handleChange} className="form-control" />
-                            {formErrors.level && <div className="text-danger">{formErrors.level}</div>}
-                        </div>
-                        <div className="form-group">
                             <label>État</label>
                             <select name="state" value={formData.state} onChange={handleChange} className="form-control">
                                 <option value="">Sélectionner un état</option>
-                                <option value="1">Non validé</option>
+                                <option value="1">Non evalué</option>
                                 <option value="5">Validé par évaluation</option>
-                                <option value="10">Confirmé</option>
                             </select>
                             {formErrors.state && <div className="text-danger">{formErrors.state}</div>}
                         </div>
                         {submitError && <small className="error-text">{submitError}</small>}
+
+                        {formLevel ? (
+                            <div className="form-group">
+                                <label>Niveau (en %)</label>
+                                <input type="number" name="level" value={formData.level} onChange={handleChange} className="form-control" />
+                                {formErrors.level && <div className="text-danger">{formErrors.level}</div>}
+                            </div>
+                        ) : (
+                            <div className="form-group"></div>
+                        )}                        
                     </form>
                 )}
             </div>

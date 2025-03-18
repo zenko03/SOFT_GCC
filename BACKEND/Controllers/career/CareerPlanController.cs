@@ -41,22 +41,58 @@ namespace soft_carriere_competence.Controllers.career
 		[HttpPost]
 		public async Task<IActionResult> Create(CareerPlan careerPlan)
 		{
-			await _careerPlanService.Add(careerPlan);
-			AssignmentType assignmentType = await _assignmentTypeService.GetById((int)careerPlan.AssignmentTypeId);
-			var activityLog = new ActivityLog
+			if (careerPlan == null)
 			{
-				UserId = 1,
-				Module = 2,
-				Action = "Creation",
-				Description = "L'user 1 a crée un nouveau plan de carrière de type " + assignmentType.AssignmentTypeName + " pour l'employé " + careerPlan.RegistrationNumber,
-				Timestamp = DateTime.UtcNow,
-				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
-			};
+				return BadRequest("Le plan de carrière est requis.");
+			}
 
-			await _historyService.Add(activityLog);
+			try
+			{
+				// Récupérer l'AssignmentType en vérifiant s'il est null
+				AssignmentType? assignmentType = await _assignmentTypeService.GetById((int)careerPlan.AssignmentTypeId);
+				if (assignmentType == null)
+				{
+					return NotFound("Type d'affectation introuvable.");
+				}
 
-			return CreatedAtAction(nameof(Get), new { id = careerPlan.CareerPlanId }, careerPlan);
+				// Vérifier s'il existe déjà un plan de carrière pour cet employé et ce type de contrat
+				CareerPlan? lastCareerPlan = await _careerPlanService.GetByEmployeeAndContractType(
+					careerPlan.RegistrationNumber, careerPlan.EmployeeTypeId
+				);
+
+				if (lastCareerPlan == null)
+				{
+					// Ajouter le plan de carrière
+					await _careerPlanService.Add(careerPlan);
+				}
+				else
+				{
+					lastCareerPlan.EndingContract = careerPlan.AssignmentDate;
+					await _careerPlanService.Update(lastCareerPlan);
+					await _careerPlanService.Add(careerPlan);
+				}
+
+				// Création du journal d'activité
+				var activityLog = new ActivityLog
+				{
+					UserId = 1, // Id utilisateur à remplacer par l'ID du contexte actuel si possible
+					Module = 2,
+					Action = "Création",
+					Description = $"L'utilisateur 1 a créé un nouveau plan de carrière de type {assignmentType.AssignmentTypeName} pour l'employé {careerPlan.RegistrationNumber}",
+					Timestamp = DateTime.UtcNow,
+					Metadata = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "IP inconnue"
+				};
+
+				await _historyService.Add(activityLog);
+
+				return CreatedAtAction(nameof(Get), new { id = careerPlan.CareerPlanId }, careerPlan);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Une erreur est survenue : {ex.Message}");
+			}
 		}
+
 
 		[HttpGet]
 		[Route("employee/{registrationNumber}/appointment")]

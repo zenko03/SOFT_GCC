@@ -253,7 +253,7 @@ function CreationCareerPlan({ onSearch }) {
                                         <option value="">Sélectionner une matricule</option>
                                         {dataEmployee && dataEmployee.map((item, id) => (
                                             <option key={id} value={item.registrationNumber}>
-                                                {item.registrationNumber}
+                                                {item.registrationNumber + " - " + item.name + " " + item.firstName}
                                             </option>
                                         ))}
                                     </select>   
