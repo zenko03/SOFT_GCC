@@ -279,7 +279,7 @@ SELECT
 	c.state,
 	CASE
 		WHEN GETDATE() BETWEEN c.Assignment_date AND c.Ending_contract THEN 'en cours'
-		WHEN GETDATE() >= c.Ending_contract THEN 'termine'
+		WHEN GETDATE() >= c.Ending_contract THEN 'terminé'
         WHEN GETDATE() < c.Assignment_date THEN 'en attente'  
     END AS career_state,
 	c.creation_date,
@@ -350,7 +350,7 @@ SELECT
 	c.state,
     CASE
 		WHEN GETDATE() BETWEEN c.Start_date AND c.End_date THEN 'en cours'
-		WHEN GETDATE() >= c.End_date THEN 'termine'
+		WHEN GETDATE() >= c.End_date THEN 'terminé'
         WHEN GETDATE() < c.Start_date THEN 'en attente'  
     END AS career_state,
 	c.creation_date,
@@ -464,13 +464,13 @@ BEGIN
         2, -- Module_id fixe
         CASE 
             WHEN Assignment_type_id = 1 THEN 
-                'L''utilisateur Rasoa a cr�� un plan de carri�re de type Nomination pour l''employ� ' + Registration_number
+                'L''utilisateur Rasoa a crée un plan de carrière de type Nomination pour l''employé ' + Registration_number
             WHEN Assignment_type_id = 2 THEN 
-                'L''utilisateur Rasoa a cr�� un plan de carri�re de type mise en disponibilite pour l''employ� ' + Registration_number
+                'L''utilisateur Rasoa a crée un plan de carrière de type mise en disponibilite pour l''employé ' + Registration_number
 			WHEN Assignment_type_id = 3 THEN 
-                'L''utilisateur Rasoa a cr�� un plan de carri�re de type avancement pour l''employ� ' + Registration_number
+                'L''utilisateur Rasoa a crée un plan de carrière de type avancement pour l''employé ' + Registration_number
             ELSE 
-                'L''utilisateur Rasoa a cr�� un plan de carri�re d''un type inconnu pour l''employ� ' + Registration_number
+                'L''utilisateur Rasoa a crée un plan de carrière d''un type inconnu pour l''employé ' + Registration_number
         END AS Description,
         Registration_number,
         1 -- �tat fixe
@@ -490,19 +490,19 @@ BEGIN
         2, -- Module_id fixe
         CASE 
             WHEN DELETED.Assignment_type_id = 1 AND State > 0 THEN 
-                'L''utilisateur Rasoa a modifi� un plan de carri�re de type Nomination pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a modifié un plan de carrière de type Nomination pour l''employé ' + DELETED.Registration_number
             WHEN DELETED.Assignment_type_id = 2 AND State > 0 THEN 
-                'L''utilisateur Rasoa a modifi� un plan de carri�re de type mise en disponibilite pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a modifié un plan de carrière de type mise en disponibilite pour l''employé ' + DELETED.Registration_number
 			WHEN DELETED.Assignment_type_id = 3 AND State > 0 THEN 
-                'L''utilisateur Rasoa a modifi� un plan de carri�re de type avancement pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a modifié un plan de carrière de type avancement pour l''employé ' + DELETED.Registration_number
 			WHEN DELETED.Assignment_type_id = 1 AND State = 0 THEN 
-                'L''utilisateur Rasoa a supprim� un plan de carri�re de type Nomination pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a supprimé un plan de carrière de type Nomination pour l''employé ' + DELETED.Registration_number
             WHEN DELETED.Assignment_type_id = 2 AND State = 0 THEN 
-                'L''utilisateur Rasoa a supprim� un plan de carri�re de type mise en disponibilite pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a supprimé un plan de carrière de type mise en disponibilite pour l''employé ' + DELETED.Registration_number
 			WHEN DELETED.Assignment_type_id = 3 AND State = 0 THEN 
-                'L''utilisateur Rasoa a supprim� un plan de carri�re de type avancement pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a supprimé un plan de carrière de type avancement pour l''employé ' + DELETED.Registration_number
             ELSE 
-                'L''utilisateur Rasoa a modifi� ou modifi� un plan de carri�re d''un type inconnu pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a modifié ou modifié un plan de carrière d''un type inconnu pour l''employé ' + DELETED.Registration_number
         END AS Description,
         DELETED.Registration_number,
         1 -- �tat fixe
@@ -521,13 +521,13 @@ BEGIN
         2, -- Module_id fixe
         CASE 
             WHEN DELETED.Assignment_type_id = 1 THEN 
-                'L''utilisateur Rasoa a supprim� definitivement un plan de carri�re de type Nomination pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a supprimé definitivement un plan de carrière de type Nomination pour l''employé ' + DELETED.Registration_number
             WHEN DELETED.Assignment_type_id = 2 THEN 
-                'L''utilisateur Rasoa a supprim� definitivement un plan de carri�re de type mise en disponibilite pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a supprimé definitivement un plan de carrière de type mise en disponibilite pour l''employé ' + DELETED.Registration_number
 			WHEN DELETED.Assignment_type_id = 3 THEN 
-                'L''utilisateur Rasoa a supprim� definitivement un plan de carri�re de type avancement pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a supprimé definitivement un plan de carrière de type avancement pour l''employé ' + DELETED.Registration_number
             ELSE 
-                'L''utilisateur Rasoa a supprim� definitivement un plan de carri�re d''un type inconnu pour l''employ� ' + DELETED.Registration_number
+                'L''utilisateur Rasoa a supprimé definitivement un plan de carrière d''un type inconnu pour l''employé ' + DELETED.Registration_number
         END AS Description,
         DELETED.Registration_number,
         1 -- �tat fixe
@@ -630,15 +630,15 @@ SELECT
 	CASE 
         WHEN w.Priority >= 0 AND w.Priority < 5 THEN 'Bas'
         WHEN w.Priority >= 5 AND w.Priority < 10 THEN 'Moyen'
-        ELSE 'Eleve'
+        ELSE 'Elevé'
     END AS priority_letter,
 	w.request_date,
 	w.State,
 	CASE 
-		WHEN w.State <= 0 THEN 'Refus�'
+		WHEN w.State <= 0 THEN 'Refusé'
         WHEN w.State > 0 AND w.State < 5 THEN 'En atente'
         WHEN w.State >= 5 AND w.State < 10 THEN 'En cours'
-		WHEN w.State >= 10 THEN 'Valid�'
+		WHEN w.State >= 10 THEN 'Validé'
         ELSE NULL
     END AS state_letter,
 	ec.Department_id AS Actual_department_id,

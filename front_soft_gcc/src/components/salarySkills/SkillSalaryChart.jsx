@@ -21,7 +21,7 @@ function SkillSalaryChart({ employeeId }) {
 
   const [filter, setFilter] = useState({
     employeeId: employeeId,
-    state: 1
+    state: 0
   });
 
   const handleFilterChange = (e) => {
@@ -69,8 +69,7 @@ function SkillSalaryChart({ employeeId }) {
 
   const statusSkills = [
     { label: 'Non validé', backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)' },
-    { label: 'Validé par évaluation', backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)' },
-    { label: 'Confirmé', backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)' }
+    { label: 'Validé par évaluation', backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)'}
   ];
 
   const renderStatusSkills = () => (

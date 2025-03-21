@@ -29,7 +29,7 @@ namespace soft_carriere_competence.Controllers.career
 			_assignmentTypeService = assignmentTypeService;
 		}
 
-
+	/// Recupérer un plan de carrière par son çid
 		[HttpGet("{id}")]
 		public async Task<IActionResult> Get(int id)
 		{
@@ -38,6 +38,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(assignment);
 		}
 
+		// Creationd'un plan de carrière
 		[HttpPost]
 		public async Task<IActionResult> Create(CareerPlan careerPlan)
 		{
@@ -93,7 +94,7 @@ namespace soft_carriere_competence.Controllers.career
 			}
 		}
 
-
+		// Récuperer les données de type nomination
 		[HttpGet]
 		[Route("employee/{registrationNumber}/appointment")]
 		public async Task<IActionResult> GetAssignmentAppointment(string registrationNumber)
@@ -104,6 +105,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(list);
 		}
 
+		// Récuperer les données de type avancement
 		[HttpGet]
 		[Route("employee/{registrationNumber}/advancement")]
 		public async Task<IActionResult> GetAssignmentAdvancement(string registrationNumber)
@@ -113,6 +115,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(list);
 		}
 
+		// Récuperer les données de type mise en disponobilté
 		[HttpGet]
 		[Route("employee/{registrationNumber}/availability")]
 		public async Task<IActionResult> GetAssignmentAvailability(string registrationNumber)
@@ -122,6 +125,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(list);
 		}
 
+		// Historique du plan de carrière
 		[HttpGet]
 		[Route("employee/{registrationNumber}/history")]
 		public async Task<IActionResult> GetHistory(string registrationNumber)
@@ -131,6 +135,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(list);
 		}
 
+		// Mis à jour du plan carrière
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Update(int id, CareerPlan careerPlan)
 		{
@@ -152,6 +157,7 @@ namespace soft_carriere_competence.Controllers.career
 			return NoContent();
 		}
 
+		// Avoir la liste des carrières
 		[HttpGet]
 		[Route("careers")]
 		public async Task<IActionResult> GetListCareers(int pageNumber = 1, int pageSize = 2)
@@ -161,6 +167,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(careers);
 		}
 
+		// Récupération des données du filtre multi-crotère
 		[HttpGet]
 		[Route("filter")]
 		public async Task<IActionResult> GetListCareersFilter(
@@ -225,6 +232,7 @@ namespace soft_carriere_competence.Controllers.career
 			}
 		}
 
+		// Avoir un plan de carrière via son matricule
 		[HttpGet]
 		[Route("careers/{registrationNumber}")]
 		public async Task<IActionResult> GetCareersByEmployee(string registrationNumber)
@@ -234,6 +242,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(employeeCareer);
 		}
 
+		//	Suppimer un pla de carrière
 		[HttpPut]
 		[Route("delete/{careerPlanId}")]
 		public async Task<IActionResult> DeleteCareerPlan(int careerPlanId)
@@ -263,6 +272,7 @@ namespace soft_carriere_competence.Controllers.career
 			}
 		}
 
+		// Suppression d'un plan de carrière
 		[HttpPut]
 		[Route("restore/{careerPlanId}")]
 		public async Task<IActionResult> RestoreCareerPlan(int careerPlanId)
@@ -292,6 +302,7 @@ namespace soft_carriere_competence.Controllers.career
 			}
 		}
 
+		//	Suppriler définitivement un plan de carrière
 		[HttpDelete]
 		[Route("definitivelyDelete/{careerPlanId}")]
 		public async Task<IActionResult> DefinitivelyDeleteCareerPlan(int careerPlanId)
@@ -321,6 +332,7 @@ namespace soft_carriere_competence.Controllers.career
 			}
 		}
 
+		// Supprimer une historique
 		[HttpDelete]
 		[Route("History/Delete/{historyId}")]
 		public async Task<IActionResult> DeleteHistory(int historyId)

@@ -2,8 +2,9 @@ import React, { useState }  from 'react';
 import useSWR from 'swr';
 import Fetcher from '../fetcher';
 
-// Contenu du pied de page
+// Formulaire de saisie de type nomination
 function AppointmentForm({ formData, setFormData }) {
+  // Réuperation des données depuis l'api
   const { data: dataEstablishment } = useSWR('/Establishment', Fetcher);
   const { data: dataDepartment } = useSWR('/Department', Fetcher);
   const { data: dataPosition } = useSWR('/Position', Fetcher);
@@ -25,6 +26,7 @@ function AppointmentForm({ formData, setFormData }) {
     }));
   };
 
+  // Gestion des changements sur la selection du champ type de contrat
   const handleChangeContractType = (e) => {
     if(e.target.value === '1') setFormDateEndContract(true);
     else setFormDateEndContract(false);

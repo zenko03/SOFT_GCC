@@ -10,24 +10,29 @@ import { urlApi } from '../../../helpers/utils';
 import Loader from '../../../helpers/Loader';
 import { useParams } from 'react-router-dom';
 import FormattedDate from '../../../helpers/FormattedDate';
+import { useNavigate } from 'react-router-dom';
 
-
+// Page détails du plan de carrière
 function CareerProfilePage({ onSearch }) {
+    // Url d'en-tete de page
     const module = "Plan de carrière";
     const action = "Fiche";
     const url = "/carriere";
+
+    // Initialisation des variables utiles
     const { registrationNumber } = useParams();
     const [isLoading, setIsLoading] = useState(false); 
     const [error, setError] = useState(false); 
+    const navigate = useNavigate();
 
     // Appel api pour les donnees du formulaire
     const [dataEmployee, setDataEmployee] = useState([]); 
     const [dataAssignmentAdvancement, setDataAssignmentAdvancement] = useState([]);
     const [dataAssignmentAppointment, setDataAssignmentAppointment] = useState([]);
     const [dataAssignmentAvailability, setDataAssignmentAvailability] = useState([]);
-
     const [componentToDisplay, setComponentToDisplay] = useState(1);
 
+    // Mise à jour du coomposant responsable à l'affichage
     const updateComponent = (value) => {
         setComponentToDisplay(value);
     };
@@ -57,14 +62,19 @@ function CareerProfilePage({ onSearch }) {
         fetchData();
     }, [registrationNumber]);
 
-    /// Gestion d'affichage de loading
+    // Fonction qui gère le retour en arrière de la page
+    const handleRetour = () => {
+        navigate(`/carriere`);
+    };
+
+    // Loading page
     if (isLoading) {
         return <div>
                 <Loader />
             </div>;
     }
 
-    /// Gestion d'affichage d'erreur
+    // Gestion d'erreur
     if (error) {
         return <div>Erreur: {error.message}</div>;
     }
@@ -74,11 +84,21 @@ function CareerProfilePage({ onSearch }) {
             <PageHeader module={module} action={action} url={url} />
 
             <div className="title-container">
-                <h4 className="title"> 
-                <i className="mdi mdi-note-text"></i> 
-                <span>Description de l'employe</span>
-                </h4>
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-note-text skill-icon"></i>
+                    <h4 className="skill-title" style={{color: '#B8860B'}}>DESCRIPTION DU PLAN DE CARRIERE</h4>
+                </div>
+                <div className="col-lg-2">
+                    <button onClick={handleRetour} className="btn-outline-dark btn-fw" style={{float: 'right'}}>
+                        <i className="mdi mdi-arrow-left-circle" style={{marginRight: '10px'}}></i>
+                        Retour
+                    </button>
+                </div>  
             </div>
+
+           
+
+
             <div className="row description">    
                 <div className="col-md-6 grid-margin stretch-card">
                     <div className="card">
@@ -117,11 +137,11 @@ function CareerProfilePage({ onSearch }) {
                 </div>
             </div>
 
-            {componentToDisplay === 2 ? (
+            {componentToDisplay === 2 ? (   // Certification
                 <Certificate dataEmployee={dataEmployee}/>
-            ) : componentToDisplay === 3 ? (
+            ) : componentToDisplay === 3 ? (    // Historique
                 <History registrationNumber={registrationNumber} />
-            ) : (
+            ) : (   // Liste d'affectation
                 <AffectationList dataAssignmentAppointment={dataAssignmentAppointment} dataAssignmentAdvancement={dataAssignmentAdvancement} dataAssignmentAvailability={dataAssignmentAvailability} fetchData={fetchData} />
             )}
         </Template>

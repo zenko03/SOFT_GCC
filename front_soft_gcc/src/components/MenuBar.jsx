@@ -39,6 +39,20 @@ function MenuBar({ task }) {
           </div>
         </li>
         <li className="nav-item">
+          <a className="nav-link" data-toggle="collapse" href="#certificate" aria-expanded="false" aria-controls="certificate">
+            <span className="icon-bg"><i className="mdi mdi-certificate menu-icon"></i></span>
+            <span className="menu-title">Gestion d'attestation</span>
+            <i className="menu-arrow"></i>
+          </a>
+          <div className="collapse" id="certificate">
+            <ul className="nav flex-column sub-menu">
+              <li className="nav-item"> <Link className="nav-link" to="/softGcc/attestationManagement/list">Modèles d'attestations</Link></li>
+              <li className="nav-item"> <Link className="nav-link" to="/softGcc/settings/carriere"> Signature électronique et sécurisation </Link></li>
+              <li className="nav-item"> <Link className="nav-link" to="/softGcc/settings/employeeManagement/liste"> Archivage et historique </Link></li>
+            </ul>
+          </div>
+        </li>
+        <li className="nav-item">
           <a className="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
             <span className="icon-bg"><i className="mdi mdi-lock menu-icon"></i></span>
             <span className="menu-title">Evaluations</span>

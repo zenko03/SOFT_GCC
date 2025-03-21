@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Contenu du pied de page
+// Formulaire de saisie pour mise en disponibilité
 function LayOffForm({ handleChange, formData }) {
     
   return (

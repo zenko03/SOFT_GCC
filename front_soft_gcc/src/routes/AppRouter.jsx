@@ -60,6 +60,8 @@ import QuestionEvaluation from '../pages/settings/evaluations/Questionnaires/Que
 import FormationSuggestions from '../pages/settings/evaluations/FormationSuggestion/FormationSuggestions';
 import EvaluationLogin from '../pages/Evaluations/SalaryEval/EvaluationLogin';
 import EvaluationPage from '../pages/Evaluations/SalaryEval/EvaluationPage';
+import ModelList from '../pages/certificateManagement/ModelList';
+import ModelEdit from '../pages/certificateManagement/ModelEdit';
 
 
 function AppRouter() {
@@ -169,6 +171,10 @@ function AppRouter() {
       <Route path="/softGcc/settings/carriere/categorieSocioProfessionnelle" element={<SocioCategoryProfessionalCrudPage />} />
       <Route path="/softGcc/settings/employeeManagement/create" element={<CreateEmployeePage />} />
       <Route path="/softGcc/settings/employeeManagement/liste" element={<ListEmployeePage />} />
+
+      {/*Gestion d'attestation */}
+      <Route path="/softGcc/attestationManagement/list" element={<ModelList />} />
+      <Route path="/softGcc/attestationManagement/edit" element={<ModelEdit />} />
     </Routes>
   );
 }

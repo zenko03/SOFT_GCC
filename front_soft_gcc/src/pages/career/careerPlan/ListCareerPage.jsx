@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../../components/PageHeader';
 import Template from '../../Template';
-import pic1 from '/src/assets/images/faces-clipart/pic-1.png';
 import '../../../styles/skillsStyle.css';
 import Loader from '../../../helpers/Loader';
 import '../../../styles/pagination.css';
@@ -21,10 +20,12 @@ const debounce = (func, delay) => {
 
 // Page liste des compétences
 const ListCareerPage = () => {
+  // URL en tête de page 
   const module = 'Plan de carrière';
   const action = 'Liste';
   const url = '/carriere';
 
+  // Initialisation des variables d'états
   const [careers, setCareers] = useState([]);
   const [sortedCareers, setSortedCareers] = useState([]);
   const [sortDirection, setSortDirection] = useState('asc');
@@ -35,11 +36,9 @@ const ListCareerPage = () => {
   const [filters, setFilters] = useState({ keyWord: '', departmentId: '', positionId: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
   const navigate = useNavigate();
   const { data: dataDepartment } = useSWR('/Department', Fetcher);
   const { data: dataPosition } = useSWR('/Position', Fetcher);
-
   const [paginationResult, setPaginationResult] = useState({
     totalRecords: 0,
     pageSize: 0,
@@ -153,7 +152,7 @@ const ListCareerPage = () => {
           <h4 className="skill-title">PLAN DE CARRIÈRE</h4>
         </div>
         <div className="col-lg-2">
-          <button className="btn-add btn-success btn-fw" onClick={handleClick}>
+          <button className="btn-add btn-success btn-fw" onClick={handleClick} style={{float: 'right'}}>
             <i className="mdi mdi-plus"></i>
             Nouveau Plan
           </button>

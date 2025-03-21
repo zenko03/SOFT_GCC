@@ -3,9 +3,9 @@ import React from 'react';
 import useSWR from 'swr';
 import Fetcher from '../fetcher';
 
-// Contenu du pied de page
+// Formulaire de saisie pour le type avancement
 function AdvancementForm({ handleChange, formData }) {
-
+    // Chargement des données depuis l'api
     const { data: dataDepartment } = useSWR('/Department', Fetcher);
     const { data: dataSocioCategoryProfessional } = useSWR('/SocioCategoryProfessional', Fetcher);
     const { data: dataIndication } = useSWR('/Indication', Fetcher);

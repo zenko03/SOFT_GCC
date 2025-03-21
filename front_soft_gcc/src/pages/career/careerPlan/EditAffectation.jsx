@@ -9,12 +9,15 @@ import { urlApi } from '../../../helpers/utils';
 import { useParams } from 'react-router-dom';
 import LoaderComponent from '../../../helpers/LoaderComponent';
 
+// Page de modification d'un plan de carrière
 function EditAffectation() {
+    // URL en tête de page 
     const module = "Plan de carrière";
     const action = "Edit";
     const url = "/carriere";
-    const { CareerPlanId } = useParams();
 
+    // Initialisation des variables etats
+    const { CareerPlanId } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [assignmentToEdit, setAssignmentToEdit] = useState({});
@@ -53,8 +56,12 @@ function EditAffectation() {
     const formatDate = (date) => {
         if (!date) return '';
         const parsedDate = new Date(date);
-        return isNaN(parsedDate) ? '' : parsedDate.toISOString().split('T')[0];
+        if (isNaN(parsedDate)) return '';
+        
+        // Ajuster pour éviter les problèmes de fuseau horaire
+        return parsedDate.toLocaleDateString('fr-CA');
     };
+    
 
     // Récupération des données
     const fetchData = async () => {
@@ -82,6 +89,7 @@ function EditAffectation() {
         }
     }, [CareerPlanId]);
 
+    // UseEffect pour ajouter des valeurs par défaut dans le formulaire de modification
     useEffect(() => {
         if (assignmentToEdit) {
             setFormData({
