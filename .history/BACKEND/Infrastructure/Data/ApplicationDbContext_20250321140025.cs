@@ -78,7 +78,7 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<EvaluationQuestion> evaluationQuestions {  get; set; }
 	    public DbSet<EvaluationInterviews> evaluationInterviews { get; set; }
         public DbSet<InterviewParticipants> interviewParticipants { get; set; }
-        public DbSet<EvaluationSupervisors>  EvaluationSupervisors { get; set; }
+        public DbSet<EvaluationSupervisor> EvaluationSupervisors { get; set; }
 
 
         public DbSet<EvaluationProgress> evaluationProgresses { get; set; }
@@ -183,10 +183,6 @@ namespace soft_carriere_competence.Infrastructure.Data
 			//------------------ORGANIGRAMME ET EFFECTIF-------------------------------------------//
 			modelBuilder.Entity<VDepartmentEffective>().ToView("v_department_effective");
 			modelBuilder.Entity<VDepartmentEffective>().HasNoKey();
-
-			// Configuration de la clé composite pour EvaluationSupervisors
-			modelBuilder.Entity<EvaluationSupervisors>()
-				.HasKey(es => new { es.EvaluationId, es.SupervisorId });
 		}
 	}
 

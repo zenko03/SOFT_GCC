@@ -215,87 +215,50 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, List<int> supervisorIds, DateTime startDate, DateTime endDate)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            var newEvaluation = new Evaluation
             {
-                try
+                UserId = userId,
+                EvaluationTypeId = evaluationTypeId,
+                StartDate = startDate,
+                EndDate = endDate,
+                OverallScore = 0,
+                Comments = null,
+                state = 10 // Actif
+            };
+
+            await _evaluationRepository.CreateAsync(newEvaluation);
+
+            // Ajouter les superviseurs
+            foreach (var supervisorId in supervisorIds)
+            {
+                var evaluationSupervisor = new EvaluationSupervisor
                 {
-                    // Vérifier si l'utilisateur existe
-                    var user = await _userRepository.GetByIdAsync(userId);
-                    if (user == null)
-                        throw new Exception($"User with ID {userId} not found.");
-
-                    // Vérifier si le type d'évaluation existe
-                    var evaluationType = await _evaluationTypeRepository.GetByIdAsync(evaluationTypeId);
-                    if (evaluationType == null)
-                        throw new Exception($"EvaluationType with ID {evaluationTypeId} not found.");
-
-                    // Vérifier si tous les superviseurs existent et sont uniques
-                    var uniqueSupervisorIds = supervisorIds.Distinct().ToList();
-                    foreach (var supervisorId in uniqueSupervisorIds)
-                    {
-                        var supervisor = await _userRepository.GetByIdAsync(supervisorId);
-                        if (supervisor == null)
-                            throw new Exception($"Supervisor with ID {supervisorId} not found.");
-                    }
-
-                    // Créer l'évaluation
-                    var newEvaluation = new Evaluation
-                    {
-                        UserId = userId,
-                        EvaluationTypeId = evaluationTypeId,
-                        StartDate = startDate,
-                        EndDate = endDate,
-                        OverallScore = 0,
-                        Comments = null,
-                        state = 10 // Actif
-                    };
-
-                    // Sauvegarder l'évaluation
-                    await _evaluationRepository.CreateAsync(newEvaluation);
-                    await _context.SaveChangesAsync();
-
-                    Console.WriteLine($"Created evaluation with ID: {newEvaluation.EvaluationId}");
-
-                    // Créer les associations superviseur-évaluation
-                    var evaluationSupervisors = uniqueSupervisorIds.Select(supervisorId => new EvaluationSupervisors
-                    {
-                        EvaluationId = newEvaluation.EvaluationId,
-                        SupervisorId = supervisorId
-                    }).ToList();
-
-                    // Ajouter toutes les associations en une seule fois
-                    await _context.EvaluationSupervisors.AddRangeAsync(evaluationSupervisors);
-                    await _context.SaveChangesAsync();
-
-                    Console.WriteLine($"Added {evaluationSupervisors.Count} supervisors to evaluation {newEvaluation.EvaluationId}");
-
-                    // Créer et envoyer les identifiants temporaires
-                    var tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(userId, newEvaluation.EvaluationId);
-
-                    // Envoyer l'email de notification
-                    await _emailService.SendEmailAsync(
-                        user.Email,
-                        "Planification évaluation",
-                        $"Vous avez une évaluation programmée du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}.\n\n" +
-                        $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
-                        $"Login : {tempAccount.TempLogin}\n" +
-                        $"Mot de passe : {tempAccount.TempPassword}\n\n" +
-                        $"Ces identifiants ne seront valides qu'à partir du {startDate.ToShortDateString()}.\n" +
-                        $"Lien pour vous connecter : https://votre-application.com/evaluation-login"
-                    );
-
-                    await transaction.CommitAsync();
-                    return newEvaluation.EvaluationId;
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    Console.WriteLine($"Error in CreateEvaluationAsync: {ex.Message}");
-                    Console.WriteLine($"Inner exception: {ex.InnerException?.Message}");
-                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                    throw;
-                }
+                    EvaluationId = newEvaluation.EvaluationId,
+                    SupervisorId = supervisorId
+                };
+                await _context.EvaluationSupervisors.AddAsync(evaluationSupervisor);
             }
+            await _context.SaveChangesAsync();
+
+            // Récupérer l'utilisateur
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            // Créer un compte temporaire pour l'évaluation
+            var tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(userId, newEvaluation.EvaluationId);
+
+            // Envoyer un email avec les identifiants temporaires
+            await _emailService.SendEmailAsync(
+                user.Email,
+                "Planification évaluation",
+                $"Vous avez une évaluation programmée du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}.\n\n" +
+                $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
+                $"Login : {tempAccount.TempLogin}\n" +
+                $"Mot de passe : {tempAccount.TempPassword}\n\n" +
+                $"Ces identifiants ne seront valides qu'à partir du {startDate.ToShortDateString()}.\n" +
+                $"Lien pour vous connecter : https://votre-application.com/evaluation-login"
+            );
+
+            return newEvaluation.EvaluationId;
         }
 
         public async Task<bool> CreateTrainingSuggestionAsync(TrainingSuggestion suggestion)

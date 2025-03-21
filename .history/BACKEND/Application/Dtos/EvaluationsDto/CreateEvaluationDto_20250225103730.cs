@@ -4,7 +4,7 @@
     {
         public int UserId { get; set; }
         public int EvaluationTypeId { get; set; }
-        public List<int> SupervisorIds { get; set; } = new List<int>();
+        public int SupervisorId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int state { get; set; }

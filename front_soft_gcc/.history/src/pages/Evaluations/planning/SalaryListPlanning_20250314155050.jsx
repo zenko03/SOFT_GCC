@@ -53,23 +53,16 @@ function SalaryListPlanning() {
 
     // Vérifier si le superviseur n'est pas déjà dans la liste
     if (!evaluationDetails.supervisors.includes(currentSupervisor)) {
-      // S'assurer que le superviseur existe dans la liste des superviseurs disponibles
-      const supervisorExists = supervisors.some(sup => String(sup.id) === String(currentSupervisor));
-
-      if (supervisorExists) {
-        setEvaluationDetails(prev => ({
-          ...prev,
-          supervisors: [...prev.supervisors, currentSupervisor]
-        }));
-        setCurrentSupervisor(''); // Réinitialiser le sélecteur
-      } else {
-        alert('Superviseur non trouvé dans la liste');
-      }
+      setEvaluationDetails(prev => ({
+        ...prev,
+        supervisors: [...prev.supervisors, currentSupervisor]
+      }));
+      setCurrentSupervisor(''); // Réinitialiser le sélecteur
     } else {
+      // Afficher un message d'erreur ou une notification
       alert('Ce superviseur est déjà dans la liste');
     }
   };
-
 
   // Retirer un superviseur de la liste
   const handleRemoveSupervisor = (supervisorId) => {
@@ -249,16 +242,12 @@ function SalaryListPlanning() {
       const payload = selectedEmployees.map((employeeId) => ({
         userId: employeeId,
         evaluationTypeId: parseInt(evaluationDetails.evaluationType, 10),
-        supervisorIds: evaluationDetails.supervisors.map(id => parseInt(id, 10)), // Conversion en nombres
+        supervisorIds: evaluationDetails.supervisors, // Envoi de tous les superviseurs sélectionnés
         startDate: evaluationDetails.startDate,
         endDate: evaluationDetails.endDate,
       }));
 
-      console.log('Données envoyées au backend:', payload);
-
-      const response = await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation', payload);
-      console.log('Réponse du backend:', response.data);
-      
+      await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation', payload);
       setPlanningSuccess(true);
       setEmailSent(true);
       setTimeout(() => {
@@ -269,7 +258,6 @@ function SalaryListPlanning() {
       }, 3000);
     } catch (error) {
       console.error('Erreur lors de la planification :', error);
-      console.error('Détails de l\'erreur:', error.response?.data);
       setPlanningError('Une erreur est survenue lors de la planification.');
     }
   };
@@ -507,58 +495,6 @@ function SalaryListPlanning() {
                             })}
                           </ul>
                         </div>
-                        {/* Section superviseurs avec interface améliorée */}
-                        <div className="form-group">
-                          <label>Superviseurs :</label>
-
-                          {/* Premier sélecteur de superviseur */}
-                          <div className="d-flex mb-2">
-                            <select
-                              className="form-control"
-                              value={currentSupervisor}
-                              onChange={handleCurrentSupervisorChange}
-                            >
-                              <option value="">Sélectionner un superviseur</option>
-                              {supervisors.map((supervisor) => (
-                                <option key={supervisor.id} value={supervisor.id}>
-                                  {supervisor.firstName} {supervisor.lastName}
-                                </option>
-                              ))}
-                            </select>
-                            <button
-                              type="button"
-                              className="btn btn-outline-success ml-2"
-                              onClick={handleAddSupervisor}
-                              style={{ width: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                            >
-                              +
-                            </button>
-                          </div>
-
-                          {/* Liste des superviseurs sélectionnés */}
-                          {evaluationDetails.supervisors.length > 0 && (
-                            <div className="selected-supervisors mt-2">
-                              <label className="text-muted small">Superviseurs sélectionnés :</label>
-                              <ul className="list-group">
-                                {evaluationDetails.supervisors.map((supervisorId) => {
-                                  const supervisor = supervisors.find(sup => String(sup.id) === String(supervisorId));
-                                  return supervisor ? (
-                                    <li key={supervisorId} className="list-group-item d-flex justify-content-between align-items-center py-2">
-                                      <span>{supervisor.firstName} {supervisor.lastName}</span>
-                                      <button
-                                        type="button"
-                                        className="btn btn-sm btn-danger"
-                                        onClick={() => handleRemoveSupervisor(supervisorId)}
-                                      >
-                                        ×
-                                      </button>
-                                    </li>
-                                  ) : null;
-                                })}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
                         <div className="form-group">
                           <label>Date de début :</label>
                           <input
@@ -597,6 +533,25 @@ function SalaryListPlanning() {
                             ))}
                           </select>
                         </div>
+                        <div className="form-group">
+                          <label>Superviseurs :</label>
+                          <select
+                            name="supervisors"
+                            className="form-control"
+                            multiple
+                            value={evaluationDetails.supervisors}
+                            onChange={handleEvaluationDetailsChange}
+                          >
+                            {supervisors.map((supervisor) => (
+                              <option key={supervisor.id} value={supervisor.id}>
+                                {supervisor.firstName} {supervisor.lastName}
+                              </option>
+                            ))}
+                          </select>
+                          {evaluationDetails.supervisors.length === 0 && (
+                            <div className="text-danger">Veuillez sélectionner au moins un superviseur.</div>
+                          )}
+                        </div>
                       </form>
                     )}
                   </div>
@@ -607,7 +562,7 @@ function SalaryListPlanning() {
                     </button>
 
                     <button className="btn btn-secondary" onClick={handleCloseModal}>
-                      Fermer
+                      Fer mer
                     </button>
                   </div>
                 </div>

@@ -249,7 +249,7 @@ function SalaryListPlanning() {
       const payload = selectedEmployees.map((employeeId) => ({
         userId: employeeId,
         evaluationTypeId: parseInt(evaluationDetails.evaluationType, 10),
-        supervisorIds: evaluationDetails.supervisors.map(id => parseInt(id, 10)), // Conversion en nombres
+        supervisorIds: evaluationDetails.supervisors, // Envoi de tous les superviseurs sélectionnés
         startDate: evaluationDetails.startDate,
         endDate: evaluationDetails.endDate,
       }));

@@ -39,15 +39,19 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Column("dgApprovalDate")]
         public DateTime? dgApprovalDate {  get; set; }
 
+
         [ForeignKey("EvaluationTypeId")]
         public EvaluationType EvaluationType { get; set; }
 
         [ForeignKey("UserId")]
         public User User { get; set; }
 
+        [ForeignKey("SupervisorId")]
+        public User Supervisor { get; set; }
         [Column("state")]
         public int state {  get; set; }
 
         public ICollection<EvaluationSupervisors> Supervisors { get; set; }
+
     }
 }

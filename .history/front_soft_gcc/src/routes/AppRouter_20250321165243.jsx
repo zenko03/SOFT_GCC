@@ -60,8 +60,6 @@ import QuestionEvaluation from '../pages/settings/evaluations/Questionnaires/Que
 import FormationSuggestions from '../pages/settings/evaluations/FormationSuggestion/FormationSuggestions';
 import EvaluationLogin from '../pages/Evaluations/SalaryEval/EvaluationLogin';
 import EvaluationPage from '../pages/Evaluations/SalaryEval/EvaluationPage';
-import UserManagement from '../pages/settings/UserManagement/UserManagement';
-import UsersList from '../pages/settings/UserManagement/UsersList';
 
 
 function AppRouter() {

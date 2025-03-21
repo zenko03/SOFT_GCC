@@ -60,7 +60,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 					var evaluationId = await _evaluationService.CreateEvaluationAsync(
 						dto.UserId,
 						dto.EvaluationTypeId,
-						dto.SupervisorIds,
+						dto.SupervisorId,
 						dto.StartDate,
 						dto.EndDate
 					);

@@ -229,16 +229,14 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     if (evaluationType == null)
                         throw new Exception($"EvaluationType with ID {evaluationTypeId} not found.");
 
-                    // Vérifier si tous les superviseurs existent et sont uniques
-                    var uniqueSupervisorIds = supervisorIds.Distinct().ToList();
-                    foreach (var supervisorId in uniqueSupervisorIds)
+                    // Vérifier si tous les superviseurs existent
+                    foreach (var supervisorId in supervisorIds)
                     {
                         var supervisor = await _userRepository.GetByIdAsync(supervisorId);
                         if (supervisor == null)
                             throw new Exception($"Supervisor with ID {supervisorId} not found.");
                     }
 
-                    // Créer l'évaluation
                     var newEvaluation = new Evaluation
                     {
                         UserId = userId,
@@ -250,29 +248,36 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                         state = 10 // Actif
                     };
 
-                    // Sauvegarder l'évaluation
                     await _evaluationRepository.CreateAsync(newEvaluation);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(); // Sauvegarder d'abord l'évaluation
 
                     Console.WriteLine($"Created evaluation with ID: {newEvaluation.EvaluationId}");
 
-                    // Créer les associations superviseur-évaluation
-                    var evaluationSupervisors = uniqueSupervisorIds.Select(supervisorId => new EvaluationSupervisors
+                    // Ajouter les superviseurs dans la table EvaluationSupervisors
+                    foreach (var supervisorId in supervisorIds)
                     {
-                        EvaluationId = newEvaluation.EvaluationId,
-                        SupervisorId = supervisorId
-                    }).ToList();
+                        try
+                        {
+                            var evaluationSupervisor = new EvaluationSupervisors
+                            {
+                                EvaluationId = newEvaluation.EvaluationId,
+                                SupervisorId = supervisorId
+                            };
+                            Console.WriteLine($"Adding supervisor {supervisorId} for evaluation {newEvaluation.EvaluationId}");
+                            _context.EvaluationSupervisors.Add(evaluationSupervisor);
+                            await _context.SaveChangesAsync(); // Sauvegarder chaque superviseur individuellement
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error adding supervisor {supervisorId}: {ex.Message}");
+                            Console.WriteLine($"Inner exception: {ex.InnerException?.Message}");
+                            throw;
+                        }
+                    }
 
-                    // Ajouter toutes les associations en une seule fois
-                    await _context.EvaluationSupervisors.AddRangeAsync(evaluationSupervisors);
-                    await _context.SaveChangesAsync();
-
-                    Console.WriteLine($"Added {evaluationSupervisors.Count} supervisors to evaluation {newEvaluation.EvaluationId}");
-
-                    // Créer et envoyer les identifiants temporaires
+                    // Envoyer l'email...
                     var tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(userId, newEvaluation.EvaluationId);
 
-                    // Envoyer l'email de notification
                     await _emailService.SendEmailAsync(
                         user.Email,
                         "Planification évaluation",

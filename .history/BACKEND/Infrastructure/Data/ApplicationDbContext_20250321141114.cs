@@ -183,10 +183,6 @@ namespace soft_carriere_competence.Infrastructure.Data
 			//------------------ORGANIGRAMME ET EFFECTIF-------------------------------------------//
 			modelBuilder.Entity<VDepartmentEffective>().ToView("v_department_effective");
 			modelBuilder.Entity<VDepartmentEffective>().HasNoKey();
-
-			// Configuration de la clé composite pour EvaluationSupervisors
-			modelBuilder.Entity<EvaluationSupervisors>()
-				.HasKey(es => new { es.EvaluationId, es.SupervisorId });
 		}
 	}
 

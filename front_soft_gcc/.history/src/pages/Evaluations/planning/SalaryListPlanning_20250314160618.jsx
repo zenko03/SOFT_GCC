@@ -249,16 +249,12 @@ function SalaryListPlanning() {
       const payload = selectedEmployees.map((employeeId) => ({
         userId: employeeId,
         evaluationTypeId: parseInt(evaluationDetails.evaluationType, 10),
-        supervisorIds: evaluationDetails.supervisors.map(id => parseInt(id, 10)), // Conversion en nombres
+        supervisorIds: evaluationDetails.supervisors, // Envoi de tous les superviseurs sélectionnés
         startDate: evaluationDetails.startDate,
         endDate: evaluationDetails.endDate,
       }));
 
-      console.log('Données envoyées au backend:', payload);
-
-      const response = await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation', payload);
-      console.log('Réponse du backend:', response.data);
-      
+      await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation', payload);
       setPlanningSuccess(true);
       setEmailSent(true);
       setTimeout(() => {
@@ -269,7 +265,6 @@ function SalaryListPlanning() {
       }, 3000);
     } catch (error) {
       console.error('Erreur lors de la planification :', error);
-      console.error('Détails de l\'erreur:', error.response?.data);
       setPlanningError('Une erreur est survenue lors de la planification.');
     }
   };
