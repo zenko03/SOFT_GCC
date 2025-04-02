@@ -5,6 +5,7 @@ import { UserProvider } from './pages/Evaluations/EvaluationInterview/UserContex
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/main.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
