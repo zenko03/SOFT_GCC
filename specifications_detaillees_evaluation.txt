@@ -1,0 +1,127 @@
+CAHIER DES CHARGES
+
+Mise en place d'un module d'évaluation des employés dans le système SOFT-GCC
+
+
+
+
+
+
+
+
+
+
+
+
+SOFTWELL
+Rédigé par : 	ANDRIAMANDRESIHAVONA Mikajy – Responsable Informatique
+INSSA Chalman – Stagiaire Développeur en Informatique	
+Septembre 2024
+
+
+SOMMAIRE
+I.    Introduction
+II.  Contexte du projet  
+III. Objectif du projet
+IV. Spécification technique
+V.  Description des fonctionnalités
+
+Introduction
+Ce document présente les spécifications détaillées du module d'évaluation des employés qui sera développé dans le cadre du projet de gestion des carrières et compétences chez Softwell. Le développement s'étendra sur une période de 3 mois, du 17 Septembre 2024 au 17 Décembre 2024.
+
+L'objectif est de définir de manière précise les fonctionnalités et spécifications techniques du module d'évaluation qui permettra d'automatiser et standardiser le processus d'évaluation des employés, d'assurer un suivi transparent des performances et de faciliter la prise de décision concernant l'évolution professionnelle.
+
+Les fonctionnalités décrites dans ce document feront l'objet de tests approfondis pour valider leur conformité avec les besoins exprimés par la direction. Le développement ne pourra débuter qu'après validation formelle de l'ensemble des spécifications par la direction.
+
+La direction se réserve le droit d'apporter des modifications aux spécifications en cours de projet. Dans ce cas, une réunion de cadrage sera organisée pour évaluer l'impact des changements sur le planning, les ressources et le budget. Les modifications ne seront implémentées qu'après accord mutuel sur la nouvelle version des spécifications et les ajustements nécessaires au niveau du projet.
+
+Contexte du projet
+Le module d'évaluation des employés est une composante essentielle du système de gestion des carrières et compétences, permettant un suivi structuré et objectif des performances des collaborateurs. Il vise à standardiser et automatiser le processus d'évaluation tout en assurant transparence et équité.
+
+Objectif du projet
+- Automatiser et standardiser le processus d'évaluation
+- Assurer un suivi transparent des performances
+- Faciliter la prise de décision pour l'évolution professionnelle  
+- Identifier les besoins en formation
+- Maintenir un historique complet des évaluations
+
+Spécification Techniques
+
+Architecture logicielle du système :
+Nous adoptons une architecture n-tiers basée sur le web afin de rendre le développement de l'application plus flexible et fluide. Cette architecture facilite l'intégration, le traçage des erreurs et assure une réutilisabilité par d'autres applications ou modules.
+
+Les couches de l'architecture :
+Couche de présentation :
+- Interface utilisateur intuitive pour la saisie des évaluations
+- Tableaux de bord et rapports personnalisables
+- Formulaires d'évaluation dynamiques
+
+Couche métier :
+- Logique de gestion des évaluations et notations
+- Workflow de validation
+- Calcul des indicateurs de performance
+
+Couche base de données :
+- Stockage sécurisé des évaluations
+- Historisation des données
+- Gestion des accès et permissions
+
+Choix technologiques :
+Pour optimiser la gestion de notre système d'évaluation et garantir un développement efficace, nous avons choisi les outils suivants :
+
+Technologies utilisées :
+
+Backend : L'application sera développée en C# avec le framework ASP.NET Core, qui offre d'excellentes performances, une architecture modulaire et une grande flexibilité pour le développement d'APIs REST. Ce choix permet également une intégration native avec les autres outils Microsoft.
+
+Frontend : L'interface utilisateur sera construite avec React.js, une bibliothèque JavaScript performante et largement adoptée, combinée à Bootstrap pour un design responsive et professionnel. Cette stack frontend moderne permettra une expérience utilisateur fluide et interactive.
+
+Base de données : Microsoft SQL Server sera utilisé pour le stockage des données, offrant une excellente intégration avec ASP.NET Core via Entity Framework Core. Cette combinaison assure une gestion robuste des données, des performances optimales et des fonctionnalités avancées de sécurité et de sauvegarde.
+
+Communication : L'architecture utilisera des APIs REST pour la communication entre le frontend et le backend, garantissant une séparation claire des responsabilités et une maintenance facilitée.
+
+Description des fonctionnalités :
+
+1. Gestion des évaluations
+- Création et configuration des campagnes d'évaluation
+- Attribution automatique des évaluateurs
+- Interface de saisie des évaluations
+- Workflow de validation multi-niveaux
+- Historique complet des évaluations
+
+2. Questionnaires d'évaluation  
+- Création de modèles de questionnaires personnalisables
+- Types de questions variés (échelle, QCM, texte libre)
+- Pondération des critères
+- Versions multilingues
+- Bibliothèque de modèles réutilisables
+
+3. Entretiens d'évaluation
+- Planification et suivi des entretiens
+- Guide d'entretien personnalisable  
+- Saisie des conclusions en temps réel
+- Définition des objectifs
+- Documentation des décisions
+
+4. Suggestions de formation
+- Identification automatique des besoins
+- Recommandations personnalisées
+- Suivi des formations planifiées
+- Évaluation de l'efficacité
+
+5. Tableaux de bord et rapports
+- Indicateurs de performance individuels et collectifs
+- Évolution des performances dans le temps
+- Rapports personnalisables et exportables
+- Visualisations graphiques
+
+6. Système de notification
+- Rappels automatiques des échéances
+- Alertes de validation en attente
+- Messagerie intégrée
+- Historique des communications
+
+7. Sécurité et confidentialité  
+- Gestion fine des droits d'accès
+- Protection des données sensibles
+- Conformité RGPD
+- Traçabilité des accès

@@ -5,6 +5,7 @@ using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Application.Dtos.EvaluationsDto;
+using soft_carriere_competence.Core.Entities.crud_career;
 using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
@@ -20,7 +21,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly EvaluationInterviewService _evaluationService;
         private readonly UserService _userService;
         private readonly IGenericRepository<Department> _departementRepository;
-        private readonly IGenericRepository<Poste> _posteRepository;
+        private readonly IGenericRepository<Position> _posteRepository;
 
 
 
@@ -417,7 +418,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         }
 
 
-        public async Task<Poste> GetPosteByIdAsync(int posteId)
+        public async Task<Position> GetPosteByIdAsync(int posteId)
         {
             return await _posteRepository.GetByIdAsync(posteId);
         }
@@ -427,7 +428,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return await _departementRepository.GetByIdAsync(departmentId);
         }
 
-        public async Task<IEnumerable<Poste>> GetAllPostesAsync()
+        public async Task<IEnumerable<Position>> GetAllPostesAsync()
         {
             return await _posteRepository.GetAllAsync();
         }

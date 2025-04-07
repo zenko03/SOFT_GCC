@@ -14,6 +14,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
 
         public int UserId { get; set; }
 
+
         [Column(TypeName = "date")]
         public DateTime StartDate { get; set; }
 
@@ -26,6 +27,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         public string? Comments { get; set; }
 
         [Column("IsServiceApproved ")]
+
         public bool? IsServiceApproved {  get; set; }
         [Column("isDgApproved")]
         public bool? isDgApproved {  get; set; }

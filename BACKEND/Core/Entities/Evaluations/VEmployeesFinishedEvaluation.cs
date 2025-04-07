@@ -6,7 +6,7 @@
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Position { get; set; }
-        public int? postId { get; set; }
+        public int? positionId { get; set; }
         public string? Department { get; set; }
         public DateTime? startDate { get; set; }
         public DateTime? endDate { get; set; }

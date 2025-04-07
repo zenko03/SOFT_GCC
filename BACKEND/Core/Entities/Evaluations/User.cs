@@ -1,4 +1,5 @@
-﻿using soft_carriere_competence.Core.Entities.Evaluations;
+﻿using soft_carriere_competence.Core.Entities.crud_career;
+using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -25,8 +26,8 @@ public class User
 
     [MaxLength(255)]
     public string Password { get; set; }
-    [Column("postId")]
-    public int PostId {  get; set; }
+    [Column("positionId")]
+    public int PositionId {  get; set; }
 
     
     [Column("role_id")]
@@ -49,7 +50,7 @@ public class User
     [ForeignKey("RoleId")]
     public Role? Role { get; set; }
     public Department? Department { get; set; }
-    [ForeignKey("PostId")]
-    public Poste? Poste { get; set; }
+    [ForeignKey("PositionId")]
+    public Position? Position { get; set; }
 
 }

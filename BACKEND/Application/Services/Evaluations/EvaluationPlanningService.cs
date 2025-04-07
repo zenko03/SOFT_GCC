@@ -4,6 +4,7 @@ using soft_carriere_competence.Core.Interface.EvaluationInterface;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Infrastructure.Data;
 using soft_carriere_competence.Core.Entities.salary_skills;
+using soft_carriere_competence.Core.Entities.crud_career;
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -17,12 +18,12 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         //private readonly IGenericRepository<Evaluation> _evaluationRepository;
 
         private readonly ApplicationDbContext _context;
-        private readonly IGenericRepository<Poste> _posteRepository;
+        private readonly IGenericRepository<Position> _posteRepository;
         private readonly IGenericRepository<Department> _departementRepository;
 
 
         public EvaluationPlanningService(ApplicationDbContext context, 
-            IGenericRepository<Department> department, IGenericRepository<Poste> poste)
+            IGenericRepository<Department> department, IGenericRepository<Position> poste)
         {
             _context = context;
             _posteRepository = poste;
@@ -37,7 +38,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     var query = _context.vEmployeeWithoutEvaluations.AsQueryable();
 
                     if (position.HasValue)
-                        query = query.Where(e => e.postId == position);
+                        query = query.Where(e => e.positionId == position);
 
                     if (department.HasValue)
                         query = query.Where(e => e.DepartmentId == department);
@@ -50,7 +51,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
                     return await query.ToListAsync();
         }
-        public async Task<Poste> GetPosteByIdAsync(int posteId)
+        public async Task<Position> GetPosteByIdAsync(int posteId)
         {
             return await _posteRepository.GetByIdAsync(posteId);
         } 
@@ -60,7 +61,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return await _departementRepository.GetByIdAsync(departmentId);
         }
 
-        public async Task<IEnumerable<Poste>> GetAllPostesAsync()
+        public async Task<IEnumerable<Position>> GetAllPostesAsync()
         {
             return await _posteRepository.GetAllAsync();
         }
@@ -82,7 +83,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             // Appliquer les filtres
             if (position.HasValue)
-                query = query.Where(e => e.postId == position);
+                query = query.Where(e => e.positionId == position);
 
             if (department.HasValue)
                 query = query.Where(e => e.DepartmentId == department);
