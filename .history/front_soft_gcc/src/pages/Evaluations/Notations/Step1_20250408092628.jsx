@@ -19,20 +19,15 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes }) => {
 
         // Récupérer les questions sélectionnées
         const questionsResponse = await axios.get(`https://localhost:7082/api/Evaluation/evaluation/${evaluationId}/selected-questions`);
-        // S'assurer que questions est un tableau
-        const questionsData = Array.isArray(questionsResponse.data) ? questionsResponse.data : [];
-        setQuestions(questionsData);
+        setQuestions(questionsResponse.data);
       } catch (err) {
         setError(err.message);
-        setQuestions([]); // S'assurer que questions reste un tableau vide en cas d'erreur
       } finally {
         setLoading(false);
       }
     };
 
-    if (evaluationId) {
-      fetchData();
-    }
+    fetchData();
   }, [evaluationId]);
 
   const handleRatingChange = (questionId, rating) => {
@@ -69,27 +64,23 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes }) => {
       <div>
         <h3 className="text-lg font-medium">Questions</h3>
         <div className="mt-4 space-y-4">
-          {questions.length > 0 ? (
-            questions.map(question => (
-              <div key={question.questionId} className="border rounded-lg p-4">
-                <p className="font-medium">{question.questionText}</p>
-                <div className="mt-2">
-                  <select
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    value={ratings[question.questionId] || ''}
-                    onChange={(e) => handleRatingChange(question.questionId, parseInt(e.target.value))}
-                  >
-                    <option value="">Sélectionner une note</option>
-                    {[1, 2, 3, 4, 5].map(score => (
-                      <option key={score} value={score}>{score}</option>
-                    ))}
-                  </select>
-                </div>
+          {questions.map(question => (
+            <div key={question.questionId} className="border rounded-lg p-4">
+              <p className="font-medium">{question.questionText}</p>
+              <div className="mt-2">
+                <select
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  value={ratings[question.questionId] || ''}
+                  onChange={(e) => handleRatingChange(question.questionId, parseInt(e.target.value))}
+                >
+                  <option value="">Sélectionner une note</option>
+                  {[1, 2, 3, 4, 5].map(score => (
+                    <option key={score} value={score}>{score}</option>
+                  ))}
+                </select>
               </div>
-            ))
-          ) : (
-            <div className="text-center text-gray-500">Aucune question disponible</div>
-          )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
