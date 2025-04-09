@@ -10,23 +10,46 @@ const Step1 = ({ evaluationId, setRatings, evaluationTypes, selectedEmployee }) 
   const [localRatings, setLocalRatings] = useState({});
   const [currentEvaluationType, setCurrentEvaluationType] = useState(null);
   const [isTypeSelected, setIsTypeSelected] = useState(false);
+  const [employeeEvalType, setEmployeeEvalType] = useState(null);
+
+  // Debug logs pour les props reçues
+  useEffect(() => {
+    console.log('Props reçues dans Step1:', {
+      evaluationId,
+      evaluationTypes,
+      selectedEmployee
+    });
+  }, [evaluationId, evaluationTypes, selectedEmployee]);
 
   // Charger les détails de l'évaluation et le type d'évaluation de l'employé
   useEffect(() => {
     const fetchEvaluationDetails = async () => {
+      if (!evaluationId) {
+        console.log("Pas d'ID d'évaluation fourni");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
+        console.log(`Récupération des détails de l'évaluation ${evaluationId}`);
+
         const response = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}`);
-        
-        // Définir le type d'évaluation actuel
-        const employeeEvalType = evaluationTypes.find(
-          type => type.EvaluationTypeId === response.data.evaluationTypeId
-        );
-        
-        if (employeeEvalType) {
-          setCurrentEvaluationType(employeeEvalType);
+        console.log('Détails de l\'évaluation reçus:', response.data);
+
+        if (response.data && response.data.evaluationTypeId) {
+          const evalType = evaluationTypes.find(
+            type => type.evaluationTypeId === response.data.evaluationTypeId
+          );
+
+          console.log('Type d\'évaluation trouvé:', evalType);
+
+          if (evalType) {
+            setEmployeeEvalType(evalType);
+            setCurrentEvaluationType(evalType);
+          }
         }
-        
+
         setLoading(false);
       } catch (error) {
         console.error('Erreur lors du chargement des détails:', error);
@@ -35,18 +58,19 @@ const Step1 = ({ evaluationId, setRatings, evaluationTypes, selectedEmployee }) 
       }
     };
 
-    if (evaluationId) {
-      fetchEvaluationDetails();
-    }
+    fetchEvaluationDetails();
   }, [evaluationId, evaluationTypes]);
 
-  // Charger les questions sélectionnées une fois le type d'évaluation choisi
   const loadSelectedQuestions = async () => {
     try {
       setLoading(true);
+      console.log(`Chargement des questions pour l'évaluation ${evaluationId}`);
+
       const response = await axios.get(
         `https://localhost:7082/api/Evaluation/evaluation/${evaluationId}/selected-questions`
       );
+
+      console.log('Questions reçues:', response.data);
       setQuestions(response.data.questions);
       setIsTypeSelected(true);
       setLoading(false);
@@ -57,16 +81,22 @@ const Step1 = ({ evaluationId, setRatings, evaluationTypes, selectedEmployee }) 
     }
   };
 
-  const handleEvaluationTypeSelect = async (type) => {
-    if (type.EvaluationTypeId === currentEvaluationType?.EvaluationTypeId) {
-      await loadSelectedQuestions();
-    }
-  };
+  const handleEvaluationTypeChange = async (event) => {
+    const selectedTypeId = event.target.value;
+    console.log('Type d\'évaluation sélectionné:', selectedTypeId);
 
-  const handleRatingChange = (questionId, rating) => {
-    const newRatings = { ...localRatings, [questionId]: rating };
-    setLocalRatings(newRatings);
-    setRatings(newRatings);
+    const selectedType = evaluationTypes.find(
+      type => type.evaluationTypeId.toString() === selectedTypeId
+    );
+
+    if (selectedType) {
+      console.log('Type trouvé:', selectedType);
+      setCurrentEvaluationType(selectedType);
+
+      if (selectedType.evaluationTypeId === employeeEvalType?.evaluationTypeId) {
+        await loadSelectedQuestions();
+      }
+    }
   };
 
   if (loading) {
@@ -80,28 +110,30 @@ const Step1 = ({ evaluationId, setRatings, evaluationTypes, selectedEmployee }) 
   return (
     <div className="step1-container">
       {!isTypeSelected ? (
-        // Affichage des types d'évaluation
-        <div className="evaluation-types-section">
-          <h3>Sélectionnez le type d'évaluation</h3>
-          <div className="evaluation-types-grid">
-            {evaluationTypes.map((type) => (
-              <button
-                key={type.EvaluationTypeId}
-                className={`evaluation-type-button ${
-                  type.EvaluationTypeId === currentEvaluationType?.EvaluationTypeId
-                    ? 'active'
-                    : 'disabled'
-                }`}
-                onClick={() => handleEvaluationTypeSelect(type)} disabled={type.EvaluationTypeId !== currentEvaluationType?.EvaluationTypeId}
-              >
-                {type.Designation}
-              </button>
-            ))}
+        <div className="evaluation-type-selection">
+          <h3>Type d'évaluation pour {selectedEmployee?.firstName} {selectedEmployee?.lastName}</h3>
+          <div className="evaluation-select-container">
+            <select
+              className="evaluation-select"
+              value={currentEvaluationType?.evaluationTypeId || ''}
+              onChange={handleEvaluationTypeChange}
+            >
+              <option value="" disabled>Sélectionnez un type d'évaluation</option>
+              {evaluationTypes.map((type) => (
+                <option
+                  key={type.evaluationTypeId}
+                  value={type.evaluationTypeId}
+                  disabled={type.evaluationTypeId !== employeeEvalType?.evaluationTypeId}
+                >
+                  {type.designation}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       ) : (
         <div className="questions-section">
-          <h2>Questions pour le type d'évaluation: {currentEvaluationType?.Designation}</h2>
+          <h2>Questions pour le type d'évaluation: {currentEvaluationType?.designation}</h2>
           {questions.map((question) => (
             <div key={question.questionId} className="question-item">
               <p className="question-text">{question.text}</p>
@@ -129,8 +161,8 @@ Step1.propTypes = {
   setRatings: PropTypes.func.isRequired,
   evaluationTypes: PropTypes.arrayOf(
     PropTypes.shape({
-      EvaluationTypeId: PropTypes.string.isRequired,
-      Designation: PropTypes.string.isRequired
+      evaluationTypeId: PropTypes.string.isRequired,
+      designation: PropTypes.string.isRequired
     })
   ).isRequired,
   selectedEmployee: PropTypes.object.isRequired,

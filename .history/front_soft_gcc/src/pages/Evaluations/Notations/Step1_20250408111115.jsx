@@ -10,6 +10,7 @@ const Step1 = ({ evaluationId, setRatings, evaluationTypes, selectedEmployee }) 
   const [localRatings, setLocalRatings] = useState({});
   const [currentEvaluationType, setCurrentEvaluationType] = useState(null);
   const [isTypeSelected, setIsTypeSelected] = useState(false);
+  const [employeeEvalType, setEmployeeEvalType] = useState(null);
 
   // Charger les détails de l'évaluation et le type d'évaluation de l'employé
   useEffect(() => {
@@ -18,13 +19,17 @@ const Step1 = ({ evaluationId, setRatings, evaluationTypes, selectedEmployee }) 
         setLoading(true);
         const response = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}`);
         
-        // Définir le type d'évaluation actuel
-        const employeeEvalType = evaluationTypes.find(
+        // Vérifier et définir le type d'évaluation de l'employé
+        const evalType = evaluationTypes.find(
           type => type.EvaluationTypeId === response.data.evaluationTypeId
         );
         
-        if (employeeEvalType) {
-          setCurrentEvaluationType(employeeEvalType);
+        if (evalType) {
+          setEmployeeEvalType(evalType);
+          setCurrentEvaluationType(evalType);
+          console.log("Type d'évaluation trouvé:", evalType.Designation);
+        } else {
+          console.log("Aucun type d'évaluation correspondant trouvé");
         }
         
         setLoading(false);
@@ -35,12 +40,11 @@ const Step1 = ({ evaluationId, setRatings, evaluationTypes, selectedEmployee }) 
       }
     };
 
-    if (evaluationId) {
+    if (evaluationId && evaluationTypes.length > 0) {
       fetchEvaluationDetails();
     }
   }, [evaluationId, evaluationTypes]);
 
-  // Charger les questions sélectionnées une fois le type d'évaluation choisi
   const loadSelectedQuestions = async () => {
     try {
       setLoading(true);
@@ -57,16 +61,14 @@ const Step1 = ({ evaluationId, setRatings, evaluationTypes, selectedEmployee }) 
     }
   };
 
-  const handleEvaluationTypeSelect = async (type) => {
-    if (type.EvaluationTypeId === currentEvaluationType?.EvaluationTypeId) {
+  const handleEvaluationTypeChange = async (event) => {
+    const selectedTypeId = event.target.value;
+    const selectedType = evaluationTypes.find(type => type.EvaluationTypeId === selectedTypeId);
+    
+    if (selectedType && selectedType.EvaluationTypeId === employeeEvalType?.EvaluationTypeId) {
+      setCurrentEvaluationType(selectedType);
       await loadSelectedQuestions();
     }
-  };
-
-  const handleRatingChange = (questionId, rating) => {
-    const newRatings = { ...localRatings, [questionId]: rating };
-    setLocalRatings(newRatings);
-    setRatings(newRatings);
   };
 
   if (loading) {
@@ -80,23 +82,25 @@ const Step1 = ({ evaluationId, setRatings, evaluationTypes, selectedEmployee }) 
   return (
     <div className="step1-container">
       {!isTypeSelected ? (
-        // Affichage des types d'évaluation
-        <div className="evaluation-types-section">
-          <h3>Sélectionnez le type d'évaluation</h3>
-          <div className="evaluation-types-grid">
-            {evaluationTypes.map((type) => (
-              <button
-                key={type.EvaluationTypeId}
-                className={`evaluation-type-button ${
-                  type.EvaluationTypeId === currentEvaluationType?.EvaluationTypeId
-                    ? 'active'
-                    : 'disabled'
-                }`}
-                onClick={() => handleEvaluationTypeSelect(type)} disabled={type.EvaluationTypeId !== currentEvaluationType?.EvaluationTypeId}
-              >
-                {type.Designation}
-              </button>
-            ))}
+        <div className="evaluation-type-selection">
+          <h3>Type d'évaluation pour {selectedEmployee?.firstName} {selectedEmployee?.lastName}</h3>
+          <div className="evaluation-select-container">
+            <select
+              className="evaluation-select"
+              value={currentEvaluationType?.EvaluationTypeId || ''}
+              onChange={handleEvaluationTypeChange}
+            >
+              <option value="" disabled>Sélectionnez un type d'évaluation</option>
+              {evaluationTypes.map((type) => (
+                <option
+                  key={type.EvaluationTypeId}
+                  value={type.EvaluationTypeId}
+                  disabled={type.EvaluationTypeId !== employeeEvalType?.EvaluationTypeId}
+                >
+                  {type.Designation}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       ) : (
