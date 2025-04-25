@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import './Step1.css';
 
-const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEvaluationTypeSelect }) => {
+const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes, onEvaluationTypeSelect }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [localRatings, setLocalRatings] = useState({});
@@ -11,51 +11,28 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEval
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [evaluationDetails, setEvaluationDetails] = useState(null);
 
-  // Debug logging
-  useEffect(() => {
-    console.log('Evaluation ID:', evaluationId);
-    console.log('Evaluation Types:', evaluationTypes);
-  }, [evaluationId, evaluationTypes]);
-
   useEffect(() => {
     const fetchEvaluationDetails = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        if (!evaluationId) {
-          setError("ID d'évaluation non spécifié");
-          setLoading(false);
-          return;
-        }
-
         // Récupérer les détails de l'évaluation
         const evaluationResponse = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}`);
         const evaluationData = evaluationResponse.data;
         setEvaluationDetails(evaluationData);
-        console.log('Détails de l\'évaluation:', evaluationData);
 
         // Trouver le type d'évaluation correspondant
-        if (evaluationTypes && evaluationTypes.length > 0) {
-          const currentType = evaluationTypes.find(type => 
-            type.evaluationTypeId === evaluationData.evaluationTypeId
-          );
-          
-          if (currentType) {
-            console.log('Type d\'évaluation trouvé:', currentType);
-            setSelectedEvaluationType(currentType);
-          } else {
-            console.log('Type d\'évaluation non trouvé dans la liste des types');
-          }
-        }
+        const currentType = evaluationTypes.find(type => type.evaluationTypeId === evaluationData.evaluationTypeId);
+        setSelectedEvaluationType(currentType);
 
         // Initialiser les notes locales
-        setLocalRatings(ratings || {});
+        setLocalRatings(ratings);
 
-        setLoading(false);
       } catch (err) {
         console.error('Erreur lors du chargement des détails de l\'évaluation:', err);
         setError('Erreur lors du chargement des détails de l\'évaluation. Veuillez réessayer.');
+      } finally {
         setLoading(false);
       }
     };
@@ -63,25 +40,11 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEval
     if (evaluationId) {
       fetchEvaluationDetails();
     }
-  }, [evaluationId, evaluationTypes, ratings]);
+  }, [evaluationId, evaluationTypes]);
 
   const handleEvaluationTypeChange = async (e) => {
     const typeId = parseInt(e.target.value);
-    console.log('Type sélectionné ID:', typeId);
-    
-    if (isNaN(typeId)) {
-      console.log('ID de type invalide');
-      return;
-    }
-    
     const selectedType = evaluationTypes.find(type => type.evaluationTypeId === typeId);
-    
-    if (!selectedType) {
-      console.log('Type sélectionné non trouvé dans la liste');
-      return;
-    }
-    
-    console.log('Type sélectionné:', selectedType);
     setSelectedEvaluationType(selectedType);
     
     if (onEvaluationTypeSelect) {
@@ -91,9 +54,11 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEval
     // Vérifier si le type sélectionné correspond au type de l'évaluation
     if (evaluationDetails && selectedType.evaluationTypeId === evaluationDetails.evaluationTypeId) {
       try {
+        // Récupérer les questions sélectionnées pour cette évaluation
         const response = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}/selected-questions`);
         setSelectedQuestions(response.data || []);
         
+        // Réinitialiser les notes pour les nouvelles questions
         const newRatings = {};
         response.data.forEach(question => {
           newRatings[question.questionId] = 0;
@@ -138,12 +103,9 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEval
           onChange={handleEvaluationTypeChange}
         >
           <option value="">Sélectionnez un type d&apos;évaluation</option>
-          {evaluationTypes && evaluationTypes.map((type, index) => (
-            <option 
-              key={`eval-type-${type.evaluationTypeId || index}`} 
-              value={type.evaluationTypeId}
-            >
-              {type.designation}
+          {evaluationTypes.map(type => (
+            <option key={type.evaluationTypeId} value={type.evaluationTypeId}>
+              {type.Designation}
             </option>
           ))}
         </select>
@@ -153,12 +115,12 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEval
         <div className="questions-section">
           <h3>Questions</h3>
           {selectedQuestions.map(question => (
-            <div key={`question-${question.questionId}`} className="question-item">
+            <div key={question.questionId} className="question-item">
               <p>{question.text}</p>
               <div className="rating-buttons">
                 {[1, 2, 3, 4, 5].map(rating => (
                   <button
-                    key={`rating-${question.questionId}-${rating}`}
+                    key={rating}
                     className={`rating-button ${localRatings[question.questionId] === rating ? 'selected' : ''}`}
                     onClick={() => handleRatingChange(question.questionId, rating)}
                   >
@@ -192,11 +154,10 @@ Step1.propTypes = {
   ratings: PropTypes.object.isRequired,
   evaluationTypes: PropTypes.arrayOf(
     PropTypes.shape({
-      evaluationTypeId: PropTypes.number,
-      designation: PropTypes.string,
-      state: PropTypes.number
+      evaluationTypeId: PropTypes.number.isRequired,
+      Designation: PropTypes.string.isRequired
     })
-  ),
+  ).isRequired,
   onEvaluationTypeSelect: PropTypes.func
 };
 

@@ -38,7 +38,7 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEval
         // Trouver le type d'évaluation correspondant
         if (evaluationTypes && evaluationTypes.length > 0) {
           const currentType = evaluationTypes.find(type => 
-            type.evaluationTypeId === evaluationData.evaluationTypeId
+            type.EvaluationTypeId === evaluationData.evaluationTypeId
           );
           
           if (currentType) {
@@ -74,7 +74,7 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEval
       return;
     }
     
-    const selectedType = evaluationTypes.find(type => type.evaluationTypeId === typeId);
+    const selectedType = evaluationTypes.find(type => type.EvaluationTypeId === typeId);
     
     if (!selectedType) {
       console.log('Type sélectionné non trouvé dans la liste');
@@ -89,7 +89,7 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEval
     }
 
     // Vérifier si le type sélectionné correspond au type de l'évaluation
-    if (evaluationDetails && selectedType.evaluationTypeId === evaluationDetails.evaluationTypeId) {
+    if (evaluationDetails && selectedType.EvaluationTypeId === evaluationDetails.evaluationTypeId) {
       try {
         const response = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}/selected-questions`);
         setSelectedQuestions(response.data || []);
@@ -134,16 +134,16 @@ const Step1 = ({ evaluationId, setRatings, ratings, evaluationTypes = [], onEval
         <h3>Type d&apos;évaluation</h3>
         <select
           className="evaluation-type-select"
-          value={selectedEvaluationType?.evaluationTypeId || ''}
+          value={selectedEvaluationType?.EvaluationTypeId || ''}
           onChange={handleEvaluationTypeChange}
         >
           <option value="">Sélectionnez un type d&apos;évaluation</option>
           {evaluationTypes && evaluationTypes.map((type, index) => (
             <option 
-              key={`eval-type-${type.evaluationTypeId || index}`} 
-              value={type.evaluationTypeId}
+              key={`eval-type-${type.EvaluationTypeId || index}`} 
+              value={type.EvaluationTypeId}
             >
-              {type.designation}
+              {type.Designation}
             </option>
           ))}
         </select>
@@ -192,9 +192,8 @@ Step1.propTypes = {
   ratings: PropTypes.object.isRequired,
   evaluationTypes: PropTypes.arrayOf(
     PropTypes.shape({
-      evaluationTypeId: PropTypes.number,
-      designation: PropTypes.string,
-      state: PropTypes.number
+      EvaluationTypeId: PropTypes.number,
+      Designation: PropTypes.string
     })
   ),
   onEvaluationTypeSelect: PropTypes.func
