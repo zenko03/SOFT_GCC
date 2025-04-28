@@ -26,7 +26,8 @@ const ModelEdit = () => {
         { value: "{anciennete}", label: "Ancienneté" },
       ];
 
-      const [selectedLanguages, setSelectedLanguages] = useState([]);
+    const [selectedLanguages, setSelectedLanguages] = useState([]);
+    const [logoPreview, setLogoPreview] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,12 +38,11 @@ const ModelEdit = () => {
       { id: 1, title: "Introduction", content: "Bienvenue {{Nom}}, aujourd’hui nous sommes le {{Date}}." },
     ]);
     const [variables] = useState(["Nom", "Date", "Poste", "Société"]);
-    const [formData, setFormData] = useState({ Nom: "Jean Dupont", Date: "02/04/2025", Poste: "Développeur", Société: "TechCorp" });
     const [showPreview, setShowPreview] = useState(false);
   
     // Ajouter une nouvelle section
     const addSection = () => {
-      setSections([...sections, { id: sections.length + 1, title: "", content: "" }]);
+      setSections([...sections, { id: sections.length + 1, content: "" }]);
     };
   
     // Supprimer une section
@@ -70,10 +70,17 @@ const ModelEdit = () => {
       );
     };
   
-    // Générer un aperçu avec les variables remplies
-    const generatePreview = (content) => {
-      return content.replace(/\{\{(.*?)\}\}/g, (_, key) => formData[key] || `{{${key}}}`);
+    const handleLogoChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        setLogoPreview(URL.createObjectURL(file));
+      }
     };
+    
+    // Générer un aperçu avec les variables remplies
+    /*const generatePreview = (content) => {
+      return content.replace(/\{\{(.*?)\}\}/g, (_, key) => formData[key] || `{{${key}}}`);
+    };*/
 
   return (
     <Template>
@@ -104,14 +111,20 @@ const ModelEdit = () => {
                                     isMulti
                                     className="basic-multi-select"
                                     classNamePrefix="select"
-                                    placeholder="Choisissez des langues..."
+                                    placeholder="Choisissez..."
                                     value={selectedLanguages}
                                     onChange={setSelectedLanguages}
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="exampleInputEmail1">Ajouter un logo</label>
-                                <input type="file" name="logo" className="form-control" id="exampleInputEmail1"/>
+                              <label htmlFor="logoUpload">Ajouter un logo</label>
+                              <input 
+                                type="file" 
+                                name="logo" 
+                                className="form-control" 
+                                id="logoUpload"
+                                onChange={handleLogoChange} 
+                              />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="exampleInputEmail1">Insértion de la signature personnalisée</label>
@@ -135,59 +148,48 @@ const ModelEdit = () => {
                         </div>
                     </div>
                 </div>
-            </div>
-                
-                <div className="container mt-4">
-                      <h2>📌 Gestion de contenu dynamique</h2>
-                
-                      {sections.map((section) => (
-                        <Card key={section.id} className="mb-3 shadow-sm p-3">
-                          <Row>
-                            <Col md={4}>
-                              <Form.Group>
-                                <Form.Label>Titre</Form.Label>
-                                <Form.Control
-                                  type="text"
-                                  value={section.title}
-                                  onChange={(e) => updateSection(section.id, "title", e.target.value)}
-                                />
-                              </Form.Group>
-                            </Col>
-                            <Col md={6}>
-                              <Form.Group>
-                                <Form.Label>Contenu</Form.Label>
-                                <Form.Control
-                                  as="textarea"
-                                  rows={2}
-                                  value={section.content}
-                                  onChange={(e) => updateSection(section.id, "content", e.target.value)}
-                                />
-                              </Form.Group>
-                            </Col>
-                            <Col md={2} className="d-flex align-items-end gap-2">
-                              <Dropdown onSelect={(variable) => insertVariable(section.id, variable)}>
-                                <Dropdown.Toggle variant="secondary">
-                                  <Icon path={mdiFormatListBulleted} size={1} className="me-2" />
-                                  Ajouter champ
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                  {variables.map((variable) => (
-                                    <Dropdown.Item key={variable} eventKey={variable}>
-                                      {variable}
-                                    </Dropdown.Item>
-                                  ))}
-                                </Dropdown.Menu>
-                              </Dropdown>
-                              <Button variant="danger" onClick={() => removeSection(section.id)}>
-                                <Icon path={mdiDelete} size={1} />
-                              </Button>
-                            </Col>
-                          </Row>
-                        </Card>
+                <div className="col-md-6 grid-margin stretch-card">
+                  <Card className="mb-3 shadow-sm p-3">
+                    <Row>
+                    {sections.map((section) => (
+                      <>
+                        <Col md={6}>
+                          <Form.Group  key={section.id}>
+                            <Form.Label>Contenu {section.id}</Form.Label>
+                            <Form.Control
+                              as="textarea"
+                              rows={2}
+                              value={section.content}
+                              onChange={(e) => updateSection(section.id, "content", e.target.value)}
+                            />
+                          </Form.Group>
+
+                          </Col>
+                          <Col md={2} className="d-flex align-items-end gap-2">
+                            <Dropdown onSelect={(variable) => insertVariable(section.id, variable)}>
+                              <Dropdown.Toggle variant="secondary">
+                                <Icon path={mdiFormatListBulleted} size={1} className="me-2" />
+                                Ajouter champ
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu>
+                                {variables.map((variable) => (
+                                  <Dropdown.Item key={variable} eventKey={variable}>
+                                    {variable}
+                                  </Dropdown.Item>
+                                ))}
+                              </Dropdown.Menu>
+                            </Dropdown>
+                            <Button variant="danger" onClick={() => removeSection(section.id)}>
+                              <Icon path={mdiDelete} size={1} />
+                            </Button>
+                          </Col>
+                      </>
+                      
                       ))}
-                
-                      {/* Boutons d'action */}
-                      <div className="mt-3 d-flex gap-2">
+
+                     
+                       {/* Boutons d'action */}
+                       <div className="mt-3 d-flex gap-2">
                         <Button variant="success" onClick={addSection}>
                           <Icon path={mdiPlus} size={1} className="me-2" />
                           Ajouter une section
@@ -198,15 +200,28 @@ const ModelEdit = () => {
                           Voir l'aperçu
                         </Button>
                       </div>
+                    </Row>
+                  </Card>
+                </div>
+            </div>
                 
+
+
+                <div className="container mt-4">
+                      
+                     
                       {/* Aperçu du contenu */}
                       {showPreview && (
                         <Card className="mt-4 p-3 shadow-sm">
-                          <h4>Aperçu du document</h4>
+                          {logoPreview && (
+                            <div className="mb-3 text-center">
+                              <img src={logoPreview} alt="Logo" style={{ width: '150px', objectFit: 'contain' }} />
+                            </div>
+                          )}
+                          <h4>Attestation de travail</h4>
                           {sections.map((section) => (
                             <div key={section.id} className="mb-3">
-                              <h5>{section.title || "Titre vide"}</h5>
-                              <p>{generatePreview(section.content)}</p>
+                              <p>{section.content}</p>
                             </div>
                           ))}
                         </Card>
