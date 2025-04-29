@@ -17,17 +17,9 @@ const ModelEdit = () => {
     // Initialisation des variables d'états
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    const options = [
-        { value: "{nom}", label: "Nom" },
-        { value: "{prenom}", label: "Prenom" },
-        { value: "{date_embauche}", label: "Date embauche" },
-        { value: "{position}", label: "Poste" },
-        { value: "{anciennete}", label: "Ancienneté" },
-      ];
-
     const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [logoPreview, setLogoPreview] = useState(null);
+    const [signaturePreview, setSignaturePreview] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,7 +29,7 @@ const ModelEdit = () => {
   const [sections, setSections] = useState([
       { id: 1, title: "Introduction", content: "Bienvenue {{Nom}}, aujourd’hui nous sommes le {{Date}}." },
     ]);
-    const [variables] = useState(["Nom", "Date", "Poste", "Société"]);
+    const [variables] = useState(["Nom", "Prenom", "Date_embauche", "Poste", "Société", "Ancienneté"]);
     const [showPreview, setShowPreview] = useState(false);
   
     // Ajouter une nouvelle section
@@ -77,6 +69,21 @@ const ModelEdit = () => {
       }
     };
     
+    const handleSignatureChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        setSignaturePreview(URL.createObjectURL(file));
+      }
+    };
+
+    const removeLogo = () => {
+      setLogoPreview(null);
+    };
+    
+    const removeSignature = () => {
+      setSignaturePreview(null);
+    };
+    
     // Générer un aperçu avec les variables remplies
     /*const generatePreview = (content) => {
       return content.replace(/\{\{(.*?)\}\}/g, (_, key) => formData[key] || `{{${key}}}`);
@@ -105,18 +112,6 @@ const ModelEdit = () => {
                                 <input type="text" name="modelName" className="form-control" id="exampleInputEmail1"/>
                             </div>
                             <div className="form-group">
-                                <label htmlFor="exampleInputEmail1">Contenu dynamique du modèle</label>
-                                <Select
-                                    options={options}
-                                    isMulti
-                                    className="basic-multi-select"
-                                    classNamePrefix="select"
-                                    placeholder="Choisissez..."
-                                    value={selectedLanguages}
-                                    onChange={setSelectedLanguages}
-                                />
-                            </div>
-                            <div className="form-group">
                               <label htmlFor="logoUpload">Ajouter un logo</label>
                               <input 
                                 type="file" 
@@ -125,11 +120,34 @@ const ModelEdit = () => {
                                 id="logoUpload"
                                 onChange={handleLogoChange} 
                               />
+                              {logoPreview && (
+                                <div className="mt-2">
+                                  <img src={logoPreview} alt="Logo" style={{ width: '150px', objectFit: 'contain' }} />
+                                  <Button variant="danger" size="sm" onClick={removeLogo} className="mt-2">
+                                    Supprimer le logo
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                             <div className="form-group">
-                                <label htmlFor="exampleInputEmail1">Insértion de la signature personnalisée</label>
-                                <input type="file" name="sgnature" className="form-control" id="exampleInputEmail1"/>
+                              <label htmlFor="signatureUpload">Ajouter une signature</label>
+                              <input 
+                                type="file" 
+                                name="signature" 
+                                className="form-control" 
+                                id="signatureUpload"
+                                onChange={handleSignatureChange} 
+                              />
+                              {signaturePreview && (
+                                <div className="mt-2">
+                                  <img src={signaturePreview} alt="Signature" style={{ width: '150px', objectFit: 'contain' }} />
+                                  <Button variant="danger" size="sm" onClick={removeSignature} className="mt-2">
+                                    Supprimer la signature
+                                  </Button>
+                                </div>
+                              )}
                             </div>
+
                             <div className="button-save-profil">
                                 <button type="button" className="btn btn-success btn-fw">
                                     <i className="mdi mdi-content-save-edit" style={{paddingRight: '5px'}}></i>Enregistrer
@@ -186,6 +204,11 @@ const ModelEdit = () => {
                       </>
                       
                       ))}
+Nous, Société , attestons par la présente que Monsieur Joss Elito travaille avec un contrat
+à durée indéterminée, au sein de notre établissement en qualité de :
+• Développeur depuis le le 8 mars 2025 à ce jour
+Monsieur Joss Elito n'est actuellement ni démissionnaire ni en procédure de licenciement.
+En foi de quoi, la présente attestation lui est délivrée pour servir et valoir ce que de droit.
 
                      
                        {/* Boutons d'action */}
@@ -204,30 +227,39 @@ const ModelEdit = () => {
                   </Card>
                 </div>
             </div>
-                
-
-
-                <div className="container mt-4">
-                      
-                     
+            <div className="container mt-4">                     
                       {/* Aperçu du contenu */}
                       {showPreview && (
                         <Card className="mt-4 p-3 shadow-sm">
                           {logoPreview && (
-                            <div className="mb-3 text-center">
+                            <div className="mb-3 text-start">
                               <img src={logoPreview} alt="Logo" style={{ width: '150px', objectFit: 'contain' }} />
                             </div>
                           )}
-                          <h4>Attestation de travail</h4>
+
+                          <h2 className="text-center fw-bold">Attestation de travail</h2>
+
                           {sections.map((section) => (
                             <div key={section.id} className="mb-3">
                               <p>{section.content}</p>
                             </div>
                           ))}
+                          <div className="mt-5 text-end">
+                            <p>Antananarivo,</p>
+                            <p>La Directrice Administrative et Financière</p>
+                          </div>
+                          <div className="mt-5 text-start">
+                            <p><strong>Motif : Admnistratif</strong></p>
+                          </div>
+                          {signaturePreview && (
+                            <div className="mt-5 text-end">
+                              <img src={signaturePreview} alt="Signature" style={{ width: '150px', objectFit: 'contain' }} />
+                              <p><strong>RAMAMONJISOA Voahangy Lalao</strong></p>
+                            </div>
+                          )}
                         </Card>
                       )}
-                    </div>
-
+            </div>
         </form>
     </Template>
   );
