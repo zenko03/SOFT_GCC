@@ -5,6 +5,7 @@ import logo from '../../assets/images/Logo/softwellogo.png';
 import Fetcher from '../Fetcher';
 import DateDisplayNoTime from '../../helpers/DateDisplayNoTime';
 import DateDisplayWithTime from '../../helpers/DateDisplayWithTime';
+import ModelEdit from '../../pages/certificateManagement/ModelEdit';
 
 const formatDate = (dateString) => {
   if (!dateString) return ''; // Vérification pour éviter les erreurs si la date est vide
@@ -246,6 +247,7 @@ function Certificate({dataEmployee}) {
           </PDFViewer>
         </div>
       )}
+      <ModelEdit />
     </div>
   );
 }
