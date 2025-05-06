@@ -6,9 +6,12 @@ namespace soft_carriere_competence.Core.Entities.career_plan
 	public class VEmployeeCareer
 	{
 		[Column("Registration_number")]
-		public string RegistrationNumber { get; set; } 
+		public string RegistrationNumber { get; set; }
 
-		[Column("Name")]
+        [Column("civilite_name")]
+        public string CiviliteName { get; set; }
+
+        [Column("Name")]
 		public string Name { get; set; }
 
 		[Column("FirstName")]

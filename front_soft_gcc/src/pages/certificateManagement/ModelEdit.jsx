@@ -19,8 +19,10 @@ import html2pdf from "html2pdf.js";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { motion, AnimatePresence } from "framer-motion";
+import DateDisplayNoTime from "../../helpers/DateDisplayNoTime";
+import { Border } from "docx";
 
-const ModelEdit = () => {
+const ModelEdit = ({ dataEmployee }) => {
   const module = "Modèle attestation";
   const action = "Liste";
   const url = "/modèle";
@@ -57,10 +59,12 @@ const ModelEdit = () => {
   });
 
   const [aboutModel, setAboutModel] = useState({
+    reference: "",
     place: "",
     signatoryPosition: "",
     reason: "",
-    signatoryName: ""
+    signatoryName: "",
+    date: ""
   });
 
   const previewRef = useRef(); // Référence pour l'export PDF
@@ -125,7 +129,22 @@ const ModelEdit = () => {
     }));
   };
 
-
+  const replaceVariables = (text) => {
+    if (!dataEmployee) return text;
+  
+    const mapping = {
+      Nom: dataEmployee.name || "",
+      Prenom: dataEmployee.firstName || "",
+      Date_embauche: dataEmployee.hiringDate || "",
+      Poste: dataEmployee.positionName || "",
+      Société: dataEmployee.societe || "",
+      Ancienneté: dataEmployee.anciennete || "",
+      Civilité: dataEmployee.civilite || "",
+    };
+  
+    return text.replace(/{{(.*?)}}/g, (_, key) => mapping[key.trim()] || "");
+  };
+  
   return (
       <Container fluid>
         <h4 className="mb-4 fw-bold">Création d'un modèle d'attestation</h4>
@@ -137,8 +156,16 @@ const ModelEdit = () => {
                 <Card.Body>
                   <h5 className="fw-semibold mb-3">À propos du modèle</h5>
                   <Form.Group className="mb-3">
+                    <Form.Label>Réference</Form.Label>
+                    <Form.Control type="text" name="reference" value={aboutModel.reference} onChange={handleChange} />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
                     <Form.Label>Fait à</Form.Label>
                     <Form.Control type="text" name="place" placeholder="Antananarivo" value={aboutModel.place} onChange={handleChange} />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Le</Form.Label>
+                    <Form.Control type="date" name="date" placeholder="date de soumission" value={aboutModel.date} onChange={handleChange} />
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>Par</Form.Label>
@@ -348,46 +375,54 @@ const ModelEdit = () => {
                         </div>
                       )}
 
-                      <h4 className="text-center fw-bold">
-                        Attestation de travail
-                      </h4>
+                      <p className="text-center fw-bold" style={{fontSize: '30px'}}>
+                        <b>ATTESTATION DE TRAVAIL</b>
+                      </p>
+                      <p className="text-center">
+                        <strong style={{textDecoration: 'underline'}}>Ref </strong>: {aboutModel.reference}
+                      </p>
                       {sections.map((section) => (
                         <div
                           key={section.id}
                           className="mb-3"
                           dangerouslySetInnerHTML={{
-                            __html: section.content,
+                            __html: replaceVariables(section.content),
                           }}
                         />
                       ))}
 
-                      <div className="mt-5 text-end">
-                        <p>{aboutModel.place},</p>
-                        <p>{aboutModel.signatoryPosition}</p>
-                      </div>
+                      <Row>
+                        <Col md={6}>
+                          <div className="mt-4 text-start">
+                            <p>
+                              <strong style={{textDecoration: 'underline'}}>Motif </strong>: <strong>{aboutModel.reason}</strong>
+                            </p>
+                          </div>
+                        </Col>
+                        <Col md={6} className="text-md-end">
+                          <div className="mt-5 text-end">
+                            <p>Fait à <strong>{aboutModel.place}</strong>, le <strong><DateDisplayNoTime isoDate={aboutModel.date} /></strong></p>
+                            <p><strong>{aboutModel.signatoryPosition}</strong></p>
+                          </div>
 
-                      <div className="mt-4 text-start">
-                        <p>
-                          <strong>Motif : {aboutModel.reason}</strong>
-                        </p>
-                      </div>
+                          {signaturePreview && (
+                            <div className="mt-2 text-end">
+                              <img
+                                src={signaturePreview}
+                                alt="Signature"
+                                style={{ width: "150px", objectFit: "contain" }}
+                              />
+                              <p>
+                                <strong>{aboutModel.signatoryName}</strong>
+                              </p>
+                            </div>
+                          )}
+                        </Col>
+                      </Row>                      
+                      
 
-                      {signaturePreview && (
-                        <div className="mt-5 text-end">
-                          <img
-                            src={signaturePreview}
-                            alt="Signature"
-                            style={{ width: "150px", objectFit: "contain" }}
-                          />
-                          <p>
-                            <strong>{aboutModel.signatoryName}</strong>
-                          </p>
-                        </div>
-                      )}
-
-                      <hr className="my-4" />
-                      <footer className="pt-3 border-top text-muted small">
-                        <Row>
+                      <footer className="pt-5 text-muted small">
+                        <Row style={{background: '#e6e9ed', padding: '50px'}}>
                           <Col md={6}>
                             <p className="mb-1">
                               <strong>Adresse :</strong>{" "}

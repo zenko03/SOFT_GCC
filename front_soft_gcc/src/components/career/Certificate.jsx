@@ -247,7 +247,7 @@ function Certificate({dataEmployee}) {
           </PDFViewer>
         </div>
       )}
-      <ModelEdit />
+      <ModelEdit dataEmployee={dataEmployee} />
     </div>
   );
 }
