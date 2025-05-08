@@ -1,10 +1,18 @@
 // Fichier complet ModelEdit.js avec export PDF
 import React, { useState, useRef } from "react";
-import Template from "../Template";
-import Loader from "../../helpers/Loader";
-import PageHeader from "../../components/PageHeader";
 import Icon from "@mdi/react";
-import { mdiPlus, mdiDelete, mdiEye, mdiFormatListBulleted } from "@mdi/js";
+import {
+  mdiPlus,
+  mdiDelete,
+  mdiEye,
+  mdiFormatListBulleted,
+  mdiInformationOutline,
+  mdiOfficeBuilding,
+  mdiFileDocumentEdit,
+  mdiEmailFastOutline,
+  mdiFileExportOutline,
+  mdiArrowLeft
+} from "@mdi/js";
 import {
   Form,
   Button,
@@ -20,16 +28,20 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { motion, AnimatePresence } from "framer-motion";
 import DateDisplayNoTime from "../../helpers/DateDisplayNoTime";
-import { Border } from "docx";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { QRCodeSVG } from "qrcode.react";
+
+// Formattage de date
+const formatDateFr = (isoDate) => {
+  if (!isoDate) return "";
+  const parsed = new Date(isoDate);
+  if (isNaN(parsed.getTime())) return "Date invalide";
+  return format(parsed, "dd MMMM yyyy", { locale: fr });
+};
+
 
 const ModelEdit = ({ dataEmployee }) => {
-  const module = "Modèle attestation";
-  const action = "Liste";
-  const url = "/modèle";
-
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [logoPreview, setLogoPreview] = useState(null);
   const [signaturePreview, setSignaturePreview] = useState(null);
   const [sections, setSections] = useState([
@@ -37,7 +49,7 @@ const ModelEdit = ({ dataEmployee }) => {
       id: 1,
       title: "Introduction",
       content:
-        "Nous, Société {{Société}}, attestons par la présente que {{Civilité}} {{Nom}} {{Prenom}} travaille avec un contrat à durée indéterminée, au sein de notre établissement en qualité de {{poste}} {{Civilité}} {{Nom}} {{Prenom}} n'est actuellement ni démissionnaire ni en procédure de licenciement. En foi de quoi, la présente attestation lui est délivrée pour servir et valoir ce que de droit.",
+        "Nous, Société {{Société}}, attestons par la présente que {{Civilité}} {{Nom}} {{Prenom}} travaille avec un contrat à durée indéterminée, au sein de notre établissement en qualité de {{Poste}} dépuis le {{Date_embauche}} {{Civilité}} {{Nom}} {{Prenom}} n'est actuellement ni démissionnaire ni en procédure de licenciement. En foi de quoi, la présente attestation lui est délivrée pour servir et valoir ce que de droit.",
     },
   ]);
   const [variables] = useState([
@@ -51,6 +63,7 @@ const ModelEdit = ({ dataEmployee }) => {
   const [showPreview, setShowPreview] = useState(false);
 
   const [companyInfo, setCompanyInfo] = useState({
+    nom: "",
     adresse: "",
     telephone: "",
     email: "",
@@ -68,6 +81,9 @@ const ModelEdit = ({ dataEmployee }) => {
   });
 
   const previewRef = useRef(); // Référence pour l'export PDF
+
+  const attestationId = "ATT-" + new Date().getTime(); // Simulé
+  const qrValue = `https://monentreprise.com/verify?id=${attestationId}`; // lien de vérification
 
   const addSection = () => {
     setSections([...sections, { id: sections.length + 1, content: "" }]);
@@ -100,13 +116,7 @@ const ModelEdit = ({ dataEmployee }) => {
     if (file) setLogoPreview(URL.createObjectURL(file));
   };
 
-  const handleSignatureChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setSignaturePreview(URL.createObjectURL(file));
-  };
-
   const removeLogo = () => setLogoPreview(null);
-  const removeSignature = () => setSignaturePreview(null);
 
   const handleExportPDF = () => {
     if (previewRef.current) {
@@ -135,11 +145,11 @@ const ModelEdit = ({ dataEmployee }) => {
     const mapping = {
       Nom: dataEmployee.name || "",
       Prenom: dataEmployee.firstName || "",
-      Date_embauche: dataEmployee.hiringDate || "",
+      Date_embauche: formatDateFr(dataEmployee.hiringDate),
       Poste: dataEmployee.positionName || "",
-      Société: dataEmployee.societe || "",
+      Société: companyInfo.nom || "",
       Ancienneté: dataEmployee.anciennete || "",
-      Civilité: dataEmployee.civilite || "",
+      Civilité: dataEmployee.civiliteName || "",
     };
   
     return text.replace(/{{(.*?)}}/g, (_, key) => mapping[key.trim()] || "");
@@ -147,14 +157,17 @@ const ModelEdit = ({ dataEmployee }) => {
   
   return (
       <Container fluid>
-        <h4 className="mb-4 fw-bold">Création d'un modèle d'attestation</h4>
+        <h4 className="mb-4 fw-bold">Géneration du document d'attestation</h4>
         <Form>
           <Row>
             <Col md={6}>
               {/* Bloc gauche */}
               <Card className="mb-4 shadow-sm">
                 <Card.Body>
-                  <h5 className="fw-semibold mb-3">À propos du modèle</h5>
+                  <h5 className="fw-semibold mb-3">
+                    <Icon path={mdiFileDocumentEdit} size={1} className="me-2" />
+                    À propos du modèle
+                  </h5>
                   <Form.Group className="mb-3">
                     <Form.Label>Réference</Form.Label>
                     <Form.Control type="text" name="reference" value={aboutModel.reference} onChange={handleChange} />
@@ -198,30 +211,6 @@ const ModelEdit = ({ dataEmployee }) => {
                   </Form.Group>
 
                   <Form.Group className="mb-3">
-                    <Form.Label>Ajouter une signature</Form.Label>
-                    <Form.Control
-                      type="file"
-                      onChange={handleSignatureChange}
-                    />
-                    {signaturePreview && (
-                      <div className="mt-2">
-                        <img
-                          src={signaturePreview}
-                          alt="Signature"
-                          style={{ width: "150px", objectFit: "contain" }}
-                        />
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={removeSignature}
-                          className="mt-2"
-                        >
-                          Supprimer
-                        </Button>
-                      </div>
-                    )}
-                  </Form.Group>
-                  <Form.Group className="mb-3">
                     <Form.Label>Le signataire</Form.Label>
                     <Form.Control type="text" name="signatoryName" placeholder="Nom complet" value={aboutModel.signatoryName} onChange={handleChange} />
                   </Form.Group>
@@ -231,9 +220,12 @@ const ModelEdit = ({ dataEmployee }) => {
               <Card className="mb-4 shadow-sm">
                 <Card.Body>
                   <h5 className="fw-semibold mb-3">
-                    Informations sur l'entreprise
+                    <Icon path={mdiOfficeBuilding} size={1} className="me-2" />
+                    Informations sur l'entreprise délivrant
                   </h5>
+
                   {[
+                    { label: "Nom de l'entreprise", key: "nom" },
                     { label: "Adresse", key: "adresse" },
                     { label: "Téléphone", key: "telephone" },
                     { label: "Email", key: "email" },
@@ -260,7 +252,10 @@ const ModelEdit = ({ dataEmployee }) => {
 
               <Card className="mb-4 shadow-sm">
                 <Card.Body>
-                  <h5 className="fw-semibold mb-3">Contenu dynamique</h5>
+                  <h5 className="fw-semibold mb-3">
+                    <Icon path={mdiInformationOutline} size={1} className="me-2" />
+                    Contenu dynamique
+                  </h5>
 
                   {sections.map((section) => (
                     <Card className="mb-3" key={section.id}>
@@ -346,11 +341,18 @@ const ModelEdit = ({ dataEmployee }) => {
               </Card>
 
               <div className="d-flex flex-wrap gap-2">
-                <Button variant="success">Envoyer par email</Button>
+                <Button variant="success">
+                  <Icon path={mdiEmailFastOutline} size={1} className="me-2" />
+                  Envoyer par email
+                </Button>
                 <Button variant="primary" onClick={handleExportPDF}>
+                  <Icon path={mdiFileExportOutline} size={1} className="me-2" />
                   Export PDF
                 </Button>
-                <Button variant="light">Retour</Button>
+                <Button variant="light">
+                  <Icon path={mdiArrowLeft} size={1} className="me-2" />
+                  Retour
+                </Button>
               </div>
             </Col>
 
@@ -398,25 +400,20 @@ const ModelEdit = ({ dataEmployee }) => {
                               <strong style={{textDecoration: 'underline'}}>Motif </strong>: <strong>{aboutModel.reason}</strong>
                             </p>
                           </div>
+                          <div className="text-md-end mt-4">
+                            <QRCodeSVG value={qrValue} size={100} />
+                          </div>
                         </Col>
                         <Col md={6} className="text-md-end">
                           <div className="mt-5 text-end">
                             <p>Fait à <strong>{aboutModel.place}</strong>, le <strong><DateDisplayNoTime isoDate={aboutModel.date} /></strong></p>
                             <p><strong>{aboutModel.signatoryPosition}</strong></p>
                           </div>
-
-                          {signaturePreview && (
-                            <div className="mt-2 text-end">
-                              <img
-                                src={signaturePreview}
-                                alt="Signature"
-                                style={{ width: "150px", objectFit: "contain" }}
-                              />
-                              <p>
-                                <strong>{aboutModel.signatoryName}</strong>
-                              </p>
-                            </div>
-                          )}
+                          <div className="mt-5 text-end" style={{paddingTop: '50px'}}>
+                            <p>
+                              <strong>{aboutModel.signatoryName}</strong>
+                            </p>
+                          </div>
                         </Col>
                       </Row>                      
                       

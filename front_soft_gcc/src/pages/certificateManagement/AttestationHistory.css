@@ -1,0 +1,38 @@
+/* Stylise le badge en ajoutant un arrondi et un padding */
+.badge {
+    border-radius: 0.5rem;
+    padding: 0.35em 0.65em;
+    font-size: 0.85rem;
+  }
+  
+  /* Pour les liens de téléchargement PDF */
+  a.text-decoration-none {
+    color: #0d6efd;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  a.text-decoration-none:hover {
+    color: #084298;
+    text-decoration: underline;
+  }
+  
+  /* Spinner + texte centré verticalement */
+  .d-flex.align-items-center {
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Table responsive padding */
+  table.table td, table.table th {
+    vertical-align: middle;
+    font-size: 0.95rem;
+    padding: 0.75rem;
+  }
+  
+  /* Titre dans Card Header */
+  .card-header h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  

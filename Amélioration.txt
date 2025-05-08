@@ -12,6 +12,31 @@
 - Graphe des compétences : ajout d'un nouveau filtre tous pour comparer le niveau de compétence validé et non validé
 - Paramètre de l'id du type de contrat et type d'affectation dans plan de carrière
 
+GESTION D'ATTESTATION DE TRAVAIL
+--------------------------------
 
+1. Gestion des modèles prédéfinis :
+	- Sauvegarder plusieurs modèles d’attestation (ex : "Attestation CDI", "Attestation de stage").
+	- Permettre de les sélectionner, modifier, dupliquer, ou supprimer.
 
- 
+2. Export Word (.docx) :
+	- Exporter non seulement en PDF mais aussi en .docx avec une mise en forme similaire (via docx ou Pizzip + Docxtemplater).
+
+3. Intégration QR Code :
+	- Ajouter un QR code contenant un lien de vérification ou des métadonnées (ex : ID de l’attestation, URL de validation).
+
+4. Archivage & Suivi des attestations générées :
+	- Historique des attestations générées pour un employé.
+	- Ajouter des métadonnées : date de génération, utilisateur émetteur.
+
+5. Validation & signature électronique :
+	- Intégration de systèmes comme DocuSign ou signature numérique interne.
+	- Workflow de validation (RH → DG → Signature).
+
+6. Envoi automatique par email avec pièce jointe :
+	- Configuration d’un email modèle avec pièce jointe automatique.
+	- Suivi : statut d’envoi, confirmation de lecture.
+
+7. Téléchargement groupé / Fusion PDF :
+	- Pouvoir générer plusieurs attestations à la fois pour plusieurs employés.
+	- Fusionner tous les PDF en un seul document (utile pour les audits ou export RH).

@@ -201,8 +201,28 @@ CREATE TABLE Assignment_type (
 -- Creation de la table etablissement(id, designation)
 CREATE TABLE Establishment (
 	Establishment_id INT PRIMARY KEY IDENTITY(1,1),
-	Establishment_name NVARCHAR(50)
+	Establishment_name NVARCHAR(50),
+	Adress NVARCHAR(250),
+	Contact NVARCHAR(250),
+	Mail NVARCHAR(250),
+	Website NVARCHAR(250),
+	Social_network NVARCHAR(250),
+	Logo VARBINARY(MAX) NULL
 );
+
+--Ajouter des nouvelles colonnes sur la table establishmment
+ALTER TABLE Establishment
+ADD 
+    Establishment_name NVARCHAR(50),
+    Adress NVARCHAR(250),
+    Contact NVARCHAR(250),
+    Mail NVARCHAR(250),
+    Website NVARCHAR(250),
+    SocialNetwork NVARCHAR(250),
+	Logo VARBINARY(MAX) NULL,
+	Creation_date DATETIME,
+	Updated_date DATETIME;
+
 
 -- Creation de la table fonction(id, designation)
 CREATE TABLE Fonction (
@@ -261,8 +281,17 @@ CREATE TABLE Echelon (
 -- Creation de la table type_attestation(id, designation)
 CREATE TABLE Certificate_type (
 	Certificate_type_id INT PRIMARY KEY IDENTITY(1,1),
-	Certificate_type_name NVARCHAR(50)
+	Certificate_type_name NVARCHAR(50),
+	content TEXT,
+	Creation_date DATETIME,
+	Updated_date DATETIME
 );
+
+ALTER TABLE Certificate_type
+ADD 
+   content TEXT,
+	Creation_date DATETIME,
+	Updated_date DATETIME;
 
 -- Creation de la table carriere_plan
 CREATE TABLE career_plan (
@@ -387,3 +416,18 @@ VALUES
 (2, 4, 1, GETDATE(), GETDATE()),
 (2, 5, 1, GETDATE(), GETDATE()),
 (3, 6, 1, GETDATE(), GETDATE());
+
+---------------------------------- Gestion d'attestation
+-- Historique de certification
+CREATE TABLE Certificate_history (
+	Certificate_history_id INT PRIMARY KEY IDENTITY(1,1),
+	Employee_id INT NOT NULL REFERENCES Employee(Employee_id),
+	Certificate_type_id INT NOT NULL REFERENCES Certificate_type(Certificate_type_id),
+	Reference NVARCHAR(50) NOT NULL UNIQUE,
+	PdfFile VARBINARY(MAX),
+    File_name NVARCHAR(255),
+    Content_type NVARCHAR(100),
+	State INT,
+	Creation_date DATETIME,
+	Updated_date DATETIME
+);
