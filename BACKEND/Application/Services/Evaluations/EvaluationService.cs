@@ -1,15 +1,12 @@
-﻿using soft_carriere_competence.Application.Dtos.EvaluationsDto;
+﻿using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Core.Entities.crud_career;
+using soft_carriere_competence.Application.Dtos.EvaluationsDto;
 using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Core.Interface.EvaluationInterface;
 using soft_carriere_competence.Infrastructure.Data;
-using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
-using soft_carriere_competence.Application.Services.EmailService;
 using soft_carriere_competence.Core.Interface.AuthInterface;
 using Microsoft.Extensions.Options;
-using Microsoft.EntityFrameworkCore;
-using soft_carriere_competence.Core.Entities.crud_career;
-
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -25,12 +22,9 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly IGenericRepository<Position> _posteRepository;
         private readonly ApplicationDbContext _context;
         private readonly TemporaryAccountService _temporaryAccountService;
-
-
         private readonly IEmailService _emailService;
         private readonly ReminderSettings _reminderSettings;
-
-
+        private readonly EvaluationCompetenceService _competenceService;
 
         public EvaluationService(IEvaluationQuestionRepository questionRepository, IGenericRepository<EvaluationType> evaluationType,
             IGenericRepository<EvaluationQuestion> EvaluationQuestion, IGenericRepository<Evaluation> _evaluation,
@@ -40,9 +34,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             IOptions<ReminderSettings> reminderSettings,
             IGenericRepository<Position> poste,
             ApplicationDbContext context,
-            TemporaryAccountService temporaryAccountService
-
-            )
+            TemporaryAccountService temporaryAccountService,
+            EvaluationCompetenceService competenceService = null)
         {
             _questionRepository = questionRepository;
             _evaluationTypeRepository = evaluationType;
@@ -52,11 +45,11 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             _evaluationQuestionnaireRepository = _evaluationQuestionnaire;
             _userRepository = userRepository;
             _emailService = emailService;
-            _reminderSettings = reminderSettings.Value; // Get the configured value
+            _reminderSettings = reminderSettings.Value;
             _posteRepository = poste;
             _context = context;
             _temporaryAccountService = temporaryAccountService;
-
+            _competenceService = competenceService;
         }
 
         // Create a new evaluation question
@@ -116,11 +109,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             var total = ratings.Values.Sum();
             var count = ratings.Count;
 
-
-
             return (double)total / count;
         }
-
 
         public async Task<List<TrainingSuggestionResultDto>> GetTrainingSuggestionsByQuestionsAsync(Dictionary<int, int> ratings)
         {
@@ -180,7 +170,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             decimal overallScore,
             string strengths,
             string weaknesses,
-            string generalEvaluation)
+            string generalEvaluation,
+            List<MultiCriteriaRatingDto> detailedRatings = null)
         {
             var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
             if (evaluation == null) throw new Exception($"Evaluation with ID {evaluationId} not found.");
@@ -193,31 +184,126 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             await _evaluationRepository.UpdateAsync(evaluation);
 
-            // Enregistrer les résultats des questions dans Evaluation_Responses
+            // Liste des réponses existantes pour éviter les doublons
+            var existingResponses = await _context.evaluationResponses
+                .Where(r => r.EvaluationId == evaluationId)
+                .ToListAsync();
+
+            // Dictionnaire pour un accès rapide
+            var existingResponsesDict = existingResponses
+                .ToDictionary(r => r.QuestionId, r => r);
+
+            // Pour chaque note
             foreach (var rating in ratings)
             {
-                var questionExists = await _questionRepository.ExistsAsync(rating.Key);
-                if (!questionExists) throw new Exception($"Question with ID {rating.Key} not found.");
+                int questionId = rating.Key;
+                int score = rating.Value;
 
-                var response = new EvaluationResponses
+                // Vérifier si la réponse existe déjà
+                if (existingResponsesDict.TryGetValue(questionId, out var existingResponse))
                 {
-                    EvaluationId = evaluationId,
-                    QuestionId = rating.Key,
-                    ResponseType = "SCORE",
-                    ResponseValue = rating.Value.ToString(),
-                    TimeSpent = 0, // Sera mis à jour par le frontend
-                    StartTime = DateTime.UtcNow,
-                    EndTime = DateTime.UtcNow,
-                    IsCorrect = false,
-                    State = 10 // TERMINEE
-                };
-                await _context.evaluationResponses.AddAsync(response);
+                    // Mettre à jour la réponse existante
+                    existingResponse.ResponseValue = score.ToString();
+                    existingResponse.EndTime = DateTime.UtcNow; // Utiliser EndTime comme date de modification
+                    _context.evaluationResponses.Update(existingResponse);
+                }
+                else
+                {
+                    // Créer une nouvelle réponse
+                    var newResponse = new EvaluationResponses
+                    {
+                        EvaluationId = evaluationId,
+                        QuestionId = questionId,
+                        ResponseValue = score.ToString(),
+                        ResponseType = "SCORE",
+                        CreatedAt = DateTime.UtcNow,
+                        StartTime = DateTime.UtcNow,
+                        EndTime = DateTime.UtcNow,
+                        State = 10 // TERMINEE
+                    };
+                    await _context.evaluationResponses.AddAsync(newResponse);
+                }
+            }
+
+            // Si des ratings détaillés sont fournis (pour les critères multiples)
+            if (detailedRatings != null && detailedRatings.Count > 0)
+            {
+                foreach (var detailedRating in detailedRatings)
+                {
+                    if (detailedRating == null || detailedRating.QuestionId <= 0) continue;
+
+                    int questionId = detailedRating.QuestionId;
+
+                    // Calculer la note globale
+                    detailedRating.OverallRating = detailedRating.CalculateOverallRating();
+
+                    // Convertir en JSON
+                    string jsonValue = System.Text.Json.JsonSerializer.Serialize(detailedRating);
+
+                    // Vérifier si la réponse existe déjà
+                    if (existingResponsesDict.TryGetValue(questionId, out var existingResponse))
+                    {
+                        // Mettre à jour la réponse existante
+                        existingResponse.ResponseValue = jsonValue;
+                        existingResponse.ResponseType = "MULTI_CRITERIA";
+                        existingResponse.EndTime = DateTime.UtcNow; // Utiliser EndTime comme date de modification
+                        _context.evaluationResponses.Update(existingResponse);
+                    }
+                    else
+                    {
+                        // Créer une nouvelle réponse
+                        var newResponse = new EvaluationResponses
+                        {
+                            EvaluationId = evaluationId,
+                            QuestionId = questionId,
+                            ResponseValue = jsonValue,
+                            ResponseType = "MULTI_CRITERIA",
+                            CreatedAt = DateTime.UtcNow,
+                            StartTime = DateTime.UtcNow,
+                            EndTime = DateTime.UtcNow,
+                            State = 10 // TERMINEE
+                        };
+                        await _context.evaluationResponses.AddAsync(newResponse);
+                    }
+                }
             }
 
             await _context.SaveChangesAsync();
+            
+            // Calculer et sauvegarder les résultats par compétence
+            try
+            {
+                // Utiliser l'instance injectée du service de compétence ici
+                await _competenceService.CalculateAndSaveCompetenceResultsAsync(evaluationId);
+            }
+            catch (Exception ex)
+            {
+                // On log l'erreur mais on ne la propage pas pour ne pas bloquer l'enregistrement des résultats
+                Console.WriteLine($"Erreur lors du calcul des résultats par compétence : {ex.Message}");
+            }
+
             return true;
         }
 
+        // Surcharge pour accepter le DTO complet
+        public async Task<bool> SaveEvaluationResultsAsync(EvaluationResultsDto dto)
+        {
+            // Synchroniser les notes simples et détaillées si nécessaire
+            if (dto.HasDetailedRatings())
+            {
+                dto.SynchronizeRatings();
+            }
+            
+            return await SaveEvaluationResultsAsync(
+                dto.EvaluationId,
+                dto.Ratings,
+                dto.OverallScore,
+                dto.Strengths ?? string.Empty,
+                dto.Weaknesses ?? string.Empty,
+                dto.GeneralEvaluation ?? string.Empty,
+                dto.DetailedRatings
+            );
+        }
 
         public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, List<int> supervisorIds, DateTime startDate, DateTime endDate)
         {
@@ -342,8 +428,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         //    return 1;
         //}
 
-
-
         // Method to send reminder emails for evaluations that are due
         public async Task SendAutomaticRemindersAsync()
         {
@@ -354,7 +438,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 await SendReminderEmailAsync(evaluation.UserId, evaluation.StartDate);
             }
         }
-
 
         // Method to get evaluations that are due for reminders (e.g., 2 days before the evaluation date)
         public async Task<List<Evaluation>> GetUpcomingEvaluationsAsync()
@@ -493,13 +576,22 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         // Get paginated evaluation questions
         public async Task<(IEnumerable<EvaluationQuestion> Items, int TotalPages)> GetPaginatedEvaluationQuestionsAsync(int pageNumber, int pageSize)
         {
-            // Utilisez la méthode de pagination de votre repository
-            var items = _evaluationQuestion.GetPage(pageNumber, pageSize, "EvaluationType,position");
+            try
+            {
+                var totalItems = await _context.evaluationQuestions.CountAsync();
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                
+                var items = await _context.evaluationQuestions
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
 
-            // Obtenez le nombre total de pages
-            var totalPages = _evaluationQuestion.GetTotalPages(pageSize);
-
-            return (items, totalPages);
+                return (items, totalPages);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erreur lors de la récupération des questions paginées : {ex.Message}");
+            }
         }
 
         public async Task<List<int>> CreateEvaluationWithSelectedQuestionsAsync(CreateEvaluationWithQuestionsDto dto)
@@ -566,7 +658,54 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 throw new Exception($"La question avec ID {questionId} n'a pas de ligne de compétence associée");
             return question.CompetenceLineId.Value;
         }
+
+        public async Task<IEnumerable<EvaluationSelectedQuestions>> GetSelectedQuestionsAsync(int evaluationId)
+        {
+            return await _context.evaluationSelectedQuestions
+                .Where(esq => esq.EvaluationId == evaluationId)
+                .Include(esq => esq.SelectedQuestion)
+                .Include(esq => esq.SelectedCompetenceLine)
+                .ToListAsync();
+        }
+
+        public async Task<bool> AddSelectedQuestionAsync(int evaluationId, int questionId, int competenceLineId)
+        {
+            var selectedQuestion = new EvaluationSelectedQuestions
+            {
+                EvaluationId = evaluationId,
+                QuestionId = questionId,
+                CompetenceLineId = competenceLineId
+            };
+
+            await _context.evaluationSelectedQuestions.AddAsync(selectedQuestion);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemoveSelectedQuestionAsync(int evaluationId, int questionId)
+        {
+            var selectedQuestion = await _context.evaluationSelectedQuestions
+                .FirstOrDefaultAsync(esq => esq.EvaluationId == evaluationId && esq.QuestionId == questionId);
+
+            if (selectedQuestion == null)
+                return false;
+
+            _context.evaluationSelectedQuestions.Remove(selectedQuestion);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateSelectedQuestionAsync(int evaluationId, int questionId, int newCompetenceLineId)
+        {
+            var selectedQuestion = await _context.evaluationSelectedQuestions
+                .FirstOrDefaultAsync(esq => esq.EvaluationId == evaluationId && esq.QuestionId == questionId);
+
+            if (selectedQuestion == null)
+                return false;
+
+            selectedQuestion.CompetenceLineId = newCompetenceLineId;
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
-
-
 }

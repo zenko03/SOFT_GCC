@@ -1,0 +1,237 @@
+/* Step1 css */
+/* Styles spécifiques au modal Step1 */
+.modal-step1-container {
+  background-color: #f5f5f5;
+}
+
+.modal-sidebar {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+}
+
+.modal-menu-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.modal-menu-list li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+}
+
+.modal-menu-list li.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.modal-section-content {
+  padding: 20px;
+}
+
+
+/* SECTIONA */
+.sectionA-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.question {
+  margin-bottom: 20px;
+}
+
+.question p {
+  font-weight: bold;
+}
+
+.note-selection {
+  display: flex;
+  gap: 10px;
+}
+
+.note-selection label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.note-selection input[type="radio"] {
+  margin-right: 5px;
+}
+
+/* Step2 css */
+
+.step2-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.average-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.average-section h3 {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.average-score {
+  font-size: 1.5rem;
+  color: #4CAF50;
+}
+
+.remarks-toggle {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.btn-show-remarks {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-show-remarks:hover {
+  background-color: #45a049;
+}
+
+.remarks-section {
+  margin-top: 20px;
+}
+
+.remark {
+  margin-bottom: 15px;
+}
+
+.remark label {
+  font-size: 1rem;
+  color: #333;
+}
+
+.remark textarea {
+  background-color: lightcyan;
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 100px;
+  color: #333;
+}
+
+.remark textarea::placeholder {
+  color: #999;
+}
+
+
+.step3-container {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.validation-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-control[type="date"] {
+  max-width: 200px;
+}
+
+.training-suggestions {
+  margin-top: 20px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.training-suggestions ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.training-suggestions li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.success {
+  color: #28a745;
+  margin-top: 10px;
+}
+
+.error {
+  color: #dc3545;
+}
+
+
+/* Animation de succès */
+.validation-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.success-animation {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+}
+
+.checkmark__circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #4caf50;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #4caf50;
+  fill: none;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+
+  0%,
+  100% {
+    transform: none;
+  }
+
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+.success-animation .checkmark__check {
+  animation: scale 0.3s ease-in-out 0.9s both;
+}

@@ -1,0 +1,288 @@
+/* Styles spécifiques pour Step1 */
+.evaluation-notation-page .step1-container {
+  --primary-color: #3f51b5;
+  --secondary-color: #f50057;
+  --background-color: #f5f5f5;
+  --text-color: #333;
+  --border-color: #ddd;
+  --hover-color: #e3f2fd;
+  --success-color: #4caf50;
+  --error-color: #f44336;
+  --warning-color: #ff9800;
+  --info-color: #2196f3;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --transition-speed: 0.3s;
+  --border-radius: 4px;
+  --spacing-unit: 8px;
+  --font-family: 'Roboto', sans-serif;
+  --font-size-small: 0.875rem;
+  --font-size-medium: 1rem;
+  --font-size-large: 1.25rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --z-index-modal: 1000;
+  --z-index-dropdown: 100;
+  --z-index-tooltip: 200;
+}
+
+.evaluation-notation-page .step1-container {
+  padding: calc(var(--spacing-unit) * 2);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.evaluation-notation-page .step1-container .question-card {
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: calc(var(--spacing-unit) * 2);
+  margin-bottom: calc(var(--spacing-unit) * 2);
+  transition: box-shadow var(--transition-speed) ease;
+}
+
+.evaluation-notation-page .step1-container .question-card:hover {
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.evaluation-notation-page .step1-container .question-text {
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+  margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+.evaluation-notation-page .step1-container .rating-container {
+  display: flex;
+  gap: calc(var(--spacing-unit) * 2);
+  margin-top: var(--spacing-unit);
+}
+
+.evaluation-notation-page .step1-container .rating-button {
+  padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: white;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.evaluation-notation-page .step1-container .rating-button:hover {
+  background-color: var(--hover-color);
+  border-color: var(--primary-color);
+}
+
+.evaluation-notation-page .step1-container .rating-button.selected {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.evaluation-notation-page .step1-container .rating-button.selected:hover {
+  background-color: var(--primary-color);
+  opacity: 0.9;
+}
+
+.evaluation-notation-page .step1-container .error-message {
+  color: var(--error-color);
+  font-size: var(--font-size-small);
+  margin-top: var(--spacing-unit);
+}
+
+.evaluation-notation-page .step1-container .success-message {
+  color: var(--success-color);
+  font-size: var(--font-size-small);
+  margin-top: var(--spacing-unit);
+}
+
+.evaluation-notation-page .step1-container .navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: calc(var(--spacing-unit) * 3);
+}
+
+.evaluation-notation-page .step1-container .nav-button {
+  padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 3);
+  border-radius: var(--border-radius);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.evaluation-notation-page .step1-container .nav-button.primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+}
+
+.evaluation-notation-page .step1-container .nav-button.primary:hover {
+  background-color: var(--primary-color);
+  opacity: 0.9;
+}
+
+.evaluation-notation-page .step1-container .nav-button.secondary {
+  background-color: white;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.evaluation-notation-page .step1-container .nav-button.secondary:hover {
+  background-color: var(--hover-color);
+  border-color: var(--primary-color);
+}
+
+.evaluation-notation-page .step1-container .progress-indicator {
+  margin-bottom: calc(var(--spacing-unit) * 3);
+}
+
+.evaluation-notation-page .step1-container .progress-bar {
+  height: 4px;
+  background-color: var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.evaluation-notation-page .step1-container .progress-fill {
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: width var(--transition-speed) ease;
+}
+
+.evaluation-notation-page .step1-container .progress-text {
+  font-size: var(--font-size-small);
+  color: var(--text-color);
+  margin-top: var(--spacing-unit);
+  text-align: right;
+}
+
+/* Styles spécifiques pour les questions et réponses */
+.evaluation-notation-page .step1-container .question-item {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.evaluation-notation-page .step1-container .question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.evaluation-notation-page .step1-container .question-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.evaluation-notation-page .step1-container .competence-tag {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-small);
+}
+
+.evaluation-notation-page .step1-container .question-rating {
+  font-weight: var(--font-weight-bold);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+}
+
+.evaluation-notation-page .step1-container .rating-low {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.evaluation-notation-page .step1-container .rating-medium {
+  background-color: var(--warning-color);
+  color: white;
+}
+
+.evaluation-notation-page .step1-container .rating-high {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.evaluation-notation-page .step1-container .employee-response {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+}
+
+.evaluation-notation-page .step1-container .qcm-response {
+  margin-top: 0.5rem;
+}
+
+.evaluation-notation-page .step1-container .qcm-response-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.evaluation-notation-page .step1-container .correct-answer {
+  color: var(--success-color);
+}
+
+.evaluation-notation-page .step1-container .incorrect-answer {
+  color: var(--error-color);
+}
+
+.evaluation-notation-page .step1-container .correct-indicator,
+.evaluation-notation-page .step1-container .incorrect-indicator {
+  font-size: var(--font-size-small);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+}
+
+.evaluation-notation-page .step1-container .correct-indicator {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.evaluation-notation-page .step1-container .incorrect-indicator {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.evaluation-notation-page .step1-container .reference-section {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.evaluation-notation-page .step1-container .reference-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+}
+
+.evaluation-notation-page .step1-container .reference-content {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.evaluation-notation-page .step1-container .key-points {
+  margin-top: 1rem;
+}
+
+.evaluation-notation-page .step1-container .key-points ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+}
+
+.evaluation-notation-page .step1-container .key-points li {
+  margin-bottom: 0.5rem;
+} 
