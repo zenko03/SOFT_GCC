@@ -39,9 +39,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 .FirstOrDefaultAsync(ep => ep.evaluationId == evaluationId && ep.userId == userId);
 
             if (progress == null) return false;
-
             progress.answeredQuestions = answeredQuestions;
-            progress.progressPercentage = (decimal)answeredQuestions / progress.totalQuestions * 100;
+            progress.progressPercentage = ((decimal)answeredQuestions / progress.totalQuestions * 100);
             progress.lastUpdate = DateTime.UtcNow;
 
             _context.evaluationProgresses.Update(progress);

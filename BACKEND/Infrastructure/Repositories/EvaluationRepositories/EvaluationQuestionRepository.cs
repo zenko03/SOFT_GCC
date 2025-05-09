@@ -14,11 +14,11 @@ namespace soft_carriere_competence.Infrastructure.Repositories.EvaluationReposit
             _context = context;
         }
 
-        public async Task<IEnumerable<EvaluationQuestion>> GetQuestionsByEvaluationTypeAndPostAsync(int evaluationTypeId, int postId)
+        public async Task<IEnumerable<EvaluationQuestion>> GetQuestionsByEvaluationTypeAndPostAsync(int evaluationTypeId, int positionId)
         {
             Console.WriteLine("Avant la fonction getEvaluationTypeAndPost");
             return await _context.evaluationQuestions
-                .Where(q => q.evaluationTypeId == evaluationTypeId && q.postId == postId).Include(u => u.poste).Include(u => u.EvaluationType)
+                .Where(q => q.evaluationTypeId == evaluationTypeId && q.positionId == positionId).Include(u => u.Position).Include(u => u.EvaluationType)
                 .ToListAsync();
 
         }

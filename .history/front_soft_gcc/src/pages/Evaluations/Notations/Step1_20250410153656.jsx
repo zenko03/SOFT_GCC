@@ -1,0 +1,172 @@
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import axios from 'axios';
+import './Step1.css';
+
+const Step1 = ({ evaluationId, setRatings, evaluationTypes }) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [localRatings, setLocalRatings] = useState({});
+  const [currentEvaluationType, setCurrentEvaluationType] = useState(null);
+  const [selectedQuestions, setSelectedQuestions] = useState([]);
+
+  const fetchQuestionsByType = async (evaluationTypeId) => {
+    try {
+      const response = await axios.get(
+        `https://localhost:7082/api/Evaluation/questions/${evaluationTypeId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Erreur lors de la récupération des questions:', error);
+      throw new Error('Impossible de récupérer les questions pour ce type d\'évaluation');
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!evaluationId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const evaluationResponse = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}`);
+        console.log('Détails de l\'évaluation reçus:', evaluationResponse.data);
+        
+        if (evaluationResponse.data && evaluationResponse.data.evaluationTypeId) {
+          const evalType = evaluationTypes.find(
+            type => type.evaluationTypeId === evaluationResponse.data.evaluationTypeId || 
+                   type.EvaluationTypeId === evaluationResponse.data.evaluationTypeId
+          );
+          
+          if (evalType) {
+            setCurrentEvaluationType(evalType);
+            const questions = await fetchQuestionsByType(evalType.evaluationTypeId || evalType.EvaluationTypeId);
+            setSelectedQuestions(questions);
+          }
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+        setError('Une erreur est survenue lors du chargement des données');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [evaluationId, evaluationTypes]);
+
+  const handleRatingChange = (questionId, rating) => {
+    const newRatings = { ...localRatings, [questionId]: rating };
+    setLocalRatings(newRatings);
+    setRatings(newRatings);
+  };
+
+  const handleEvaluationTypeChange = async (e) => {
+    const selectedTypeId = parseInt(e.target.value);
+    const selectedType = evaluationTypes.find(type => 
+      type.evaluationTypeId === selectedTypeId || 
+      type.EvaluationTypeId === selectedTypeId
+    );
+    
+    if (!selectedType) {
+      setError('Type d\'évaluation non trouvé');
+      return;
+    }
+
+    setCurrentEvaluationType(selectedType);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const questions = await fetchQuestionsByType(selectedTypeId);
+      setSelectedQuestions(questions);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="loader">Chargement en cours...</div>;
+  }
+
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  }
+
+  return (
+    <div className="step1-container">
+      <div className="evaluation-type-section">
+        <h2>Type d&apos;évaluation</h2>
+        <select
+          className="evaluation-type-select"
+          value={currentEvaluationType?.evaluationTypeId || currentEvaluationType?.EvaluationTypeId || ''}
+          onChange={handleEvaluationTypeChange}
+        >
+          <option value="" key="default">Sélectionnez un type d&apos;évaluation</option>
+          {evaluationTypes.map((type) => (
+            <option 
+              key={type.evaluationTypeId || type.EvaluationTypeId} 
+              value={type.evaluationTypeId || type.EvaluationTypeId}
+            >
+              {type.designation || type.Designation}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="questions-section">
+        {selectedQuestions.length > 0 ? (
+          selectedQuestions.map((question) => (
+            <div key={question.questionId} className="question-item">
+              <p className="question-text">{question.question || question.text}</p>
+              <div className="rating-buttons">
+                <button
+                  className={`rating-button ${localRatings[question.questionId] === 1 ? 'selected' : ''}`}
+                  onClick={() => handleRatingChange(question.questionId, 1)}
+                >
+                  Insuffisant
+                </button>
+                <button
+                  className={`rating-button ${localRatings[question.questionId] === 2 ? 'selected' : ''}`}
+                  onClick={() => handleRatingChange(question.questionId, 2)}
+                >
+                  Satisfaisant
+                </button>
+                <button
+                  className={`rating-button ${localRatings[question.questionId] === 3 ? 'selected' : ''}`}
+                  onClick={() => handleRatingChange(question.questionId, 3)}
+                >
+                  Très bon
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="no-questions">
+            Aucune question disponible pour cette évaluation.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+Step1.propTypes = {
+  evaluationId: PropTypes.number,
+  setRatings: PropTypes.func.isRequired,
+  evaluationTypes: PropTypes.arrayOf(
+    PropTypes.shape({
+      evaluationTypeId: PropTypes.number,
+      EvaluationTypeId: PropTypes.number,
+      designation: PropTypes.string,
+      Designation: PropTypes.string
+    })
+  ).isRequired
+};
+
+export default Step1;

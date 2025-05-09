@@ -77,6 +77,8 @@ function MenuBar({ task }) {
               <li className="nav-item"> <Link className="nav-link" to="/softGcc/settings/carriere"> Gestion Carrières </Link></li>
               <li className="nav-item"> <Link className="nav-link" to="/softGcc/settings/employeeManagement/liste"> Gestion employés </Link></li>
               <li className="nav-item"> <Link className="nav-link" to="/EvaluationSettings"> Gestion des évaluations </Link></li>
+              <li className="nav-item"> <Link className="nav-link" to="/user-management"> Gestion des utilisateurs </Link></li>
+
 
             </ul>
           </div>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Controllers.Evaluations;
 using soft_carriere_competence.Core.Entities.career_plan;
 using soft_carriere_competence.Core.Entities.crud_career;
 using soft_carriere_competence.Core.Entities.dashboard;
@@ -67,39 +68,41 @@ namespace soft_carriere_competence.Infrastructure.Data
 
 		//EVALUATIONS
 		public DbSet<Role> Roles { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<EvaluationType> EvaluationTypes { get; set; }
-        public DbSet<Evaluation> Evaluations { get; set; }
-        public DbSet<EvaluationQuestionnaire> EvaluationQuestionnaires { get; set; }
-        public DbSet<EvaluationSchedule> EvaluationSchedules { get; set; }
-        public DbSet<TrainingSuggestion> TrainingSuggestions { get; set; }
-        public DbSet<EvaluationHistory> EvaluationHistories { get; set; }
-        public DbSet<PerformanceEvolution> PerformanceEvolutions { get; set; }
-		public DbSet<Poste> postes { get; set; }
+		public DbSet<User> Users { get; set; }
+		public DbSet<EvaluationType> EvaluationTypes { get; set; }
+		public DbSet<Evaluation> Evaluations { get; set; }
+		public DbSet<EvaluationQuestionnaire> EvaluationQuestionnaires { get; set; }
+		public DbSet<TrainingSuggestion> TrainingSuggestions { get; set; }
+		public DbSet<EvaluationHistory> EvaluationHistories { get; set; }
+		public DbSet<PerformanceEvolution> PerformanceEvolutions { get; set; }
 		public DbSet<EvaluationQuestion> evaluationQuestions {  get; set; }
-	    public DbSet<EvaluationInterviews> evaluationInterviews { get; set; }
-        public DbSet<InterviewParticipants> interviewParticipants { get; set; }
-        public DbSet<EvaluationProgress> evaluationProgresses { get; set; }
-        public DbSet<TemporaryAccount> temporaryAccounts { get; set; }
-        public DbSet<LoginAttempt> loginAttempts { get; set; }
+		public DbSet<EvaluationInterviews> evaluationInterviews { get; set; }
+		public DbSet<InterviewParticipants> interviewParticipants { get; set; }
+		public DbSet<EvaluationSupervisors> EvaluationSupervisors { get; set; }
+		public DbSet<Permission> Permissions { get; set; }
+		public DbSet<RolePermission> rolePermissions { get; set; }
+		public DbSet<CompetenceLine> competenceLines { get; set; }
+		public DbSet<CompetenceTraining> competenceTrainings { get; set; }
+		public DbSet<EvaluationSelectedQuestions> evaluationSelectedQuestions { get; set; }
+		public DbSet<EvaluationResponses> evaluationResponses { get; set; }
+		public DbSet<EvaluationQuestionOptions> evaluationQuestionOptions { get; set; }
+		public DbSet<EvaluationReferenceAnswer> evaluationReferenceAnswers { get; set; }
+		public DbSet<EvaluationCompetenceResult> EvaluationCompetenceResults { get; set; }
+		public DbSet<ResponseType> ResponseTypes { get; set; }
 
+		public DbSet<EvaluationProgress> evaluationProgresses { get; set; }
+		public DbSet<TemporaryAccount> temporaryAccounts { get; set; }
+		public DbSet<LoginAttempt> loginAttempts { get; set; }
 
+		public DbSet<VEmployeeDetails> VEmployeeDetails { get; set; }
+		public DbSet<VEmployeeWithoutEvaluation> vEmployeeWithoutEvaluations { get; set; }
+		public DbSet<VEmployeesFinishedEvaluation> vEmployeesFinishedEvaluations { get; set; }
+		public DbSet<VEvaluationHistory> vEvaluationHistories { get; set; }
+		public DbSet<VEmployeesOngoingEvaluation> vEmployeesOngoingEvaluations { get; set; }
+		public DbSet<VEmployeeEvaluationProgress> vEmployeesEvaluationProgress { get; set; }
 
-
-        public DbSet<VEmployeeDetails> VEmployeeDetails { get; set; }
-        public DbSet<VEmployeeWithoutEvaluation> vEmployeeWithoutEvaluations { get; set; }
-        public DbSet<VEmployeesFinishedEvaluation> vEmployeesFinishedEvaluations { get; set; }
-        public DbSet<VEvaluationHistory> vEvaluationHistories { get; set; }
-        public DbSet<VEmployeesOngoingEvaluation> vEmployeesOngoingEvaluations { get; set; }
-        public DbSet<VEmployeeEvaluationProgress> vEmployeesEvaluationProgress { get; set; }
-
-
-
-
-
-
-        // RETRAITE
-        public DbSet<VRetirement> VRetirement { get; set; }
+		// RETRAITE
+		public DbSet<VRetirement> VRetirement { get; set; }
 		public DbSet<RetirementParameter> RetirementParameter { get; set; }
 
 		// SOUHAIT EVOLUTION
@@ -166,6 +169,13 @@ namespace soft_carriere_competence.Infrastructure.Data
 
 
 
+			//------------------EVALUATIONS-----------------------------------------//
+			modelBuilder.Entity<VEmployeeDetails>().HasNoKey().ToView("VEmployeeDetails");
+			modelBuilder.Entity<VEmployeeWithoutEvaluation>().HasNoKey().ToView("VEmployeesWithoutEvaluation");
+			modelBuilder.Entity<VEmployeesFinishedEvaluation>().HasNoKey().ToView("VEmployeesFinishedEvaluation");
+			modelBuilder.Entity<VEvaluationHistory>().HasNoKey().ToView("VEvaluationHistory");
+			modelBuilder.Entity<VEmployeesOngoingEvaluation>().HasNoKey().ToView("VEmployeesOngoingEvaluation");
+			modelBuilder.Entity<VEmployeeEvaluationProgress>().HasNoKey().ToView("VEmployeeEvaluationProgress");
             //------------------EVALUATIONS-----------------------------------------//
             modelBuilder.Entity<VEmployeeDetails>().HasNoKey().ToView("VEmployeeDetails");
             modelBuilder.Entity<VEmployeeWithoutEvaluation>().HasNoKey().ToView("VEmployeesWithoutEvaluation");
@@ -183,6 +193,10 @@ namespace soft_carriere_competence.Infrastructure.Data
 			//------------------ORGANIGRAMME ET EFFECTIF-------------------------------------------//
 			modelBuilder.Entity<VDepartmentEffective>().ToView("v_department_effective");
 			modelBuilder.Entity<VDepartmentEffective>().HasNoKey();
+
+			// Configuration de la clé composite pour EvaluationSupervisors
+			modelBuilder.Entity<EvaluationSupervisors>()
+				.HasKey(es => new { es.EvaluationId, es.SupervisorId });
 		}
 	}
 

@@ -1,17 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Application.Services.Evaluations;
 using soft_carriere_competence.Core.Interface.AuthInterface;
+using soft_carriere_competence.Infrastructure.Data;
 
 [Route("api/User")]
 [ApiController]
 public class UserController : ControllerBase
 {
 	private readonly UserService _employeeService;
+	private readonly ApplicationDbContext _context;
 
-
-	public UserController(UserService employeeService)
+	public UserController(UserService employeeService, ApplicationDbContext context)
 	{
 		_employeeService = employeeService;
+		_context = context;
 	}
 
 	// Endpoint GET : api/User pour récupérer tous les employés avec leurs détails
@@ -74,6 +77,18 @@ public class UserController : ControllerBase
 			CurrentPage = pageNumber,
 			PageSize = pageSize
 		});
+	}
+
+	// Endpoint GET : api/User/roles pour récupérer tous les rôles
+	[HttpGet("roles")]
+	public async Task<ActionResult<IEnumerable<object>>> GetRoles()
+	{
+		var roles = await _context.Roles
+			.Where(r => r.state == null || r.state == 1)
+			.Select(r => new { roleId = r.Roleid, name = r.Title })
+			.ToListAsync();
+		
+		return Ok(roles);
 	}
 
 }

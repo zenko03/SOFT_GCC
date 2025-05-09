@@ -8,22 +8,16 @@ VALUES
     ('Reseaux et techniques');
 
 -- 2. Postes
-INSERT INTO Postes (title, state)
+INSERT INTO position (positionName)
 VALUES
-    ('Developpeur', 0),             -- Poste_id = 1
-    ('Administrateur Syst�me' ,0),    -- Poste_id = 2
-    ('Analyste de donn�es', 0),       -- Poste_id = 3
-    ('Responsable Marketing',0),     -- Poste_id = 4
-    ('Charg� de communication', 0),   -- Poste_id = 5
-    ('Directeur G�n�ral', 0),         -- Poste_id = 6
-    ('Commercial', 0),                -- Poste_id = 7
-    ('Responsable des ventes', 0),    -- Poste_id = 8
-    ('Ing�nieur R�seaux', 0),         -- Poste_id = 9
-    ('Technicien support', 0);        -- Poste_id = 10
-
-	use Base_soft_gcc
- INSERT INTO Roles (title)
- VALUES 
+    ('Developpeur'),             -- Poste_id = 1
+    ('Technicien'),   -- Poste_id = 2
+    ('Responsable Marketing'),      -- Poste_id = 3
+    ('testeur');    -- Poste_id = 4
+    
+-- 3. Rôles
+INSERT INTO Roles (title)
+VALUES 
     ('Administrator'), -- Role_id = 1 
     ('Manager'),       -- Role_id = 2 
     ('Employee'),      -- Role_id = 3 
