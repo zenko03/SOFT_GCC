@@ -62,7 +62,13 @@ import EvaluationLogin from '../pages/Evaluations/SalaryEval/EvaluationLogin';
 import EvaluationPage from '../pages/Evaluations/SalaryEval/EvaluationPage';
 import ModelList from '../pages/certificateManagement/ModelList';
 import ModelEdit from '../pages/certificateManagement/ModelEdit';
-
+import EvaluationConfirmation from '../pages/Evaluations/SalaryEval/EvaluationConfirmation';
+import UserManagement from '../pages/settings/UserManagement/UserManagement';
+import UsersList from '../pages/settings/UserManagement/UsersList';
+import RolesManagement from '../pages/settings/UserManagement/RolesManagement';
+import PermissionsManagement from '../pages/settings/UserManagement/PermissionsManagement';
+import Unauthorized from '../pages/Authentification/Unauthorized';
+import EvaluationNotation from '../pages/Evaluations/Notations/EvaluationNotation';
 
 function AppRouter() {
   return (
