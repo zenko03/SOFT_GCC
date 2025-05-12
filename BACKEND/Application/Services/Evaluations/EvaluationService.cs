@@ -42,7 +42,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             _evaluationQuestion = EvaluationQuestion;
             _evaluationRepository = _evaluation;
             _trainingSuggestionsRepository = _trainingSuggestions;
-            _evaluationQuestionnaireRepository = _evaluationQuestionnaire;
+            _evaluationQuestionnaireRepository = _evaluationQuestionnaire; 
             _userRepository = userRepository;
             _emailService = emailService;
             _reminderSettings = reminderSettings.Value;
@@ -148,7 +148,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             return result;
         }
-
+        
         public async Task<bool> ValidateEvaluationAsync(int evaluationId, bool isServiceApproved, bool isDgApproved, DateTime? serviceApprovalDate, DateTime? dgApprovalDate)
         {
             var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
@@ -165,11 +165,11 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         }
 
         public async Task<bool> SaveEvaluationResultsAsync(
-            int evaluationId,
-            Dictionary<int, int> ratings,
-            decimal overallScore,
-            string strengths,
-            string weaknesses,
+       int evaluationId,
+       Dictionary<int, int> ratings,
+       decimal overallScore,
+       string strengths,
+       string weaknesses,
             string generalEvaluation,
             List<MultiCriteriaRatingDto> detailedRatings = null)
         {
@@ -253,8 +253,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     {
                         // Créer une nouvelle réponse
                         var newResponse = new EvaluationResponses
-                        {
-                            EvaluationId = evaluationId,
+                {
+                    EvaluationId = evaluationId,
                             QuestionId = questionId,
                             ResponseValue = jsonValue,
                             ResponseType = "MULTI_CRITERIA",
@@ -586,7 +586,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     .Take(pageSize)
                     .ToListAsync();
 
-                return (items, totalPages);
+            return (items, totalPages);
             }
             catch (Exception ex)
             {
@@ -706,6 +706,30 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             selectedQuestion.CompetenceLineId = newCompetenceLineId;
             await _context.SaveChangesAsync();
             return true;
+        }
+
+
+        public async Task<(IEnumerable<EvaluationQuestion> Items, int TotalPages)> GetPaginatedEvaluationQuestionsByTypeAsync(int evaluationTypeId, int pageNumber, int pageSize)
+        {
+            try
+            {
+                var query = _context.evaluationQuestions
+                    .Where(q => q.evaluationTypeId == evaluationTypeId);
+
+                var totalItems = await query.CountAsync();
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+                var items = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                return (items, totalPages);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erreur lors de la récupération des questions paginées : {ex.Message}");
+            }
         }
     }
 }

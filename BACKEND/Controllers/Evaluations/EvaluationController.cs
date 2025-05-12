@@ -679,7 +679,8 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		{
 			try
 			{
-				var selectedQuestions = await _context.evaluationSelectedQuestions
+				// Récupérer les questions sélectionnées avec leurs données de base
+				var selectedQuestionsQuery = await _context.evaluationSelectedQuestions
 					.Where(esq => esq.EvaluationId == evaluationId)
 					.Join(_context.evaluationQuestions,
 						esq => esq.QuestionId,
@@ -694,45 +695,67 @@ namespace soft_carriere_competence.Controllers.Evaluations
 								.FirstOrDefault(er => er.EvaluationId == evaluationId && er.QuestionId == eq.questiondId)
 						})
 					.ToListAsync();
-
-				// Transformez les résultats pour inclure le texte de l'option pour les réponses QCM
-				var formattedQuestions = new List<object>();
-				foreach (var selectedQuestion in selectedQuestions)
+					
+				// Récupérer les configurations de temps
+				var questionIds = selectedQuestionsQuery.Select(q => q.QuestionId).ToList();
+				var timeConfigs = await _context.evaluationQuestionConfigs
+					.Where(c => questionIds.Contains(c.QuestionId))
+					.ToDictionaryAsync(c => c.QuestionId, c => c.MaxTimeInMinutes);
+					
+				// Récupérer les types de réponse
+				var responseTypeIds = selectedQuestionsQuery.Select(q => q.ResponseTypeId).Distinct().ToList();
+				var responseTypes = await _context.ResponseTypes
+					.Where(rt => responseTypeIds.Contains(rt.ResponseTypeId))
+					.ToDictionaryAsync(rt => rt.ResponseTypeId, rt => rt.TypeName);
+					
+				// Récupérer toutes les options pour les questions QCM
+				var optionIds = new List<int>();
+				foreach (var question in selectedQuestionsQuery)
 				{
-					// Récupérer le type de réponse (TEXT ou QCM)
-					var responseType = await _context.ResponseTypes
-						.Where(rt => rt.ResponseTypeId == selectedQuestion.ResponseTypeId)
-						.Select(rt => rt.TypeName)
-						.FirstOrDefaultAsync() ?? "TEXT";
-					
-					string formattedResponse = selectedQuestion.Response?.ResponseValue;
-					bool isCorrect = selectedQuestion.Response?.IsCorrect ?? false;
-					
-					// Si c'est une question QCM et qu'il y a une réponse
-					if (responseType == "QCM" && selectedQuestion.Response != null)
+					if (question.Response != null && int.TryParse(question.Response.ResponseValue, out int optionId))
 					{
-						// Essayer de récupérer l'option choisie
-						if (int.TryParse(selectedQuestion.Response.ResponseValue, out int optionId))
-						{
-							var option = await _context.evaluationQuestionOptions
-								.FirstOrDefaultAsync(o => o.OptionId == optionId);
-							
-							// Utiliser le texte de l'option si trouvé
-							if (option != null)
-							{
-								formattedResponse = option.OptionText;
-							}
-						}
+						optionIds.Add(optionId);
+					}
+				}
+				
+				var options = await _context.evaluationQuestionOptions
+					.Where(o => optionIds.Contains(o.OptionId))
+					.ToDictionaryAsync(o => o.OptionId, o => o.OptionText);
+
+				// Construire les résultats formatés
+				var formattedQuestions = new List<object>();
+				foreach (var question in selectedQuestionsQuery)
+				{
+					string responseType = responseTypes.ContainsKey(question.ResponseTypeId) ? 
+						responseTypes[question.ResponseTypeId] : "TEXT";
+						
+					string formattedResponse = question.Response?.ResponseValue;
+					bool isCorrect = question.Response?.IsCorrect ?? false;
+					
+					// Formater la réponse pour les questions QCM
+					if (responseType == "QCM" && question.Response != null && 
+						int.TryParse(question.Response.ResponseValue, out int optionId) && 
+						options.ContainsKey(optionId))
+					{
+						formattedResponse = options[optionId];
+					}
+					
+					// Déterminer le temps maximum
+					int maxTime = 15; // Valeur par défaut
+					if (timeConfigs.ContainsKey(question.QuestionId))
+					{
+						maxTime = timeConfigs[question.QuestionId];
 					}
 					
 					formattedQuestions.Add(new
 					{
-						QuestionId = selectedQuestion.QuestionId,
-						QuestionText = selectedQuestion.QuestionText,
-						CompetenceLineId = selectedQuestion.CompetenceLineId,
+						QuestionId = question.QuestionId,
+						QuestionText = question.QuestionText,
+						CompetenceLineId = question.CompetenceLineId,
 						ResponseType = responseType,
 						ResponseValue = formattedResponse,
-						IsCorrect = isCorrect
+						IsCorrect = isCorrect,
+						MaxTimeInMinutes = maxTime
 					});
 				}
 
@@ -741,6 +764,143 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			catch (Exception ex)
 			{
 				return StatusCode(500, $"Erreur interne du serveur: {ex.Message}");
+			}
+		}
+
+		// API pour récupérer la liste des modèles d'évaluation (templates)
+		[HttpGet("templates")]
+		public async Task<IActionResult> GetEvaluationTemplates()
+		{
+			try
+			{
+				var evaluationTypes = await _context.EvaluationTypes
+					.Where(et => et.state == 1)
+					.Select(et => new
+					{
+						id = et.EvaluationTypeId,
+						title = et.Designation,
+						description = et.Designation, // Vous pouvez ajouter une description plus détaillée si nécessaire
+						questionCount = _context.evaluationQuestions
+							.Count(q => q.evaluationTypeId == et.EvaluationTypeId && q.state == 1)
+					})
+					.ToListAsync();
+
+				return Ok(evaluationTypes);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		// API pour récupérer les questions d'une évaluation spécifique
+		[HttpGet("{evaluationTypeId}/questions")]
+		public async Task<IActionResult> GetQuestionsByEvaluationType(int evaluationTypeId)
+		{
+			try
+			{
+				// Récupérer les questions
+				var questionsQuery = await _context.evaluationQuestions
+					.Where(q => q.evaluationTypeId == evaluationTypeId && q.state == 1)
+					.Select(q => new
+					{
+						questionId = q.questiondId,
+						text = q.question,
+						positionId = q.positionId,
+						competenceLineId = q.CompetenceLineId,
+						responseType = _context.ResponseTypes
+							.Where(rt => rt.ResponseTypeId == q.ResponseTypeId)
+							.Select(rt => rt.TypeName)
+							.FirstOrDefault() ?? "TEXT",
+						questionIdForConfig = q.questiondId // Utilisé pour joindre avec les configurations
+					})
+					.ToListAsync();
+
+				// Récupérer séparément toutes les configurations de temps
+				var timeConfigs = await _context.evaluationQuestionConfigs
+					.Where(c => questionsQuery.Select(q => q.questionId).Contains(c.QuestionId))
+					.ToDictionaryAsync(c => c.QuestionId, c => c.MaxTimeInMinutes);
+
+				// Créer une nouvelle liste avec les valeurs correctes
+				var result = questionsQuery.Select(q => new
+				{
+					questionId = q.questionId,
+					text = q.text,
+					positionId = q.positionId,
+					competenceLineId = q.competenceLineId,
+					responseType = q.responseType,
+					maxTimeInMinutes = timeConfigs.ContainsKey(q.questionId) ? timeConfigs[q.questionId] : 15
+				}).ToList();
+
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		// API pour mettre à jour le temps par question
+		[HttpPost("questions/update-time")]
+		public async Task<IActionResult> UpdateQuestionsTime([FromBody] List<QuestionTimeUpdateDto> questions)
+		{
+			try
+			{
+				if (questions == null || !questions.Any())
+				{
+					return BadRequest("Aucune question à mettre à jour");
+				}
+
+				foreach (var questionUpdate in questions)
+				{
+					// Chercher si une configuration existe déjà pour cette question
+					var config = await _context.evaluationQuestionConfigs
+						.FirstOrDefaultAsync(c => c.QuestionId == questionUpdate.QuestionId);
+
+					if (config != null)
+					{
+						// Mettre à jour la configuration existante
+						config.MaxTimeInMinutes = questionUpdate.MaxTimeInMinutes;
+						config.UpdatedAt = DateTime.UtcNow;
+					}
+					else
+					{
+						// Créer une nouvelle configuration
+						var newConfig = new EvaluationQuestionConfig
+						{
+							QuestionId = questionUpdate.QuestionId,
+							MaxTimeInMinutes = questionUpdate.MaxTimeInMinutes
+						};
+						await _context.evaluationQuestionConfigs.AddAsync(newConfig);
+					}
+				}
+
+				await _context.SaveChangesAsync();
+				return Ok(new { success = true, message = "Temps des questions mis à jour avec succès" });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
+
+		[HttpGet("{evaluationTypeId}/questions/paginated")]
+		public async Task<IActionResult> GetPaginatedEvaluationQuestionsByType(int evaluationTypeId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+		{
+			try
+			{
+				var result = await _evaluationService.GetPaginatedEvaluationQuestionsByTypeAsync(evaluationTypeId, pageNumber, pageSize);
+				return Ok(new
+				{
+					items = result.Items,
+					totalPages = result.TotalPages,
+					currentPage = pageNumber,
+					pageSize = pageSize
+				});
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
 			}
 		}
 	}
