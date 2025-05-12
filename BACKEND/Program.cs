@@ -141,9 +141,18 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<EvaluationPlanningService>();
 builder.Services.AddScoped<EvaluationInterviewService>();
+builder.Services.AddScoped<RoleService>();
+builder.Services.AddScoped<PermissionService>();
+builder.Services.AddScoped<CompetenceLineService>();
+builder.Services.AddScoped<CompetenceTrainingService>();
+builder.Services.AddScoped<EvaluationResponseService>();
+builder.Services.AddScoped<ReferenceAnswerService>();
+builder.Services.AddScoped<EvaluationCompetenceService>();
 
 builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
 builder.Services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
+
+
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<UserService>();

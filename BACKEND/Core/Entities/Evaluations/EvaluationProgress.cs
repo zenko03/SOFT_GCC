@@ -8,7 +8,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
     {
         [Key]
         [Column("Progress_id")]
-        public int progressId { get; set; }
+        public int ProgressId { get; set; }
         [Column("evaluationId")]
         public int evaluationId { get; set; }
         [Column("userId")]
@@ -26,7 +26,5 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         public Evaluation evaluation { get; set; }
         [ForeignKey("userId")]
         public User user { get; set; }
-
-
     }
 }

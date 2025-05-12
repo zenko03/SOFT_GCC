@@ -72,7 +72,7 @@ namespace soft_carriere_competence.Controllers.Authentification
 				lastName = user.LastName,
 				roleId = user.RoleId,
 				roleTitle = user.Role?.Title ?? "Unknown",
-				postId = user.PostId,
+				postId = user.PositionId,
 				departmentId = user.DepartmentId
 			});
 		}

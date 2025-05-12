@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using soft_carriere_competence.Application.Dtos.LoginDto;
+using soft_carriere_competence.Core.Entities.crud_career;
 using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Core.Interface.AuthInterface;
@@ -48,9 +49,9 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         }
 
 
-        public async Task<Poste?> GetPostByIdAsync(int postId)
+        public async Task<Position?> GetPostByIdAsync(int postId)
         {
-            return await _context.postes.FindAsync(postId);
+            return await _context.Position.FindAsync(postId);
         }
 
         public async Task<IEnumerable<User>> GetManagerAndDirector()
@@ -82,7 +83,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 RoleId = dto.RoleId,
                 CreationDate = DateTime.UtcNow,
                 DepartmentId = dto.departementId,
-                PostId = 1,
+                PositionId = 1,
                 Createdby = 1
 
             };
@@ -171,7 +172,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         new Claim("lastName", user.LastName), // Nom
         new Claim("roleId", user.RoleId.ToString()), // ID du rôle
         new Claim("roleTitle", user.Role?.Title ?? "Unknown"), // Titre du rôle
-        new Claim("postId", user.PostId.ToString()), // ID du poste
+        new Claim("positionId", user.PositionId.ToString()), // ID du poste
         new Claim("departmentId", user.DepartmentId.ToString()) // ID du département
     };
 
@@ -239,7 +240,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return await _context.Users
                 .Include(u => u.Department)
                 .Include(u => u.Role)
-                .Include(u => u.Poste)
+                .Include(u => u.Position)
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
@@ -248,7 +249,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return await _context.Users
                 .Include(u => u.Department)
                 .Include(u => u.Role)
-                .Include(u => u.Poste)
+                .Include(u => u.Position)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 

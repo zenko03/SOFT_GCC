@@ -1,14 +1,12 @@
-﻿using soft_carriere_competence.Application.Dtos.EvaluationsDto;
+﻿using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Core.Entities.crud_career;
+using soft_carriere_competence.Application.Dtos.EvaluationsDto;
 using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Core.Interface.EvaluationInterface;
 using soft_carriere_competence.Infrastructure.Data;
-using soft_carriere_competence.Infrastructure.Repositories.EvaluationRepositories;
-using soft_carriere_competence.Application.Services.EmailService;
 using soft_carriere_competence.Core.Interface.AuthInterface;
 using Microsoft.Extensions.Options;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -21,15 +19,12 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly IGenericRepository<EvaluationQuestionnaire> _evaluationQuestionnaireRepository;
         private readonly IGenericRepository<Evaluation> _evaluationRepository;
         private readonly IGenericRepository<User> _userRepository;
-        private readonly IGenericRepository<Poste> _posteRepository;
+        private readonly IGenericRepository<Position> _posteRepository;
         private readonly ApplicationDbContext _context;
         private readonly TemporaryAccountService _temporaryAccountService;
-
-
         private readonly IEmailService _emailService;
         private readonly ReminderSettings _reminderSettings;
-
-
+        private readonly EvaluationCompetenceService _competenceService;
 
         public EvaluationService(IEvaluationQuestionRepository questionRepository, IGenericRepository<EvaluationType> evaluationType,
             IGenericRepository<EvaluationQuestion> EvaluationQuestion, IGenericRepository<Evaluation> _evaluation,
@@ -37,25 +32,24 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             IGenericRepository<User> userRepository,
             IEmailService emailService,
             IOptions<ReminderSettings> reminderSettings,
-            IGenericRepository<Poste> poste,
+            IGenericRepository<Position> poste,
             ApplicationDbContext context,
-            TemporaryAccountService temporaryAccountService
-
-            )
+            TemporaryAccountService temporaryAccountService,
+            EvaluationCompetenceService competenceService = null)
         {
             _questionRepository = questionRepository;
             _evaluationTypeRepository = evaluationType;
             _evaluationQuestion = EvaluationQuestion;
             _evaluationRepository = _evaluation;
             _trainingSuggestionsRepository = _trainingSuggestions;
-            _evaluationQuestionnaireRepository = _evaluationQuestionnaire; 
+            _evaluationQuestionnaireRepository = _evaluationQuestionnaire;
             _userRepository = userRepository;
             _emailService = emailService;
-            _reminderSettings = reminderSettings.Value; // Get the configured value
+            _reminderSettings = reminderSettings.Value;
             _posteRepository = poste;
             _context = context;
             _temporaryAccountService = temporaryAccountService;
-
+            _competenceService = competenceService;
         }
 
         // Create a new evaluation question
@@ -69,7 +63,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         // Get all evaluation questions
         public async Task<IEnumerable<EvaluationQuestion>> GetAllEvaluationQuestionsAsync()
         {
-            return await _context.evaluationQuestions.Include(p => p.poste).Include(et => et.EvaluationType).ToListAsync();
+            return await _context.evaluationQuestions
+                .Include(p => p.Position)
+                .Include(et => et.EvaluationType)
+                .ToListAsync();
         }
         // Get a specific evaluation question by ID
         public async Task<EvaluationQuestion> GetEvaluationQuestionByIdAsync(int id)
@@ -94,9 +91,9 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return true;
         }
 
-        public async Task<IEnumerable<EvaluationQuestion>> GetEvaluationQuestionsAsync(int evaluationTypeId, int postId)
+        public async Task<IEnumerable<EvaluationQuestion>> GetEvaluationQuestionsAsync(int evaluationTypeId, int positionId)
         {
-            return await _questionRepository.GetQuestionsByEvaluationTypeAndPostAsync(evaluationTypeId, postId);
+            return await _questionRepository.GetQuestionsByEvaluationTypeAndPostAsync(evaluationTypeId, positionId);
         }
 
         public async Task<IEnumerable<EvaluationType>> GetEvaluationTypeAsync()
@@ -111,12 +108,9 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             var total = ratings.Values.Sum();
             var count = ratings.Count;
-            
-            
 
             return (double)total / count;
         }
-
 
         public async Task<List<TrainingSuggestionResultDto>> GetTrainingSuggestionsByQuestionsAsync(Dictionary<int, int> ratings)
         {
@@ -154,7 +148,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             return result;
         }
-        
+
         public async Task<bool> ValidateEvaluationAsync(int evaluationId, bool isServiceApproved, bool isDgApproved, DateTime? serviceApprovalDate, DateTime? dgApprovalDate)
         {
             var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
@@ -164,90 +158,249 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             evaluation.isDgApproved = isDgApproved;
             evaluation.serviceApprovalDate = serviceApprovalDate;
             evaluation.dgApprovalDate = dgApprovalDate;
-            evaluation.state= 20;
+            evaluation.state = 20;
 
             await _evaluationRepository.UpdateAsync(evaluation);
             return true;
         }
 
         public async Task<bool> SaveEvaluationResultsAsync(
-       int evaluationId,
-       Dictionary<int, int> ratings,
-       decimal overallScore,
-       string strengths,
-       string weaknesses,
-       string generalEvaluation)
+            int evaluationId,
+            Dictionary<int, int> ratings,
+            decimal overallScore,
+            string strengths,
+            string weaknesses,
+            string generalEvaluation,
+            List<MultiCriteriaRatingDto> detailedRatings = null)
         {
-            Console.WriteLine("tafiditra avant getbyidasync");
-
             var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
-            Console.WriteLine("tafiditra apres getbyidasync");
-
             if (evaluation == null) throw new Exception($"Evaluation with ID {evaluationId} not found.");
 
             // Enregistrer les informations globales de l'évaluation
             evaluation.OverallScore = overallScore;
             evaluation.Comments = generalEvaluation;
-            evaluation.strengths = strengths;  // Colonne ajoutée
-            evaluation.weaknesses = weaknesses; // Colonne ajoutée
+            evaluation.strengths = strengths;
+            evaluation.weaknesses = weaknesses;
 
             await _evaluationRepository.UpdateAsync(evaluation);
 
-            // Enregistrer les résultats des questions dans Evaluation_questionnaire
+            // Liste des réponses existantes pour éviter les doublons
+            var existingResponses = await _context.evaluationResponses
+                .Where(r => r.EvaluationId == evaluationId)
+                .ToListAsync();
+
+            // Dictionnaire pour un accès rapide
+            var existingResponsesDict = existingResponses
+                .ToDictionary(r => r.QuestionId, r => r);
+
+            // Pour chaque note
             foreach (var rating in ratings)
             {
-                var questionExists = await _questionRepository.ExistsAsync(rating.Key);
-                if (!questionExists) throw new Exception($"Question with ID {rating.Key} not found.");
+                int questionId = rating.Key;
+                int score = rating.Value;
 
-                var questionnaire = new EvaluationQuestionnaire
+                // Vérifier si la réponse existe déjà
+                if (existingResponsesDict.TryGetValue(questionId, out var existingResponse))
                 {
-                    EvaluationId = evaluationId,
-                    questionId = rating.Key,
-                    Score = rating.Value,
-                    state = 10 // TERMINEE
-                };
-                await _evaluationQuestionnaireRepository.CreateAsync(questionnaire);
+                    // Mettre à jour la réponse existante
+                    existingResponse.ResponseValue = score.ToString();
+                    existingResponse.EndTime = DateTime.UtcNow; // Utiliser EndTime comme date de modification
+                    _context.evaluationResponses.Update(existingResponse);
+                }
+                else
+                {
+                    // Créer une nouvelle réponse
+                    var newResponse = new EvaluationResponses
+                    {
+                        EvaluationId = evaluationId,
+                        QuestionId = questionId,
+                        ResponseValue = score.ToString(),
+                        ResponseType = "SCORE",
+                        CreatedAt = DateTime.UtcNow,
+                        StartTime = DateTime.UtcNow,
+                        EndTime = DateTime.UtcNow,
+                        State = 10 // TERMINEE
+                    };
+                    await _context.evaluationResponses.AddAsync(newResponse);
+                }
+            }
+
+            // Si des ratings détaillés sont fournis (pour les critères multiples)
+            if (detailedRatings != null && detailedRatings.Count > 0)
+            {
+                foreach (var detailedRating in detailedRatings)
+                {
+                    if (detailedRating == null || detailedRating.QuestionId <= 0) continue;
+
+                    int questionId = detailedRating.QuestionId;
+
+                    // Calculer la note globale
+                    detailedRating.OverallRating = detailedRating.CalculateOverallRating();
+
+                    // Convertir en JSON
+                    string jsonValue = System.Text.Json.JsonSerializer.Serialize(detailedRating);
+
+                    // Vérifier si la réponse existe déjà
+                    if (existingResponsesDict.TryGetValue(questionId, out var existingResponse))
+                    {
+                        // Mettre à jour la réponse existante
+                        existingResponse.ResponseValue = jsonValue;
+                        existingResponse.ResponseType = "MULTI_CRITERIA";
+                        existingResponse.EndTime = DateTime.UtcNow; // Utiliser EndTime comme date de modification
+                        _context.evaluationResponses.Update(existingResponse);
+                    }
+                    else
+                    {
+                        // Créer une nouvelle réponse
+                        var newResponse = new EvaluationResponses
+                        {
+                            EvaluationId = evaluationId,
+                            QuestionId = questionId,
+                            ResponseValue = jsonValue,
+                            ResponseType = "MULTI_CRITERIA",
+                            CreatedAt = DateTime.UtcNow,
+                            StartTime = DateTime.UtcNow,
+                            EndTime = DateTime.UtcNow,
+                            State = 10 // TERMINEE
+                        };
+                        await _context.evaluationResponses.AddAsync(newResponse);
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            
+            // Calculer et sauvegarder les résultats par compétence
+            try
+            {
+                // Utiliser l'instance injectée du service de compétence ici
+                await _competenceService.CalculateAndSaveCompetenceResultsAsync(evaluationId);
+            }
+            catch (Exception ex)
+            {
+                // On log l'erreur mais on ne la propage pas pour ne pas bloquer l'enregistrement des résultats
+                Console.WriteLine($"Erreur lors du calcul des résultats par compétence : {ex.Message}");
             }
 
             return true;
         }
 
-
-        public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, int supervisorId, DateTime startDate, DateTime endDate)
+        // Surcharge pour accepter le DTO complet
+        public async Task<bool> SaveEvaluationResultsAsync(EvaluationResultsDto dto)
         {
-            var newEvaluation = new Evaluation
+            // Synchroniser les notes simples et détaillées si nécessaire
+            if (dto.HasDetailedRatings())
             {
-                UserId = userId,
-                EvaluationTypeId = evaluationTypeId,
-                SupervisorId = supervisorId,
-                StartDate = startDate,
-                EndDate = endDate,
-                OverallScore = 0,
-                Comments = null,
-                state = 10 // Actif
-            };
-
-            await _evaluationRepository.CreateAsync(newEvaluation);
-
-            // Récupérer l'utilisateur
-            var user = await _userRepository.GetByIdAsync(userId);
-
-            // Créer un compte temporaire pour l'évaluation
-            var tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(userId, newEvaluation.EvaluationId);
-
-            // Envoyer un email avec les identifiants temporaires
-            await _emailService.SendEmailAsync(
-                user.Email,
-                "Planification évaluation",
-                $"Vous avez une évaluation programmée du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}.\n\n" +
-                $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
-                $"Login : {tempAccount.TempLogin}\n" +
-                $"Mot de passe : {tempAccount.TempPassword}\n\n" +
-                $"Ces identifiants ne seront valides qu'à partir du {startDate.ToShortDateString()}.\n" +
-                $"Lien pour vous connecter : https://votre-application.com/evaluation-login"
+                dto.SynchronizeRatings();
+            }
+            
+            return await SaveEvaluationResultsAsync(
+                dto.EvaluationId,
+                dto.Ratings,
+                dto.OverallScore,
+                dto.Strengths ?? string.Empty,
+                dto.Weaknesses ?? string.Empty,
+                dto.GeneralEvaluation ?? string.Empty,
+                dto.DetailedRatings
             );
+        }
 
-            return newEvaluation.EvaluationId;
+        public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, List<int> supervisorIds, DateTime startDate, DateTime endDate)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Vérifier si l'utilisateur existe
+                    var user = await _userRepository.GetByIdAsync(userId);
+                    if (user == null)
+                        throw new Exception($"User with ID {userId} not found.");
+
+                    // Vérifier si le type d'évaluation existe
+                    var evaluationType = await _evaluationTypeRepository.GetByIdAsync(evaluationTypeId);
+                    if (evaluationType == null)
+                        throw new Exception($"EvaluationType with ID {evaluationTypeId} not found.");
+
+                    // Vérifier si tous les superviseurs existent et sont uniques
+                    var uniqueSupervisorIds = supervisorIds.Distinct().ToList();
+                    foreach (var supervisorId in uniqueSupervisorIds)
+                    {
+                        var supervisor = await _userRepository.GetByIdAsync(supervisorId);
+                        if (supervisor == null)
+                            throw new Exception($"Supervisor with ID {supervisorId} not found.");
+                    }
+
+                    // Créer l'évaluation
+                    var newEvaluation = new Evaluation
+                    {
+                        UserId = userId,
+                        EvaluationTypeId = evaluationTypeId,
+                        StartDate = startDate,
+                        EndDate = endDate,
+                        OverallScore = 0,
+                        Comments = null,
+                        state = 10 // Actif
+                    };
+
+                    // Sauvegarder l'évaluation
+                    await _evaluationRepository.CreateAsync(newEvaluation);
+                    await _context.SaveChangesAsync();
+
+                    Console.WriteLine($"Created evaluation with ID: {newEvaluation.EvaluationId}");
+
+                    // Initialiser la progression
+                    var progress = new EvaluationProgress
+                    {
+                        evaluationId = newEvaluation.EvaluationId,
+                        userId = userId,
+                        totalQuestions = 0, // Sera mis à jour lors de la sélection des questions
+                        answeredQuestions = 0,
+                        progressPercentage = 0,
+                        lastUpdate = DateTime.UtcNow
+                    };
+                    await _context.evaluationProgresses.AddAsync(progress);
+                    await _context.SaveChangesAsync();
+
+                    // Créer les associations superviseur-évaluation
+                    var evaluationSupervisors = uniqueSupervisorIds.Select(supervisorId => new EvaluationSupervisors
+                    {
+                        EvaluationId = newEvaluation.EvaluationId,
+                        SupervisorId = supervisorId
+                    }).ToList();
+
+                    // Ajouter toutes les associations en une seule fois
+                    await _context.EvaluationSupervisors.AddRangeAsync(evaluationSupervisors);
+                    await _context.SaveChangesAsync();
+
+                    Console.WriteLine($"Added {evaluationSupervisors.Count} supervisors to evaluation {newEvaluation.EvaluationId}");
+
+                    // Créer et envoyer les identifiants temporaires
+                    var tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(userId, newEvaluation.EvaluationId);
+
+                    // Envoyer l'email de notification
+                    await _emailService.SendEmailAsync(
+                        user.Email,
+                        "Planification évaluation",
+                        $"Vous avez une évaluation programmée du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}.\n\n" +
+                        $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
+                        $"Login : {tempAccount.TempLogin}\n" +
+                        $"Mot de passe : {tempAccount.TempPassword}\n\n" +
+                        $"Ces identifiants ne seront valides qu'à partir du {startDate.ToShortDateString()}.\n" +
+                        $"Lien pour vous connecter : https://votre-application.com/evaluation-login"
+                    );
+
+                    await transaction.CommitAsync();
+                    return newEvaluation.EvaluationId;
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    Console.WriteLine($"Error in CreateEvaluationAsync: {ex.Message}");
+                    Console.WriteLine($"Inner exception: {ex.InnerException?.Message}");
+                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    throw;
+                }
+            }
         }
 
         public async Task<bool> CreateTrainingSuggestionAsync(TrainingSuggestion suggestion)
@@ -275,8 +428,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         //    return 1;
         //}
 
-
-
         // Method to send reminder emails for evaluations that are due
         public async Task SendAutomaticRemindersAsync()
         {
@@ -287,7 +438,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 await SendReminderEmailAsync(evaluation.UserId, evaluation.StartDate);
             }
         }
-
 
         // Method to get evaluations that are due for reminders (e.g., 2 days before the evaluation date)
         public async Task<List<Evaluation>> GetUpcomingEvaluationsAsync()
@@ -358,7 +508,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return 1; // Success
         }
 
-        public async Task<IEnumerable<Poste>> GetPostesAsync()
+        public async Task<IEnumerable<Position>> GetPostesAsync()
         {
             return await _posteRepository.GetAllAsync(); // Assuming you have a repository for posts
         }
@@ -426,15 +576,136 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         // Get paginated evaluation questions
         public async Task<(IEnumerable<EvaluationQuestion> Items, int TotalPages)> GetPaginatedEvaluationQuestionsAsync(int pageNumber, int pageSize)
         {
-            // Utilisez la méthode de pagination de votre repository
-            var items = _evaluationQuestion.GetPage(pageNumber, pageSize, "EvaluationType,poste");
+            try
+            {
+                var totalItems = await _context.evaluationQuestions.CountAsync();
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                
+                var items = await _context.evaluationQuestions
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
 
-            // Obtenez le nombre total de pages
-            var totalPages = _evaluationQuestion.GetTotalPages(pageSize);
+                return (items, totalPages);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erreur lors de la récupération des questions paginées : {ex.Message}");
+            }
+        }
 
-            return (items, totalPages);
+        public async Task<List<int>> CreateEvaluationWithSelectedQuestionsAsync(CreateEvaluationWithQuestionsDto dto)
+        {
+            var evaluationIds = new List<int>();
+
+            try
+            {
+                foreach (var employeeQuestion in dto.EmployeeQuestions)
+                {
+                    // Créer l'évaluation pour l'employé
+                    var evaluationId = await CreateEvaluationAsync(
+                        employeeQuestion.EmployeeId,
+                        employeeQuestion.EvaluationTypeId,
+                        dto.SupervisorIds,
+                        dto.StartDate,
+                        dto.EndDate
+                    );
+
+                    // Ajouter les questions sélectionnées avec leurs compétences
+                    foreach (var question in employeeQuestion.SelectedQuestions)
+                    {
+                        if (!question.CompetenceLineId.HasValue)
+                        {
+                            throw new Exception($"La question avec ID {question.QuestionId} n'a pas de ligne de compétence associée");
+                        }
+
+                        var selectedQuestion = new EvaluationSelectedQuestions
+                        {
+                            EvaluationId = evaluationId,
+                            QuestionId = question.QuestionId,
+                            CompetenceLineId = question.CompetenceLineId.Value
+                        };
+                        await _context.evaluationSelectedQuestions.AddAsync(selectedQuestion);
+                    }
+
+                    // Mettre à jour le nombre total de questions dans la progression
+                    var progress = await _context.evaluationProgresses
+                        .FirstOrDefaultAsync(ep => ep.evaluationId == evaluationId);
+                    if (progress != null)
+                    {
+                        progress.totalQuestions = employeeQuestion.SelectedQuestions.Count;
+                        await _context.SaveChangesAsync();
+                    }
+
+                    evaluationIds.Add(evaluationId);
+                }
+
+                await _context.SaveChangesAsync();
+                return evaluationIds;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erreur lors de la création des évaluations avec questions sélectionnées : {ex.Message}");
+            }
+        }
+
+        private async Task<int> GetCompetenceLineIdForQuestion(int questionId)
+        {
+            var question = await _evaluationQuestion.GetByIdAsync(questionId);
+            if (question == null)
+                throw new Exception($"Question avec ID {questionId} non trouvée");
+            if (!question.CompetenceLineId.HasValue)
+                throw new Exception($"La question avec ID {questionId} n'a pas de ligne de compétence associée");
+            return question.CompetenceLineId.Value;
+        }
+
+        public async Task<IEnumerable<EvaluationSelectedQuestions>> GetSelectedQuestionsAsync(int evaluationId)
+        {
+            return await _context.evaluationSelectedQuestions
+                .Where(esq => esq.EvaluationId == evaluationId)
+                .Include(esq => esq.SelectedQuestion)
+                .Include(esq => esq.SelectedCompetenceLine)
+                .ToListAsync();
+        }
+
+        public async Task<bool> AddSelectedQuestionAsync(int evaluationId, int questionId, int competenceLineId)
+        {
+            var selectedQuestion = new EvaluationSelectedQuestions
+            {
+                EvaluationId = evaluationId,
+                QuestionId = questionId,
+                CompetenceLineId = competenceLineId
+            };
+
+            await _context.evaluationSelectedQuestions.AddAsync(selectedQuestion);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> RemoveSelectedQuestionAsync(int evaluationId, int questionId)
+        {
+            var selectedQuestion = await _context.evaluationSelectedQuestions
+                .FirstOrDefaultAsync(esq => esq.EvaluationId == evaluationId && esq.QuestionId == questionId);
+
+            if (selectedQuestion == null)
+                return false;
+
+            _context.evaluationSelectedQuestions.Remove(selectedQuestion);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateSelectedQuestionAsync(int evaluationId, int questionId, int newCompetenceLineId)
+        {
+            var selectedQuestion = await _context.evaluationSelectedQuestions
+                .FirstOrDefaultAsync(esq => esq.EvaluationId == evaluationId && esq.QuestionId == questionId);
+
+            if (selectedQuestion == null)
+                return false;
+
+            selectedQuestion.CompetenceLineId = newCompetenceLineId;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
-
-
 }

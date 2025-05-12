@@ -65,7 +65,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			var positions = await _evaluationInterviewService.GetAllPostesAsync();
 			foreach (var pos in positions)
 			{
-				Console.WriteLine("les postes: " + pos.title);
+				Console.WriteLine("les postes: " + pos.PositionName);
 			}
 			return Ok(positions);
 		}
