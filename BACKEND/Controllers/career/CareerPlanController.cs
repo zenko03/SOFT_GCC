@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Application.Services.career_plan;
@@ -21,15 +22,17 @@ namespace soft_carriere_competence.Controllers.career
 		private readonly CareerPlanService _careerPlanService;
 		private readonly HistoryService _historyService;
 		private readonly AssignmentTypeService _assignmentTypeService;
+		private readonly CertificateHistoryService _certificateHistoryService;
 
-		public CareerPlanController(CareerPlanService service, HistoryService historyService, AssignmentTypeService assignmentTypeService)
+		public CareerPlanController(CareerPlanService service, HistoryService historyService, AssignmentTypeService assignmentTypeService, CertificateHistoryService certificateHistoryService)
 		{
 			_careerPlanService = service;
 			_historyService = historyService;
 			_assignmentTypeService = assignmentTypeService;
+			_certificateHistoryService = certificateHistoryService;
 		}
 
-	/// Recupérer un plan de carrière par son çid
+		/// Recupérer un plan de carrière par son çid
 		[HttpGet("{id}")]
 		public async Task<IActionResult> Get(int id)
 		{
@@ -347,6 +350,59 @@ namespace soft_carriere_competence.Controllers.career
 			{
 				return BadRequest("Échec de la suppression de l'historique.");
 			}
+		}
+
+		// Upload pdf certification
+		[HttpPost]
+		[Route("Certificate/Save")]
+		public async Task<IActionResult> UploadCertificate(
+			[FromForm] IFormFile file, 
+			[FromForm] string registrationNumber,
+			[FromForm] int certificateTypeId,
+			[FromForm] string reference
+		) {
+			if (file == null || file.Length == 0 || !file.ContentType.Contains("pdf"))
+				return BadRequest("Fichier invalide.");
+
+			using var ms = new MemoryStream();
+			await file.CopyToAsync(ms);
+			var fileBytes = ms.ToArray();
+
+			var certificateHistory = new CertificateHistory
+			{
+				RegistrationNumber = registrationNumber,
+				CertificateTypeId = certificateTypeId,
+				Reference = reference,
+				PdfFile = fileBytes,
+				FileName = file.FileName,
+				ContentType = file.ContentType,
+				State = 1,
+				CreationDate = DateTime.UtcNow,
+				UpdatedDate = DateTime.UtcNow
+			};
+
+			await _certificateHistoryService.Add(certificateHistory);
+
+			return Ok("Fichier pdf enregistré avec succès.");
+		}
+
+		[HttpGet]
+		[Route("Certificate/Get/{certificateId}")]
+		public async Task<IActionResult> DownloadCertificate(int certificateId)
+		{
+			CertificateHistory certificateHistory = await _certificateHistoryService.GetById(certificateId);
+
+			if (certificateHistory == null || certificateHistory.PdfFile == null)
+				return NotFound("Fichier introuvable.");
+
+			return File(certificateHistory.PdfFile, certificateHistory.ContentType, certificateHistory.FileName);
+		}
+
+		[HttpDelete("Certificate/Get/{id}")]
+		public async Task<IActionResult> DeleteCertificate(int id)
+		{
+			await _certificateHistoryService.Delete(id);
+			return NoContent();
 		}
 	}
 }

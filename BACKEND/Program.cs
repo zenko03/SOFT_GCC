@@ -106,6 +106,9 @@ builder.Services.AddScoped<ICrudRepository<Position>, CrudRepository<Position>>(
 builder.Services.AddScoped<CertificateTypeService>();
 builder.Services.AddScoped<ICrudRepository<CertificateType>, CrudRepository<CertificateType>>();
 
+builder.Services.AddScoped<CertificateHistoryService>();
+builder.Services.AddScoped<ICrudRepository<CertificateHistory>, CrudRepository<CertificateHistory>>();
+
 builder.Services.AddScoped<ProfessionalCategoryService>();
 builder.Services.AddScoped<ICrudRepository<ProfessionalCategory>, CrudRepository<ProfessionalCategory>>();
 

@@ -1,4 +1,4 @@
-// Fichier complet ModelEdit.js avec export PDF
+import axios from 'axios';
 import React, { useState, useRef } from "react";
 import Icon from "@mdi/react";
 import {
@@ -31,6 +31,8 @@ import DateDisplayNoTime from "../../helpers/DateDisplayNoTime";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { QRCodeSVG } from "qrcode.react";
+import { urlApi } from '../../helpers/utils';
+import { faCertificate } from '@fortawesome/free-solid-svg-icons';
 
 // Formattage de date
 const formatDateFr = (isoDate) => {
@@ -44,6 +46,7 @@ const formatDateFr = (isoDate) => {
 const ModelEdit = ({ dataEmployee }) => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [signaturePreview, setSignaturePreview] = useState(null);
+  const [file, setFile] = useState(null);
   const [sections, setSections] = useState([
     {
       id: 1,
@@ -127,7 +130,15 @@ const ModelEdit = ({ dataEmployee }) => {
         html2canvas: { scale: 2 },
         jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
       };
-      html2pdf().set(opt).from(previewRef.current).save();
+
+      html2pdf()
+        .set(opt)
+        .from(previewRef.current)
+        .outputPdf('blob') // Génère un Blob au lieu de le sauvegarder localement
+        .then((blob) => {
+          const file = new File([blob], "attestation.pdf", { type: "application/pdf" });
+          handleUpload(file);
+        });
     }
   };
 
@@ -153,6 +164,27 @@ const ModelEdit = ({ dataEmployee }) => {
     };
   
     return text.replace(/{{(.*?)}}/g, (_, key) => mapping[key.trim()] || "");
+  };
+
+  // Upload pdf de l'attestation de travail
+  const handleUpload = async (file) => {
+    if (!file || !dataEmployee?.id) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('registrationNumber', dataEmployee.registrationNumber);
+    formData.append('certificateYprId', 1);
+    formData.append('reference', 'REF');
+
+    try {
+      await axios.post(urlApi('Certificate/Save'), formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      alert('PDF exporté et enregistré avec succès.');
+    } catch (err) {
+      console.error(err);
+      alert('Erreur lors de l’upload du PDF.');
+    }
   };
   
   return (

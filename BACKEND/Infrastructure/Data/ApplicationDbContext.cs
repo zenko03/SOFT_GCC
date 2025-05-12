@@ -57,7 +57,8 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<ProfessionalCategory> ProfessionalCategory { get; set; }
 		public DbSet<SocioCategoryProfessional> SocioCategoryProfessional { get; set; }
 		public DbSet<CertificateType> CertificateType { get; set; }
-		public DbSet<VAssignmentAppointment> VAssignmentAppointment { get; set; }
+        public DbSet<CertificateHistory> CertificateHistory { get; set; }
+        public DbSet<VAssignmentAppointment> VAssignmentAppointment { get; set; }
 		public DbSet<VAssignmentAvailability> VAssignmentAvailability { get; set; }
 		public DbSet<VAssignmentAdvancement> VAssignmentAdvancement { get; set; }
 		public DbSet<VEmployeeCareer> VEmployeeCareer { get; set; }
