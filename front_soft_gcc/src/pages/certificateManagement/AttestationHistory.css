@@ -1,38 +1,41 @@
-/* Stylise le badge en ajoutant un arrondi et un padding */
-.badge {
-    border-radius: 0.5rem;
-    padding: 0.35em 0.65em;
-    font-size: 0.85rem;
-  }
-  
-  /* Pour les liens de téléchargement PDF */
-  a.text-decoration-none {
-    color: #0d6efd;
-    font-weight: 500;
-    transition: color 0.2s ease-in-out;
-  }
-  
-  a.text-decoration-none:hover {
-    color: #084298;
-    text-decoration: underline;
-  }
-  
-  /* Spinner + texte centré verticalement */
-  .d-flex.align-items-center {
-    gap: 0.5rem;
-    font-size: 0.9rem;
-  }
-  
-  /* Table responsive padding */
-  table.table td, table.table th {
-    vertical-align: middle;
-    font-size: 0.95rem;
-    padding: 0.75rem;
-  }
-  
-  /* Titre dans Card Header */
-  .card-header h5 {
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
-  
+.archive-table-container {
+  background-color: #fdfdfd;
+  border: 1px solid #e0e0e0;
+}
+
+.table-modern {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-modern thead {
+  background-color: #f4f6f9;
+  color: #333;
+  font-weight: 600;
+}
+
+.table-modern thead th {
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table-modern tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table-modern tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+.table-modern td,
+.table-modern th {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
+
+.btn-sm {
+  font-size: 0.85rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+}

@@ -424,7 +424,7 @@ CREATE TABLE Certificate_history (
 	Registration_number NVARCHAR(100),
 	Certificate_type_id INT NOT NULL REFERENCES Certificate_type(Certificate_type_id),
 	Reference NVARCHAR(50) NOT NULL UNIQUE,
-	PdfFile VARBINARY(MAX),
+	Pdf_file VARBINARY(MAX),
     File_name NVARCHAR(255),
     Content_type NVARCHAR(100),
 	State INT,

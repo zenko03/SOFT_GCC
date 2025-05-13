@@ -8,7 +8,7 @@ namespace soft_carriere_competence.Core.Entities.career_plan
 	{
 		[Key]
 		[Column("Certificate_history_id")]
-		public int CertificateHistortyId { get; set; }
+		public int CertificateHistoryId { get; set; }
 
 		[Column("Registration_number")]
 		public string? RegistrationNumber { get; set; }

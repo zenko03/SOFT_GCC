@@ -6,6 +6,7 @@ import LoaderComponent from '../../helpers/LoaderComponent';
 import DateDisplay from '../../helpers/DateDisplay';
 import { Tooltip } from 'react-tooltip';
 import './tooltip.css';
+import AttestationHistory from '../../pages/certificateManagement/AttestationHistory';
 
 function History({ registrationNumber }) {
     const [isLoading, setIsLoading] = useState(false); 
@@ -70,6 +71,7 @@ function History({ registrationNumber }) {
                         {error}
                     </Alert>
                 )}
+                <AttestationHistory  employeeId={12} />
                 <div className="card">
                     <div className="card-body">
                         <table className="table table-hover">

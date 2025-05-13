@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { Table, Spinner, Card, Badge } from 'react-bootstrap';
-import { FileEarmarkArrowDown } from 'react-bootstrap-icons';
-import './AttestationHistory.css'; // fichier CSS personnalisé si besoin
+import { FileEarmarkArrowDown, Eye } from 'react-bootstrap-icons';
+import './AttestationHistory.css'; // pour le style modernisé du tableau
+import { urlApi } from '../../helpers/utils';
 
 const AttestationHistory = ({ employeeId }) => {
   const [history, setHistory] = useState([]);
@@ -12,7 +13,8 @@ const AttestationHistory = ({ employeeId }) => {
   useEffect(() => {
     if (!employeeId) return;
     setLoading(true);
-    axios.get(`/api/attestations/history?employeeId=${employeeId}`)
+    axios
+      .get(urlApi(`/CareerPlan/Certificate/Get/${employeeId}`))
       .then(res => setHistory(res.data))
       .catch(err => console.error('Erreur chargement historique :', err))
       .finally(() => setLoading(false));
@@ -44,35 +46,48 @@ const AttestationHistory = ({ employeeId }) => {
         ) : history.length === 0 ? (
           <p className="text-muted">Aucune attestation trouvée.</p>
         ) : (
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Modèle</th>
-                <th>Émetteur</th>
-                <th>Statut</th>
-                <th className="text-end">PDF</th>
-              </tr>
-            </thead>
-            <tbody> Petit modificaikjjhvghjvjhg
+          <div className="archive-table-container p-4 rounded shadow-sm bg-white">
+            <h5 className="mb-4 fw-semibold text-primary">📁 Archive des fichiers exportés</h5>
+            <Table responsive className="table-modern align-middle">
+              <thead>
                 <tr>
-                  <td>{format(new Date(), 'dd/MM/yyyy HH:mm')}</td>
-                  <td>Attestation de travail</td>
-                  <td>Zaho</td>
-                  <td>Yes</td>
-                  <td className="text-end">
-                    <a
-                      href={"ulr"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-decoration-none"
-                    >
-                      <FileEarmarkArrowDown className="me-1" /> Télécharger
-                    </a>
-                  </td>
+                  <th>📄 Nom</th>
+                  <th>📅 Date de création</th>
+                  <th>📌 Statut</th>
+                  <th>📦 Taille</th>
+                  <th className="text-end">🔗 Actions</th>
                 </tr>
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                  <tr>
+                    <td>Attestation</td>
+                    <td>19 juin 2025 à 25h30</td>
+                    <td>Fchier exporté</td>
+                    <td>129 ko</td>
+                    <td className="text-end">
+                      <a
+                        href={"#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-outline-secondary btn-sm me-2"
+                      >
+                        <Eye className="me-1" />
+                        Visualiser
+                      </a>
+                      <a
+                        href={"#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-outline-primary btn-sm"
+                      >
+                        <FileEarmarkArrowDown className="me-1" />
+                        Télécharger
+                      </a>
+                    </td>
+                  </tr>
+              </tbody>
+            </Table>
+          </div>
         )}
       </Card.Body>
     </Card>

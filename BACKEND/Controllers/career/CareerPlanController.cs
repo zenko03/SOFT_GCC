@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Application.Dtos.History;
 using soft_carriere_competence.Application.Services.career_plan;
 using soft_carriere_competence.Application.Services.crud_career;
 using soft_carriere_competence.Application.Services.history;
@@ -387,18 +388,18 @@ namespace soft_carriere_competence.Controllers.career
 		}
 
 		[HttpGet]
-		[Route("Certificate/Get/{certificateId}")]
-		public async Task<IActionResult> DownloadCertificate(int certificateId)
+		[Route("Certificate/Get/{registrationNumber}")]
+		public async Task<ActionResult<List<CertificateHistoryDto>>> GetAllCertificates(string registrationNumber)
 		{
-			CertificateHistory certificateHistory = await _certificateHistoryService.GetById(certificateId);
+			var certificates = await _certificateHistoryService.GetDtosByEmployee(registrationNumber);
 
-			if (certificateHistory == null || certificateHistory.PdfFile == null)
-				return NotFound("Fichier introuvable.");
+			if (certificates == null || !certificates.Any())
+				return NotFound("Aucun certificat trouvé pour ce matricule.");
 
-			return File(certificateHistory.PdfFile, certificateHistory.ContentType, certificateHistory.FileName);
+			return Ok(certificates);
 		}
 
-		[HttpDelete("Certificate/Get/{id}")]
+		[HttpDelete("Certificate/Delete/{id}")]
 		public async Task<IActionResult> DeleteCertificate(int id)
 		{
 			await _certificateHistoryService.Delete(id);

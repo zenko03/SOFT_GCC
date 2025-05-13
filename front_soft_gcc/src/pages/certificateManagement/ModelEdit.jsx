@@ -122,40 +122,31 @@ const ModelEdit = ({ dataEmployee }) => {
   const removeLogo = () => setLogoPreview(null);
 
   const handleExportPDF = () => {
-    if (!showPreview) {
-      setShowPreview(true);
-      // attendre que le DOM soit prêt avant l’export
-      console.log("loading");
-      setTimeout(() => exportPDF(), 500);
-    } else {
-            console.log("loading 14");
-      exportPDF();
-                  console.log("sara be");
-    }
-  };
+  if (previewRef.current) {
+    const opt = {
+      margin: 0.5,
+      filename: "attestation.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+    };
 
-  const exportPDF = () => {
-    if (previewRef.current) {
-      const opt = {
-        margin: 0.5,
-        filename: "attestation.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      };
+    html2pdf()
+      .set(opt)
+      .from(previewRef.current)
+      .outputPdf("blob")
+      .then((blob) => {
+        // 📥 Télécharger
+        html2pdf().set(opt).from(previewRef.current).save();
 
-      html2pdf()
-        .set(opt)
-        .from(previewRef.current)
-        .outputPdf('blob')
-        .then((blob) => {
-          const file = new File([blob], "attestation.pdf", {
-            type: "application/pdf",
-          });
-          handleUpload(file);
-        });
-    }
-  };
+        // 🚀 Envoyer vers l'API .NET
+        const formData = new FormData();
+        formData.append("file", blob, "attestation.pdf");
+
+        handleUpload(blob);
+      });
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -183,16 +174,16 @@ const ModelEdit = ({ dataEmployee }) => {
 
   // Upload pdf de l'attestation de travail
   const handleUpload = async (file) => {
-    if (!file || !dataEmployee?.id) return;
+    if (!file || !dataEmployee?.registrationNumber) return;
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('registrationNumber', dataEmployee.registrationNumber);
-    formData.append('certificateYprId', 1);
+    formData.append('certificateTypeId', 1);
     formData.append('reference', 'REF');
 
     try {
-      await axios.post(urlApi('Certificate/Save'), formData, {
+      await axios.post(urlApi('/CareerPlan/Certificate/Save'), formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert('PDF exporté et enregistré avec succès.');
