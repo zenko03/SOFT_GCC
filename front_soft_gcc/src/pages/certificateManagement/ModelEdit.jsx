@@ -122,6 +122,19 @@ const ModelEdit = ({ dataEmployee }) => {
   const removeLogo = () => setLogoPreview(null);
 
   const handleExportPDF = () => {
+    if (!showPreview) {
+      setShowPreview(true);
+      // attendre que le DOM soit prêt avant l’export
+      console.log("loading");
+      setTimeout(() => exportPDF(), 500);
+    } else {
+            console.log("loading 14");
+      exportPDF();
+                  console.log("sara be");
+    }
+  };
+
+  const exportPDF = () => {
     if (previewRef.current) {
       const opt = {
         margin: 0.5,
@@ -134,9 +147,11 @@ const ModelEdit = ({ dataEmployee }) => {
       html2pdf()
         .set(opt)
         .from(previewRef.current)
-        .outputPdf('blob') // Génère un Blob au lieu de le sauvegarder localement
+        .outputPdf('blob')
         .then((blob) => {
-          const file = new File([blob], "attestation.pdf", { type: "application/pdf" });
+          const file = new File([blob], "attestation.pdf", {
+            type: "application/pdf",
+          });
           handleUpload(file);
         });
     }

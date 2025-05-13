@@ -6,7 +6,6 @@ function Certificate({dataEmployee}) {
 
   return (
     <div>
-      <AttestationHistory employeeId={4} />
       <ModelEdit dataEmployee={dataEmployee} />
     </div>
   );
