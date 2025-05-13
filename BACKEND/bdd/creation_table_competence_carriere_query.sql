@@ -421,7 +421,7 @@ VALUES
 -- Historique de certification
 CREATE TABLE Certificate_history (
 	Certificate_history_id INT PRIMARY KEY IDENTITY(1,1),
-	Employee_id INT NOT NULL REFERENCES Employee(Employee_id),
+	Registration_number NVARCHAR(100),
 	Certificate_type_id INT NOT NULL REFERENCES Certificate_type(Certificate_type_id),
 	Reference NVARCHAR(50) NOT NULL UNIQUE,
 	PdfFile VARBINARY(MAX),
