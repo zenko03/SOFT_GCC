@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Icon from "@mdi/react";
 import {
   mdiPlus,
@@ -33,6 +33,8 @@ import { fr } from "date-fns/locale";
 import { QRCodeSVG } from "qrcode.react";
 import { urlApi } from '../../helpers/utils';
 import { faCertificate } from '@fortawesome/free-solid-svg-icons';
+import Loader from '../../helpers/Loader';
+import FormattedDate from '../../helpers/FormattedDate';
 
 // Formattage de date
 const formatDateFr = (isoDate) => {
@@ -42,11 +44,55 @@ const formatDateFr = (isoDate) => {
   return format(parsed, "dd MMMM yyyy", { locale: fr });
 };
 
+function genererNouvelleReference(attestations) {
+  const dateDuJour = new Date();
+  const annee = dateDuJour.getFullYear();
+  const mois = String(dateDuJour.getMonth() + 1).padStart(2, '0');
+  const jour = String(dateDuJour.getDate()).padStart(2, '0');
+  const heures = String(dateDuJour.getHours()).padStart(2, '0');
+  const minutes = String(dateDuJour.getMinutes()).padStart(2, '0');
+  const secondes = String(dateDuJour.getSeconds()).padStart(2, '0');
+  const dateStr = `${annee}${mois}${jour}-${heures}${minutes}${secondes}`;
+
+  const regex = new RegExp(`^ATT-${dateStr}-(\\w+)$`);
+
+  const compteurs = attestations
+    .map((attestation) => {
+      const match = attestation.reference.match(regex);
+      return match ? match[1] : null;
+    })
+    .filter((ref) => ref !== null);
+
+  let prochainCompteur;
+
+  if (compteurs.length === 0) {
+    prochainCompteur = '0001';
+  } else {
+    // Extraire la partie numérique et incrémenter
+    const derniersNumeros = compteurs.map((code) => {
+      const match = code.match(/^(\d+)/);
+      return match ? parseInt(match[1], 10) : 0;
+    });
+
+    const maxNumero = Math.max(...derniersNumeros);
+    const nouveauNumero = (maxNumero + 1).toString().padStart(4, '0');
+
+    prochainCompteur = `${nouveauNumero}`;
+  }
+
+  return `ATT-${dateStr}-${prochainCompteur}`;
+}
+
 
 const ModelEdit = ({ dataEmployee }) => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [signaturePreview, setSignaturePreview] = useState(null);
   const [file, setFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); 
+  const [error, setError] = useState(false); 
+  const [errorUpload, setErrorUpload] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+
   const [sections, setSections] = useState([
     {
       id: 1,
@@ -80,10 +126,50 @@ const ModelEdit = ({ dataEmployee }) => {
     signatoryPosition: "",
     reason: "",
     signatoryName: "",
-    date: ""
+    date: "",
+    entreprise: 0
   });
 
   const previewRef = useRef(); // Référence pour l'export PDF
+
+  // Appel api pour les donnees du formulaire
+  const [certificates, setCertificates] = useState([]); 
+  const [employeeEstablishment, setEmployeeEstablishment] = useState({}); 
+
+  // Chargement des donnees depuis l'api 
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [allCertificatesResponse, employeeEstablishmentResponse] = await Promise.all([
+        axios.get(urlApi(`/CareerPlan/Certificate/GetAll`)),
+        axios.get(urlApi(`/Establishment/${dataEmployee.establishmentId}`))
+      ]);
+      console.log(dataEmployee.establishmentId);
+
+      setCertificates(allCertificatesResponse.data || []);
+      setEmployeeEstablishment(employeeEstablishmentResponse.data);
+
+      const nouvelleRef = genererNouvelleReference(certificates);
+      setAboutModel({reference:nouvelleRef});
+      setCompanyInfo({
+        nom: employeeEstablishmentResponse.data.establishmentName || "",
+        adresse: employeeEstablishmentResponse.data.address || "",
+        telephone: employeeEstablishmentResponse.data.phoneNumber || "",
+        email: employeeEstablishmentResponse.data.email || "",
+        site: employeeEstablishmentResponse.data.website || "",
+        reseaux: employeeEstablishmentResponse.data.socialMedia || ""
+      });
+      setError(false);
+    } catch (error) {
+      setError(`Erreur lors de la recuperation des donnees : ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [dataEmployee]);
 
   const attestationId = "ATT-" + new Date().getTime(); // Simulé
   const qrValue = `https://monentreprise.com/verify?id=${attestationId}`; // lien de vérification
@@ -122,31 +208,32 @@ const ModelEdit = ({ dataEmployee }) => {
   const removeLogo = () => setLogoPreview(null);
 
   const handleExportPDF = () => {
-  if (previewRef.current) {
-    const opt = {
-      margin: 0.5,
-      filename: "attestation.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-    };
+    if (previewRef.current) {
+      const opt = {
+        margin: 0.5,
+        filename: "attestation.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      };
 
-    html2pdf()
-      .set(opt)
-      .from(previewRef.current)
-      .outputPdf("blob")
-      .then((blob) => {
-        // 📥 Télécharger
-        html2pdf().set(opt).from(previewRef.current).save();
+      html2pdf()
+        .set(opt)
+        .from(previewRef.current)
+        .outputPdf('blob')
+        .then((blob) => {
+          // Télécharger localement
+          html2pdf().set(opt).from(previewRef.current).save();
 
-        // 🚀 Envoyer vers l'API .NET
-        const formData = new FormData();
-        formData.append("file", blob, "attestation.pdf");
+          // Créer un fichier nommé
+          const file = new File([blob], `Attestation_${aboutModel.reference}.pdf`, { type: "application/pdf" });
 
-        handleUpload(blob);
-      });
-  }
-};
+          // Uploader avec un nom correct
+          handleUpload(file);
+        });
+    }
+  };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -180,22 +267,41 @@ const ModelEdit = ({ dataEmployee }) => {
     formData.append('file', file);
     formData.append('registrationNumber', dataEmployee.registrationNumber);
     formData.append('certificateTypeId', 1);
-    formData.append('reference', 'REF');
+    formData.append('reference', aboutModel.reference);
+    console.log(file);
 
     try {
       await axios.post(urlApi('/CareerPlan/Certificate/Save'), formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      alert('PDF exporté et enregistré avec succès.');
+      setUploadSuccess('PDF exporté et enregistré avec succès.');
+      setErrorUpload(false);
     } catch (err) {
-      console.error(err);
-      alert('Erreur lors de l’upload du PDF.');
+      if (err.response?.status === 409) {
+        setErrorUpload("Erreur lors de l'upload du fichier pdf : référence déjà utilisée pour une autre attestation.")
+      } else if (err.response?.status === 400) {
+        setErrorUpload("Erreur lors de l'upload du fichier pdf : Fichier invalide.")
+      } else {
+        setErrorUpload("Erreur lors de l'enregistrement. Veuillez réessayer plus tard.");
+      }
     }
   };
+
+  useEffect(() => {
+    if (uploadSuccess) {
+      const timer = setTimeout(() => {
+        setUploadSuccess(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [uploadSuccess]);
   
   return (
       <Container fluid>
         <h4 className="mb-4 fw-bold">Géneration du document d'attestation</h4>
+        <p>{aboutModel.date}</p>
+        {isLoading && <Loader />}
+        {error && <div className="alert alert-danger">{error}</div>}
         <Form>
           <Row>
             <Col md={6}>
@@ -252,39 +358,6 @@ const ModelEdit = ({ dataEmployee }) => {
                     <Form.Label>Le signataire</Form.Label>
                     <Form.Control type="text" name="signatoryName" placeholder="Nom complet" value={aboutModel.signatoryName} onChange={handleChange} />
                   </Form.Group>
-                </Card.Body>
-              </Card>
-
-              <Card className="mb-4 shadow-sm">
-                <Card.Body>
-                  <h5 className="fw-semibold mb-3">
-                    <Icon path={mdiOfficeBuilding} size={1} className="me-2" />
-                    Informations sur l'entreprise délivrant
-                  </h5>
-
-                  {[
-                    { label: "Nom de l'entreprise", key: "nom" },
-                    { label: "Adresse", key: "adresse" },
-                    { label: "Téléphone", key: "telephone" },
-                    { label: "Email", key: "email" },
-                    { label: "Site web", key: "site" },
-                    { label: "Réseaux sociaux", key: "reseaux" },
-                  ].map(({ label, key }, index) => (
-                    <Form.Group className="mb-3" key={index}>
-                      <Form.Label>{label}</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder={label}
-                        value={companyInfo[key]}
-                        onChange={(e) =>
-                          setCompanyInfo({
-                            ...companyInfo,
-                            [key]: e.target.value,
-                          })
-                        }
-                      />
-                    </Form.Group>
-                  ))}
                 </Card.Body>
               </Card>
 
@@ -392,6 +465,10 @@ const ModelEdit = ({ dataEmployee }) => {
                   Retour
                 </Button>
               </div>
+              <br></br>
+              {errorUpload && <div className="alert alert-danger">{errorUpload}</div>}
+              {uploadSuccess && <div className="alert alert-success">{uploadSuccess}</div>}
+
             </Col>
 
             {/* Aperçu PDF */}

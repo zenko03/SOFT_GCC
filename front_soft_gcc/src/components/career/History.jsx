@@ -71,7 +71,7 @@ function History({ registrationNumber }) {
                         {error}
                     </Alert>
                 )}
-                <AttestationHistory  employeeId={12} />
+                <AttestationHistory  registrationNumber={registrationNumber} />
                 <div className="card">
                     <div className="card-body">
                         <table className="table table-hover">

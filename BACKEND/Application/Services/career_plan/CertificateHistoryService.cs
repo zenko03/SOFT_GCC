@@ -70,5 +70,31 @@ namespace soft_carriere_competence.Application.Services.career_plan
             }).ToList();
         }
 
+        public async Task<List<CertificateHistoryDto>> GetDtosAll()
+        {
+            var entities = await _context.CertificateHistory
+                .FromSqlRaw("SELECT * FROM certificate_history")
+                .ToListAsync();
+
+            return entities.Select(e => new CertificateHistoryDto
+            {
+                Id = e.CertificateHistoryId,
+                RegistrationNumber = e.RegistrationNumber,
+                Reference = e.Reference,
+                FileName = e.FileName,
+                ContentType = e.ContentType,
+                FileSize = e.PdfFile?.Length ?? 0,
+                CreatedAt = e.CreationDate
+            }).ToList();
+        }
+
+        // Verifier si la reference existe deja
+        public async Task<bool> ExistsByReferenceAsync(string reference)
+        {
+            return await _context.CertificateHistory
+                .AnyAsync(c => c.Reference == reference);
+        }
+
+
     }
 }

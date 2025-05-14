@@ -5,21 +5,23 @@ import { Table, Spinner, Card, Badge } from 'react-bootstrap';
 import { FileEarmarkArrowDown, Eye } from 'react-bootstrap-icons';
 import './AttestationHistory.css'; // pour le style modernisé du tableau
 import { urlApi } from '../../helpers/utils';
+import DateDisplayWithTime from '../../helpers/DateDisplayWithTime';
 
-const AttestationHistory = ({ employeeId }) => {
+const AttestationHistory = ({ registrationNumber }) => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!employeeId) return;
+    if (!registrationNumber) return;
     setLoading(true);
     axios
-      .get(urlApi(`/CareerPlan/Certificate/Get/${employeeId}`))
+      .get(urlApi(`/CareerPlan/Certificate/Get/${registrationNumber}`))
       .then(res => setHistory(res.data))
       .catch(err => console.error('Erreur chargement historique :', err))
       .finally(() => setLoading(false));
-  }, [employeeId]);
+  }, [registrationNumber]);
 
+  console.log(history);
   const renderStatus = (status) => {
     switch (status) {
       case 'signed':
@@ -55,16 +57,17 @@ const AttestationHistory = ({ employeeId }) => {
                   <th>📅 Date de création</th>
                   <th>📌 Statut</th>
                   <th>📦 Taille</th>
-                  <th className="text-end">🔗 Actions</th>
+                  <th>🔗 Actions</th>
                 </tr>
               </thead>
               <tbody>
-                  <tr>
-                    <td>Attestation</td>
-                    <td>19 juin 2025 à 25h30</td>
-                    <td>Fchier exporté</td>
-                    <td>129 ko</td>
-                    <td className="text-end">
+                {history.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.fileName || 'Attestation.pdf'}</td>
+                    <td><DateDisplayWithTime isoDate={item.createdAt} /></td>
+                    <td>{renderStatus('signed')}</td>
+                    <td>{(item.fileSize / 1024).toFixed(1)} ko</td>
+                    <td>
                       <a
                         href={"#"}
                         target="_blank"
@@ -85,6 +88,7 @@ const AttestationHistory = ({ employeeId }) => {
                       </a>
                     </td>
                   </tr>
+                ))}
               </tbody>
             </Table>
           </div>
