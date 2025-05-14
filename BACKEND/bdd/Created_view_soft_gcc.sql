@@ -398,6 +398,7 @@ WITH Ranked_posts AS (
         Position_id,
         Base_salary,
         Net_salary,
+		Establishment_id,
         ROW_NUMBER() OVER (
             PARTITION BY Registration_number 
             ORDER BY Assignment_date DESC
@@ -416,7 +417,8 @@ SELECT
     rp.Position_id,
     p.Position_name,
     rp.Base_salary,
-    rp.Net_salary
+    rp.Net_salary,
+	rp.Establishment_id
 FROM Ranked_posts rp
 -- Jointure avec la table Department
 LEFT JOIN Department d 
@@ -447,7 +449,8 @@ SELECT
     ep.Position_name,
     ep.Base_salary,
     ep.Net_salary,
-	cpen.career_plan_number
+	cpen.career_plan_number,
+	ep.Establishment_id
 FROM v_employee_get_last_position ep
 JOIN v_career_plan_employee_number cpen
 ON ep.Registration_number = cpen.Registration_number;
