@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using soft_carriere_competence.Application.Dtos.LoginDto;
 using soft_carriere_competence.Core.Entities.crud_career;
 using soft_carriere_competence.Core.Entities.Evaluations;
-using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Core.Interface.AuthInterface;
 using soft_carriere_competence.Infrastructure.Data;
@@ -224,9 +223,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             int pageSize = 10,
             string? search = null,
             int? position = null,
-            int? department = null,
-            string? sortBy = null,
-            string? sortDirection = null)
+            int? department = null)
         {
             var query = _context.VEmployeeDetails.AsQueryable();
 
@@ -240,51 +237,12 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             if (position.HasValue)
                 query = query.Where(e => e.positionId == position);
 
-            // Pour le filtre par département, nous devons adapter car VEmployeeDetails n'a pas de DepartmentId explicite
-            // Dans ce cas, nous pourrions filtrer par nom de département obtenu à partir de l'ID
             if (department.HasValue)
             {
-                // Si nous ne pouvons pas le faire de cette façon, une alternative est de simplifier
-                // en utilisant une approche basée sur le contenu du champ Department
-                var departmentDetails = await _context.Department.FindAsync(department.Value);
-                if (departmentDetails != null && !string.IsNullOrEmpty(departmentDetails.Name))
-                {
-                    query = query.Where(e => e.Department != null && e.Department.Contains(departmentDetails.Name));
-                }
-            }
-
-            // Appliquer le tri
-            if (!string.IsNullOrEmpty(sortBy))
-            {
-                bool isAscending = string.IsNullOrEmpty(sortDirection) || sortDirection.ToLower() == "ascending";
-                
-                switch (sortBy.ToLower())
-                {
-                    case "name":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName)
-                            : query.OrderByDescending(e => e.FirstName).ThenByDescending(e => e.LastName);
-                        break;
-                    case "position":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.Position)
-                            : query.OrderByDescending(e => e.Position);
-                        break;
-                    case "department":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.Department)
-                            : query.OrderByDescending(e => e.Department);
-                        break;
-                    case "evaluationdate":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.EvaluationDate)
-                            : query.OrderByDescending(e => e.EvaluationDate);
-                        break;
-                    default:
-                        // Tri par défaut si la clé de tri n'est pas reconnue
-                        query = query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName);
-                        break;
-                }
+                // Note: Si VEmployeeDetails n'a pas de propriété DepartmentId, 
+                // on peut filtrer sur le nom du département si nécessaire
+                query = query.Where(e => e.Department != null && e.Department.Contains(
+                    _context.Department.Where(d => d.ID == department).Select(d => d.Name).FirstOrDefault() ?? ""));
             }
 
             // Calculer le nombre total d'éléments

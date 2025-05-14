@@ -40,18 +40,14 @@ namespace soft_carriere_competence.Controllers.Evaluations
 	int pageSize = 10,
 	int? position = null,
 	int? department = null,
-	string? search = null,
-	string? sortBy = null,
-	string? sortDirection = null)
+	string? search = null)
 		{
 			var (employees, totalPages) = await _evaluationInterviewService.GetEmployeesWithFinishedEvalPaginatedAsync(
 				pageNumber,
 				pageSize,
 				position,
 				department,
-				search,
-				sortBy,
-				sortDirection);
+				search);
 
 			return Ok(new
 			{

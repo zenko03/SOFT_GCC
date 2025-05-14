@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using soft_carriere_competence.Application.Dtos.LoginDto;
 using soft_carriere_competence.Core.Entities.crud_career;
 using soft_carriere_competence.Core.Entities.Evaluations;
-using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Core.Interface.AuthInterface;
 using soft_carriere_competence.Infrastructure.Data;
@@ -219,75 +218,11 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return (users, totalPages);
         }
 
-        public async Task<(IEnumerable<VEmployeeDetails> Employees, int TotalPages)> GetVEmployeeDetailsPaginatedAsync(
-            int pageNumber = 1, 
-            int pageSize = 10,
-            string? search = null,
-            int? position = null,
-            int? department = null,
-            string? sortBy = null,
-            string? sortDirection = null)
+        public async Task<(IEnumerable<VEmployeeDetails> Employees, int TotalPages)> GetVEmployeeDetailsPaginatedAsync(int pageNumber, int pageSize)
         {
             var query = _context.VEmployeeDetails.AsQueryable();
 
-            // Appliquer les filtres
-            if (!string.IsNullOrEmpty(search))
-                query = query.Where(e =>
-                    (e.FirstName + " " + e.LastName).Contains(search) ||
-                    e.FirstName.Contains(search) ||
-                    e.LastName.Contains(search));
-            
-            if (position.HasValue)
-                query = query.Where(e => e.positionId == position);
-
-            // Pour le filtre par département, nous devons adapter car VEmployeeDetails n'a pas de DepartmentId explicite
-            // Dans ce cas, nous pourrions filtrer par nom de département obtenu à partir de l'ID
-            if (department.HasValue)
-            {
-                // Si nous ne pouvons pas le faire de cette façon, une alternative est de simplifier
-                // en utilisant une approche basée sur le contenu du champ Department
-                var departmentDetails = await _context.Department.FindAsync(department.Value);
-                if (departmentDetails != null && !string.IsNullOrEmpty(departmentDetails.Name))
-                {
-                    query = query.Where(e => e.Department != null && e.Department.Contains(departmentDetails.Name));
-                }
-            }
-
-            // Appliquer le tri
-            if (!string.IsNullOrEmpty(sortBy))
-            {
-                bool isAscending = string.IsNullOrEmpty(sortDirection) || sortDirection.ToLower() == "ascending";
-                
-                switch (sortBy.ToLower())
-                {
-                    case "name":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName)
-                            : query.OrderByDescending(e => e.FirstName).ThenByDescending(e => e.LastName);
-                        break;
-                    case "position":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.Position)
-                            : query.OrderByDescending(e => e.Position);
-                        break;
-                    case "department":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.Department)
-                            : query.OrderByDescending(e => e.Department);
-                        break;
-                    case "evaluationdate":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.EvaluationDate)
-                            : query.OrderByDescending(e => e.EvaluationDate);
-                        break;
-                    default:
-                        // Tri par défaut si la clé de tri n'est pas reconnue
-                        query = query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName);
-                        break;
-                }
-            }
-
-            // Calculer le nombre total d'éléments
+            // Calculer le nombre total de pages
             var totalItems = await query.CountAsync();
             var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 

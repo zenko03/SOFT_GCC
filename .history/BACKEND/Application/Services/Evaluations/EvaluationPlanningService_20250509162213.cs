@@ -77,9 +77,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
     int pageSize = 10,
     int? position = null,
     int? department = null,
-    string? search = null,
-    string? sortBy = null,
-    string? sortDirection = null)
+    string? search = null)
         {
             var query = _context.vEmployeeWithoutEvaluations.AsQueryable();
 
@@ -95,45 +93,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     (e.FirstName + " " + e.LastName).Contains(search) ||
                     e.FirstName.Contains(search) ||
                     e.LastName.Contains(search));
-
-            // Appliquer le tri
-            if (!string.IsNullOrEmpty(sortBy))
-            {
-                bool isAscending = string.IsNullOrEmpty(sortDirection) || sortDirection.ToLower() == "ascending";
-                
-                switch (sortBy.ToLower())
-                {
-                    case "name":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName)
-                            : query.OrderByDescending(e => e.FirstName).ThenByDescending(e => e.LastName);
-                        break;
-                    case "position":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.Position)
-                            : query.OrderByDescending(e => e.Position);
-                        break;
-                    case "department":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.Department)
-                            : query.OrderByDescending(e => e.Department);
-                        break;
-                    case "startdate":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.startDate)
-                            : query.OrderByDescending(e => e.startDate);
-                        break;
-                    case "enddate":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.endDate)
-                            : query.OrderByDescending(e => e.endDate);
-                        break;
-                    default:
-                        // Tri par défaut si la clé de tri n'est pas reconnue
-                        query = query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName);
-                        break;
-                }
-            }
 
             // Calculer le nombre total d'éléments
             var totalItems = await query.CountAsync();

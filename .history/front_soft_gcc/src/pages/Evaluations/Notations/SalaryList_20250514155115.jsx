@@ -77,7 +77,7 @@ function SalaryList() {
     fetchFilterOptions();
   }, []);
 
-  // Chargement des employés avec filtres et tri
+  // Chargement des employés avec filtres
   useEffect(() => {
     const fetchEmployees = async () => {
       setLoading(true);
@@ -89,8 +89,6 @@ function SalaryList() {
             search: searchQuery,
             position: filters.position || null,
             department: filters.department || null,
-            sortBy: sortConfig.key,
-            sortDirection: sortConfig.direction
           },
         });
         setEmployees(response.data.employees);
@@ -108,7 +106,7 @@ function SalaryList() {
     }, 300);
     
     return () => clearTimeout(delayDebounceFn);
-  }, [currentPage, pageSize, searchQuery, filters, sortConfig]);
+  }, [currentPage, pageSize, searchQuery, filters]);
 
   const handleOpenEvaluation = (employeeId, evaluationId) => {
     const selectedEmployee = employees.find(emp => emp.employeeId === employeeId || emp.evaluationId === evaluationId);
@@ -134,7 +132,7 @@ function SalaryList() {
     setCurrentPage(1); // Réinitialiser à la première page lors d'un changement de filtre
   };
 
-  // Fonction pour gérer le tri - maintenant envoie la requête au serveur au lieu de trier localement
+  // Fonction pour gérer le tri
   const requestSort = (key) => {
     let direction = 'ascending';
     
@@ -174,6 +172,56 @@ function SalaryList() {
       ...styles.sortable,
       ...(sortConfig.key === columnName ? styles.sortableActive : {})
     };
+  };
+
+  // Trier les employés (maintenu côté client pour le moment)
+  const getSortedEmployees = () => {
+    if (!sortConfig.key || !sortConfig.direction) {
+      return employees;
+    }
+
+    return [...employees].sort((a, b) => {
+      if (sortConfig.key === 'evaluationDate') {
+        const dateA = a.evaluationDate ? new Date(a.evaluationDate).getTime() : 0;
+        const dateB = b.evaluationDate ? new Date(b.evaluationDate).getTime() : 0;
+        
+        if (dateA === dateB) return 0;
+        
+        if (sortConfig.direction === 'ascending') {
+          return dateA > dateB ? 1 : -1;
+        } else {
+          return dateA < dateB ? 1 : -1;
+        }
+      }
+      
+      if (sortConfig.key === 'name') {
+        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+        
+        if (nameA === nameB) return 0;
+        
+        if (sortConfig.direction === 'ascending') {
+          return nameA > nameB ? 1 : -1;
+        } else {
+          return nameA < nameB ? 1 : -1;
+        }
+      }
+      
+      if (sortConfig.key === 'position') {
+        const posA = (a.position || '').toLowerCase();
+        const posB = (b.position || '').toLowerCase();
+        
+        if (posA === posB) return 0;
+        
+        if (sortConfig.direction === 'ascending') {
+          return posA > posB ? 1 : -1;
+        } else {
+          return posA < posB ? 1 : -1;
+        }
+      }
+      
+      return 0;
+    });
   };
 
   return (
@@ -237,10 +285,6 @@ function SalaryList() {
                         Poste
                         {getSortIcon('position')}
                       </th>
-                      <th style={getSortableThStyle('department')} onClick={() => requestSort('department')}>
-                        Département
-                        {getSortIcon('department')}
-                      </th>
                       <th style={getSortableThStyle('evaluationDate')} onClick={() => requestSort('evaluationDate')}>
                         Dates d&apos;évaluation 
                         {getSortIcon('evaluationDate')}
@@ -249,15 +293,14 @@ function SalaryList() {
                     </tr>
                   </thead>
                   <tbody>
-                    {employees.length > 0 ? (
-                      employees.map((employee, index) => (
+                    {getSortedEmployees().length > 0 ? (
+                      getSortedEmployees().map((employee, index) => (
                         <tr key={`${employee.employeeId}-${index}`}>
                           <td>
                             <img src="../../assets/images/faces-clipart/pic-1.png" alt="employee" />
                           </td>
                           <td>{employee.firstName} {employee.lastName}</td>
                           <td>{employee.position}</td>
-                          <td>{employee.department}</td>
                           <td>
                             {employee.evaluationDate
                               ? new Date(employee.evaluationDate).toLocaleDateString()
@@ -275,7 +318,7 @@ function SalaryList() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="text-center">
+                        <td colSpan="5" className="text-center">
                           Aucun employé trouvé
                         </td>
                       </tr>

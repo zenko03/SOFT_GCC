@@ -71,18 +71,14 @@ public class UserController : ControllerBase
 		int pageSize = 10, 
 		string? search = null,
 		int? position = null,
-		int? department = null,
-		string? sortBy = null,
-		string? sortDirection = null)
+		int? department = null)
 	{
 		var (employees, totalPages) = await _employeeService.GetVEmployeeDetailsPaginatedAsync(
 			pageNumber, 
 			pageSize, 
 			search,
 			position,
-			department,
-			sortBy,
-			sortDirection);
+			department);
 
 		return Ok(new
 		{

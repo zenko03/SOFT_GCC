@@ -224,9 +224,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             int pageSize = 10,
             string? search = null,
             int? position = null,
-            int? department = null,
-            string? sortBy = null,
-            string? sortDirection = null)
+            int? department = null)
         {
             var query = _context.VEmployeeDetails.AsQueryable();
 
@@ -250,40 +248,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 if (departmentDetails != null && !string.IsNullOrEmpty(departmentDetails.Name))
                 {
                     query = query.Where(e => e.Department != null && e.Department.Contains(departmentDetails.Name));
-                }
-            }
-
-            // Appliquer le tri
-            if (!string.IsNullOrEmpty(sortBy))
-            {
-                bool isAscending = string.IsNullOrEmpty(sortDirection) || sortDirection.ToLower() == "ascending";
-                
-                switch (sortBy.ToLower())
-                {
-                    case "name":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName)
-                            : query.OrderByDescending(e => e.FirstName).ThenByDescending(e => e.LastName);
-                        break;
-                    case "position":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.Position)
-                            : query.OrderByDescending(e => e.Position);
-                        break;
-                    case "department":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.Department)
-                            : query.OrderByDescending(e => e.Department);
-                        break;
-                    case "evaluationdate":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.EvaluationDate)
-                            : query.OrderByDescending(e => e.EvaluationDate);
-                        break;
-                    default:
-                        // Tri par défaut si la clé de tri n'est pas reconnue
-                        query = query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName);
-                        break;
                 }
             }
 
