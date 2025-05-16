@@ -53,32 +53,8 @@ function genererNouvelleReference(attestations) {
   const minutes = String(dateDuJour.getMinutes()).padStart(2, '0');
   const secondes = String(dateDuJour.getSeconds()).padStart(2, '0');
   const dateStr = `${annee}${mois}${jour}-${heures}${minutes}${secondes}`;
-
-  const regex = new RegExp(`^ATT-${dateStr}-(\\w+)$`);
-
-  const compteurs = attestations
-    .map((attestation) => {
-      const match = attestation.reference.match(regex);
-      return match ? match[1] : null;
-    })
-    .filter((ref) => ref !== null);
-
-  let prochainCompteur;
-
-  if (compteurs.length === 0) {
-    prochainCompteur = '0001';
-  } else {
-    // Extraire la partie numérique et incrémenter
-    const derniersNumeros = compteurs.map((code) => {
-      const match = code.match(/^(\d+)/);
-      return match ? parseInt(match[1], 10) : 0;
-    });
-
-    const maxNumero = Math.max(...derniersNumeros);
-    const nouveauNumero = (maxNumero + 1).toString().padStart(4, '0');
-
-    prochainCompteur = `${nouveauNumero}`;
-  }
+  console.log(attestations);
+  let prochainCompteur = `0RF0${attestations[attestations.length-1].id+1}`;
 
   return `ATT-${dateStr}-${prochainCompteur}`;
 }
@@ -149,7 +125,7 @@ const ModelEdit = ({ dataEmployee }) => {
       setCertificates(allCertificatesResponse.data || []);
       setEmployeeEstablishment(employeeEstablishmentResponse.data);
 
-      const nouvelleRef = genererNouvelleReference(certificates);
+      const nouvelleRef = genererNouvelleReference(allCertificatesResponse.data);
       setAboutModel({reference:nouvelleRef});
       setCompanyInfo({
         nom: employeeEstablishmentResponse.data.establishmentName || "",

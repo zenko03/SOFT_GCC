@@ -39,3 +39,8 @@
   padding: 0.375rem 0.75rem;
   border-radius: 0.375rem;
 }
+
+.modal-xxl {
+  max-width: 95vw;
+  width: 95vw;
+}

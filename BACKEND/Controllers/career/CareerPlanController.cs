@@ -429,5 +429,33 @@ namespace soft_carriere_competence.Controllers.career
 			var allCertificates = await _certificateHistoryService.GetDtosAll();
 			return Ok(allCertificates);
 		}
+
+		[HttpGet]
+		[Route("Certificate/GetbyId/{id}")]
+		public async Task<ActionResult<List<CertificateHistory>>> GetById(int id)
+		{
+			var certificate = await _certificateHistoryService.GetById(id);
+
+			if (certificate == null)
+				return NotFound("Aucun certificat trouvé pour ce id.");
+
+			return Ok(certificate);
+		}
+
+		[HttpGet]
+		[Route("Certificate/GetPdfFilebyId/{id}")]
+		public async Task<IActionResult> GetByPdfFileById(int id)
+		{
+			var certificate = await _certificateHistoryService.GetById(id);
+
+			if (certificate == null || certificate.PdfFile == null)
+				return NotFound("Aucun certificat trouvé ou fichier vide.");
+
+			return File(
+				certificate.PdfFile,
+				certificate.ContentType ?? "application/pdf",
+				certificate.FileName ?? "attestation.pdf"
+			);
+		}
 	}
 }
