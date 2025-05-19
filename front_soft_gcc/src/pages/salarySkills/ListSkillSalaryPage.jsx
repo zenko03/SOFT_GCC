@@ -152,7 +152,7 @@ function ListSkillSalaryPage() {
 
   return (
     <Template>
-      {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
+      {loading && <Loader />}
 
 
       <PageHeader module={module} action={action} url={url} />
@@ -161,7 +161,7 @@ function ListSkillSalaryPage() {
       <div className="row">
         <div className="col-lg-12 skill-header">
           <i className="mdi mdi-school skill-icon"></i>
-          <h4 className="skill-title">COMPÉTENCES DES SALARIÉS</h4>
+          <p className="skill-title">COMPÉTENCES DES SALARIÉS</p>
         </div>
                     
         <div className="col-lg-12 grid-margin">
@@ -170,7 +170,6 @@ function ListSkillSalaryPage() {
                 <h5 className="title">
                   <i className="mdi mdi-filter-outline"></i> Filtre de recherche
                 </h5>
-                {error && <p className="text-danger search-error">{error}</p>}
               </div>
               <div className="card-body">
                 <form className="search-form">
@@ -184,7 +183,6 @@ function ListSkillSalaryPage() {
                     />
                   </div>
                 </form>
-                {error && <p className="text-danger search-error">{error}</p>}
               </div>
             </div>
           </div>
@@ -196,9 +194,8 @@ function ListSkillSalaryPage() {
           <div className="card">
             <div className="card-header title-container">
               <h5 className="title">
-                <i className="mdi mdi-format-list-bulleted"></i> Liste des employés avec leur nombre de compétences
+                <i className="mdi mdi-format-list-bulleted"></i> Nombre de compétences par Employé
               </h5>
-              {error && <p className="text-danger search-error">{error}</p>}
             </div>
             <div className="card-body">
               {!loading && !error && (

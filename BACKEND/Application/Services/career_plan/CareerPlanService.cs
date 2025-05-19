@@ -107,6 +107,8 @@ namespace soft_carriere_competence.Application.Services.career_plan
 		string? keyWord = null,
 		string? departmentId = null,
 		string? positionId = null,
+		string? dateAssignmentMin = null,
+		string? dateAssignmentMax = null,
 		int page = 1,
 		int pageSize = 10)
 		{
@@ -134,6 +136,13 @@ namespace soft_carriere_competence.Application.Services.career_plan
 				sql.Append(" AND position_id = @PositionId");
 				countSql.Append(" AND position_id = @PositionId");
 				parameters.Add(new SqlParameter("@PositionId", positionId));
+			}
+			if (!string.IsNullOrWhiteSpace(dateAssignmentMin) && !string.IsNullOrWhiteSpace(dateAssignmentMax))
+			{
+				sql.Append(" AND Assignment_date BETWEEN @DateAssignmentMin AND @DateAssignmentMax");
+				countSql.Append(" AND Assignment_date BETWEEN @DateAssignmentMin AND @DateAssignmentMax");
+				parameters.Add(new SqlParameter("@DateAssignmentMin", dateAssignmentMin));
+				parameters.Add(new SqlParameter("@DateAssignmentMax", dateAssignmentMax));
 			}
 
 

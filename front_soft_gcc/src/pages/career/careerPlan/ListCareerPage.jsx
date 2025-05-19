@@ -7,7 +7,7 @@ import Loader from '../../../helpers/Loader';
 import '../../../styles/pagination.css';
 import FormattedDate from '../../../helpers/FormattedDate';
 import useSWR from 'swr';
-import Fetcher from '../../../components/Fetcher';
+import Fetcher from '../../../components/fetcher';
 
 // Fonction debounce pour éviter les appels excessifs
 const debounce = (func, delay) => {
@@ -33,7 +33,13 @@ const ListCareerPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState({ keyWord: '', departmentId: '', positionId: '' });
+  const [filters, setFilters] = useState(
+    { keyWord: '', 
+      departmentId: '', 
+      positionId: '',
+      dateAssignmentMin: '',
+      dateAssignmentMax: ''
+    });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -149,7 +155,7 @@ const ListCareerPage = () => {
       <div className="row header-title">
         <div className="col-lg-10 skill-header">
           <i className="mdi mdi-map-marker-path skill-icon"></i>
-          <h4 className="skill-title">PLAN DE CARRIÈRE</h4>
+          <p className="skill-title">PLAN DE CARRIÈRE</p>
         </div>
         <div className="col-lg-2">
           <button className="btn-add btn-success btn-fw" onClick={handleClick} style={{float: 'right'}}>
@@ -209,6 +215,28 @@ const ListCareerPage = () => {
                 ))}
               </select>
             </div>
+            <div className="form-group">
+              <label>Date d'affectation min</label>
+              <input
+                type="date"
+                className="form-control"
+                placeholder="Date min"
+                name="dateAssignmentMin"
+                value={filters.dateAssignmentMin}
+                onChange={handleFilterChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date d'affectation max</label>
+              <input
+                type="date"
+                className="form-control"
+                placeholder="Date min"
+                name="dateAssignmentMax"
+                value={filters.dateAssignmentMax}
+                onChange={handleFilterChange}
+              />
+            </div>
           </form>
         </div>
       </div>
@@ -216,7 +244,7 @@ const ListCareerPage = () => {
       <div className="card">
         <div className="card-header title-container">
           <h5 className="title">
-            <i className="mdi mdi-format-list-bulleted"></i> Liste des employés ayant des plans de carrières
+            <i className="mdi mdi-format-list-bulleted"></i> Plan de carrière par employé
           </h5>
         </div>
         <div className="card-body">

@@ -67,26 +67,16 @@ function CareerProfilePage({ onSearch }) {
         navigate(`/carriere`);
     };
 
-    // Loading page
-    if (isLoading) {
-        return <div>
-                <Loader />
-            </div>;
-    }
-
-    // Gestion d'erreur
-    if (error) {
-        return <div>Erreur: {error.message}</div>;
-    }
-
     return (
         <Template>
+            {isLoading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}            
             <PageHeader module={module} action={action} url={url} />
+            {error && <div className="alert alert-danger">{error}</div>}
 
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
                     <i className="mdi mdi-note-text skill-icon"></i>
-                    <h4 className="skill-title" style={{color: '#B8860B'}}>DESCRIPTION DU PLAN DE CARRIERE</h4>
+                    <p className="skill-title" style={{color: '#B8860B'}}>DÉTAILS PLAN DE CARRIERE</p>
                 </div>
                 <div className="col-lg-2">
                     <button onClick={handleRetour} className="btn-outline-dark btn-fw" style={{float: 'right'}}>
@@ -104,7 +94,7 @@ function CareerProfilePage({ onSearch }) {
                     <div className="card">
                         <div className="card-body">
                             <p>Employe : <span className='value-profil'>{dataEmployee.firstName+" "+dataEmployee.name}</span></p>
-                            <p>Matricule : <span className='value-profil'>{dataEmployee.registrationNumber}</span></p>
+                            <p>Matricule : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployee.registrationNumber}</span></p>
                             <p>Date naissance : <span className='value-profil'><FormattedDate date={dataEmployee.birthday} /></span></p>
                         </div>
                     </div>
@@ -112,8 +102,8 @@ function CareerProfilePage({ onSearch }) {
                 <div className="col-md-6 grid-margin stretch-card">
                     <div className="card">
                         <div className="card-body">
-                            <p>Poste actuel : <span className='value-profil'>{dataEmployee.positionName}</span></p>
-                            <p>Salaire : <span className='value-profil'>{dataEmployee.baseSalary} Ar</span></p>
+                            <p>Poste actuel : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployee.positionName}</span></p>
+                            <p>Salaire : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployee.baseSalary} Ar</span></p>
                             <p>Date d'embauche : <span className='value-profil'><FormattedDate date={dataEmployee.assignmentDate} /></span></p>
                         </div>
                     </div>

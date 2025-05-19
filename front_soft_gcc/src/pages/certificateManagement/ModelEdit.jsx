@@ -53,8 +53,13 @@ function genererNouvelleReference(attestations) {
   const minutes = String(dateDuJour.getMinutes()).padStart(2, '0');
   const secondes = String(dateDuJour.getSeconds()).padStart(2, '0');
   const dateStr = `${annee}${mois}${jour}-${heures}${minutes}${secondes}`;
-  console.log(attestations);
-  let prochainCompteur = `0RF0${attestations[attestations.length-1].id+1}`;
+  let prochainCompteur = '';
+  if(attestations.length == 0) {
+    prochainCompteur = `0RF01`;
+
+  } else {
+    prochainCompteur = `0RF0${attestations[attestations.length-1].id+1}`;
+  }
 
   return `ATT-${dateStr}-${prochainCompteur}`;
 }
@@ -103,7 +108,8 @@ const ModelEdit = ({ dataEmployee }) => {
     reason: "",
     signatoryName: "",
     date: "",
-    entreprise: 0
+    entreprise: 0,
+    certificateType: 0
   });
 
   const previewRef = useRef(); // Référence pour l'export PDF
@@ -111,19 +117,21 @@ const ModelEdit = ({ dataEmployee }) => {
   // Appel api pour les donnees du formulaire
   const [certificates, setCertificates] = useState([]); 
   const [employeeEstablishment, setEmployeeEstablishment] = useState({}); 
+  const [certificateTypes, setCertificateTypes] = useState([]);
 
   // Chargement des donnees depuis l'api 
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [allCertificatesResponse, employeeEstablishmentResponse] = await Promise.all([
+      const [allCertificatesResponse, employeeEstablishmentResponse, certificateTypesResponse] = await Promise.all([
         axios.get(urlApi(`/CareerPlan/Certificate/GetAll`)),
-        axios.get(urlApi(`/Establishment/${dataEmployee.establishmentId}`))
+        axios.get(urlApi(`/Establishment/${dataEmployee.establishmentId}`)),
+        axios.get(urlApi(`/CertificateType`))
       ]);
-      console.log(dataEmployee.establishmentId);
 
       setCertificates(allCertificatesResponse.data || []);
       setEmployeeEstablishment(employeeEstablishmentResponse.data);
+      setCertificateTypes(certificateTypesResponse.data);
 
       const nouvelleRef = genererNouvelleReference(allCertificatesResponse.data);
       setAboutModel({reference:nouvelleRef});
@@ -242,9 +250,9 @@ const ModelEdit = ({ dataEmployee }) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('registrationNumber', dataEmployee.registrationNumber);
-    formData.append('certificateTypeId', 1);
+    formData.append('certificateTypeId', aboutModel.certificateType);
     formData.append('reference', aboutModel.reference);
-    console.log(file);
+    console.log(formData);
 
     try {
       await axios.post(urlApi('/CareerPlan/Certificate/Save'), formData, {
@@ -291,6 +299,17 @@ const ModelEdit = ({ dataEmployee }) => {
                   <Form.Group className="mb-3">
                     <Form.Label>Réference</Form.Label>
                     <Form.Control type="text" name="reference" value={aboutModel.reference} onChange={handleChange} />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Type d'attestation</Form.Label>
+                    <select name="certificateType" value={aboutModel.certificateType} onChange={handleChange} className="form-control" id="exampleSelectGender">
+                      <option value="">Sélectionner le type</option>
+                        {certificateTypes && certificateTypes.map((item, id) => (
+                          <option key={id} value={item.certificateType}>
+                            {item.certificateTypeName}
+                          </option>
+                        ))}
+                    </select>                     
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>Fait à</Form.Label>

@@ -177,7 +177,9 @@ namespace soft_carriere_competence.Controllers.career
 		public async Task<IActionResult> GetListCareersFilter(
 			string keyWord=null, 
 			string departmentId=null, 
-			string positionId=null, 
+			string positionId=null,
+			string dateAssignmentMin = null,
+			string dateAssignmentMax = null,
 			int pageNumber = 1, 
 			int pageSize = 2)
 		{
@@ -185,7 +187,7 @@ namespace soft_carriere_competence.Controllers.career
 			{
 				// Appel au service pour récupérer les données et le total
 				var (data, totalCount) = await _careerPlanService.GetAllCareersFilter(
-					keyWord, departmentId, positionId, pageNumber, pageSize);
+					keyWord, departmentId, positionId, dateAssignmentMin, dateAssignmentMax, pageNumber, pageSize);
 
 				// Structure de réponse standard
 				var response = new

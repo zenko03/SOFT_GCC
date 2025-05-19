@@ -74,6 +74,12 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
   const [showEditLanguage, setShowEditLanguage] = useState(false);
   const [showEditOtherSkill, setShowEditOtherSkill] = useState(false);
 
+  /// Pour gerer la navigation
+  const [navLinkEducation, setNavLinkEducation] = useState("");
+  const [navLinkSkill, setNavLinkSkill] = useState("active");
+  const [navLinkLanguage, setNavLinkLanguage] = useState("");
+  const [navLinkOther, setNavLinkOther] = useState("");
+
   // Chargement des donnees depuis l'api 
   const fetchData = async () => {
     setIsLoading(true);
@@ -115,26 +121,42 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
 
 /// Fonction pour controler l'affichage du menu competences
   const addCardSkills = () => {
-      setDataColumn(['Domaine', 'Competences', 'Niveau', 'Etat']);
-      setModalDisplay(1);
+    setDataColumn(['Domaine', 'Competences', 'Niveau', 'Etat']);
+    setModalDisplay(1);
+    setNavLinkEducation("");
+    setNavLinkSkill("active");
+    setNavLinkOther("");
+    setNavLinkLanguage("");
   };
 
 /// Fonction pour controler l'affichage du menu education
   const addCardEducation = () => {    
     setDataColumn(['Filiere', 'Niveau', 'Ecole', 'Annee']);
     setModalDisplay(2);
+    setNavLinkEducation("active");
+    setNavLinkSkill("");
+    setNavLinkOther("");
+    setNavLinkLanguage("");
   };
 
 /// Fonction pour controler l'affichage du menu language
   const addCardLanguage = () => {      
     setDataColumn(['Langues', 'Niveau', 'Etat']);
     setModalDisplay(3);
+    setNavLinkEducation("");
+    setNavLinkSkill("");
+    setNavLinkOther("");
+    setNavLinkLanguage("active");
   };
 
 /// Fonction pour controler l'affichage du menu autres formations
   const addCardOther = () => {      
     setDataColumn(['Description', 'Date debut', 'Date fin', 'Commentaire']);
     setModalDisplay(4);
+    setNavLinkEducation("");
+    setNavLinkSkill("");
+    setNavLinkOther("active");
+    setNavLinkLanguage("");
   };
     
 /// Affichage d'une modale de confirmation d'une suppression d'item de competence
@@ -206,16 +228,16 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
                   {/* Menu de navigation des competences */}
                     <ul className="nav nav-tabs tab-transparent" role="tablist">
                       <li className="nav-item">
-                          <a onClick={addCardEducation} className="nav-link" id="home-tab" data-toggle="tab" href="#" role="tab" aria-selected="true">Diplomes & formations ({dataEmployeeDescription.educationNumber})</a>
+                          <a onClick={addCardEducation} className={"nav-link "+navLinkEducation} id="home-tab" data-toggle="tab" href="#" role="tab" aria-selected="true">Diplomes & formations ({dataEmployeeDescription.educationNumber})</a>
                       </li>
                       <li className="nav-item">
-                          <a onClick={addCardSkills} className="nav-link active" id="business-tab" data-toggle="tab" href="#business-1" role="tab" aria-selected="false">Competences ({dataEmployeeDescription.skillNumber})</a>
+                          <a onClick={addCardSkills} className={"nav-link "+navLinkSkill} id="business-tab" data-toggle="tab" href="#business-1" role="tab" aria-selected="false">Competences ({dataEmployeeDescription.skillNumber})</a>
                       </li>
                       <li className="nav-item">
-                          <a onClick={addCardLanguage} className="nav-link" id="performance-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Langues ({dataEmployeeDescription.languageNumber})</a>
+                          <a onClick={addCardLanguage} className={"nav-link "+navLinkLanguage} id="performance-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Langues ({dataEmployeeDescription.languageNumber})</a>
                       </li>
                       <li className="nav-item">
-                          <a onClick={addCardOther} className="nav-link" id="conversion-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Autres ({dataEmployeeDescription.otherFormationNumber})</a>
+                          <a onClick={addCardOther} className={"nav-link "+navLinkOther} id="conversion-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Autres ({dataEmployeeDescription.otherFormationNumber})</a>
                       </li>
                     </ul>
     

@@ -40,3 +40,12 @@ GESTION D'ATTESTATION DE TRAVAIL
 7. Téléchargement groupé / Fusion PDF :
 	- Pouvoir générer plusieurs attestations à la fois pour plusieurs employés.
 	- Fusionner tous les PDF en un seul document (utile pour les audits ou export RH).
+
+TABLEAU DE BORD ET STATISTIQUES
+-------------------------------
+- Taux de promotion
+- Taux de mobilite interne
+- Duree moyenne d'anciennete
+- Pyramide des ages pour visualiser la repartition des ages de collaborateurs
+- Cartes des competences pour visualiser les talents et les besoins en competences
+
