@@ -11,7 +11,10 @@ import {
   mdiFileDocumentEdit,
   mdiEmailFastOutline,
   mdiFileExportOutline,
-  mdiArrowLeft
+  mdiArrowLeft,
+  mdiCheckCircle,
+  mdiAlertCircle,
+  mdiCancel
 } from "@mdi/js";
 import {
   Form,
@@ -64,15 +67,54 @@ function genererNouvelleReference(attestations) {
   return `ATT-${dateStr}-${prochainCompteur}`;
 }
 
+const fileToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64 = reader.result.split(',')[1]; // Enlever "data:application/pdf;base64,"
+      resolve(base64);
+    };
+    reader.onerror = (error) => reject(error);
+  });
+};
+
+const sendAttestationEmail = async ({ recipientEmail, subject, body, file }) => {
+  try {
+    const base64Pdf = await fileToBase64(file); 
+    const payload = {
+      recipientEmail,
+      subject,
+      body,
+      fileName: file.name,
+      base64Pdf,
+    };
+
+    const response = await axios.post(urlApi('/Email/send-pdf'), payload);
+    console.log('Email envoyé :', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de l’envoi :', error);
+    throw error;
+  }
+};
 
 const ModelEdit = ({ dataEmployee }) => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [signaturePreview, setSignaturePreview] = useState(null);
-  const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false); 
   const [error, setError] = useState(false); 
   const [errorUpload, setErrorUpload] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  // Variables d'état pour l'envoi par email
+  const [email, setEmail] = useState('');
+  const [file, setFile] = useState(null);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
+  const [sendSuccess, setSendSuccess] = useState(false);
+
 
   const [sections, setSections] = useState([
     {
@@ -109,7 +151,8 @@ const ModelEdit = ({ dataEmployee }) => {
     signatoryName: "",
     date: "",
     entreprise: 0,
-    certificateType: 0
+    certificateType: 0,
+    certificateTypeName: ""
   });
 
   const previewRef = useRef(); // Référence pour l'export PDF
@@ -134,7 +177,10 @@ const ModelEdit = ({ dataEmployee }) => {
       setCertificateTypes(certificateTypesResponse.data);
 
       const nouvelleRef = genererNouvelleReference(allCertificatesResponse.data);
-      setAboutModel({reference:nouvelleRef});
+      setAboutModel(prev => ({
+        ...prev,
+        reference: nouvelleRef
+      }));
       setCompanyInfo({
         nom: employeeEstablishmentResponse.data.establishmentName || "",
         adresse: employeeEstablishmentResponse.data.address || "",
@@ -215,7 +261,7 @@ const ModelEdit = ({ dataEmployee }) => {
           // Uploader avec un nom correct
           handleUpload(file);
         });
-    }
+      }
   };
 
 
@@ -226,6 +272,36 @@ const ModelEdit = ({ dataEmployee }) => {
         [name]: value === "" ? null : value,
     }));
   };
+
+  // Fonction qui gère le changement dans la liste déroulante
+  const handleSelectChange = async (event) => {
+    const selectedId = event.target.value;
+    handleChange(event); // si vous avez d'autres effets à gérer
+
+    if (selectedId) {
+      setIsLoading(true);
+      try {
+        const response = await fetch(urlApi(`/certificateType/${selectedId}`));
+        const data = await response.json();
+
+        // Ici vous mettez à jour l’état avec les données du certificat sélectionné
+        setAboutModel((prev) => ({
+          ...prev,
+          certificateType: selectedId,
+          certificateTypeName: data.certificateTypeName || [],
+        }));
+        console.log(response);
+        console.log(data);
+        console.log(aboutModel.certificateTypeName);
+      } catch (error) {
+        setError(`Erreur lors du chargement du type d'attestation : ${error.message}`);
+        console.error("Erreur lors du chargement du type d'attestation :", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
 
   const replaceVariables = (text) => {
     if (!dataEmployee) return text;
@@ -253,13 +329,15 @@ const ModelEdit = ({ dataEmployee }) => {
     formData.append('certificateTypeId', aboutModel.certificateType);
     formData.append('reference', aboutModel.reference);
     console.log(formData);
-
+    setUploading(true);
     try {
       await axios.post(urlApi('/CareerPlan/Certificate/Save'), formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setUploadSuccess('PDF exporté et enregistré avec succès.');
       setErrorUpload(false);
+      setSendError(null);
+      setError(false);
     } catch (err) {
       if (err.response?.status === 409) {
         setErrorUpload("Erreur lors de l'upload du fichier pdf : référence déjà utilisée pour une autre attestation.")
@@ -268,6 +346,8 @@ const ModelEdit = ({ dataEmployee }) => {
       } else {
         setErrorUpload("Erreur lors de l'enregistrement. Veuillez réessayer plus tard.");
       }
+    } finally {
+        setUploading(false);
     }
   };
 
@@ -279,6 +359,78 @@ const ModelEdit = ({ dataEmployee }) => {
       return () => clearTimeout(timer);
     }
   }, [uploadSuccess]);
+
+  useEffect(() => {
+    if (sendSuccess) {
+      const timer = setTimeout(() => {
+        setSendSuccess(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [sendSuccess]);
+
+  const handleSend = async () => {
+    setSending(true);
+    setSendError(null);
+    setSendSuccess(false);
+
+    try {
+      if (previewRef.current) {
+        const opt = {
+          margin: 0.5,
+          filename: "attestation.pdf",
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        };
+
+        // Attendre correctement la génération du PDF en tant que Blob
+        const blob = await html2pdf()
+          .set(opt)
+          .from(previewRef.current)
+          .outputPdf('blob');
+
+        const generatedFile = new File([blob], `Attestation_${aboutModel.reference}.pdf`, {
+          type: "application/pdf",
+        });
+
+        // Utiliser une valeur valide d’email ici (optionnel, tu peux mettre un champ si nécessaire)
+        const recipient = email || 'chalmaninssa1962002@gmail.com';
+
+        handleUpload(generatedFile);
+
+        if(errorUpload) {
+          setSendError("Échec de l’envoi email");
+        } else {
+           await sendAttestationEmail({
+            recipientEmail: recipient,
+            subject: 'Votre attestation de travail',
+            body: '<p>Bonjour,<br/>Veuillez trouver ci-joint votre attestation de travail.</p>',
+            file: generatedFile,
+          });
+
+          setSendSuccess(true);
+          setSendError(null);
+          setError(false);
+        }
+      }
+    } catch (error) {
+      if (err.response?.status === 409) {
+        setErrorUpload("Erreur lors de l'upload du fichier pdf : référence déjà utilisée pour une autre attestation.")
+      } else if (err.response?.status === 400) {
+        setErrorUpload("Erreur lors de l'upload du fichier pdf : Fichier invalide.")
+      } else {
+        setErrorUpload("Erreur lors de l'enregistrement. Veuillez réessayer plus tard.");
+      }
+      console.error("Erreur lors de l'envoi de l'email :", error);
+      setSendError("Échec de l’envoi. Veuillez vérifier l’adresse e-mail ou réessayer plus tard.");
+
+    } finally {
+      setSending(false);
+    }
+  };
+
+
   
   return (
       <Container fluid>
@@ -302,10 +454,10 @@ const ModelEdit = ({ dataEmployee }) => {
                   </Form.Group>
                   <Form.Group className="mb-3">
                     <Form.Label>Type d'attestation</Form.Label>
-                    <select name="certificateType" value={aboutModel.certificateType} onChange={handleChange} className="form-control" id="exampleSelectGender">
+                    <select name="certificateType" value={aboutModel.certificateType} onChange={handleSelectChange} className="form-control" id="exampleSelectGender">
                       <option value="">Sélectionner le type</option>
                         {certificateTypes && certificateTypes.map((item, id) => (
-                          <option key={id} value={item.certificateType}>
+                          <option key={id} value={item.certificateTypeId}>
                             {item.certificateTypeName}
                           </option>
                         ))}
@@ -389,24 +541,14 @@ const ModelEdit = ({ dataEmployee }) => {
                               />
                             </Form.Group>
                           </Col>
-                          <Col
-                            md={2}
-                            className="d-flex flex-column gap-2 justify-content-end"
-                          >
-                            <Dropdown
-                              onSelect={(variable) =>
-                                insertVariable(section.id, variable)
-                              }
-                            >
+                          <Col md={2} className="d-flex flex-column align-items-stretch gap-2 justify-content-start pt-1">
+                            <Dropdown onSelect={(variable) => insertVariable(section.id, variable)}>
                               <Dropdown.Toggle
                                 variant="outline-primary"
                                 size="sm"
+                                className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
                               >
-                                <Icon
-                                  path={mdiFormatListBulleted}
-                                  size={0.8}
-                                  className="me-1"
-                                />{" "}
+                                <Icon path={mdiFormatListBulleted} size={0.75} className="me-1" />
                                 Champ
                               </Dropdown.Toggle>
                               <Dropdown.Menu>
@@ -417,52 +559,99 @@ const ModelEdit = ({ dataEmployee }) => {
                                 ))}
                               </Dropdown.Menu>
                             </Dropdown>
+
                             <Button
                               variant="outline-danger"
                               size="sm"
                               onClick={() => removeSection(section.id)}
+                              className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
                             >
-                              <Icon path={mdiDelete} size={0.8} />
+                              <Icon path={mdiDelete} size={0.75} />
                             </Button>
                           </Col>
                         </Row>
                       </Card.Body>
                     </Card>
                   ))}
-
-                  <div className="d-flex gap-2 mt-3">
-                    <Button variant="success" onClick={addSection}>
-                      <Icon path={mdiPlus} size={1} className="me-2" /> Ajouter
-                      une section
-                    </Button>
-                    <Button
-                      variant="info"
-                      onClick={() => setShowPreview(true)}
-                    >
-                      <Icon path={mdiEye} size={1} className="me-2" /> Voir
-                      l'aperçu
-                    </Button>
+                  <div className="mt-4">
+                    <Row className="g-3">
+                      <Col xs={12} md="auto">
+                        <Button variant="outline-success" onClick={addSection} className="w-100 shadow-sm rounded-3 px-4">
+                          <Icon path={mdiPlus} size={0.9} className="me-2" />
+                          Ajouter une section
+                        </Button>
+                      </Col>
+                      <Col xs={12} md="auto">
+                        <Button variant="info" onClick={() => setShowPreview(true)} className="w-100 text-white shadow-sm rounded-3 px-4">
+                          <Icon path={mdiEye} size={0.9} className="me-2" />
+                          Voir l’aperçu
+                        </Button>
+                      </Col>
+                    </Row>
                   </div>
+
                 </Card.Body>
               </Card>
 
-              <div className="d-flex flex-wrap gap-2">
-                <Button variant="success">
-                  <Icon path={mdiEmailFastOutline} size={1} className="me-2" />
-                  Envoyer par email
-                </Button>
-                <Button variant="primary" onClick={handleExportPDF}>
-                  <Icon path={mdiFileExportOutline} size={1} className="me-2" />
-                  Export PDF
-                </Button>
-                <Button variant="light">
-                  <Icon path={mdiArrowLeft} size={1} className="me-2" />
-                  Retour
-                </Button>
+              <div className="my-4">
+                <Row className="g-3">
+                  <Col xs={12} md="auto">
+                    <Button variant="success" onClick={handleSend} disabled={sending} className="w-100 shadow-sm rounded-3 px-4">
+                      <Icon path={mdiEmailFastOutline} size={0.9} className="me-2" />
+                      {sending ? "Envoi en cours..." : "Envoyer par e-mail"}
+                    </Button>
+                  </Col>
+                  <Col xs={12} md="auto">
+                    <Button variant="primary" onClick={handleExportPDF} className="w-100 shadow-sm rounded-3 px-4">
+                      <Icon path={mdiFileExportOutline} size={0.9} className="me-2" />
+                      Export PDF
+                      {uploading ? "Export pdf en cours..." : "Export pdf"}
+                    </Button>
+                  </Col>
+                  <Col xs={12} md="auto">
+                    <Button variant="outline-secondary" className="w-100 shadow-sm rounded-3 px-4">
+                      <Icon path={mdiCancel} size={0.9} className="me-2" />
+                      Annuler
+                    </Button>
+                  </Col>
+                </Row>
               </div>
+
               <br></br>
-              {errorUpload && <div className="alert alert-danger">{errorUpload}</div>}
-              {uploadSuccess && <div className="alert alert-success">{uploadSuccess}</div>}
+              {errorUpload && (
+                <div className="alert alert-danger rounded-3 d-flex align-items-center gap-2">
+                  <Icon path={mdiAlertCircle} size={0.8} />
+                  {errorUpload}
+                </div>
+              )}
+              {uploadSuccess && (
+                <div className="alert alert-success rounded-3 d-flex align-items-center gap-2">
+                  <Icon path={mdiCheckCircle} size={0.8} />
+                  {uploadSuccess}
+                </div>
+              )}
+              {uploading && (
+                <Alert variant="info" className="mt-3">
+                  Export pdf en cours...
+                </Alert>
+              )}
+              {sending && (
+                <Alert variant="info" className="mt-3">
+                  Envoi en cours...
+                </Alert>
+              )}
+
+              {sendSuccess && (
+                <Alert variant="success" className="mt-3">
+                  L’attestation a été envoyée avec succès !
+                </Alert>
+              )}
+
+              {sendError && (
+                <Alert variant="danger" className="mt-3">
+                  {sendError}
+                </Alert>
+              )}
 
             </Col>
 
@@ -487,9 +676,10 @@ const ModelEdit = ({ dataEmployee }) => {
                         </div>
                       )}
 
-                      <p className="text-center fw-bold" style={{fontSize: '30px'}}>
-                        <b>ATTESTATION DE TRAVAIL</b>
+                      <p className="text-center fw-bold" style={{ fontSize: '30px', textTransform: 'uppercase' }}>
+                        <b>{aboutModel.certificateTypeName}</b>
                       </p>
+
                       <p className="text-center">
                         <strong style={{textDecoration: 'underline'}}>Ref </strong>: {aboutModel.reference}
                       </p>
@@ -504,18 +694,18 @@ const ModelEdit = ({ dataEmployee }) => {
                       ))}
 
                       <Row>
-                        <Col md={6}>
+                        <Col md={8}>
                           <div className="mt-4 text-start">
                             <p>
                               <strong style={{textDecoration: 'underline'}}>Motif </strong>: <strong>{aboutModel.reason}</strong>
                             </p>
                           </div>
-                          <div className="text-md-end mt-4">
-                            <QRCodeSVG value={qrValue} size={100} />
+                          <div className="mt-4 text-center">
+                            <QRCodeSVG value={qrValue} size={130} />
                           </div>
                         </Col>
-                        <Col md={6} className="text-md-end">
-                          <div className="mt-5 text-end">
+                        <Col md={4}>
+                          <div className="mt-4 text-end">
                             <p>Fait à <strong>{aboutModel.place}</strong>, le <strong><DateDisplayNoTime isoDate={aboutModel.date} /></strong></p>
                             <p><strong>{aboutModel.signatoryPosition}</strong></p>
                           </div>
@@ -530,7 +720,7 @@ const ModelEdit = ({ dataEmployee }) => {
 
                       <footer className="pt-5 text-muted small">
                         <Row style={{background: '#e6e9ed', padding: '50px'}}>
-                          <Col md={6}>
+                          <Col md={8}>
                             <p className="mb-1">
                               <strong>Adresse :</strong>{" "}
                               {companyInfo.adresse || "..."}
@@ -544,7 +734,7 @@ const ModelEdit = ({ dataEmployee }) => {
                               {companyInfo.email || "..."}
                             </p>
                           </Col>
-                          <Col md={6} className="text-md-end">
+                          <Col md={4} className="text-md-end">
                             <p className="mb-1">
                               <strong>Site web :</strong>{" "}
                               {companyInfo.site || "..."}
