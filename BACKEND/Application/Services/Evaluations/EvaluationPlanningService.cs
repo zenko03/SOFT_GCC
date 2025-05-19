@@ -118,16 +118,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                             ? query.OrderBy(e => e.Department)
                             : query.OrderByDescending(e => e.Department);
                         break;
-                    case "startdate":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.startDate)
-                            : query.OrderByDescending(e => e.startDate);
-                        break;
-                    case "enddate":
-                        query = isAscending 
-                            ? query.OrderBy(e => e.endDate)
-                            : query.OrderByDescending(e => e.endDate);
-                        break;
+                   
                     default:
                         // Tri par défaut si la clé de tri n'est pas reconnue
                         query = query.OrderBy(e => e.FirstName).ThenBy(e => e.LastName);

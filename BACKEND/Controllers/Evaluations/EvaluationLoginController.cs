@@ -92,7 +92,7 @@ namespace soft_carriere_competence.Controllers
 			await _context.SaveChangesAsync();
 
 			// Générer le token JWT
-			var token = GenerateJwtToken(tempAccount.UserId, tempAccount.Evaluations_id);
+			var token = GenerateJwtToken(tempAccount.EmployeeId, tempAccount.Evaluations_id);
 
 			return Ok(new
 			{

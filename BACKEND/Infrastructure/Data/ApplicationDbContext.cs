@@ -106,7 +106,6 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<RetirementParameter> RetirementParameter { get; set; }
 
 		// SOUHAIT EVOLUTION
-		public DbSet<SkillPosition> SkillPosition { get; set; }
 		public DbSet<WishType> WishType { get; set; }
 		public DbSet<WishEvolutionCareer> WishEvolutionCareer { get; set; }
 		public DbSet<VWishEvolution> VWishEvolution { get; set; }

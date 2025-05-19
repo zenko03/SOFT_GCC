@@ -105,4 +105,144 @@ public class UserController : ControllerBase
 		return Ok(roles);
 	}
 
+	// Endpoint GET : api/User/{userId}/employee-mapping pour récupérer le mapping utilisateur-employé
+	// [HttpGet("{userId}/employee-mapping")]
+	// public async Task<IActionResult> GetUserEmployeeMapping(int userId)
+	// {
+	// 	try
+	// 	{
+	// 		// Récupérer l'utilisateur avec sa référence à l'employé
+	// 		var user = await _context.Users
+	// 			.Where(u => u.Id == userId)
+	// 			.Select(u => new 
+	// 			{
+	// 				UserId = u.Id,
+	// 				UserFirstName = u.FirstName,
+	// 				UserLastName = u.LastName,
+	// 				EmployeeId = u.EmployeeId
+	// 			})
+	// 			.FirstOrDefaultAsync();
+
+	// 		if (user == null)
+	// 		{
+	// 			return NotFound($"Utilisateur avec ID {userId} introuvable.");
+	// 		}
+
+	// 		// Si EmployeeId est null, essayer de trouver un employé correspondant par nom/prénom
+	// 		if (user.EmployeeId == null)
+	// 		{
+	// 			var employee = await _context.Employee
+	// 				.Where(e => e.Name == user.UserLastName && e.FirstName == user.UserFirstName)
+	// 				.Select(e => new
+	// 				{
+	// 					EmployeeId = e.EmployeeId,
+	// 					RegistrationNumber = e.RegistrationNumber,
+	// 					EmployeeName = e.Name,
+	// 					EmployeeFirstName = e.FirstName,
+	// 					DepartmentId = e.Department_id
+	// 				})
+	// 				.FirstOrDefaultAsync();
+
+	// 			if (employee != null)
+	// 			{
+	// 				return Ok(new
+	// 				{
+	// 					UserId = user.UserId,
+	// 					UserFirstName = user.UserFirstName,
+	// 					UserLastName = user.UserLastName,
+	// 					EmployeeId = employee.EmployeeId,
+	// 					RegistrationNumber = employee.RegistrationNumber,
+	// 					MappingType = "ByName", // Mapping par nom/prénom
+	// 					IsDirectMapping = false
+	// 				});
+	// 			}
+	// 			else
+	// 			{
+	// 				return Ok(new
+	// 				{
+	// 					UserId = user.UserId,
+	// 					UserFirstName = user.UserFirstName,
+	// 					UserLastName = user.UserLastName,
+	// 					EmployeeId = (int?)null,
+	// 					MappingType = "NotFound",
+	// 					IsDirectMapping = false
+	// 				});
+	// 			}
+	// 		}
+	// 		else
+	// 		{
+	// 			// Si EmployeeId n'est pas null, récupérer les détails de l'employé
+	// 			var employee = await _context.Employee
+	// 				.Where(e => e.EmployeeId == user.EmployeeId)
+	// 				.Select(e => new
+	// 				{
+	// 					EmployeeId = e.EmployeeId,
+	// 					RegistrationNumber = e.RegistrationNumber,
+	// 					EmployeeName = e.Name,
+	// 					EmployeeFirstName = e.FirstName,
+	// 					DepartmentId = e.Department_id
+	// 				})
+	// 				.FirstOrDefaultAsync();
+
+	// 			return Ok(new
+	// 			{
+	// 				UserId = user.UserId,
+	// 				UserFirstName = user.UserFirstName,
+	// 				UserLastName = user.UserLastName,
+	// 				EmployeeId = employee?.EmployeeId,
+	// 				RegistrationNumber = employee?.RegistrationNumber,
+	// 				EmployeeName = employee?.EmployeeName,
+	// 				EmployeeFirstName = employee?.EmployeeFirstName,
+	// 				DepartmentId = employee?.DepartmentId,
+	// 				MappingType = "Direct", // Mapping direct via EmployeeId
+	// 				IsDirectMapping = true
+	// 			});
+	// 		}
+	// 	}
+	// 	catch (Exception ex)
+	// 	{
+	// 		return StatusCode(500, $"Erreur lors de la récupération du mapping: {ex.Message}");
+	// 	}
+	// }
+
+	// Endpoint GET : api/User/employee/{employeeId} pour récupérer l'utilisateur associé à un employé
+	//[HttpGet("employee/{employeeId}")]
+	//public async Task<IActionResult> GetEmployeeUser(int employeeId)
+	//{
+	//	try
+	//	{
+	//		// Récupérer l'employé
+	//		var employee = await _context.Employee
+	//			.Where(e => e.EmployeeId == employeeId)
+	//			.Select(e => new
+	//			{
+	//				EmployeeId = e.EmployeeId,
+	//				RegistrationNumber = e.RegistrationNumber,
+	//				Name = e.Name,
+	//				FirstName = e.FirstName,
+	//				DepartmentId = e.Department_id
+	//			})
+	//			.FirstOrDefaultAsync();
+
+	//		if (employee == null)
+	//		{
+	//			return NotFound($"Employé avec ID {employeeId} introuvable.");
+	//		}
+
+	//		// Chercher l'utilisateur lié à cet employé
+			
+
+	//		return Ok(new
+	//		{
+	//			Employee = employee,
+	//			User = user,
+	//			HasUserAccount = user != null
+	//		});
+	//	}
+	//	catch (Exception ex)
+	//	{
+	//		return StatusCode(500, $"Erreur lors de la récupération des données: {ex.Message}");
+	//	}
+	//}
+
 }

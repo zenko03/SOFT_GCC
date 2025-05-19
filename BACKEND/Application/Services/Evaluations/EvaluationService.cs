@@ -305,16 +305,16 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             );
         }
 
-        public async Task<int> CreateEvaluationAsync(int userId, int evaluationTypeId, List<int> supervisorIds, DateTime startDate, DateTime endDate)
+        public async Task<int> CreateEvaluationAsync(int userId, int employeeId, int evaluationTypeId, List<int> supervisorIds, DateTime startDate, DateTime endDate)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    // Vérifier si l'utilisateur existe
-                    var user = await _userRepository.GetByIdAsync(userId);
-                    if (user == null)
-                        throw new Exception($"User with ID {userId} not found.");
+                    // Vérifier si l'employé existe (obligatoire)
+                    var employee = await _context.Employee.FindAsync(employeeId);
+                    if (employee == null)
+                        throw new Exception($"Employee with ID {employeeId} not found.");
 
                     // Vérifier si le type d'évaluation existe
                     var evaluationType = await _evaluationTypeRepository.GetByIdAsync(evaluationTypeId);
@@ -330,10 +330,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                             throw new Exception($"Supervisor with ID {supervisorId} not found.");
                     }
 
-                    // Créer l'évaluation
+                    // Créer l'évaluation - Ne pas inclure UserId
                     var newEvaluation = new Evaluation
                     {
-                        UserId = userId,
+                        EmployeeId = employeeId, // Uniquement l'employé évalué
                         EvaluationTypeId = evaluationTypeId,
                         StartDate = startDate,
                         EndDate = endDate,
@@ -352,7 +352,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     var progress = new EvaluationProgress
                     {
                         evaluationId = newEvaluation.EvaluationId,
-                        userId = userId,
+                        employeeId = employeeId,
                         totalQuestions = 0, // Sera mis à jour lors de la sélection des questions
                         answeredQuestions = 0,
                         progressPercentage = 0,
@@ -374,20 +374,27 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
                     Console.WriteLine($"Added {evaluationSupervisors.Count} supervisors to evaluation {newEvaluation.EvaluationId}");
 
-                    // Créer et envoyer les identifiants temporaires
-                    var tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(userId, newEvaluation.EvaluationId);
-
-                    // Envoyer l'email de notification
-                    await _emailService.SendEmailAsync(
-                        user.Email,
-                        "Planification évaluation",
-                        $"Vous avez une évaluation programmée du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}.\n\n" +
-                        $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
-                        $"Login : {tempAccount.TempLogin}\n" +
-                        $"Mot de passe : {tempAccount.TempPassword}\n\n" +
-                        $"Ces identifiants ne seront valides qu'à partir du {startDate.ToShortDateString()}.\n" +
-                        $"Lien pour vous connecter : https://votre-application.com/evaluation-login"
+                    // Créer un compte temporaire pour l'employé
+                    var tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(
+                        employeeId, 
+                        newEvaluation.EvaluationId
                     );
+                    
+                    // Utiliser l'email de l'employé s'il est disponible
+                    if (employee != null && !string.IsNullOrEmpty(employee.Email))
+                    {
+                        // Envoyer l'email de notification à l'employé
+                        await _emailService.SendEmailAsync(
+                            employee.Email,
+                            "Planification évaluation",
+                            $"Vous avez une évaluation programmée du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}.\n\n" +
+                            $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
+                            $"Login : {tempAccount.TempLogin}\n" +
+                            $"Mot de passe : {tempAccount.TempPassword}\n\n" +
+                            $"Ces identifiants ne seront valides qu'à partir du {startDate.ToShortDateString()}.\n" +
+                            $"Lien pour vous connecter : https://votre-application.com/evaluation-login"
+                        );
+                    }
 
                     await transaction.CommitAsync();
                     return newEvaluation.EvaluationId;
@@ -435,7 +442,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             foreach (var evaluation in upcomingEvaluations)
             {
-                await SendReminderEmailAsync(evaluation.UserId, evaluation.StartDate);
+                await SendReminderEmailAsync(evaluation.EmployeeId, evaluation.StartDate);
             }
         }
 
@@ -457,7 +464,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             // Récupérer l'évaluation en cours pour cet utilisateur
             var evaluation = await _evaluationRepository.FindAsync(e =>
-                e.UserId == userId &&
+                e.EmployeeId == userId &&
                 e.StartDate == evaluationDate &&
                 e.state == 10);
 
@@ -468,7 +475,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             // Récupérer le compte temporaire existant ou en créer un nouveau
             var tempAccount = await _context.temporaryAccounts
                 .FirstOrDefaultAsync(ta =>
-                    ta.UserId == userId &&
+                    ta.EmployeeId == userId &&
                     ta.Evaluations_id == currentEvaluation.EvaluationId);
 
             if (tempAccount == null)
@@ -498,7 +505,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
                 if (evaluation == null) return 0; // Evaluation not found
 
-                int userId = evaluation.UserId;
+                int userId = evaluation.EmployeeId;
                 await SendReminderEmailAsync(userId, evaluation.StartDate);
             }
             catch (Exception)
@@ -604,6 +611,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 {
                     // Créer l'évaluation pour l'employé
                     var evaluationId = await CreateEvaluationAsync(
+                        employeeQuestion.UserId, 
                         employeeQuestion.EmployeeId,
                         employeeQuestion.EvaluationTypeId,
                         dto.SupervisorIds,

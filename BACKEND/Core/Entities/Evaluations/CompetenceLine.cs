@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using soft_carriere_competence.Core.Entities.crud_career;
+using soft_carriere_competence.Core.Entities.salary_skills;
+using soft_carriere_competence.Core.Entities.wish_evolution;
 
 namespace soft_carriere_competence.Core.Entities.Evaluations
 {
@@ -12,22 +14,17 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         public int CompetenceLineId { get; set; }
 
         [Required]
-        [Column("PositionId")]
-        public int PositionId { get; set; }
+        [Column("SkillPositionId")]
+        public int SkillPositionId { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        [Column("CompetenceName")]
-        public string CompetenceName { get; set; }
-
-        [MaxLength(255)]
         [Column("Description")]
         public string Description { get; set; }
 
         [Column("state")]
         public int State { get; set; } = 1;
-        [ForeignKey("PositionId")]
-        public Position position { get; set; }
+
+        [ForeignKey("SkillPositionId")]
+        public SkillPosition SkillPosition { get; set; }
 
         // Navigation properties
         public virtual ICollection<EvaluationQuestion> EvaluationQuestions { get; set; }
