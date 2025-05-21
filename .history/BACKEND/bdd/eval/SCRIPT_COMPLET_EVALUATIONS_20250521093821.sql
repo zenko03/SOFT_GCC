@@ -1,3 +1,15 @@
+/*
+    Titre : Script complet du module d'évaluation
+    Date : 27 septembre 2024
+    Description : Script SQL consolidé pour la création et la configuration 
+                 du module d'évaluation de la gestion de carrières et compétences.
+    
+    Ce script comprend:
+    - La création de toutes les tables du module d'évaluation
+    - La création des contraintes et des relations
+    - La création des vues pour les rapports
+    - Les modifications suite à la refactorisation pour utiliser Employee au lieu de Users
+*/
 
 -- ====================================================
 -- 1. TABLES INDÉPENDANTES (sans clés étrangères)
