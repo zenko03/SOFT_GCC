@@ -296,8 +296,7 @@
 }
 
 .title-container i {
-  font-size: 20px;
-  color: #B8860B;
+  font-size: 25px;
 }
 
 .search-input {
@@ -363,4 +362,40 @@
   font-size: 50px;
   font-weight: bold;
   color: #333;
+}
+
+.icon-cancel {
+  margin-right: 10px; 
+  color: #B8860B;
+}
+
+.value-profil {
+  color: #333;
+}
+
+.title-container {
+  background-color: #f5f8fa;
+}
+
+.label-title {
+  display: inline-block;
+  min-width: 140px; /* Ajuste selon la longueur des labels */
+  margin-right: 100px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #333;
+}
+
+.value-profil {
+  color: #555;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.card-header {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.card-body p {
+  margin-bottom: 0.75rem;
 }

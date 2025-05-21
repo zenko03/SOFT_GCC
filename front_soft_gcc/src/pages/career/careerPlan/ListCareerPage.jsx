@@ -152,11 +152,12 @@ const ListCareerPage = () => {
       <PageHeader module={module} action={action} url={url} />
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="row header-title">
+      <div className="title-container">
         <div className="col-lg-10 skill-header">
           <i className="mdi mdi-map-marker-path skill-icon"></i>
           <p className="skill-title">PLAN DE CARRIÈRE</p>
         </div>
+                            
         <div className="col-lg-2">
           <button className="btn-add btn-success btn-fw" onClick={handleClick} style={{float: 'right'}}>
             <i className="mdi mdi-plus"></i>
@@ -164,11 +165,11 @@ const ListCareerPage = () => {
           </button>
         </div>  
       </div>
+     
       <div className="card mb-4 search-card">
-        <div className="card-header title-container">
-          <h5 className="title">
-            <i className="mdi mdi-filter-outline"></i> Filtres
-          </h5>
+        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+          <i className="mdi mdi-filter-outline me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+          <h3 className="mb-0" style={{color: '#B8860B'}}>Filtres</h3>
         </div>
         <div className="card-body">
           <form className="filter-form">
@@ -242,10 +243,9 @@ const ListCareerPage = () => {
       </div>
 
       <div className="card">
-        <div className="card-header title-container">
-          <h5 className="title">
-            <i className="mdi mdi-format-list-bulleted"></i> Plan de carrière par employé
-          </h5>
+        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+          <i className="mdi mdi-format-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+          <h3 className="mb-0" style={{color: '#B8860B'}}>Plan de carrière par employé</h3>
         </div>
         <div className="card-body">
           {!loading && (

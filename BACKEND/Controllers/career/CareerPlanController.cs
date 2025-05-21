@@ -62,8 +62,9 @@ namespace soft_carriere_competence.Controllers.career
 
 				// Vérifier s'il existe déjà un plan de carrière pour cet employé et ce type de contrat
 				CareerPlan? lastCareerPlan = await _careerPlanService.GetByEmployeeAndContractType(
-					careerPlan.RegistrationNumber, careerPlan.EmployeeTypeId
+					careerPlan.RegistrationNumber
 				);
+
 
 				if (lastCareerPlan == null)
 				{
@@ -254,11 +255,11 @@ namespace soft_carriere_competence.Controllers.career
 		public async Task<IActionResult> DeleteCareerPlan(int careerPlanId)
 		{
 			bool isUpdated = await _careerPlanService.DeleteCareerPlan(careerPlanId);
-
+			Console.WriteLine("Career plan id : " + careerPlanId);
 			if (isUpdated)
 			{
-				AssignmentType assignmentType = await _assignmentTypeService.GetById((int)careerPlanId);
 				CareerPlan careerPlan = await _careerPlanService.GetById(careerPlanId);
+				AssignmentType assignmentType = await _assignmentTypeService.GetById(careerPlan.AssignmentTypeId);
 				var activityLog = new ActivityLog
 				{
 					UserId = 1,
@@ -362,7 +363,8 @@ namespace soft_carriere_competence.Controllers.career
 		[FromForm] IFormFile file,
 		[FromForm] string registrationNumber,
 		[FromForm] int certificateTypeId,
-		[FromForm] string reference)
+		[FromForm] string reference,
+		[FromForm] int state)
 		{
 			if (file == null || file.Length == 0 || !file.ContentType.Contains("pdf"))
 				return BadRequest("Fichier invalide.");
@@ -388,7 +390,7 @@ namespace soft_carriere_competence.Controllers.career
 					PdfFile = fileBytes,
 					FileName = file.FileName,
 					ContentType = file.ContentType,
-					State = 1,
+					State = state,
 					CreationDate = DateTime.UtcNow,
 					UpdatedDate = DateTime.UtcNow
 				};

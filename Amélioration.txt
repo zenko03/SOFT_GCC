@@ -1,8 +1,8 @@
 - Mappage bdd sage : relié avec la base de donnée de Sage pour mapper les employés, dynamiser le choix du mappage
 - Gestion compétences : Niveau de compétence des employés sont à jour automatique après recrutement et évaluation 
-- Statut des compétences : changer non évalué par non validé, mettre le niveau à null automatique lorsque le statut est non validé, supprimer le statut confirmé
-- Plan de carrière : mettre matricule - nom dans le dropdown list des employés
-- Plan de carrière : type de salarié change en type de contrat
+- Statut des compétences : changer non évalué par non validé, mettre le niveau à null automatique lorsque le statut est non validé, supprimer le statut confirmé (ok)
+- Plan de carrière : mettre matricule - nom dans le dropdown list des employés (ok)
+- Plan de carrière : type de salarié change en type de contrat (ok)
 - Plan de carrière : lorsque le type de contrat est cdi, le fin de contrat doit être null. Après une évolution de carrière, la date de début de celle-ci deviendra la date fin du fin contrat
 - Attestation de travail : historiques, Dynamisme du contenu de l'attestation, possibilité de choisir ou modifier un modèle de contestation existant
 - Souhait d'évolution : la note de priorité doit être faite en 3 choix :  bas, moyen, élevé; motivation devient motif dans l'ajout de souhait d'évolution

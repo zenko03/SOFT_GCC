@@ -47,24 +47,39 @@ const formatDateFr = (isoDate) => {
   return format(parsed, "dd MMMM yyyy", { locale: fr });
 };
 
-function genererNouvelleReference(attestations) {
-  const dateDuJour = new Date();
-  const annee = dateDuJour.getFullYear();
-  const mois = String(dateDuJour.getMonth() + 1).padStart(2, '0');
-  const jour = String(dateDuJour.getDate()).padStart(2, '0');
-  const heures = String(dateDuJour.getHours()).padStart(2, '0');
-  const minutes = String(dateDuJour.getMinutes()).padStart(2, '0');
-  const secondes = String(dateDuJour.getSeconds()).padStart(2, '0');
-  const dateStr = `${annee}${mois}${jour}-${heures}${minutes}${secondes}`;
-  let prochainCompteur = '';
-  if(attestations.length == 0) {
-    prochainCompteur = `0RF01`;
+const genererNouvelleReference = async (setIsLoading, setError) => {
+  setIsLoading(true);
+    try {
+      const [allCertificatesResponse] = await Promise.all([
+        axios.get(urlApi(`/CareerPlan/Certificate/GetAll`))
+      ]);
 
-  } else {
-    prochainCompteur = `0RF0${attestations[attestations.length-1].id+1}`;
-  }
+      const attestations = allCertificatesResponse.data;
+      //console.log(allCertificatesResponse.data);
+      //console.log(attestations);
 
-  return `ATT-${dateStr}-${prochainCompteur}`;
+      const dateDuJour = new Date();
+      const annee = dateDuJour.getFullYear();
+      const mois = String(dateDuJour.getMonth() + 1).padStart(2, '0');
+      const jour = String(dateDuJour.getDate()).padStart(2, '0');
+      const heures = String(dateDuJour.getHours()).padStart(2, '0');
+      const minutes = String(dateDuJour.getMinutes()).padStart(2, '0');
+      const secondes = String(dateDuJour.getSeconds()).padStart(2, '0');
+      const dateStr = `${annee}${mois}${jour}-${heures}${minutes}${secondes}`;
+      let prochainCompteur = '';
+      if(attestations.length == 0) {
+        prochainCompteur = `0RF01`;
+
+      } else {
+        prochainCompteur = `0RF0${attestations[attestations.length-1].id+1}`;
+      }
+
+      return `ATT-${dateStr}-${prochainCompteur}`;     
+    } catch (error) {
+      setError(`Erreur lors de la recuperation des donnees : ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
 }
 
 const fileToBase64 = (file) => {
@@ -107,6 +122,7 @@ const ModelEdit = ({ dataEmployee }) => {
   const [errorUpload, setErrorUpload] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [info, setInfo] = useState(false);
 
   // Variables d'état pour l'envoi par email
   const [email, setEmail] = useState('');
@@ -114,7 +130,6 @@ const ModelEdit = ({ dataEmployee }) => {
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState(null);
   const [sendSuccess, setSendSuccess] = useState(false);
-
 
   const [sections, setSections] = useState([
     {
@@ -166,17 +181,15 @@ const ModelEdit = ({ dataEmployee }) => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [allCertificatesResponse, employeeEstablishmentResponse, certificateTypesResponse] = await Promise.all([
-        axios.get(urlApi(`/CareerPlan/Certificate/GetAll`)),
+      const [employeeEstablishmentResponse, certificateTypesResponse] = await Promise.all([
         axios.get(urlApi(`/Establishment/${dataEmployee.establishmentId}`)),
         axios.get(urlApi(`/CertificateType`))
       ]);
 
-      setCertificates(allCertificatesResponse.data || []);
       setEmployeeEstablishment(employeeEstablishmentResponse.data);
       setCertificateTypes(certificateTypesResponse.data);
 
-      const nouvelleRef = genererNouvelleReference(allCertificatesResponse.data);
+      const nouvelleRef = await genererNouvelleReference(setIsLoading, setError);
       setAboutModel(prev => ({
         ...prev,
         reference: nouvelleRef
@@ -239,6 +252,15 @@ const ModelEdit = ({ dataEmployee }) => {
 
   const handleExportPDF = () => {
     if (previewRef.current) {
+      setInfo(false);
+      // Vérifications des données requises
+      const { registrationNumber } = dataEmployee || {};
+      const { certificateType, reference } = aboutModel;
+
+      if (!registrationNumber || !certificateType || !reference) {
+        setErrorUpload("Certains champs obligatoires sont manquants pour l’enregistrement.");
+        return;
+      }
       const opt = {
         margin: 0.5,
         filename: "attestation.pdf",
@@ -259,8 +281,10 @@ const ModelEdit = ({ dataEmployee }) => {
           const file = new File([blob], `Attestation_${aboutModel.reference}.pdf`, { type: "application/pdf" });
 
           // Uploader avec un nom correct
-          handleUpload(file);
+          handleUpload(file, 1);          
         });
+      } else {
+        setInfo("Veuillez cliquer d'abord sur le bouton voir aperçu");
       }
   };
 
@@ -290,9 +314,6 @@ const ModelEdit = ({ dataEmployee }) => {
           certificateType: selectedId,
           certificateTypeName: data.certificateTypeName || [],
         }));
-        console.log(response);
-        console.log(data);
-        console.log(aboutModel.certificateTypeName);
       } catch (error) {
         setError(`Erreur lors du chargement du type d'attestation : ${error.message}`);
         console.error("Erreur lors du chargement du type d'attestation :", error);
@@ -320,36 +341,57 @@ const ModelEdit = ({ dataEmployee }) => {
   };
 
   // Upload pdf de l'attestation de travail
-  const handleUpload = async (file) => {
-    if (!file || !dataEmployee?.registrationNumber) return;
+  const handleUpload = async (file, state) => {
+    if (!file) {
+      setErrorUpload("Aucun fichier sélectionné.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('registrationNumber', dataEmployee.registrationNumber);
     formData.append('certificateTypeId', aboutModel.certificateType);
     formData.append('reference', aboutModel.reference);
-    console.log(formData);
+    formData.append('state', state);
+
     setUploading(true);
+    setUploadSuccess(null);
+    setErrorUpload(null);
+
     try {
       await axios.post(urlApi('/CareerPlan/Certificate/Save'), formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setUploadSuccess('PDF exporté et enregistré avec succès.');
-      setErrorUpload(false);
+
+      if(state === 1) {
+        setUploadSuccess('PDF exporté et enregistré avec succès.');
+
+      } else {
+        setUploadSuccess('PDF enregistré avec succès.');
+      }
+
+      await initializeForm();
+      setErrorUpload(null);
       setSendError(null);
       setError(false);
     } catch (err) {
+      setUploading(false); // Stop spinner même en cas d’erreur
+
       if (err.response?.status === 409) {
-        setErrorUpload("Erreur lors de l'upload du fichier pdf : référence déjà utilisée pour une autre attestation.")
+        setErrorUpload("Erreur : Référence déjà utilisée pour une autre attestation.");
       } else if (err.response?.status === 400) {
-        setErrorUpload("Erreur lors de l'upload du fichier pdf : Fichier invalide.")
+        setErrorUpload("Erreur : Fichier PDF invalide.");
       } else {
-        setErrorUpload("Erreur lors de l'enregistrement. Veuillez réessayer plus tard.");
+        setErrorUpload("Erreur inconnue lors de l'enregistrement. Veuillez réessayer.");
       }
-    } finally {
-        setUploading(false);
+
+      throw err; // Important : stopper la suite
     }
+
+    setUploading(false);
   };
+
+
 
   useEffect(() => {
     if (uploadSuccess) {
@@ -376,6 +418,16 @@ const ModelEdit = ({ dataEmployee }) => {
 
     try {
       if (previewRef.current) {
+        setInfo(false);
+
+        // Vérifications des données requises
+        const { registrationNumber } = dataEmployee || {};
+        const { certificateType, reference } = aboutModel;
+
+        if (!registrationNumber || !certificateType || !reference) {
+          setErrorUpload("Certains champs obligatoires sont manquants pour l’enregistrement.");
+          return;
+        }
         const opt = {
           margin: 0.5,
           filename: "attestation.pdf",
@@ -384,7 +436,7 @@ const ModelEdit = ({ dataEmployee }) => {
           jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
         };
 
-        // Attendre correctement la génération du PDF en tant que Blob
+        // Génération du fichier PDF
         const blob = await html2pdf()
           .set(opt)
           .from(previewRef.current)
@@ -394,47 +446,61 @@ const ModelEdit = ({ dataEmployee }) => {
           type: "application/pdf",
         });
 
-        // Utiliser une valeur valide d’email ici (optionnel, tu peux mettre un champ si nécessaire)
         const recipient = email || 'chalmaninssa1962002@gmail.com';
 
-        handleUpload(generatedFile);
+        // ✅ Attente de l'upload + arrêt si erreur levée
+        await handleUpload(generatedFile, 2);
 
-        if(errorUpload) {
-          setSendError("Échec de l’envoi email");
-        } else {
-           await sendAttestationEmail({
-            recipientEmail: recipient,
-            subject: 'Votre attestation de travail',
-            body: '<p>Bonjour,<br/>Veuillez trouver ci-joint votre attestation de travail.</p>',
-            file: generatedFile,
-          });
+        await sendAttestationEmail({
+          recipientEmail: recipient,
+          subject: 'Votre attestation de travail',
+          body: '<p>Bonjour,<br/>Veuillez trouver ci-joint votre attestation de travail.</p>',
+          file: generatedFile,
+        });
 
-          setSendSuccess(true);
-          setSendError(null);
-          setError(false);
-        }
-      }
-    } catch (error) {
-      if (err.response?.status === 409) {
-        setErrorUpload("Erreur lors de l'upload du fichier pdf : référence déjà utilisée pour une autre attestation.")
-      } else if (err.response?.status === 400) {
-        setErrorUpload("Erreur lors de l'upload du fichier pdf : Fichier invalide.")
+        setSendSuccess(true);
+        setSendError(null);
+        setError(false);
       } else {
-        setErrorUpload("Erreur lors de l'enregistrement. Veuillez réessayer plus tard.");
+        setInfo("Veuillez cliquer d'abord sur le bouton voir aperçu");
       }
-      console.error("Erreur lors de l'envoi de l'email :", error);
-      setSendError("Échec de l’envoi. Veuillez vérifier l’adresse e-mail ou réessayer plus tard.");
-
+    } catch (err) {
+      // Gérer les erreurs (upload ou email)
+      console.error("Erreur lors de l'envoi :", err);
+      setSendError("Une erreur s'est produite lors de l'envoi de l'attestation.");
     } finally {
       setSending(false);
     }
   };
 
 
+// Initialisation du formulaire de géneration du formulaire
+    const initializeForm = async () => {
+        setAboutModel((prevData) => ({
+            ...prevData, // Conserve les autres champs inchangés
+            reference: "",
+            place: "",
+            signatoryPosition: "",
+            reason: "",
+            signatoryName: "",
+            date: "",
+            entreprise: 0,
+            certificateType: 0,
+            certificateTypeName: "",
+            state: 0
+        }));
+        setLogoPreview(null);
+        console.log("Manda");
+        const nouvelleRef = await genererNouvelleReference(setIsLoading, setError);
+        setAboutModel(prev => ({
+          ...prev,
+          reference: nouvelleRef
+        }));
+    };
   
   return (
       <Container fluid>
-        <h4 className="mb-4 fw-bold">Géneration du document d'attestation</h4>
+        <h2 className="mb-4 fw-bold">Géneration du document d'attestation</h2>
         <p>{aboutModel.date}</p>
         {isLoading && <Loader />}
         {error && <div className="alert alert-danger">{error}</div>}
@@ -443,11 +509,11 @@ const ModelEdit = ({ dataEmployee }) => {
             <Col md={6}>
               {/* Bloc gauche */}
               <Card className="mb-4 shadow-sm">
+                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                  <Icon path={mdiFileDocumentEdit} size={1} className="me-2" style={{marginRight: '10px'}}/>
+                  <h3 className="mb-0" style={{color: '#B8860B'}}>À propos du modèle</h3>
+                </div>
                 <Card.Body>
-                  <h5 className="fw-semibold mb-3">
-                    <Icon path={mdiFileDocumentEdit} size={1} className="me-2" />
-                    À propos du modèle
-                  </h5>
                   <Form.Group className="mb-3">
                     <Form.Label>Réference</Form.Label>
                     <Form.Control type="text" name="reference" value={aboutModel.reference} onChange={handleChange} />
@@ -509,12 +575,11 @@ const ModelEdit = ({ dataEmployee }) => {
               </Card>
 
               <Card className="mb-4 shadow-sm">
+                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                  <Icon path={mdiInformationOutline} size={1} className="me-2" style={{marginRight: '10px'}}/>
+                  <h3 className="mb-0" style={{color: '#B8860B'}}> Contenu dynamique</h3>
+                </div>
                 <Card.Body>
-                  <h5 className="fw-semibold mb-3">
-                    <Icon path={mdiInformationOutline} size={1} className="me-2" />
-                    Contenu dynamique
-                  </h5>
-
                   {sections.map((section) => (
                     <Card className="mb-3" key={section.id}>
                       <Card.Body>
@@ -609,7 +674,7 @@ const ModelEdit = ({ dataEmployee }) => {
                     </Button>
                   </Col>
                   <Col xs={12} md="auto">
-                    <Button variant="outline-secondary" className="w-100 shadow-sm rounded-3 px-4">
+                    <Button variant="outline-secondary" onClick={initializeForm} className="w-100 shadow-sm rounded-3 px-4">
                       <Icon path={mdiCancel} size={0.9} className="me-2" />
                       Annuler
                     </Button>
@@ -650,6 +715,11 @@ const ModelEdit = ({ dataEmployee }) => {
               {sendError && (
                 <Alert variant="danger" className="mt-3">
                   {sendError}
+                </Alert>
+              )}
+              {info && (
+                <Alert variant="info" className="mt-3">
+                  {info}
                 </Alert>
               )}
 

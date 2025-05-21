@@ -63,7 +63,9 @@ namespace soft_carriere_competence.Application.Services.career_plan
             {
                 Id = e.CertificateHistoryId,
                 RegistrationNumber = e.RegistrationNumber,
+                CertificateTypeId = e.CertificateTypeId,
                 FileName = e.FileName,
+                State = e.State,
                 ContentType = e.ContentType,
                 FileSize = e.PdfFile?.Length ?? 0,
                 CreatedAt = e.CreationDate
@@ -80,8 +82,10 @@ namespace soft_carriere_competence.Application.Services.career_plan
             {
                 Id = e.CertificateHistoryId,
                 RegistrationNumber = e.RegistrationNumber,
+                CertificateTypeId = e.CertificateTypeId,
                 Reference = e.Reference,
                 FileName = e.FileName,
+                State = e.State,
                 ContentType = e.ContentType,
                 FileSize = e.PdfFile?.Length ?? 0,
                 CreatedAt = e.CreationDate

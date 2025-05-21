@@ -76,11 +76,12 @@ function CareerProfilePage({ onSearch }) {
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
                     <i className="mdi mdi-note-text skill-icon"></i>
-                    <p className="skill-title" style={{color: '#B8860B'}}>DÉTAILS PLAN DE CARRIERE</p>
+                    <p className="skill-title">DÉTAILS PLAN DE CARRIÈRE</p>
                 </div>
+                            
                 <div className="col-lg-2">
                     <button onClick={handleRetour} className="btn-outline-dark btn-fw" style={{float: 'right'}}>
-                        <i className="mdi mdi-arrow-left-circle" style={{marginRight: '10px'}}></i>
+                        <i className="mdi mdi-arrow-left-circle icon-cancel" style={{}}></i>
                         Retour
                     </button>
                 </div>  
@@ -89,26 +90,35 @@ function CareerProfilePage({ onSearch }) {
            
 
 
-            <div className="row description">    
-                <div className="col-md-6 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-body">
-                            <p>Employe : <span className='value-profil'>{dataEmployee.firstName+" "+dataEmployee.name}</span></p>
-                            <p>Matricule : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployee.registrationNumber}</span></p>
-                            <p>Date naissance : <span className='value-profil'><FormattedDate date={dataEmployee.birthday} /></span></p>
+            <div className="row description">
+                <div className="col-md-12">
+                    <div className="card shadow-sm">
+                        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                            <i className="mdi mdi-information-outline me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                            <h3 className="mb-0" style={{color: '#B8860B'}}>Informations salariés</h3>
                         </div>
-                    </div>
-                </div>
-                <div className="col-md-6 grid-margin stretch-card">
-                    <div className="card">
                         <div className="card-body">
-                            <p>Poste actuel : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployee.positionName}</span></p>
-                            <p>Salaire : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployee.baseSalary} Ar</span></p>
-                            <p>Date d'embauche : <span className='value-profil'><FormattedDate date={dataEmployee.assignmentDate} /></span></p>
+                            <div className="row">
+                                {/* Colonne gauche */}
+                                <div className="col-md-4">
+                                    <p><strong className="label-title">Employé :</strong><span className="value-profil">{dataEmployee.firstName} {dataEmployee.name}</span></p>
+                                    <p><strong className="label-title">Matricule :</strong><span className="value-profil">{dataEmployee.registrationNumber}</span></p>
+                                    <p><strong className="label-title">Date naissance :</strong><span className="value-profil"><FormattedDate date={dataEmployee.birthday} /></span></p>
+                                </div>
+
+                                {/* Colonne droite */}
+                                <div className="col-md-4">
+                                    <p><strong className="label-title">Poste actuel :</strong><span className="value-profil text-primary">{dataEmployee.positionName}</span></p>
+                                    <p><strong className="label-title">Salaire :</strong><span className="value-profil text-info">{dataEmployee.baseSalary} Ar</span></p>
+                                    <p><strong className="label-title">Date d'embauche :</strong><span className="value-profil"><FormattedDate date={dataEmployee.assignmentDate} /></span></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
 
             <div className="row">
                 <div className="col-lg-12 grid-margin">

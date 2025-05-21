@@ -166,6 +166,42 @@ function CreationCareerPlan({ onSearch }) {
         console.log(dataToSend);
   
         const response = await axios.post(urlApi('/CareerPlan'), dataToSend);
+        handleRetour();
+    } catch (error) {
+        console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
+        setError(`Erreur lors de l\'insertion : ${error.message}`);
+
+    } finally {
+        setIsLoading(false);
+    }
+  };
+        
+    // Initialisation du formulaire de saisie près enregistrement d'un plan de carrière
+    const initializeForm = () => {
+        setFormData((prevData) => ({
+            ...prevData, 
+            establishmentId: undefined,
+            departmentId: undefined,
+            positionId: undefined,
+            employeeTypeId: undefined,
+            socioCategoryProfessionalId: undefined,
+            indicationId: undefined,
+            baseSalary: undefined,
+            netSalary: undefined,
+            professionalCategoryId: undefined,
+            legalClassId: undefined,
+            newsletterTemplateId: undefined,
+            paymentMethodId: undefined,
+            endingContract: undefined,
+            reason: undefined,
+            assigningInstitution: undefined,
+            startDate: undefined,
+            endDate: undefined,
+            echelonId: undefined,
+        }));
+    };
+
+    const initializeAllForm = () => {
         setFormData({
             assignmentTypeId: 1,
             registrationNumber: undefined,
@@ -190,41 +226,8 @@ function CreationCareerPlan({ onSearch }) {
             assigningInstitution: undefined,
             startDate: undefined,
             endDate: undefined,
-            echelonId: undefined,
-            state: 1,
+            echelonId: undefined
         });
-    } catch (error) {
-        console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
-        setError(`Erreur lors de l\'insertion : ${error.message}`);
-
-    } finally {
-        setIsLoading(false);
-    }
-  };
-        
-    // Initialisation du formulaire de saisie près enregistrement d'un plan de carrière
-    const initializeForm = () => {
-        setFormData((prevData) => ({
-            ...prevData, // Conserve les autres champs inchangés
-            establishmentId: undefined,
-            departmentId: undefined,
-            positionId: undefined,
-            employeeTypeId: undefined,
-            socioCategoryProfessionalId: undefined,
-            indicationId: undefined,
-            baseSalary: undefined,
-            netSalary: undefined,
-            professionalCategoryId: undefined,
-            legalClassId: undefined,
-            newsletterTemplateId: undefined,
-            paymentMethodId: undefined,
-            endingContract: undefined,
-            reason: undefined,
-            assigningInstitution: undefined,
-            startDate: undefined,
-            endDate: undefined,
-            echelonId: undefined,
-        }));
     };
 
     return (
@@ -233,20 +236,26 @@ function CreationCareerPlan({ onSearch }) {
             <PageHeader module={module} action={action} url={url} />
             {error && <div className="alert alert-danger">{error}</div>}
 
-            <div className="row header-title">
+            <div className="title-container">
                 <div className="col-lg-10 skill-header">
                     <i className="mdi mdi-map-marker-path skill-icon"></i>
-                    <h4 className="skill-title">CREATION D'UN PLAN DE CARRIÈRE</h4>
+                    <p className="skill-title">CREATION D'UN PLAN DE CARRIÈRE</p>
                 </div>
+                <div className="col-lg-2">
+                    <button onClick={handleRetour} className="btn-outline-dark btn-fw" style={{float: 'right'}}>
+                        <i className="mdi mdi-arrow-left-circle icon-cancel" style={{}}></i>
+                        Retour
+                    </button>
+                </div>  
             </div>
             <div className="row">
                 <div className="button-save-profil">
                     <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">
                         <i className="mdi mdi-content-save-edit" style={{paddingRight: '5px'}}></i>Enregistrer
                     </button>
-                    <button onClick={handleRetour} type="button" className="btn btn-light btn-fw">
-                        <i className="mdi mdi-arrow-left-circle" style={{paddingRight: '5px'}}></i>
-                        Retour
+                    <button onClick={initializeAllForm} type="button" className="btn btn-light btn-fw">
+                        <i className="mdi mdi-backspace-outline" style={{paddingRight: '5px'}}></i>
+                        Annuler
                     </button>
                 </div>
             </div>

@@ -428,6 +428,6 @@ CREATE TABLE Certificate_history (
     File_name NVARCHAR(255),
     Content_type NVARCHAR(100),
 	State INT,
-	Creation_date DATETIME,
-	Updated_date DATETIME
+	Creation_date DATETIME DEFAULT GETDATE(),
+	Updated_date DATETIME DEFAULT GETDATE()
 );

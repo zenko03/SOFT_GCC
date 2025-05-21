@@ -6,6 +6,7 @@ import { FaFileAlt, FaCalendarAlt, FaThumbtack, FaBoxOpen, FaLink } from 'react-
 import './AttestationHistory.css'; // pour le style modernisé du tableau
 import { urlApi } from '../../helpers/utils';
 import DateDisplayWithTime from '../../helpers/DateDisplayWithTime';
+import FullscreenModal from './FullscreenModal'; // adapte le chemin si nécessaire
 
 
 const AttestationHistory = ({ registrationNumber }) => {
@@ -35,12 +36,10 @@ const AttestationHistory = ({ registrationNumber }) => {
 
   const renderStatus = (status) => {
     switch (status) {
-      case 'signed':
-        return <Badge bg="success">Signé</Badge>;
-      case 'unsigned':
-        return <Badge bg="secondary">Non signé</Badge>;
-      case 'invalid':
-        return <Badge bg="danger">Signature invalide</Badge>;
+      case 1:
+        return <Badge bg="info">Fichier exporté</Badge>;
+      case 2:
+        return <Badge bg="secondary">Fichier envoyé par email</Badge>;
       default:
         return <Badge bg="light" text="dark">Inconnu</Badge>;
     }
@@ -117,9 +116,10 @@ const AttestationHistory = ({ registrationNumber }) => {
       </Toast>
 
 
-      <Card.Header>
-        <h5 className="mb-0">📁 Historique des attestations</h5>
-      </Card.Header>
+      <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+        <i className="mdi mdi-folder-outline  me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+        <h3 className="mb-0" style={{color: '#B8860B'}}>Historique des attestations</h3>
+      </div>
       <Modal
         show={showConfirmModal}
         onHide={handleCancelDelete}
@@ -140,29 +140,12 @@ const AttestationHistory = ({ registrationNumber }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      <Modal
+      <FullscreenModal
         show={showModal}
-        onHide={() => setShowModal(false)}
-        fullscreen
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Visualisation de l’attestation</Modal.Title>
-        </Modal.Header>
-        <Modal.Body style={{ height: '80vh' }}>
-          {selectedPDF ? (
-            <iframe
-              src={selectedPDF}
-              title="Aperçu PDF"
-              style={{ width: '100%', height: '100%' }}
-              frameBorder="0"
-            />
-          ) : (
-            <div className="text-muted">Chargement du fichier...</div>
-          )}
-        </Modal.Body>
-      </Modal>
+        onClose={() => setShowModal(false)}
+        pdfUrl={selectedPDF}
+      />
+
 
       <Card.Body>
         {loading ? (
@@ -172,46 +155,51 @@ const AttestationHistory = ({ registrationNumber }) => {
         ) : history.length === 0 ? (
           <p className="text-muted">Aucune attestation trouvée.</p>
         ) : (
-            <Table responsive className="table-modern align-middle">
-              <thead>
+            <Table responsive hover className="table-modern align-middle shadow-sm rounded">
+              <thead className="table-light">
                 <tr>
-                  <th><FaFileAlt className="me-2" />Nom</th>
-                  <th><FaCalendarAlt className="me-2" />Date de création</th>
-                  <th><FaThumbtack className="me-2" />Statut</th>
-                  <th><FaBoxOpen className="me-2" />Taille</th>
-                  <th><FaLink className="me-2" />Actions</th>
+                  <th><FaFileAlt className="icon-table" />Nom</th>
+                  <th><FaCalendarAlt className="icon-table" />Date de création</th>
+                  <th><FaThumbtack className="icon-table" />Statut</th>
+                  <th><FaBoxOpen className="icon-table" />Taille</th>
+                  <th><FaLink className="icon-table" />Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {history.map((item, index) => (
                   <tr key={index}>
-                    <td>{item.fileName || 'Attestation.pdf'}</td>
+                    <td className="text-truncate" style={{ maxWidth: '200px' }}>
+                      <FaFileAlt className="me-2 text-muted" />
+                      {item.fileName || 'Attestation.pdf'}
+                    </td>
                     <td><DateDisplayWithTime isoDate={item.createdAt} /></td>
-                    <td>{renderStatus('signed')}</td>
+                    <td>{renderStatus(item.state)}</td>
                     <td>{(item.fileSize / 1024).toFixed(1)} ko</td>
-                    <td>
-                      <Button
-                        variant="outline-secondary"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => handleView(item.id)} // Assure-toi que `item.id` existe
-                      >
-                        <Eye className="me-1" />
-                        Visualiser
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleAskDelete(item.id)}
-                      >
-                        <Trash className="me-1" />
-                        Supprimer
-                      </Button>
+                    <td style={{ verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <Button
+                          variant="outline-secondary"
+                          size="sm"
+                          onClick={() => handleView(item.id)}
+                        >
+                          <Eye className="me-1" />
+                          Visualiser
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleAskDelete(item.id)}
+                        >
+                          <Trash className="me-1" />
+                          Supprimer
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
+
         )}
       </Card.Body>
     </Card>
