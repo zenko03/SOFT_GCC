@@ -1,6 +1,6 @@
 /*
-	Auteur : Inssa Chalman et Toky Rabehaja
-	Date : 25 septembre 2024
+	Auteur : Inssa Chalman
+	Date : 21 mai 2025
 	Description : Script complet pour la création des tables nécessaires dans l'application Soft_GCC
 	Version : 1.0
 
