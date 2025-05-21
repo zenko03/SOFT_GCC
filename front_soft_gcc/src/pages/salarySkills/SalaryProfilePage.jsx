@@ -74,26 +74,26 @@ function SalaryProfilePage({ task }) {
     <Template>
       <PageHeader module={module} action={action} url={url} />
       <div className="title-container">
-        <h4 className="title"> 
+        <p className="title"> 
           <i className="mdi mdi-note-text"></i> 
           <span>Description</span>
-        </h4>
+        </p>
       </div>
       <SalaryDescription dataEmployeeDescription={employee} />
 
       <div className="card-header title-container">
-        <h4 className="title"> 
+        <p className="title"> 
           <i className="mdi mdi-school"></i> 
           <span>Compétences</span>
-        </h4>
+        </p>
       </div>
       <CardSkills dataEmployeeDescription={employee} idEmployee={idEmployee} />
 
       <div className="card-header title-container">
-        <h4 className="title"> 
+        <p className="title"> 
           <i className="mdi mdi-chart-bar"></i> 
           <span>Graphes des compétences</span>
-        </h4>
+        </p>
       </div>
       <SkillSalaryChart employeeId={idEmployee} />
     </Template>

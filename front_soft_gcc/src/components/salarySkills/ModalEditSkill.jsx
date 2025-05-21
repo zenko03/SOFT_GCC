@@ -17,13 +17,14 @@ function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, id
         employeeSkillId: '',
         domainSkillId: '',
         skillId: '',
-        level: '',
+        level: 0,
         state: '',
         employeeId: idEmployee,
     });
 
     const [formErrors, setFormErrors] = useState({}); // Pour stocker les erreurs de validation
     const [submitError, setSubmitError] = useState(''); 
+    const [formLevel, setFormLevel] = useState(false); 
 
     // Utilisez useEffect pour pré-remplir les données lorsque la modale s'ouvre
     useEffect(() => {
@@ -32,15 +33,32 @@ function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, id
                 employeeSkillId: selectedSkill.employeeSkillId,
                 domainSkillId: selectedSkill.domainSkillId || '',
                 skillId: selectedSkill.skillId || '',
-                level: selectedSkill.level || '',
+                level: selectedSkill.level || 0,
                 state: selectedSkill.state || '',
                 employeeId: selectedSkill.employeeId || idEmployee,
             });
+            if(selectedSkill.state == 1) setFormLevel(false);
+            else setFormLevel(true);
         }
     }, [selectedSkill, idEmployee]);
 
     // Gérer les changements dans les champs du formulaire
     const handleChange = (e) => {
+        if(e.target.value === '1') {
+            setFormLevel( false );
+            setFormData({
+                employeeSkillId: selectedSkill.employeeSkillId,
+                domainSkillId: selectedSkill.domainSkillId || '',
+                skillId: selectedSkill.skillId || '',
+                level: 0,
+                state: selectedSkill.state || '',
+                employeeId: selectedSkill.employeeId || idEmployee,
+            });
+        }
+        else {
+            setFormLevel( true );
+        }
+
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
@@ -54,7 +72,7 @@ function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, id
         
         if (!formData.domainSkillId) errors.domainSkillId = "Le domaine est requis.";
         if (!formData.skillId) errors.skillId = "La compétence est requise.";
-        if (!formData.level || formData.level < 0 || formData.level > 100) errors.level = "Le niveau doit être compris entre 1 et 100.";
+        if (formLevel && (!formData.level || formData.level < 0 || formData.level > 100)) errors.level = "Le niveau doit être compris entre 1 et 100.";
         if (!formData.state) errors.state = "L'état est requis.";
 
         setFormErrors(errors);
@@ -75,6 +93,13 @@ function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, id
             const response = await axios.put(urlApi(`/EmployeeSkills/${selectedSkill.employeeSkillId}`), dataToSend);
             handleCloseEditSkill();
             fetchData();
+            setFormData({
+                domainSkillId: '',
+                skillId: '',
+                level: 0,
+                state: '',
+                employeeId: idEmployee,
+            });
         } catch (error) {
             setSubmitError({ submit: `Erreur lors de l'insertion de la compétence : ${error.message}` });
         }
@@ -120,20 +145,25 @@ function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, id
                             {formErrors.skillId && <div className="text-danger">{formErrors.skillId}</div>}
                         </div>
                         <div className="form-group">
-                            <label>Niveau (en %)</label>
-                            <input type="number" name="level" value={formData.level} onChange={handleChange} className="form-control" />
-                            {formErrors.level && <div className="text-danger">{formErrors.level}</div>}
-                        </div>
-                        <div className="form-group">
                             <label>État</label>
                             <select name="state" value={formData.state} onChange={handleChange} className="form-control">
                                 <option value="">Sélectionner un état</option>
                                 <option value="1">Non validé</option>
                                 <option value="5">Validé par évaluation</option>
-                                <option value="10">Confirmé</option>
                             </select>
                             {formErrors.state && <div className="text-danger">{formErrors.state}</div>}
                         </div>
+
+                        {formLevel ? (
+                            <div className="form-group">
+                                <label>Niveau (en %)</label>
+                                <input type="number" name="level" value={formData.level} onChange={handleChange} className="form-control" />
+                                {formErrors.level && <div className="text-danger">{formErrors.level}</div>}
+                            </div>
+                        ) : (
+                            <div className="form-group"></div>
+                        )}      
+                        
                         {submitError && <small className="error-text">{submitError}</small>}
                     </form>
                 )}

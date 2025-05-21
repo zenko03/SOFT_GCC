@@ -3,10 +3,11 @@ import { Button, Modal, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
+import FormattedDate from '../../helpers/FormattedDate';
 
 // Pour lister les types d'affectation
 function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement, dataAssignmentAvailability, fetchData }) {
-
+    // Initialisation des variables 
     const navigate = useNavigate();
     const [selectedAssignment, setSelectedAssignment] = useState(1);
     const [showConfirmDelete, setShowConfirmDelete] = useState(false); // State pour la modale de confirmation
@@ -15,10 +16,12 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
     const [successMessage, setSuccessMessage] = useState(null); // État pour le message de succès
     const [error, setError] = useState(null); 
 
+    // Click sur le bouton edit 
     const handleClickEdit = (item) => {
         navigate(`/carriere/fiche/edit/${item.careerPlanId}`); 
     };
 
+    // Click sur le bouton détails
     const handleClickDetail = (item) => {
         navigate(`/carriere/fiche/detail/${item.careerPlanId}`); 
     };
@@ -30,7 +33,8 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
         setShowConfirmDelete(true); 
     };
 
-    const handleCloseDelete = () => setShowConfirmDelete(false); // Fermer le popup
+    // Fermer la modale de suppression
+    const handleCloseDelete = () => setShowConfirmDelete(false);
 
     // Valider une suppression d'item de competence
     const handleDeleteConfirmed = async () => {
@@ -39,7 +43,6 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
             setShowConfirmDelete(false);
             setSuccessMessage("L'élément a été supprimé avec succès."); 
             await fetchData();
-            // Récupérer à nouveau les données après la suppression
         } catch (error) {
             console.error('Erreur lors de la suppression:', error);
             setError('Erreur lors de la suppression:' + error.message);
@@ -52,9 +55,9 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
             const timer = setTimeout(() => {
                 setSuccessMessage(null);
                 setError(null);
-            }, 5000); // Cache le message après 5 secondes
+            }, 5000); 
 
-            return () => clearTimeout(timer); // Nettoyage
+            return () => clearTimeout(timer); 
         }
     }, [successMessage, error]);
 
@@ -103,14 +106,15 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                             {selectedAssignment === 1 ? (
                                 <>
                                     {/* Nomination */}
-                                    <h4 className="card-title" 
+                                    <h4 className="title" 
                                         style={{
                                         color: '#B8860B',  
                                         borderBottom: '2px solid #B8860B', 
-                                        paddingBottom: '5px'
+                                        paddingBottom: '5px',
+                                        marginBottom: '50px'
                                         }}
                                     >Nomination</h4>
-                                    <table className="table table-striped table-competences">
+                                    <table className="table table-competences">
                                         <thead>
                                             <tr>
                                                 <th>Date d'affectation</th>
@@ -122,6 +126,8 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                                 <th>Fin</th>
                                                 <th>Salaire</th>
                                                 <th>Etat</th>
+                                                <th>action</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -132,13 +138,15 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                                     <td>{item.departmentName}</td>
                                                     <td>{item.positionName}</td>
                                                     <td>{item.employeeTypeName}</td>
-                                                    <td>{new Date(item.assignmentDate).toLocaleDateString()}</td>
-                                                    <td>{new Date(item.endingContract).toLocaleDateString()}</td>
+                                                    <td><FormattedDate date={item.assignmentDate} /></td>
+                                                    <td><FormattedDate date={item.endingContract} /></td>
                                                     <td>{item.netSalary}</td>
-                                                    <td>{item.careerState}</td>
                                                     
                                                     {item.careerState !== 'termine' ? (
                                                         <>
+                                                            <td>
+                                                                <label className='badge badge-success'>{item.careerState}</label>
+                                                            </td>
                                                             <td>
                                                                 <Button
                                                                     onClick={() => {
@@ -175,24 +183,29 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                                             </td>
                                                         </>
                                                     ) : (
-                                                        <td>
-                                                            <Button
-                                                                onClick={() => {
-                                                                    handleClickDetail(item);
-                                                                }}
-                                                                style={{
-                                                                    width: '25px',
-                                                                    height: '25px',
-                                                                    display: 'flex',
-                                                                    justifyContent: 'center',
-                                                                    alignItems: 'center',
-                                                                    backgroundColor: 'white',
-                                                                    border: 'white',
-                                                                }}
-                                                            >
-                                                                <i className="mdi mdi-pencil icon-edit" style={{ fontSize: '20px' }}></i>
-                                                            </Button>
-                                                        </td>
+                                                        <>
+                                                            <td>
+                                                                <label className='badge badge-warning'>{item.careerState}</label>
+                                                            </td>
+                                                            <td>
+                                                                <Button
+                                                                    onClick={() => {
+                                                                        handleClickDetail(item);
+                                                                    }}
+                                                                    style={{
+                                                                        width: '25px',
+                                                                        height: '25px',
+                                                                        display: 'flex',
+                                                                        justifyContent: 'center',
+                                                                        alignItems: 'center',
+                                                                        backgroundColor: 'white',
+                                                                        border: 'white',
+                                                                    }}
+                                                                >
+                                                                    <i className="mdi mdi-pencil icon-edit" style={{ fontSize: '20px' }}></i>
+                                                                </Button>
+                                                            </td>
+                                                        </>
                                                     )}
                                                     
                                                 </tr>
@@ -203,14 +216,15 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                             ) : selectedAssignment === 2 ? (
                                 <>
                                     {/* Avancements */}
-                                    <h4 className="card-title" 
+                                    <h4 className="title" 
                                         style={{
-                                        color: '#B8860B',  
-                                        borderBottom: '2px solid #B8860B', 
-                                        paddingBottom: '5px'
+                                            color: '#B8860B',  
+                                            borderBottom: '2px solid #B8860B', 
+                                            paddingBottom: '5px',
+                                            marginBottom: '50px'
                                         }}
                                     >Avancements</h4>
-                                    <table className="table table-striped table-competences">
+                                    <table className="table table-competences">
                                         <thead>
                                             <tr>
                                                 <th>Date d'affectation</th>
@@ -270,14 +284,15 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                             ) : (
                                 <>
                                     {/* Mise en disponibilite */}
-                                    <h4 className="card-title" 
-                                        style={{
-                                        color: '#B8860B',  
-                                        borderBottom: '2px solid #B8860B', 
-                                        paddingBottom: '5px'
+                                    <h4 className="title" 
+                                            style={{
+                                            color: '#B8860B',  
+                                            borderBottom: '2px solid #B8860B', 
+                                            paddingBottom: '5px',
+                                            marginBottom: '50px'
                                         }}
                                     >Mise en disponibilité</h4>
-                                    <table className="table table-striped table-competences">
+                                    <table className="table table-competences">
                                         <thead>
                                             <tr>
                                                 <th>Date d'affectation</th>
@@ -286,6 +301,8 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                                 <th>fin</th>
                                                 <th>Motif</th>
                                                 <th>Etat</th>
+                                                <th>Action</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -296,10 +313,12 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                                     <td>{new Date(item.startDate).toLocaleDateString()}</td>
                                                     <td>{new Date(item.endDate).toLocaleDateString()}</td>
                                                     <td>{item.reason}</td>
-                                                    <td>{item.careerState}</td>
                                                     
                                                     {item.careerState !== 'termine' ? (
                                                         <>
+                                                            <td>
+                                                                <label className='badge badge-success'>{item.careerState}</label>
+                                                            </td>
                                                             <td>
                                                                 <Button
                                                                     onClick={() => {
@@ -336,24 +355,29 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                                             </td>
                                                         </>
                                                     ) : (
-                                                        <td>
-                                                            <Button
-                                                                onClick={() => {
-                                                                    handleClickDetail(item);
-                                                                }}
-                                                                style={{
-                                                                    width: '25px',
-                                                                    height: '25px',
-                                                                    display: 'flex',
-                                                                    justifyContent: 'center',
-                                                                    alignItems: 'center',
-                                                                    backgroundColor: 'white',
-                                                                    border: 'white',
-                                                                }}
-                                                            >
-                                                                <i className="mdi mdi-pencil icon-edit" style={{ fontSize: '20px' }}></i>
-                                                            </Button>
-                                                        </td>
+                                                        <>
+                                                            <td>
+                                                                <label className='badge badge-warning'>{item.careerState}</label>
+                                                            </td>
+                                                            <td>
+                                                                <Button
+                                                                    onClick={() => {
+                                                                        handleClickDetail(item);
+                                                                    }}
+                                                                    style={{
+                                                                        width: '25px',
+                                                                        height: '25px',
+                                                                        display: 'flex',
+                                                                        justifyContent: 'center',
+                                                                        alignItems: 'center',
+                                                                        backgroundColor: 'white',
+                                                                        border: 'white',
+                                                                    }}
+                                                                >
+                                                                    <i className="mdi mdi-pencil icon-edit" style={{ fontSize: '20px' }}></i>
+                                                                </Button>
+                                                            </td>
+                                                        </>
                                                     )}
                                                 </tr>
                                             ))}

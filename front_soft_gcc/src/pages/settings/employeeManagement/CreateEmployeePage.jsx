@@ -29,7 +29,7 @@ function CreateEmployeePage({ onSearch }) {
         department_id: '',
         hiring_date: '',
         civiliteId: '',
-        managerId: '',
+        managerId: null,
         photo: null
     });
 
@@ -63,7 +63,6 @@ function CreateEmployeePage({ onSearch }) {
             errors.hiring_date = "La date d'embauche ne peut pas être dans le futur";
         }
         if (!formData.civiliteId) errors.civiliteId = "La civilité est requise";
-        if (!formData.managerId) errors.managerId = "Le manager est requis";
         if (!formData.photo) errors.photo = "Le photo est requis";
 
         setFormErrors(errors);
@@ -82,12 +81,16 @@ function CreateEmployeePage({ onSearch }) {
             form.append("department_id", formData.department_id);
             form.append("hiring_date", formData.hiring_date);
             form.append("civiliteId", formData.civiliteId);
-            form.append("managerId", formData.managerId);
+
+            if (formData.managerId !== null) {
+                form.append("managerId", formData.managerId);
+            }
 
             if (formData.photo) {
                 form.append("photo", formData.photo);
             }
-
+            console.log(form.get("name"));
+            console.log(form.get("managerId"));
             await axios.post(urlApi('/Employee'), form);
             setFormData({
                 registrationNumber: '',
@@ -97,7 +100,7 @@ function CreateEmployeePage({ onSearch }) {
                 department_id: '',
                 hiring_date: '',
                 civiliteId: '',
-                managerId: '',
+                managerId: null,
                 photo: null
             });
             setError(null);
@@ -113,7 +116,7 @@ function CreateEmployeePage({ onSearch }) {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value,
+            [name]: value === "" ? null : value,
         }));
     };
 
@@ -190,7 +193,6 @@ function CreateEmployeePage({ onSearch }) {
                                             </option>
                                         ))}
                                     </select>  
-                                    {formErrors.managerId && <div className="error-text">{formErrors.managerId}</div>}  
                                 </div>
                                 <div className="form-group">
                                     <label>Photo</label>

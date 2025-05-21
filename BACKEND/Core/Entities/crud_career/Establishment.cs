@@ -13,5 +13,29 @@ namespace soft_carriere_competence.Core.Entities.crud_career
 
 		[Column("Establishment_name")]
 		public string? EstablishmentName { get; set; }
-	}
+
+        [Column("Adress")]
+        public string? Address { get; set; }
+
+        [Column("Contact")]
+        public string? PhoneNumber { get; set; }
+
+        [Column("Mail")]
+        public string? Email { get; set; }
+
+        [Column("Website")]
+        public string? Website { get; set; }
+
+        [Column("Social_network")]
+        public string? SocialMedia { get; set; }
+
+        [Column("Logo")]
+        public byte[]? Logo { get; set; }
+
+        [Column("Creation_date")]
+        public DateTime? CreationDate { get; set; }
+
+        [Column("Updated_date")]
+        public DateTime? UpdatedDate { get; set; }
+    }
 }

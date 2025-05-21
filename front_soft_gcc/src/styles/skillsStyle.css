@@ -225,10 +225,32 @@
   color: #333; /* Bleu professionnel */
 }
 
+.settings-icon {
+  font-size: 25px;
+  color: #333; /* Bleu professionnel */
+}
+
+.settings-title {
+  padding-left: 10px;
+  font-size: 20px;
+}
+
+.icon-sub {
+  font-size: 20px;
+  color: c; /* Bleu professionnel */
+}
+
 .skill-title {
   font-size: 22px;
   font-weight: bold;
   color: #333;
+  margin: 0;
+}
+
+.sub {
+  font-size: 18px;
+  font-weight: bold;
+  color: #B8860B;
   margin: 0;
 }
 
@@ -242,6 +264,16 @@
 }
 
 .search-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.settings-card {
+  background-color: #fde826;
+  text-align: center;
+}
+
+.settings-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
@@ -264,8 +296,7 @@
 }
 
 .title-container i {
-  font-size: 20px;
-  color: #B8860B;
+  font-size: 25px;
 }
 
 .search-input {
@@ -308,4 +339,63 @@
 
 .header-title {
   margin-bottom: 1px !important;
+}
+
+.stats-card {
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.stats-icon {
+  font-size: 40px;
+  color: #4CAF50; /* Couleur verte */
+  margin-bottom: 10px;
+}
+
+.stats-number {
+  font-size: 50px;
+  font-weight: bold;
+  color: #333;
+}
+
+.icon-cancel {
+  margin-right: 10px; 
+  color: #B8860B;
+}
+
+.value-profil {
+  color: #333;
+}
+
+.title-container {
+  background-color: #f5f8fa;
+}
+
+.label-title {
+  display: inline-block;
+  min-width: 140px; /* Ajuste selon la longueur des labels */
+  margin-right: 100px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #333;
+}
+
+.value-profil {
+  color: #555;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.card-header {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.card-body p {
+  margin-bottom: 0.75rem;
 }

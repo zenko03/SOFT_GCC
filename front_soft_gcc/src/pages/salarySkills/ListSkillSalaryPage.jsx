@@ -152,39 +152,38 @@ function ListSkillSalaryPage() {
 
   return (
     <Template>
-      {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
+      {loading && <Loader />}
 
 
       <PageHeader module={module} action={action} url={url} />
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="row">
-        <div className="col-lg-12 skill-header">
+      <div className="title-container">
+        <div className="col-lg-10 skill-header">
           <i className="mdi mdi-school skill-icon"></i>
-          <h4 className="skill-title">COMPÉTENCES DES SALARIÉS</h4>
+          <p className="skill-title">COMPÉTENCES DES SALARIÉS</p>
         </div>
-                    
+      </div>
+      <div className="row">                    
         <div className="col-lg-12 grid-margin">
             <div className="search-card">
-              <div className="card-header title-container">
-                <h5 className="title">
-                  <i className="mdi mdi-filter-outline"></i> Filtre de recherche
-                </h5>
-                {error && <p className="text-danger search-error">{error}</p>}
+              <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                <i className="mdi mdi-magnify me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                <h3 className="mb-0" style={{color: '#B8860B'}}>Filtre de recherche</h3>
               </div>
+             
               <div className="card-body">
                 <form className="search-form">
                   <div className="form-group">
                     <input
                       type="text"
                       className="form-control search-input"
-                      placeholder="🔍 Nom, prénom ou matricule"
+                      placeholder="Nom, prénom ou matricule"
                       value={searchTerm}
                       onChange={(e) => handleSearch(e.target.value)}
                     />
                   </div>
                 </form>
-                {error && <p className="text-danger search-error">{error}</p>}
               </div>
             </div>
           </div>
@@ -194,11 +193,9 @@ function ListSkillSalaryPage() {
       <div className="row">
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
-            <div className="card-header title-container">
-              <h5 className="title">
-                <i className="mdi mdi-format-list-bulleted"></i> Liste des employés avec leur nombre de compétences
-              </h5>
-              {error && <p className="text-danger search-error">{error}</p>}
+            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+              <i className="mdi mdi-format-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+              <h3 className="mb-0" style={{color: '#B8860B'}}> Nombre de compétences par Employé </h3>
             </div>
             <div className="card-body">
               {!loading && !error && (

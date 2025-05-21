@@ -44,7 +44,10 @@ function EmployeeOrgChart() {
 
             <PageHeader module={module} action={action} url={url} />
 
-            <h2 className="card-title">Organigramme de l'entreprise</h2>
+            <div className="col-lg-10 skill-header">
+                <i className="mdi mdi-sitemap skill-icon"></i>
+                <h4 className="skill-title">Organigramme de l'entreprise</h4>
+            </div>
             <div className="container-responsive">
                 <div className="row">
                     <div className="col-lg-12 grid-margin stretch-card">

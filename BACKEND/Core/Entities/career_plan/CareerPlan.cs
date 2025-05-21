@@ -11,7 +11,7 @@ namespace soft_carriere_competence.Core.Entities.career_plan
 		public int CareerPlanId { get; set; }
 
 		[Column("Assignment_type_id")]
-		public int? AssignmentTypeId { get; set; }
+		public int AssignmentTypeId { get; set; }
 
 		[Column("Registration_number")]
 		public string? RegistrationNumber { get; set; }

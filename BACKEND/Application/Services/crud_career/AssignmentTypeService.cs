@@ -37,5 +37,5 @@ namespace soft_carriere_competence.Application.Services.crud_career
 		{
 			await _repository.Delete(id);
 		}
-	}
+    }
 }

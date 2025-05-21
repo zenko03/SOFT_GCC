@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using soft_carriere_competence.Application.Dtos.History;
 using soft_carriere_competence.Application.Services.career_plan;
 using soft_carriere_competence.Application.Services.crud_career;
 using soft_carriere_competence.Application.Services.history;
@@ -21,15 +23,17 @@ namespace soft_carriere_competence.Controllers.career
 		private readonly CareerPlanService _careerPlanService;
 		private readonly HistoryService _historyService;
 		private readonly AssignmentTypeService _assignmentTypeService;
+		private readonly CertificateHistoryService _certificateHistoryService;
 
-		public CareerPlanController(CareerPlanService service, HistoryService historyService, AssignmentTypeService assignmentTypeService)
+		public CareerPlanController(CareerPlanService service, HistoryService historyService, AssignmentTypeService assignmentTypeService, CertificateHistoryService certificateHistoryService)
 		{
 			_careerPlanService = service;
 			_historyService = historyService;
 			_assignmentTypeService = assignmentTypeService;
+			_certificateHistoryService = certificateHistoryService;
 		}
 
-
+		/// Recupérer un plan de carrière par son çid
 		[HttpGet("{id}")]
 		public async Task<IActionResult> Get(int id)
 		{
@@ -38,26 +42,64 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(assignment);
 		}
 
+		// Creationd'un plan de carrière
 		[HttpPost]
 		public async Task<IActionResult> Create(CareerPlan careerPlan)
 		{
-			await _careerPlanService.Add(careerPlan);
-			AssignmentType assignmentType = await _assignmentTypeService.GetById((int)careerPlan.AssignmentTypeId);
-			var activityLog = new ActivityLog
+			if (careerPlan == null)
 			{
-				UserId = 1,
-				Module = 2,
-				Action = "Creation",
-				Description = "L'user 1 a crée un nouveau plan de carrière de type " + assignmentType.AssignmentTypeName + " pour l'employé " + careerPlan.RegistrationNumber,
-				Timestamp = DateTime.UtcNow,
-				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
-			};
+				return BadRequest("Le plan de carrière est requis.");
+			}
 
-			await _historyService.Add(activityLog);
+			try
+			{
+				// Récupérer l'AssignmentType en vérifiant s'il est null
+				AssignmentType? assignmentType = await _assignmentTypeService.GetById((int)careerPlan.AssignmentTypeId);
+				if (assignmentType == null)
+				{
+					return NotFound("Type d'affectation introuvable.");
+				}
 
-			return CreatedAtAction(nameof(Get), new { id = careerPlan.CareerPlanId }, careerPlan);
+				// Vérifier s'il existe déjà un plan de carrière pour cet employé et ce type de contrat
+				CareerPlan? lastCareerPlan = await _careerPlanService.GetByEmployeeAndContractType(
+					careerPlan.RegistrationNumber
+				);
+
+
+				if (lastCareerPlan == null)
+				{
+					// Ajouter le plan de carrière
+					await _careerPlanService.Add(careerPlan);
+				}
+				else
+				{
+					lastCareerPlan.EndingContract = careerPlan.AssignmentDate;
+					await _careerPlanService.Update(lastCareerPlan);
+					await _careerPlanService.Add(careerPlan);
+				}
+
+				// Création du journal d'activité
+				var activityLog = new ActivityLog
+				{
+					UserId = 1, // Id utilisateur à remplacer par l'ID du contexte actuel si possible
+					Module = 2,
+					Action = "Création",
+					Description = $"L'utilisateur 1 a créé un nouveau plan de carrière de type {assignmentType.AssignmentTypeName} pour l'employé {careerPlan.RegistrationNumber}",
+					Timestamp = DateTime.UtcNow,
+					Metadata = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "IP inconnue"
+				};
+
+				await _historyService.Add(activityLog);
+
+				return CreatedAtAction(nameof(Get), new { id = careerPlan.CareerPlanId }, careerPlan);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Une erreur est survenue : {ex.Message}");
+			}
 		}
 
+		// Récuperer les données de type nomination
 		[HttpGet]
 		[Route("employee/{registrationNumber}/appointment")]
 		public async Task<IActionResult> GetAssignmentAppointment(string registrationNumber)
@@ -68,6 +110,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(list);
 		}
 
+		// Récuperer les données de type avancement
 		[HttpGet]
 		[Route("employee/{registrationNumber}/advancement")]
 		public async Task<IActionResult> GetAssignmentAdvancement(string registrationNumber)
@@ -77,6 +120,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(list);
 		}
 
+		// Récuperer les données de type mise en disponobilté
 		[HttpGet]
 		[Route("employee/{registrationNumber}/availability")]
 		public async Task<IActionResult> GetAssignmentAvailability(string registrationNumber)
@@ -86,6 +130,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(list);
 		}
 
+		// Historique du plan de carrière
 		[HttpGet]
 		[Route("employee/{registrationNumber}/history")]
 		public async Task<IActionResult> GetHistory(string registrationNumber)
@@ -95,6 +140,7 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(list);
 		}
 
+		// Mis à jour du plan carrière
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Update(int id, CareerPlan careerPlan)
 		{
@@ -116,6 +162,7 @@ namespace soft_carriere_competence.Controllers.career
 			return NoContent();
 		}
 
+		// Avoir la liste des carrières
 		[HttpGet]
 		[Route("careers")]
 		public async Task<IActionResult> GetListCareers(int pageNumber = 1, int pageSize = 2)
@@ -125,12 +172,15 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(careers);
 		}
 
+		// Récupération des données du filtre multi-crotère
 		[HttpGet]
 		[Route("filter")]
 		public async Task<IActionResult> GetListCareersFilter(
 			string keyWord=null, 
 			string departmentId=null, 
-			string positionId=null, 
+			string positionId=null,
+			string dateAssignmentMin = null,
+			string dateAssignmentMax = null,
 			int pageNumber = 1, 
 			int pageSize = 2)
 		{
@@ -138,7 +188,7 @@ namespace soft_carriere_competence.Controllers.career
 			{
 				// Appel au service pour récupérer les données et le total
 				var (data, totalCount) = await _careerPlanService.GetAllCareersFilter(
-					keyWord, departmentId, positionId, pageNumber, pageSize);
+					keyWord, departmentId, positionId, dateAssignmentMin, dateAssignmentMax, pageNumber, pageSize);
 
 				// Structure de réponse standard
 				var response = new
@@ -189,6 +239,7 @@ namespace soft_carriere_competence.Controllers.career
 			}
 		}
 
+		// Avoir un plan de carrière via son matricule
 		[HttpGet]
 		[Route("careers/{registrationNumber}")]
 		public async Task<IActionResult> GetCareersByEmployee(string registrationNumber)
@@ -198,16 +249,17 @@ namespace soft_carriere_competence.Controllers.career
 			return Ok(employeeCareer);
 		}
 
+		//	Suppimer un pla de carrière
 		[HttpPut]
 		[Route("delete/{careerPlanId}")]
 		public async Task<IActionResult> DeleteCareerPlan(int careerPlanId)
 		{
 			bool isUpdated = await _careerPlanService.DeleteCareerPlan(careerPlanId);
-
+			Console.WriteLine("Career plan id : " + careerPlanId);
 			if (isUpdated)
 			{
-				AssignmentType assignmentType = await _assignmentTypeService.GetById((int)careerPlanId);
 				CareerPlan careerPlan = await _careerPlanService.GetById(careerPlanId);
+				AssignmentType assignmentType = await _assignmentTypeService.GetById(careerPlan.AssignmentTypeId);
 				var activityLog = new ActivityLog
 				{
 					UserId = 1,
@@ -227,6 +279,7 @@ namespace soft_carriere_competence.Controllers.career
 			}
 		}
 
+		// Suppression d'un plan de carrière
 		[HttpPut]
 		[Route("restore/{careerPlanId}")]
 		public async Task<IActionResult> RestoreCareerPlan(int careerPlanId)
@@ -256,6 +309,7 @@ namespace soft_carriere_competence.Controllers.career
 			}
 		}
 
+		//	Suppriler définitivement un plan de carrière
 		[HttpDelete]
 		[Route("definitivelyDelete/{careerPlanId}")]
 		public async Task<IActionResult> DefinitivelyDeleteCareerPlan(int careerPlanId)
@@ -285,6 +339,7 @@ namespace soft_carriere_competence.Controllers.career
 			}
 		}
 
+		// Supprimer une historique
 		[HttpDelete]
 		[Route("History/Delete/{historyId}")]
 		public async Task<IActionResult> DeleteHistory(int historyId)
@@ -299,6 +354,112 @@ namespace soft_carriere_competence.Controllers.career
 			{
 				return BadRequest("Échec de la suppression de l'historique.");
 			}
+		}
+
+		// Upload pdf certification
+		[HttpPost]
+		[Route("Certificate/Save")]
+		public async Task<IActionResult> UploadCertificate(
+		[FromForm] IFormFile file,
+		[FromForm] string registrationNumber,
+		[FromForm] int certificateTypeId,
+		[FromForm] string reference,
+		[FromForm] int state)
+		{
+			if (file == null || file.Length == 0 || !file.ContentType.Contains("pdf"))
+				return BadRequest("Fichier invalide.");
+
+			try
+			{
+				// Vérification de la référence existante
+				bool referenceExists = await _certificateHistoryService.ExistsByReferenceAsync(reference);
+				if (referenceExists)
+				{
+					return Conflict("Une attestation avec cette référence existe déjà.");
+				}
+
+				using var ms = new MemoryStream();
+				await file.CopyToAsync(ms);
+				var fileBytes = ms.ToArray();
+
+				var certificateHistory = new CertificateHistory
+				{
+					RegistrationNumber = registrationNumber,
+					CertificateTypeId = certificateTypeId,
+					Reference = reference,
+					PdfFile = fileBytes,
+					FileName = file.FileName,
+					ContentType = file.ContentType,
+					State = state,
+					CreationDate = DateTime.UtcNow,
+					UpdatedDate = DateTime.UtcNow
+				};
+
+				await _certificateHistoryService.Add(certificateHistory);
+
+				return Ok("Fichier pdf enregistré avec succès.");
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, "Une erreur interne est survenue lors de l'enregistrement du fichier.");
+			}
+		}
+
+
+		[HttpGet]
+		[Route("Certificate/Get/{registrationNumber}")]
+		public async Task<ActionResult<List<CertificateHistoryDto>>> GetAllCertificatesByEmpployee(string registrationNumber)
+		{
+			var certificates = await _certificateHistoryService.GetDtosByEmployee(registrationNumber);
+
+			if (certificates == null || !certificates.Any())
+				return NotFound("Aucun certificat trouvé pour ce matricule.");
+
+			return Ok(certificates);
+		}
+
+		[HttpDelete]
+		[Route("Certificate/Delete/{id}")]
+		public async Task<IActionResult> DeleteCertificate(int id)
+		{
+			await _certificateHistoryService.Delete(id);
+			return NoContent();
+		}
+
+		[HttpGet]
+		[Route("Certificate/GetAll")]
+		public async Task<IActionResult> GetAllCertificates()
+		{
+			var allCertificates = await _certificateHistoryService.GetDtosAll();
+			return Ok(allCertificates);
+		}
+
+		[HttpGet]
+		[Route("Certificate/GetbyId/{id}")]
+		public async Task<ActionResult<List<CertificateHistory>>> GetById(int id)
+		{
+			var certificate = await _certificateHistoryService.GetById(id);
+
+			if (certificate == null)
+				return NotFound("Aucun certificat trouvé pour ce id.");
+
+			return Ok(certificate);
+		}
+
+		[HttpGet]
+		[Route("Certificate/GetPdfFilebyId/{id}")]
+		public async Task<IActionResult> GetByPdfFileById(int id)
+		{
+			var certificate = await _certificateHistoryService.GetById(id);
+
+			if (certificate == null || certificate.PdfFile == null)
+				return NotFound("Aucun certificat trouvé ou fichier vide.");
+
+			return File(
+				certificate.PdfFile,
+				certificate.ContentType ?? "application/pdf",
+				certificate.FileName ?? "attestation.pdf"
+			);
 		}
 	}
 }

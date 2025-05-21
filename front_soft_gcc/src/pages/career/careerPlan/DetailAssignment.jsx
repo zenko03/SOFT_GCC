@@ -10,12 +10,15 @@ import { urlApi } from '../../../helpers/utils';
 import { useParams } from 'react-router-dom';
 import LoaderComponent from '../../../helpers/LoaderComponent';
 
+// Page pour consulter les détails d'un plan de carrière
 function DetailAssignment() {
+    // Url d'en-tete de page
     const module = "Plan de carrière";
     const action = "Detail";
     const url = "/carriere";
-    const { CareerPlanId } = useParams();
 
+    // Initialisation des variables états
+    const { CareerPlanId } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [assignmentToEdit, setAssignmentToEdit] = useState({});
@@ -83,6 +86,7 @@ function DetailAssignment() {
         }
     }, [CareerPlanId]);
 
+    // UseEffect pour ajouter des valeurs par défaut dans le formulaire de modification
     useEffect(() => {
         if (assignmentToEdit) {
             setFormData({
@@ -145,10 +149,12 @@ function DetailAssignment() {
         }
     };
 
+    // Affichage du Loading page
     if (isLoading) {
         return <LoaderComponent />;
     }
 
+    // Gestion des erreurs
     if (error) {
         return <div className="error">Erreur : {error}</div>;
     }
@@ -211,11 +217,11 @@ function DetailAssignment() {
                     </div>
                 </div>
 
-                {selectedItem === 1 ? (
+                {selectedItem === 1 ? ( // Type nomination
                     <AppointmentForm formData={formData} setFormData={setFormData} />
-                ) : selectedItem === 2 ? (
+                ) : selectedItem === 2 ? (  // Type mise en disponibilité
                     <LayOffForm handleChange={handleChange} formData={formData} />
-                ) : selectedItem === 3 ? (
+                ) : selectedItem === 3 ? (  // Type avancement
                     <AdvancementForm handleChange={handleChange} formData={formData} />
                 ) : (
                     <p>Aucune affectation détectée</p>

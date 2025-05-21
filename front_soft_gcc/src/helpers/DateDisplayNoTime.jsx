@@ -10,7 +10,7 @@ function DateDisplayNoTime({ isoDate }) {
         return <span>Date invalide</span>; // Ou un autre message
     }
     // Convertir la date ISO au format désiré
-    const formattedDate = format(parsedDate, "'Le' dd MMMM yyyy", { locale: fr });
+    const formattedDate = format(parsedDate, "dd MMMM yyyy", { locale: fr });
 
     return <span>{formattedDate}</span>;
 }

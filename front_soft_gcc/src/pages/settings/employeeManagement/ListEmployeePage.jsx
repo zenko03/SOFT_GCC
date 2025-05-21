@@ -148,25 +148,19 @@ function ListEmployeePage() {
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className='row'>
-        <div className='col-lg-8'>
+      <div className="row">
+        <div className="col-lg-8">
           <h4 className="card-title">LISTE DES EMPLOYES</h4>
         </div>
-        <div className="col-lg-2">
-          <div className="action-buttons text-right my-1">
-            <button type="button" onClick={handleShowModalImport} className="btn btn-success">
-              <i className="mdi mdi-import button-logo"></i>
-              Import employés
-            </button>
-          </div>
-        </div>
-        <div className='col-lg-2'>
-          <div className="action-buttons text-right my-1">
-            <button type="button" onClick={handleClick} className="btn btn-success">
-              <i className='mdi mdi-plus button-logo'></i>
-              Ajouter
-            </button>
-          </div>
+        <div className="col-lg-4 d-flex justify-content-end">
+          <button type="button" style={{margin: '2px'}} onClick={handleShowModalImport} className="btn btn-success">
+            <i className="mdi mdi-import button-logo"></i>
+            Import employés
+          </button>
+          <button type="button" style={{margin: '2px'}} onClick={handleClick} className="btn btn-primary">
+            <i className="mdi mdi-plus button-logo"></i>
+            Ajouter
+          </button>
         </div>
       </div>
 

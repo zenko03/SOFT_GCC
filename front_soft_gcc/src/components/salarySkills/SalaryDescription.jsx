@@ -15,21 +15,22 @@ function SalaryDescription({ dataEmployeeDescription }) {
               <div className='col-md-5 image-profil'>
                 {dataEmployeeDescription.photo ? (
                   <img src={urlApi(`/Employee/photo/${dataEmployeeDescription.employeeId}`)} 
-                  alt={'Employe '+dataEmployeeDescription.registrationNumber} width={150} />
+                  alt={'Employe '+dataEmployeeDescription.registrationNumber} width={180} 
+                  style={{ borderRadius: '10px'}} />
                 ) : (
                   <img
                     src={pic1}
                     alt={dataEmployeeDescription.registrationNumber}
-                    width={150}
+                    width={180}
                   />
                 )}
               </div>
               <div className='col-md-6 decription'>
-                <p>Employe : <span className='value-profil'>{dataEmployeeDescription.firstName+" "+dataEmployeeDescription.name}</span></p>
-                <p>Matricule : <span className='value-profil'>{dataEmployeeDescription.registrationNumber}</span></p>
-                <p>Date naissance : <span className='value-profil'><FormattedDate date={dataEmployeeDescription.birthday} /></span></p>
-                <p>Date d'embauche : <span className='value-profil'><FormattedDate date={dataEmployeeDescription.hiringDate} /></span></p>
-                <p>Derniere mise a jour : <span className='value-profil'><DateDisplayWithTime isoDate={dataEmployeeDescription.updatedDate}/></span></p>
+                <p>Employe : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployeeDescription.firstName+" "+dataEmployeeDescription.name}</span></p>
+                <p>Matricule : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployeeDescription.registrationNumber}</span></p>
+                <p>Date naissance : <span className='value-profil' style={{fontWeight: 'bolder'}}><FormattedDate date={dataEmployeeDescription.birthday} /></span></p>
+                <p>Date d'embauche : <span className='value-profil' style={{fontWeight: 'bolder'}}><FormattedDate date={dataEmployeeDescription.hiringDate} /></span></p>
+                <p>Derniere mise a jour : <span className='value-profil' style={{fontWeight: 'bolder'}}><DateDisplayWithTime isoDate={dataEmployeeDescription.updatedDate}/></span></p>
               </div>
             </div>
           </div>

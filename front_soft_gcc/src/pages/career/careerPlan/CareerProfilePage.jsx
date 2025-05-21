@@ -10,24 +10,29 @@ import { urlApi } from '../../../helpers/utils';
 import Loader from '../../../helpers/Loader';
 import { useParams } from 'react-router-dom';
 import FormattedDate from '../../../helpers/FormattedDate';
+import { useNavigate } from 'react-router-dom';
 
-
+// Page détails du plan de carrière
 function CareerProfilePage({ onSearch }) {
+    // Url d'en-tete de page
     const module = "Plan de carrière";
     const action = "Fiche";
     const url = "/carriere";
+
+    // Initialisation des variables utiles
     const { registrationNumber } = useParams();
     const [isLoading, setIsLoading] = useState(false); 
     const [error, setError] = useState(false); 
+    const navigate = useNavigate();
 
     // Appel api pour les donnees du formulaire
     const [dataEmployee, setDataEmployee] = useState([]); 
     const [dataAssignmentAdvancement, setDataAssignmentAdvancement] = useState([]);
     const [dataAssignmentAppointment, setDataAssignmentAppointment] = useState([]);
     const [dataAssignmentAvailability, setDataAssignmentAvailability] = useState([]);
-
     const [componentToDisplay, setComponentToDisplay] = useState(1);
 
+    // Mise à jour du coomposant responsable à l'affichage
     const updateComponent = (value) => {
         setComponentToDisplay(value);
     };
@@ -57,48 +62,63 @@ function CareerProfilePage({ onSearch }) {
         fetchData();
     }, [registrationNumber]);
 
-    /// Gestion d'affichage de loading
-    if (isLoading) {
-        return <div>
-                <Loader />
-            </div>;
-    }
-
-    /// Gestion d'affichage d'erreur
-    if (error) {
-        return <div>Erreur: {error.message}</div>;
-    }
+    // Fonction qui gère le retour en arrière de la page
+    const handleRetour = () => {
+        navigate(`/carriere`);
+    };
 
     return (
         <Template>
+            {isLoading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}            
             <PageHeader module={module} action={action} url={url} />
+            {error && <div className="alert alert-danger">{error}</div>}
 
             <div className="title-container">
-                <h4 className="title"> 
-                <i className="mdi mdi-note-text"></i> 
-                <span>Description de l'employe</span>
-                </h4>
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-note-text skill-icon"></i>
+                    <p className="skill-title">DÉTAILS PLAN DE CARRIÈRE</p>
+                </div>
+                            
+                <div className="col-lg-2">
+                    <button onClick={handleRetour} className="btn-outline-dark btn-fw" style={{float: 'right'}}>
+                        <i className="mdi mdi-arrow-left-circle icon-cancel" style={{}}></i>
+                        Retour
+                    </button>
+                </div>  
             </div>
-            <div className="row description">    
-                <div className="col-md-6 grid-margin stretch-card">
-                    <div className="card">
+
+           
+
+
+            <div className="row description">
+                <div className="col-md-12">
+                    <div className="card shadow-sm">
+                        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                            <i className="mdi mdi-information-outline me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                            <h3 className="mb-0" style={{color: '#B8860B'}}>Informations salariés</h3>
+                        </div>
                         <div className="card-body">
-                            <p>Employe : <span className='value-profil'>{dataEmployee.firstName+" "+dataEmployee.name}</span></p>
-                            <p>Matricule : <span className='value-profil'>{dataEmployee.registrationNumber}</span></p>
-                            <p>Date naissance : <span className='value-profil'><FormattedDate date={dataEmployee.birthday} /></span></p>
+                            <div className="row">
+                                {/* Colonne gauche */}
+                                <div className="col-md-4">
+                                    <p><strong className="label-title">Employé :</strong><span className="value-profil">{dataEmployee.firstName} {dataEmployee.name}</span></p>
+                                    <p><strong className="label-title">Matricule :</strong><span className="value-profil">{dataEmployee.registrationNumber}</span></p>
+                                    <p><strong className="label-title">Date naissance :</strong><span className="value-profil"><FormattedDate date={dataEmployee.birthday} /></span></p>
+                                </div>
+
+                                {/* Colonne droite */}
+                                <div className="col-md-4">
+                                    <p><strong className="label-title">Poste actuel :</strong><span className="value-profil text-primary">{dataEmployee.positionName}</span></p>
+                                    <p><strong className="label-title">Salaire :</strong><span className="value-profil text-info">{dataEmployee.baseSalary} Ar</span></p>
+                                    <p><strong className="label-title">Date d'embauche :</strong><span className="value-profil"><FormattedDate date={dataEmployee.assignmentDate} /></span></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="col-md-6 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-body">
-                            <p>Poste actuel : <span className='value-profil'>{dataEmployee.positionName}</span></p>
-                            <p>Salaire : <span className='value-profil'>{dataEmployee.baseSalary} Ar</span></p>
-                            <p>Date d'embauche : <span className='value-profil'><FormattedDate date={dataEmployee.assignmentDate} /></span></p>
-                        </div>
-                    </div>
-                </div>
             </div>
+
+
 
             <div className="row">
                 <div className="col-lg-12 grid-margin">
@@ -117,11 +137,11 @@ function CareerProfilePage({ onSearch }) {
                 </div>
             </div>
 
-            {componentToDisplay === 2 ? (
+            {componentToDisplay === 2 ? (   // Certification
                 <Certificate dataEmployee={dataEmployee}/>
-            ) : componentToDisplay === 3 ? (
+            ) : componentToDisplay === 3 ? (    // Historique
                 <History registrationNumber={registrationNumber} />
-            ) : (
+            ) : (   // Liste d'affectation
                 <AffectationList dataAssignmentAppointment={dataAssignmentAppointment} dataAssignmentAdvancement={dataAssignmentAdvancement} dataAssignmentAvailability={dataAssignmentAvailability} fetchData={fetchData} />
             )}
         </Template>

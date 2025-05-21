@@ -8,19 +8,24 @@ import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 import { useParams } from 'react-router-dom';
 import LoaderComponent from '../../../helpers/LoaderComponent';
+import { useNavigate } from 'react-router-dom';
 
+// Page de modification d'un plan de carrière
 function EditAffectation() {
+    // URL en tête de page 
     const module = "Plan de carrière";
     const action = "Edit";
     const url = "/carriere";
-    const { CareerPlanId } = useParams();
 
+    // Initialisation des variables etats
+    const { CareerPlanId } = useParams();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [assignmentToEdit, setAssignmentToEdit] = useState({});
     const [state, seState] = useState('');
     const [assignmentType, setAssignmentType] = useState({});
     const [selectedItem, setSelectedItem] = useState(0);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         assignmentTypeId: undefined,
         registrationNumber: undefined,
@@ -53,8 +58,12 @@ function EditAffectation() {
     const formatDate = (date) => {
         if (!date) return '';
         const parsedDate = new Date(date);
-        return isNaN(parsedDate) ? '' : parsedDate.toISOString().split('T')[0];
+        if (isNaN(parsedDate)) return '';
+        
+        // Ajuster pour éviter les problèmes de fuseau horaire
+        return parsedDate.toLocaleDateString('fr-CA');
     };
+    
 
     // Récupération des données
     const fetchData = async () => {
@@ -82,6 +91,7 @@ function EditAffectation() {
         }
     }, [CareerPlanId]);
 
+    // UseEffect pour ajouter des valeurs par défaut dans le formulaire de modification
     useEffect(() => {
         if (assignmentToEdit) {
             setFormData({
@@ -139,9 +149,15 @@ function EditAffectation() {
             dataToSend.updatedDate = new Date().toISOString();
             await axios.put(urlApi(`/CareerPlan/${assignmentToEdit.careerPlanId}`), dataToSend);
             await fetchData();
+            handleRetour();
         } catch (err) {
             console.error(`Erreur lors de la modification : ${err.message}`);
         }
+    };
+
+    // Fonction qui gère le retour en arrière de la page
+    const handleRetour = () => {
+        navigate(`/carriere/fiche/${assignmentToEdit.registrationNumber}`);
     };
 
     if (isLoading) {
@@ -155,10 +171,28 @@ function EditAffectation() {
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
+            <div className="title-container">
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-map-marker-path skill-icon"></i>
+                    <p className="skill-title">MODIFICATION DU PLAN DE CARRIÈRE</p>
+                </div>
+                <div className="col-lg-2">
+                    <button onClick={handleRetour} className="btn-outline-dark btn-fw" style={{float: 'right'}}>
+                        <i className="mdi mdi-arrow-left-circle icon-cancel" style={{}}></i>
+                        Retour
+                    </button>
+                </div>  
+            </div>
+          
             <div className="row">
                 <div className="button-save-profil">
-                    <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">Modifier</button>
-                    <button type="button" className="btn btn-light btn-fw">Annuler</button>
+                    <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">
+                        <i className="mdi mdi-pencil" style={{paddingRight: '5px'}}></i>Modifier
+                    </button>
+                    <button type="button" className="btn btn-light btn-fw">
+                        <i className="mdi mdi-backspace-outline" style={{paddingRight: '5px'}}></i>
+                        Annuler
+                    </button>
                 </div>
             </div>
 

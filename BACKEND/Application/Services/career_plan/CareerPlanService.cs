@@ -60,14 +60,29 @@ namespace soft_carriere_competence.Application.Services.career_plan
 				.ToListAsync();
 		}
 
-		// Recuperer les mises en disponibilites d'un employe
-		public async Task<List<History>> GetHistory(string registrationNumber)
+        // Recuperer le dernier plan de carrière de l'employé 
+        public async Task<CareerPlan?> GetLastCareerPlanByEmployee(string registrationNumber)
+        {
+            return await _context.CareerPlan
+                .FromSqlRaw(@"SELECT * 
+                      FROM Career_plan 
+                      WHERE Registration_number = {0} 
+                        AND state > 0 
+                        AND employee_type = 2 
+                      ORDER BY Career_plan_id DESC 
+                      LIMIT 1", registrationNumber)
+                .AsNoTracking() // (optionnel) pour améliorer les performances si tu ne modifies pas l'objet
+                .FirstOrDefaultAsync();
+        }
+
+        // Recuperer les mises en disponibilites d'un employe
+        public async Task<List<History>> GetHistory(string registrationNumber)
 		{
 			return await _context.History
 				.FromSqlRaw("SELECT * FROM History where Module_id=2 AND  Registration_number = {0} ORDER BY Creation_date DESC", registrationNumber)
 				.ToListAsync();
 		}
-		
+
 		// Recuperer les mises en disponibilites d'un employe
 		public async Task<VEmployeeCareer?> GetCareerByEmployee(string registrationNumber)
 		{
@@ -107,6 +122,8 @@ namespace soft_carriere_competence.Application.Services.career_plan
 		string? keyWord = null,
 		string? departmentId = null,
 		string? positionId = null,
+		string? dateAssignmentMin = null,
+		string? dateAssignmentMax = null,
 		int page = 1,
 		int pageSize = 10)
 		{
@@ -134,6 +151,13 @@ namespace soft_carriere_competence.Application.Services.career_plan
 				sql.Append(" AND position_id = @PositionId");
 				countSql.Append(" AND position_id = @PositionId");
 				parameters.Add(new SqlParameter("@PositionId", positionId));
+			}
+			if (!string.IsNullOrWhiteSpace(dateAssignmentMin) && !string.IsNullOrWhiteSpace(dateAssignmentMax))
+			{
+				sql.Append(" AND Assignment_date BETWEEN @DateAssignmentMin AND @DateAssignmentMax");
+				countSql.Append(" AND Assignment_date BETWEEN @DateAssignmentMin AND @DateAssignmentMax");
+				parameters.Add(new SqlParameter("@DateAssignmentMin", dateAssignmentMin));
+				parameters.Add(new SqlParameter("@DateAssignmentMax", dateAssignmentMax));
 			}
 
 
@@ -292,5 +316,24 @@ namespace soft_carriere_competence.Application.Services.career_plan
 				return false;
 			}
 		}
-	}
+
+        // Récuperer la dernière ligne enregistré pour l'employé et le type de contrat correspondant
+        public async Task<CareerPlan?> GetByEmployeeAndContractType(string? registrationNumber)
+        {
+            if (string.IsNullOrEmpty(registrationNumber))
+            {
+                return null;
+            }
+
+            return await _context.Set<CareerPlan>()
+				.FromSqlRaw(@"
+					SELECT TOP 1 * 
+					FROM career_plan
+					WHERE Registration_number = @p0
+					AND State > 0
+					AND Employee_type_id = 2
+					ORDER BY Assignment_date DESC", registrationNumber)
+                .FirstOrDefaultAsync();
+        }
+    }
 }

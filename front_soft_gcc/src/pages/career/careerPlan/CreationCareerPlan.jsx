@@ -7,6 +7,7 @@ import LayOffForm from '../../../components/career/LayOffForm';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 import Loader from '../../../helpers/Loader';
+import { useNavigate } from 'react-router-dom';
 
 
 // Page de creation d'un plan de carriere
@@ -22,6 +23,8 @@ function CreationCareerPlan({ onSearch }) {
     const [submitError, setSubmitError] = useState(''); 
     const [isLoading, setIsLoading] = useState(false); 
     const [error, setError] = useState(false); 
+    const navigate = useNavigate();
+    
 
     // Appel api pour les donnees du formulaire
     const [dataEmployee, setDataEmployee] = useState([]); 
@@ -38,7 +41,7 @@ function CreationCareerPlan({ onSearch }) {
             setDataEmployee(employeeResponse.data || []);
             setDataAssignmentType(assignmentTypeResponse.data || []);
         } catch (error) {
-            setError(`Erreur lors de la recuperation des donnees : ${error}`);
+            setError(`Erreur lors de la recuperation des donnees : ${error.message}`);
         } finally {
             setIsLoading(false);
         }
@@ -54,6 +57,11 @@ function CreationCareerPlan({ onSearch }) {
         setSelectedItem(event.target.value);
         handleChange(event);
         initializeForm();
+    };
+
+    // Fonction qui gère le retour en arrière de la page
+    const handleRetour = () => {
+        navigate(`/carriere`);
     };
 
 
@@ -101,6 +109,7 @@ function CreationCareerPlan({ onSearch }) {
   };
 
 
+  // Gestion de validation des données
   const validateField = (fieldName, value) => {
     let error = '';
     if (fieldName === 'registrationNumber' && !value) {
@@ -154,8 +163,45 @@ function CreationCareerPlan({ onSearch }) {
             creationDate: new Date().toISOString(),
             updatedDate: new Date().toISOString(),
         };
+        console.log(dataToSend);
   
         const response = await axios.post(urlApi('/CareerPlan'), dataToSend);
+        handleRetour();
+    } catch (error) {
+        console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
+        setError(`Erreur lors de l\'insertion : ${error.message}`);
+
+    } finally {
+        setIsLoading(false);
+    }
+  };
+        
+    // Initialisation du formulaire de saisie près enregistrement d'un plan de carrière
+    const initializeForm = () => {
+        setFormData((prevData) => ({
+            ...prevData, 
+            establishmentId: undefined,
+            departmentId: undefined,
+            positionId: undefined,
+            employeeTypeId: undefined,
+            socioCategoryProfessionalId: undefined,
+            indicationId: undefined,
+            baseSalary: undefined,
+            netSalary: undefined,
+            professionalCategoryId: undefined,
+            legalClassId: undefined,
+            newsletterTemplateId: undefined,
+            paymentMethodId: undefined,
+            endingContract: undefined,
+            reason: undefined,
+            assigningInstitution: undefined,
+            startDate: undefined,
+            endDate: undefined,
+            echelonId: undefined,
+        }));
+    };
+
+    const initializeAllForm = () => {
         setFormData({
             assignmentTypeId: 1,
             registrationNumber: undefined,
@@ -180,65 +226,37 @@ function CreationCareerPlan({ onSearch }) {
             assigningInstitution: undefined,
             startDate: undefined,
             endDate: undefined,
-            echelonId: undefined,
-            state: 1,
+            echelonId: undefined
         });
-    } catch (error) {
-        console.error('Erreur lors de l\'insertion :', error.response?.data || error.message);
-    } finally {
-        setIsLoading(false);
-    }
-  };
-        
-    const initializeForm = () => {
-        setFormData((prevData) => ({
-            ...prevData, // Conserve les autres champs inchangés
-            establishmentId: undefined,
-            departmentId: undefined,
-            positionId: undefined,
-            employeeTypeId: undefined,
-            socioCategoryProfessionalId: undefined,
-            indicationId: undefined,
-            baseSalary: undefined,
-            netSalary: undefined,
-            professionalCategoryId: undefined,
-            legalClassId: undefined,
-            newsletterTemplateId: undefined,
-            paymentMethodId: undefined,
-            endingContract: undefined,
-            reason: undefined,
-            assigningInstitution: undefined,
-            startDate: undefined,
-            endDate: undefined,
-            echelonId: undefined,
-        }));
     };
-
-    /// Gestion d'affichage de loading
-    if (isLoading) {
-        return <div>
-                <Loader />
-            </div>;
-    }
-
-    /// Gestion d'affichage d'erreur
-    if (error) {
-        return <div>Erreur: {error.message}</div>;
-    }
 
     return (
         <Template>
+            {isLoading && <Loader />}
             <PageHeader module={module} action={action} url={url} />
-            <div className="row header-title">
+            {error && <div className="alert alert-danger">{error}</div>}
+
+            <div className="title-container">
                 <div className="col-lg-10 skill-header">
                     <i className="mdi mdi-map-marker-path skill-icon"></i>
-                    <h4 className="skill-title">CREATION D'UN PLAN DE CARRIÈRE</h4>
+                    <p className="skill-title">CREATION D'UN PLAN DE CARRIÈRE</p>
                 </div>
+                <div className="col-lg-2">
+                    <button onClick={handleRetour} className="btn-outline-dark btn-fw" style={{float: 'right'}}>
+                        <i className="mdi mdi-arrow-left-circle icon-cancel" style={{}}></i>
+                        Retour
+                    </button>
+                </div>  
             </div>
             <div className="row">
                 <div className="button-save-profil">
-                    <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">Enregistrer</button>
-                    <button type="button" className="btn btn-light btn-fw">Annuler</button>
+                    <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">
+                        <i className="mdi mdi-content-save-edit" style={{paddingRight: '5px'}}></i>Enregistrer
+                    </button>
+                    <button onClick={initializeAllForm} type="button" className="btn btn-light btn-fw">
+                        <i className="mdi mdi-backspace-outline" style={{paddingRight: '5px'}}></i>
+                        Annuler
+                    </button>
                 </div>
             </div>
 
@@ -253,7 +271,7 @@ function CreationCareerPlan({ onSearch }) {
                                         <option value="">Sélectionner une matricule</option>
                                         {dataEmployee && dataEmployee.map((item, id) => (
                                             <option key={id} value={item.registrationNumber}>
-                                                {item.registrationNumber}
+                                                {item.registrationNumber + " - " + item.name + " " + item.firstName}
                                             </option>
                                         ))}
                                     </select>   
@@ -310,14 +328,13 @@ function CreationCareerPlan({ onSearch }) {
                         </div>
                     </div>
                 </div>
-                {selectedItem === '1' ? (
+                {selectedItem === '1' ? (   //  Type nomination
                     <AppointmentForm formData={formData} setFormData={setFormData} />
-                  ) : selectedItem === '2' ? (
+                  ) : selectedItem === '2' ? (  // Type mise en disponibilité
                     <LayOffForm handleChange={handleChange} formData={formData} />
-                  ) : (
+                  ) : ( // Type avancement
                     <AdvancementForm handleChange={handleChange} formData={formData} />
                   )}
-                
             </form>
         </Template>
     );

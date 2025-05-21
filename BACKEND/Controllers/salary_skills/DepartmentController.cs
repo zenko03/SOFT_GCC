@@ -67,5 +67,33 @@ namespace soft_carriere_competence.Controllers.salary_skills
 			await _departmentService.Delete(id);
 			return NoContent();
 		}
+
+		[HttpPut("{id}")]
+		public async Task<IActionResult> Update(int id, [FromForm] string name, [FromForm] IFormFile? photo)
+		{
+			var existingDepartment = await _departmentService.GetById(id);
+			if (existingDepartment == null)
+			{
+				return NotFound();
+			}
+
+			byte[]? photoBytes = existingDepartment.Photo; // Garder l'ancienne photo si aucune nouvelle n'est envoyée
+			if (photo != null)
+			{
+				using (var memoryStream = new MemoryStream())
+				{
+					await photo.CopyToAsync(memoryStream);
+					photoBytes = memoryStream.ToArray();
+				}
+			}
+
+			existingDepartment.Name = name;
+			existingDepartment.Photo = photoBytes;
+
+			await _departmentService.Update(existingDepartment, photoBytes);
+
+			// Forcer le cache à être ignoré en retournant l'URL avec un timestamp
+			return Ok(new { photoUrl = $"/api/Department/photo/{id}?t=" + DateTime.UtcNow.Ticks });
+		}
 	}
 }

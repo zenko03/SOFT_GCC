@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../../components/PageHeader';
 import Template from '../../Template';
-import pic1 from '/src/assets/images/faces-clipart/pic-1.png';
 import '../../../styles/skillsStyle.css';
 import Loader from '../../../helpers/Loader';
 import '../../../styles/pagination.css';
 import FormattedDate from '../../../helpers/FormattedDate';
 import useSWR from 'swr';
-import Fetcher from '../../../components/Fetcher';
+import Fetcher from '../../../components/fetcher';
 
 // Fonction debounce pour éviter les appels excessifs
 const debounce = (func, delay) => {
@@ -21,10 +20,12 @@ const debounce = (func, delay) => {
 
 // Page liste des compétences
 const ListCareerPage = () => {
+  // URL en tête de page 
   const module = 'Plan de carrière';
   const action = 'Liste';
   const url = '/carriere';
 
+  // Initialisation des variables d'états
   const [careers, setCareers] = useState([]);
   const [sortedCareers, setSortedCareers] = useState([]);
   const [sortDirection, setSortDirection] = useState('asc');
@@ -32,14 +33,18 @@ const ListCareerPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState({ keyWord: '', departmentId: '', positionId: '' });
+  const [filters, setFilters] = useState(
+    { keyWord: '', 
+      departmentId: '', 
+      positionId: '',
+      dateAssignmentMin: '',
+      dateAssignmentMax: ''
+    });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
   const navigate = useNavigate();
   const { data: dataDepartment } = useSWR('/Department', Fetcher);
   const { data: dataPosition } = useSWR('/Position', Fetcher);
-
   const [paginationResult, setPaginationResult] = useState({
     totalRecords: 0,
     pageSize: 0,
@@ -147,23 +152,24 @@ const ListCareerPage = () => {
       <PageHeader module={module} action={action} url={url} />
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="row header-title">
+      <div className="title-container">
         <div className="col-lg-10 skill-header">
           <i className="mdi mdi-map-marker-path skill-icon"></i>
-          <h4 className="skill-title">PLAN DE CARRIÈRE</h4>
+          <p className="skill-title">PLAN DE CARRIÈRE</p>
         </div>
+                            
         <div className="col-lg-2">
-          <button className="btn-add btn-success btn-fw" onClick={handleClick}>
+          <button className="btn-add btn-success btn-fw" onClick={handleClick} style={{float: 'right'}}>
             <i className="mdi mdi-plus"></i>
             Nouveau Plan
           </button>
         </div>  
       </div>
+     
       <div className="card mb-4 search-card">
-        <div className="card-header title-container">
-          <h5 className="title">
-            <i className="mdi mdi-filter-outline"></i> Filtres
-          </h5>
+        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+          <i className="mdi mdi-filter-outline me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+          <h3 className="mb-0" style={{color: '#B8860B'}}>Filtres</h3>
         </div>
         <div className="card-body">
           <form className="filter-form">
@@ -210,15 +216,36 @@ const ListCareerPage = () => {
                 ))}
               </select>
             </div>
+            <div className="form-group">
+              <label>Date d'affectation min</label>
+              <input
+                type="date"
+                className="form-control"
+                placeholder="Date min"
+                name="dateAssignmentMin"
+                value={filters.dateAssignmentMin}
+                onChange={handleFilterChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Date d'affectation max</label>
+              <input
+                type="date"
+                className="form-control"
+                placeholder="Date min"
+                name="dateAssignmentMax"
+                value={filters.dateAssignmentMax}
+                onChange={handleFilterChange}
+              />
+            </div>
           </form>
         </div>
       </div>
 
       <div className="card">
-        <div className="card-header title-container">
-          <h5 className="title">
-            <i className="mdi mdi-format-list-bulleted"></i> Liste des employés ayant des plans de carrières
-          </h5>
+        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+          <i className="mdi mdi-format-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+          <h3 className="mb-0" style={{color: '#B8860B'}}>Plan de carrière par employé</h3>
         </div>
         <div className="card-body">
           {!loading && (

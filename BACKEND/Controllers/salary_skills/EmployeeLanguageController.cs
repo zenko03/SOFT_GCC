@@ -56,7 +56,9 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Update(int id, EmployeeLanguage employeeLanguage)
 		{
+			Console.WriteLine("Tsia");
 			if (id != employeeLanguage.EmployeeLanguageId) return BadRequest();
+			Console.WriteLine("Tonga");
 			await _employeeLanguageService.Update(employeeLanguage);
 			var activityLog = new ActivityLog
 			{

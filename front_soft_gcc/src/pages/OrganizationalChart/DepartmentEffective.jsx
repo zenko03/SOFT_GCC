@@ -67,8 +67,9 @@ function DepartmentEffective() {
             <PageHeader module={module} action={action} url={url} />
 
             <div className="row mb-3">
-                <div className="col-lg-10">
-                    <h2 className="card-title">Effectif par département</h2>
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-account-group skill-icon"></i>
+                    <h4 className="skill-title">Effectif par département</h4>
                 </div>
                 <div className="col-lg-2">
                     <div className="action-buttons text-left my-1">

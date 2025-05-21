@@ -15,13 +15,14 @@ function ModalEditLanguage ({ showEditLanguage, handleCloseEditLanguage, selecte
   const [formData, setFormData] = useState({
     employeeLanguageId: '',
     language_id: '',
-    level: '',
+    level: 0,
     state: '',
     employeeId: idEmployee, // Valeur par défaut de l'employé, peut être rendue dynamique
   });
 
   const [formErrors, setFormErrors] = useState({});
   const [submitError, setSubmitError] = useState(''); 
+  const [formLevel, setFormLevel] = useState(false); 
 
   // Utilisez useEffect pour pré-remplir les données lorsque la modale s'ouvre
   useEffect(() => {
@@ -29,20 +30,35 @@ function ModalEditLanguage ({ showEditLanguage, handleCloseEditLanguage, selecte
         setFormData({
             employeeLanguageId: selectedLanguage.employeeLanguageId,
             language_id: selectedLanguage.languageId || '',
-            level: selectedLanguage.level || '',
+            level: selectedLanguage.level || 0,
             state: selectedLanguage.state || '',
             employeeId: selectedLanguage.employeeId || idEmployee,
         });
+        if(selectedLanguage.state == 1) setFormLevel(false);
+        else setFormLevel(true);
     }
-}, [selectedLanguage, idEmployee]);
+  }, [selectedLanguage, idEmployee]);
 
   // Gérer les changements dans les champs du formulaire
   const handleChange = (e) => {
-      const { name, value } = e.target;
-      setFormData((prevData) => ({
-          ...prevData,
-          [name]: value,
-      }));
+    if(e.target.value === '1') {
+      setFormLevel( false );
+      setFormData({
+        employeeLanguageId: selectedLanguage.employeeLanguageId,
+        language_id: selectedLanguage.languageId || '',
+        level: 0,
+        state: selectedLanguage.state || '',
+        employeeId: selectedLanguage.employeeId || idEmployee,
+      });
+    }
+    else {
+      setFormLevel( true );
+    }
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   
@@ -51,7 +67,7 @@ function ModalEditLanguage ({ showEditLanguage, handleCloseEditLanguage, selecte
     const errors = {};
     
     if (!formData.language_id) errors.language_id = 'Veuillez sélectionner une langue.';
-    if (!formData.level) errors.level = 'Veuillez entrer un nombre entre 0 et 100.';
+    if (formLevel && (!formData.level || formData.level < 0 || formData.level > 100)) errors.level = "Le niveau doit être compris entre 1 et 100.";
     if (!formData.state) errors.state = 'Veuillez sélectionner un état.';
     else if (formData.level < 0 || formData.level > 100) errors.year = 'Veuillez entrer un nombre entre 0 et 100.';
 
@@ -68,12 +84,17 @@ function ModalEditLanguage ({ showEditLanguage, handleCloseEditLanguage, selecte
                 ...formData,
                 updateDate: new Date().toISOString(),
             };
-
             // Requête PUT pour mettre à jour les données
             const response = await axios.put(urlApi(`/EmployeeLanguage/${selectedLanguage.employeeLanguageId}`), dataToSend);
-            console.log('Updated successfully:', response.data);
             handleCloseEditLanguage();
             await fetchData();
+            setFormData({
+              employeeLanguageId: '',
+              language_id: '',
+              level: 0,
+              state: '',
+              employeeId: idEmployee,
+            });
         } catch (error) {
           setSubmitError(`Erreur lors de la modification d'un language : ${error.message}`);
         }
@@ -111,20 +132,24 @@ function ModalEditLanguage ({ showEditLanguage, handleCloseEditLanguage, selecte
                           {formErrors.language_id && <small className="error-text">{formErrors.language_id}</small>}
                       </div>
                       <div className="form-group">
-                          <label>Niveau (en %)</label>
-                          <input type="number" name="level" value={formData.level} onChange={handleChange} className="form-control" />
-                          {formErrors.level && <small className="error-text">{formErrors.level}</small>}
-                      </div>
-                      <div className="form-group">
                           <label>Etat</label>
                           <select name="state" value={formData.state} onChange={handleChange} className="form-control">
                               <option value="">Sélectionner un état</option>
                               <option value="1">Non validé</option>
                               <option value="5">Validé par évaluation</option>
-                              <option value="10">Confirmé</option>
                           </select>
                           {formErrors.state && <small className="error-text">{formErrors.state}</small>}
                       </div>
+                      {formLevel ? (
+                        <div className="form-group">
+                          <label>Niveau (en %)</label>
+                          <input type="number" name="level" value={formData.level} onChange={handleChange} className="form-control" />
+                          {formErrors.level && <div className="text-danger">{formErrors.level}</div>}
+                        </div>
+                      ) : (
+                        <div className="form-group"></div>
+                      )}      
+
                       {submitError && <small className="error-text">{submitError}</small>}
                     </form>
               )}

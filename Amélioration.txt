@@ -1,0 +1,51 @@
+- Mappage bdd sage : relié avec la base de donnée de Sage pour mapper les employés, dynamiser le choix du mappage
+- Gestion compétences : Niveau de compétence des employés sont à jour automatique après recrutement et évaluation 
+- Statut des compétences : changer non évalué par non validé, mettre le niveau à null automatique lorsque le statut est non validé, supprimer le statut confirmé (ok)
+- Plan de carrière : mettre matricule - nom dans le dropdown list des employés (ok)
+- Plan de carrière : type de salarié change en type de contrat (ok)
+- Plan de carrière : lorsque le type de contrat est cdi, le fin de contrat doit être null. Après une évolution de carrière, la date de début de celle-ci deviendra la date fin du fin contrat
+- Attestation de travail : historiques, Dynamisme du contenu de l'attestation, possibilité de choisir ou modifier un modèle de contestation existant
+- Souhait d'évolution : la note de priorité doit être faite en 3 choix :  bas, moyen, élevé; motivation devient motif dans l'ajout de souhait d'évolution
+- Organigramme de l'entreprise : la hiérarchie se fait par poste et non par employé
+- CRUD poste : détails de poste pour consulter les compétences requises dans ce poste
+- Historique des activités : historiques des activités devient historiques des actions
+- Graphe des compétences : ajout d'un nouveau filtre tous pour comparer le niveau de compétence validé et non validé
+- Paramètre de l'id du type de contrat et type d'affectation dans plan de carrière
+
+GESTION D'ATTESTATION DE TRAVAIL
+--------------------------------
+
+1. Gestion des modèles prédéfinis :
+	- Sauvegarder plusieurs modèles d’attestation (ex : "Attestation CDI", "Attestation de stage").
+	- Permettre de les sélectionner, modifier, dupliquer, ou supprimer.
+
+2. Export Word (.docx) :
+	- Exporter non seulement en PDF mais aussi en .docx avec une mise en forme similaire (via docx ou Pizzip + Docxtemplater).
+
+3. Intégration QR Code :
+	- Ajouter un QR code contenant un lien de vérification ou des métadonnées (ex : ID de l’attestation, URL de validation).
+
+4. Archivage & Suivi des attestations générées :
+	- Historique des attestations générées pour un employé.
+	- Ajouter des métadonnées : date de génération, utilisateur émetteur.
+
+5. Validation & signature électronique :
+	- Intégration de systèmes comme DocuSign ou signature numérique interne.
+	- Workflow de validation (RH → DG → Signature).
+
+6. Envoi automatique par email avec pièce jointe :
+	- Configuration d’un email modèle avec pièce jointe automatique.
+	- Suivi : statut d’envoi, confirmation de lecture.
+
+7. Téléchargement groupé / Fusion PDF :
+	- Pouvoir générer plusieurs attestations à la fois pour plusieurs employés.
+	- Fusionner tous les PDF en un seul document (utile pour les audits ou export RH).
+
+TABLEAU DE BORD ET STATISTIQUES
+-------------------------------
+- Taux de promotion
+- Taux de mobilite interne
+- Duree moyenne d'anciennete
+- Pyramide des ages pour visualiser la repartition des ages de collaborateurs
+- Cartes des competences pour visualiser les talents et les besoins en competences
+

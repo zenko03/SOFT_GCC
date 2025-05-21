@@ -13,7 +13,7 @@
 		- Ajouter des commentaires en francais en haut de chaque script important
 */
 
-USE Base_soft_gcc;
+USE Soft_GCC;
 
 ----------------------------------------- TABLES POUR COMPETENCES SALARIES -----------------------------------------------------------------------
 -- Civilite
@@ -31,9 +31,6 @@ CREATE TABLE Department (
     Photo VARBINARY(MAX) NULL
 );
 
-ALTER TABLE department
-ADD photo VARBINARY(MAX) NULL
-
 -- Creation de la table employe(id, matricule, nom, prenom, date_embauche) simule
 CREATE TABLE Employee (
 	Employee_id INT PRIMARY KEY IDENTITY(1,1),
@@ -44,58 +41,60 @@ CREATE TABLE Employee (
 	Hiring_date DATE NOT NULL,
 	Department_id INT NOT NULL REFERENCES Department(Department_id),
 	Civilite_id INT NOT NULL REFERENCES Civilite(Civilite_id),
-	Manager_id INT NULL REFERENCES Employee(Employee_id),
-	Photo VARBINARY(MAX) NULL
+	Manager_id INT NULL REFERENCES Employee(Employee_id) ON DELETE NO ACTION,
+	Photo VARBINARY(MAX) NULL,
+	Email NVARCHAR(255) NULL
 );
 
 -- Insérer des employés avec des données de test
 -- Pour cet exemple, nous allons supposer que l'Employee_id 1 est un manager
-INSERT INTO Employee (Registration_number, Name, FirstName, Birthday, Hiring_date, Department_id, 
-Civilite_id, Manager_id, Photo)
-VALUES 
-('REG001', 'Dupont', 'Jean', '1985-01-15', '2020-06-01', 3, 1, NULL, NULL),
-('REG002', 'Martin', 'Sophie', '1990-03-22', '2021-07-15', 2, 2, 1, NULL),
-('REG003', 'Bernard', 'Pierre', '1988-05-30', '2019-05-20', 3, 1, 1, NULL),
-('REG004', 'Durand', 'Claire', '1992-07-12', '2022-01-10', 4, 2, 1, NULL),
-('REG005', 'Leroy', 'Luc', '1980-09-25', '2018-11-05', 5, 1, 1, NULL),
-('REG006', 'Moreau', 'Alice', '1995-11-18', '2020-02-20', 1, 2, 1, NULL),
-('REG007', 'Simon', 'Julien', '1983-12-05', '2017-03-15', 2, 1, 2, NULL),
-('REG008', 'Michel', 'Laura', '1991-04-10', '2021-08-01', 3, 2, 3, NULL),
-('REG009', 'Lemoine', 'Thomas', '1987-06-20', '2019-09-30', 4, 1, 4, NULL),
-('REG010', 'Garnier', 'Emma', '1994-08-15', '2020-10-10', 5, 2, 5, NULL),
-('REG011', 'Roux', 'Antoine', '1986-02-28', '2018-12-12', 1, 1, 1, NULL),
-('REG012', 'Blanc', 'Chloé', '1993-03-15', '2021-01-20', 2, 2, 2, NULL),
-('REG013', 'Fournier', 'Nicolas', '1989-05-05', '2019-06-25', 3, 1, 3, NULL),
-('REG014', 'Giraud', 'Camille', '1992-07-30', '2020-04-15', 4, 2, 4, NULL),
-('REG015', 'Lemoine', 'Victor', '1984-09-10', '2018-11-01', 5, 1, 5, NULL),
-('REG016', 'Pires', 'Inès', '1991-10-20', '2019-02-05', 1, 2, 1, NULL),
-('REG017', 'Boucher', 'Louis', '1985-11-30', '2019-03-10', 2, 1, 1, NULL),
-('REG018', 'Gautier', 'Léa', '1990-12-15', '2020-05-25', 3, 2, 3, NULL),
-('REG019', 'Lemoine', 'Paul', '1988-01-05', '2018-07-20', 4, 1, 4, NULL),
-('REG020', 'Lemoine', 'Sarah', '1994-02-10', '2021-09-15', 5, 2, 5, NULL),
-('REG021', 'Renaud', 'Juliette', '1986-03-25', '2019-10-30', 1, 1, 1, NULL),
-('REG022', 'Bourgeois', 'Gabriel', '1993-04-15', '2020-11-05', 2, 2, 2, NULL),
-('REG023', 'Lemoine', 'Anaïs', '1989-05-20', '2018-12-15', 3, 1, 3, NULL),
-('REG024', 'Garnier', 'Maxime', '1992-06-30', '2021-01-10', 4, 2, 4, NULL),
-('REG025', 'Dupuis', 'Sophie', '1985-07-15', '2019-08-20', 5, 1, 5, NULL);
+--INSERT INTO Employee (Registration_number, Name, FirstName, Birthday, Hiring_date, Department_id, 
+--Civilite_id, Manager_id, Photo)
+--VALUES 
+--('REG001', 'Dupont', 'Jean', '1985-01-15', '2020-06-01', 3, 1, NULL, NULL),
+--('REG002', 'Martin', 'Sophie', '1990-03-22', '2021-07-15', 2, 2, 1, NULL),
+--('REG003', 'Bernard', 'Pierre', '1988-05-30', '2019-05-20', 3, 1, 1, NULL),
+--('REG004', 'Durand', 'Claire', '1992-07-12', '2022-01-10', 4, 2, 1, NULL),
+--('REG005', 'Leroy', 'Luc', '1980-09-25', '2018-11-05', 5, 1, 1, NULL),
+--('REG006', 'Moreau', 'Alice', '1995-11-18', '2020-02-20', 1, 2, 1, NULL),
+--('REG007', 'Simon', 'Julien', '1983-12-05', '2017-03-15', 2, 1, 2, NULL),
+--('REG008', 'Michel', 'Laura', '1991-04-10', '2021-08-01', 3, 2, 3, NULL),
+--('REG009', 'Lemoine', 'Thomas', '1987-06-20', '2019-09-30', 4, 1, 4, NULL),
+--('REG010', 'Garnier', 'Emma', '1994-08-15', '2020-10-10', 5, 2, 5, NULL),
+--('REG011', 'Roux', 'Antoine', '1986-02-28', '2018-12-12', 1, 1, 1, NULL),
+--('REG012', 'Blanc', 'Chloé', '1993-03-15', '2021-01-20', 2, 2, 2, NULL),
+--('REG013', 'Fournier', 'Nicolas', '1989-05-05', '2019-06-25', 3, 1, 3, NULL),
+--('REG014', 'Giraud', 'Camille', '1992-07-30', '2020-04-15', 4, 2, 4, NULL),
+--('REG015', 'Lemoine', 'Victor', '1984-09-10', '2018-11-01', 5, 1, 5, NULL),
+--('REG016', 'Pires', 'Inès', '1991-10-20', '2019-02-05', 1, 2, 1, NULL),
+--('REG017', 'Boucher', 'Louis', '1985-11-30', '2019-03-10', 2, 1, 1, NULL),
+--('REG018', 'Gautier', 'Léa', '1990-12-15', '2020-05-25', 3, 2, 3, NULL),
+--('REG019', 'Lemoine', 'Paul', '1988-01-05', '2018-07-20', 4, 1, 4, NULL),
+--('REG020', 'Lemoine', 'Sarah', '1994-02-10', '2021-09-15', 5, 2, 5, NULL),
+--('REG021', 'Renaud', 'Juliette', '1986-03-25', '2019-10-30', 1, 1, 1, NULL),
+--('REG022', 'Bourgeois', 'Gabriel', '1993-04-15', '2020-11-05', 2, 2, 2, NULL),
+--('REG023', 'Lemoine', 'Anaïs', '1989-05-20', '2018-12-15', 3, 1, 3, NULL),
+--('REG024', 'Garnier', 'Maxime', '1992-06-30', '2021-01-10', 4, 2, 4, NULL),
+--('REG025', 'Dupuis', 'Sophie', '1985-07-15', '2019-08-20', 5, 1, 5, NULL);
+-----
 
 -- Ajout d'une contrainte unique au registration number de employe
-ALTER TABLE Employee
-ADD CONSTRAINT UQ_Employee_RegistrationNumber UNIQUE (Registration_number);
+--ALTER TABLE Employee
+--ADD CONSTRAINT UQ_Employee_RegistrationNumber UNIQUE (Registration_number);
 
--- Étape 1: Ajouter la colonne Manager_id
-ALTER TABLE Employee
-ADD Manager_id INT NULL;
+---- Étape 1: Ajouter la colonne Manager_id
+--ALTER TABLE Employee
+--ADD Manager_id INT NULL;
 
-ALTER TABLE Employee
-ADD Photo VARBINARY(MAX) NULL;
+--ALTER TABLE Employee
+--ADD Photo VARBINARY(MAX) NULL;
 
 -- Étape 2: Ajouter la contrainte de clé étrangère
-ALTER TABLE Employee
-ADD CONSTRAINT FK_Manager_Employee
-FOREIGN KEY (Manager_id)
-REFERENCES Employee(Employee_id)
-ON DELETE SET NULL; -- Optionnel : définit ce qui arrive si le manager est supprimé
+--ALTER TABLE Employee
+--ADD CONSTRAINT FK_Manager_Employee
+--FOREIGN KEY (Manager_id)
+--REFERENCES Employee(Employee_id)
+--ON DELETE SET NULL; -- Optionnel : définit ce qui arrive si le manager est supprimé
 
 
 -- Creation de la table filiere(id, designation)
@@ -201,8 +200,30 @@ CREATE TABLE Assignment_type (
 -- Creation de la table etablissement(id, designation)
 CREATE TABLE Establishment (
 	Establishment_id INT PRIMARY KEY IDENTITY(1,1),
-	Establishment_name NVARCHAR(50)
+	Establishment_name NVARCHAR(50),
+	Adress NVARCHAR(250),
+	Contact NVARCHAR(250),
+	Mail NVARCHAR(250),
+	Website NVARCHAR(250),
+	Social_network NVARCHAR(250),
+	Logo VARBINARY(MAX) NULL,
+	Creation_date DATETIME,
+	Updated_date DATETIME
 );
+
+--Ajouter des nouvelles colonnes sur la table establishmment
+--ALTER TABLE Establishment
+--ADD 
+--    Establishment_name NVARCHAR(50),
+--    Adress NVARCHAR(250),
+--    Contact NVARCHAR(250),
+--    Mail NVARCHAR(250),
+--    Website NVARCHAR(250),
+--    SocialNetwork NVARCHAR(250),
+--	Logo VARBINARY(MAX) NULL,
+--	Creation_date DATETIME,
+--	Updated_date DATETIME;
+
 
 -- Creation de la table fonction(id, designation)
 CREATE TABLE Fonction (
@@ -261,8 +282,17 @@ CREATE TABLE Echelon (
 -- Creation de la table type_attestation(id, designation)
 CREATE TABLE Certificate_type (
 	Certificate_type_id INT PRIMARY KEY IDENTITY(1,1),
-	Certificate_type_name NVARCHAR(50)
+	Certificate_type_name NVARCHAR(50),
+	content TEXT,
+	Creation_date DATETIME,
+	Updated_date DATETIME
 );
+
+--ALTER TABLE Certificate_type
+--ADD 
+--   content TEXT,
+--	Creation_date DATETIME,
+--	Updated_date DATETIME;
 
 -- Creation de la table carriere_plan
 CREATE TABLE career_plan (
@@ -325,9 +355,9 @@ CREATE TABLE Activity_logs (
     Metadata NVARCHAR(MAX)
 );
 
--- Donne d'insertion
-INSERT INTO Module(Module_name) VALUES ('Competences');
-INSERT INTO Module(Module_name) VALUES ('Carrieres');
+---- Donne d'insertion
+--INSERT INTO Module(Module_name) VALUES ('Competences');
+--INSERT INTO Module(Module_name) VALUES ('Carrieres');
 
 -------------------------------------------------- DEPART A LA RETRAITE --------------------------------------------------------------------
 CREATE TABLE Retirement_parameter (
@@ -345,7 +375,7 @@ CREATE TABLE Wish_type (
 	designation NVARCHAR(250) NOT NULL,
 );
 
-INSERT INTO Wish_type (designation) VALUES ('Evolution'), ('Changement de departement');
+--INSERT INTO Wish_type (designation) VALUES ('Evolution'), ('Changement de departement');
 
 -- Creation de la table souhaitEvolution pour enregistrer les demandes de souhait d'evolution des employes
 CREATE TABLE Wish_evolution_career (
@@ -363,10 +393,10 @@ CREATE TABLE Wish_evolution_career (
 );
 
 
-INSERT INTO Wish_evolution_career(Position_id, Employee_id, Wish_type_id, Motivation, Disponibility, Priority, Request_date, State, 
-Creation_date, Updated_date) VALUES 
-(3, 7, 1, 'Etre Chef', '2024/12/14', 5, '2024/12/02', 1, GETDATE(), GETDATE()),
-(2, 8, 1, 'Etre chef', '2024/12/14', 5, '2024/11/25', 1, GETDATE(), GETDATE());
+--INSERT INTO Wish_evolution_career(Position_id, Employee_id, Wish_type_id, Motivation, Disponibility, Priority, Request_date, State, 
+--Creation_date, Updated_date) VALUES 
+--(3, 7, 1, 'Etre Chef', '2024/12/14', 5, '2024/12/02', 1, GETDATE(), GETDATE()),
+--(2, 8, 1, 'Etre chef', '2024/12/14', 5, '2024/11/25', 1, GETDATE(), GETDATE());
 
 -- Creation de la table simulation pour les competences necessaires dans une poste
 CREATE TABLE Skill_position (
@@ -379,11 +409,26 @@ CREATE TABLE Skill_position (
 );
 
 
-INSERT INTO skill_position (Position_id, Skill_id, State, Creation_date, Updated_date)
-VALUES 
-(1, 1, 1, GETDATE(), GETDATE()),
-(1, 2, 1, GETDATE(), GETDATE()),
-(1, 3, 1, GETDATE(), GETDATE()),
-(2, 4, 1, GETDATE(), GETDATE()),
-(2, 5, 1, GETDATE(), GETDATE()),
-(3, 6, 1, GETDATE(), GETDATE());
+--INSERT INTO skill_position (Position_id, Skill_id, State, Creation_date, Updated_date)
+--VALUES 
+--(1, 1, 1, GETDATE(), GETDATE()),
+--(1, 2, 1, GETDATE(), GETDATE()),
+--(1, 3, 1, GETDATE(), GETDATE()),
+--(2, 4, 1, GETDATE(), GETDATE()),
+--(2, 5, 1, GETDATE(), GETDATE()),
+--(3, 6, 1, GETDATE(), GETDATE());
+
+---------------------------------- Gestion d'attestation
+-- Historique de certification
+CREATE TABLE Certificate_history (
+	Certificate_history_id INT PRIMARY KEY IDENTITY(1,1),
+	Registration_number NVARCHAR(100),
+	Certificate_type_id INT NOT NULL REFERENCES Certificate_type(Certificate_type_id),
+	Reference NVARCHAR(50) NOT NULL UNIQUE,
+	Pdf_file VARBINARY(MAX),
+    File_name NVARCHAR(255),
+    Content_type NVARCHAR(100),
+	State INT,
+	Creation_date DATETIME DEFAULT GETDATE(),
+	Updated_date DATETIME DEFAULT GETDATE()
+);

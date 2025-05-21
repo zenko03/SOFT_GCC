@@ -119,7 +119,15 @@ namespace soft_carriere_competence.Application.Services.salary_skills
 				.ToListAsync();
 		}
 
-		public async Task<string> IsSkillEmployeeExist(int idEmployee, int domainSkillId, int skillId)
+        // Avoir le rapport statuts des compétences
+        public async Task<List<VStateNumber>> GetStateNumber(int idEmployee)
+        {
+            return await _context.VStateNumber
+                .FromSqlRaw("SELECT * FROM v_state_number WHERE Employee_id = {0}", idEmployee)
+                .ToListAsync();
+        }
+
+        public async Task<string> IsSkillEmployeeExist(int idEmployee, int domainSkillId, int skillId)
 		{
 			try
 			{

@@ -62,62 +62,73 @@ function RetirementPage() {
   };
 
   // Fonction de recherche des données avec filtres
-  const fetchFilteredData = useCallback(
-    async (appliedFilters) => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const queryParams = new URLSearchParams({
-          ...appliedFilters,
-          page: currentPage,
-          pageSize,
-        }).toString();
-
-        const response = await Fetcher(`/Retirement/filter?${queryParams}`);
-
-        if (response.success) {
-          setDataRetirement(response.data);
-          setError(null);
-          setTotalPages(response.totalPages || 0);
-          setPaginationResult({
-            totalRecords: response.totalCount,
-            pageSize: response.pageSize,
-            currentPage: response.currentPage,
-            totalPages: response.totalPages
-          });
+  const fetchFilteredData = useCallback(async (appliedFilters) => {
+    setLoading(true);
+    setError(null);
+  
+    try {
+      const queryParams = new URLSearchParams({
+        ...appliedFilters,
+        page: currentPage,
+        pageSize,
+      }).toString();
+  
+      const response = await Fetcher(`/Retirement/filter?${queryParams}`);
+  
+      if (response.success) {
+        if (!Array.isArray(response.data)) {
+          console.error("Données invalides reçues :", response.data);
+          setDataRetirement([]);
         } else {
-          setError(response.message + " " + response.details);
-          setDataRetirement(null);
+          setDataRetirement(response.data);
         }
-      } catch (err) {
-        setError("Erreur inattendue lors du chargement des données : " + err.message);
-        setDataRetirement(null);
-      } finally {
-        setLoading(false);
+  
+        setError(null);
+        setTotalPages(response.totalPages || 0);
+        setPaginationResult({
+          totalRecords: response.totalCount || 0,
+          pageSize: response.pageSize || 0,
+          currentPage: response.currentPage || 0,
+          totalPages: response.totalPages || 0
+        });
+      } else {
+        setError(response.message + " " + response.details);
+        setDataRetirement([]);
       }
-    },
-    [currentPage, pageSize]
-  );
+    } catch (err) {
+      setError("Erreur inattendue lors du chargement des données : " + err.message);
+      setDataRetirement([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, pageSize]);
+  
 
   // Mise à jour des données triées
   // Appliquer le tri chaque fois que `sortDirection` ou `careers` change
   useEffect(() => {
+    if (!Array.isArray(dataRetirement)) {
+      console.error("dataRetirement n'est pas un tableau :", dataRetirement);
+      setSortedDataRetirement([]);
+      return;
+    }
+  
     const sorted = [...dataRetirement].sort((a, b) => {
-    const valueA = a[sortColumn];
-    const valueB = b[sortColumn];
-      
-    if (sortColumn === 'dateDepart') {
-      const dateA = new Date(valueA);
-      const dateB = new Date(valueB);
-      return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-    } else {
+      const valueA = a[sortColumn];
+      const valueB = b[sortColumn];
+  
+      if (sortColumn === 'dateDepart') {
+        const dateA = new Date(valueA);
+        const dateB = new Date(valueB);
+        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+      } else {
         if (valueA < valueB) return sortDirection === 'asc' ? -1 : 1;
         if (valueA > valueB) return sortDirection === 'asc' ? 1 : -1;
-          return 0;
-        }
-      });
-        setSortedDataRetirement(sorted);
+        return 0;
+      }
+    });
+  
+    setSortedDataRetirement(sorted);
   }, [sortDirection, dataRetirement, sortColumn]);
   
 
@@ -297,25 +308,25 @@ function RetirementPage() {
                       </tr>
                     </thead>
                     <tbody>
-                        {sortedDataRetirement.length ? (
-                          sortedDataRetirement.map((item, index) => (
-                            <tr key={index}>
-                              <td>{item.civiliteName}</td>
-                              <td style={{color: '#58d8a3'}}>{`${item.name} ${item.firstName}`}</td>
-                              <td>{item.registrationNumber}</td>
-                              <td>{item.departmentName}</td>
-                              <td>{item.positionName}</td>
-                              <td>{item.age}</td>
-                              <td style={{color: '#57c7d4'}}><FormattedDate date={item.dateDepart} /></td>
-                            </tr>
-                          ))
-                      ) : (
-                        <tr>
-                          <td colSpan="6" className="text-center">
+                    {Array.isArray(sortedDataRetirement) && sortedDataRetirement.length ? (
+                      sortedDataRetirement.map((item, index) => (
+                        <tr key={index}>
+                          <td>{item.civiliteName}</td>
+                          <td style={{color: '#58d8a3'}}>{`${item.name} ${item.firstName}`}</td>
+                          <td>{item.registrationNumber}</td>
+                          <td>{item.departmentName}</td>
+                          <td>{item.positionName}</td>
+                          <td>{item.age}</td>
+                          <td style={{color: '#57c7d4'}}><FormattedDate date={item.dateDepart} /></td>
+                        </tr>
+                     ))) : (
+                        <tr> 
+                          <td colSpan="7" className="text-center">
                             Aucun résultat trouvé.
                           </td>
                         </tr>
-                      )}
+)}
+
                     </tbody>
                   </table>
                   <div className="pagination">

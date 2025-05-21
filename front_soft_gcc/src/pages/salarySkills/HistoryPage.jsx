@@ -7,6 +7,7 @@ import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import Loader from '../../helpers/Loader';
 import DateDisplayWithTime from '../../helpers/DateDisplayWithTime';
+import '../../styles/skillsStyle.css';
 
 const HistoryPage = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -54,16 +55,21 @@ const HistoryPage = () => {
       <PageHeader module={module} action={action} url={url} />
 
       <div className="row">
-        <div className="col-lg-6">
-          <h4 className="card-title text-primary">Historique des Activités</h4>
+        <div className="col-lg-12 skill-header">
+          <i className="mdi mdi-history skill-icon"></i>
+          <h4 className="skill-title">HISTORIQUES DES ACTIVITES</h4>
         </div>
       </div>
 
       <div className="row">
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card shadow-sm rounded-lg">
+          <div className="card-header title-container">
+            <h5 className="title">
+              <i className="mdi mdi-format-list-bulleted"></i> Liste des Historiques
+            </h5>
+          </div>
             <div className="card-body">
-              <h5 className="card-title subtitle text-secondary mb-4">Liste des Historiques</h5>
               <div className="table-responsive">
                 {activityLogs.length > 0 ? (
                   <>

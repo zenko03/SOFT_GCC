@@ -20,19 +20,19 @@ function SettingCareerPage() {
     const [error, setError] = useState(null); 
 
     const  [listSettings, setListSettings] = useState([
-        {url: '/softGcc/settings/carriere/typeAffectation', crudName: 'Type d\'affectation'}, 
-        {url: '/softGcc/settings/carriere/typeCertificat', crudName: 'Type de certificat'},
-        {url: '/softGcc/settings/carriere/echelon', crudName: 'Echelon'},  
-        {url: '/softGcc/settings/carriere/typeEmploye', crudName: 'Type d\'employé'},  
-        {url: '/softGcc/settings/carriere/etablissement', crudName: 'Etablissement'}, 
-        {url: '/softGcc/settings/carriere/fonction', crudName: 'Fonction'}, 
-        {url: '/softGcc/settings/carriere/indication', crudName: 'Indication'}, 
-        {url: '/softGcc/settings/carriere/classeLegale', crudName: 'Classe legale'}, 
-        {url: '/softGcc/settings/carriere/bulletin', crudName: 'Bulletin'}, 
-        {url: '/softGcc/settings/carriere/methodePaiement', crudName: 'Methode de paiement'},                 
-        {url: '/softGcc/settings/carriere/poste', crudName: 'Poste'},     
-        {url: '/softGcc/settings/carriere/categorieProfessionnelle', crudName: 'Categorie professionnelle'},                 
-        {url: '/softGcc/settings/carriere/categorieSocioProfessionnelle', crudName: 'Categorie socio-professionnelle'},                 
+        {url: '/softGcc/settings/carriere/typeAffectation', crudName: 'Type d\'affectation', icon: 'mdi mdi-account-arrow-right settings-icon'}, 
+        {url: '/softGcc/settings/carriere/typeCertificat', crudName: 'Type de certificat', icon: 'mdi mdi-certificate settings-icon'},
+        {url: '/softGcc/settings/carriere/echelon', crudName: 'Echelon', icon: 'mdi mdi-stairs settings-icon'},  
+        {url: '/softGcc/settings/carriere/typeEmploye', crudName: 'Type d\'employé', icon: 'mdi mdi-account-tie settings-icon'},  
+        {url: '/softGcc/settings/carriere/etablissement', crudName: 'Etablissement', icon: 'mdi mdi-domain settings-icon'}, 
+        {url: '/softGcc/settings/carriere/fonction', crudName: 'Fonction', icon: 'mdi mdi-briefcase settings-icon'}, 
+        {url: '/softGcc/settings/carriere/indication', crudName: 'Indication', icon: 'mdi mdi-star settings-icon'}, 
+        {url: '/softGcc/settings/carriere/classeLegale', crudName: 'Classe legale', icon: 'mdi mdi-gavel settings-icon'}, 
+        {url: '/softGcc/settings/carriere/bulletin', crudName: 'Bulletin', icon: 'mdi mdi-newspaper settings-icon'}, 
+        {url: '/softGcc/settings/carriere/methodePaiement', crudName: 'Methode de paiement', icon: 'mdi mdi-credit-card settings-icon'},                 
+        {url: '/softGcc/settings/carriere/poste', crudName: 'Poste', icon: 'mdi mdi-briefcase settings-icon'},     
+        {url: '/softGcc/settings/carriere/categorieProfessionnelle', crudName: 'Categorie professionnelle', icon: 'mdi mdi-account-tie settings-icon'},                 
+        {url: '/softGcc/settings/carriere/categorieSocioProfessionnelle', crudName: 'Categorie socio-professionnelle', icon: 'mdi mdi-account-tie settings-icon'},                 
     ]);
     
     // Navigation dans la page de crud
@@ -46,16 +46,20 @@ function SettingCareerPage() {
           
             <PageHeader module={module} action={action} url={url} />
             <div className='row'>
-                <h2 className="card-title">Paramètre des carrières</h2>                
+                <div className="col-lg-12 skill-header">
+                    <i className="mdi mdi-settings skill-icon"></i>
+                    <h4 className="skill-title">PARAMETRE DES CARRIERES</h4>
+                </div>             
             </div>
 
             <div className="row">
                 {listSettings.map((item, id) => (
-                    <div key={id} className="col-lg-3 grid-margin stretch-card">
-                        <div onClick={() => (handleCrudPage(item))} className="card" style={{backgroundColor: '#0062ff'}}>
+                    <div key={id} className="col-lg-2 grid-margin stretch-card">
+                        <div onClick={() => (handleCrudPage(item))} className="card settings-card">
                             <div className="card-body"> 
-                                <h5 className="card-title">
-                                    <span>{item.crudName}</span> 
+                                <h5 className="card-text">
+                                    <i className={item.icon}></i>
+                                    <span className='settings-title'>{item.crudName}</span> 
                                 </h5>
                             </div>
                         </div>
