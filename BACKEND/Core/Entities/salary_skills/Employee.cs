@@ -36,5 +36,7 @@ namespace soft_carriere_competence.Core.Entities.salary_skills
 
 		[Column("Photo")]
 		public byte[]? Photo { get; set; }
+		[Column("Email")]
+        public string? Email { get; set; }
 	}
 }

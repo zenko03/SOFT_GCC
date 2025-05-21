@@ -94,6 +94,7 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<EvaluationProgress> evaluationProgresses { get; set; }
 		public DbSet<TemporaryAccount> temporaryAccounts { get; set; }
 		public DbSet<LoginAttempt> loginAttempts { get; set; }
+		public DbSet<EvaluationQuestionConfig> evaluationQuestionConfigs { get; set; }
 
 		public DbSet<VEmployeeDetails> VEmployeeDetails { get; set; }
 		public DbSet<VEmployeeWithoutEvaluation> vEmployeeWithoutEvaluations { get; set; }
@@ -107,7 +108,6 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<RetirementParameter> RetirementParameter { get; set; }
 
 		// SOUHAIT EVOLUTION
-		public DbSet<SkillPosition> SkillPosition { get; set; }
 		public DbSet<WishType> WishType { get; set; }
 		public DbSet<WishEvolutionCareer> WishEvolutionCareer { get; set; }
 		public DbSet<VWishEvolution> VWishEvolution { get; set; }

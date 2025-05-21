@@ -58,6 +58,7 @@ import { useNavigate } from "react-router-dom";
 import Evaluations from '../pages/settings/evaluations/Evaluations';
 import QuestionEvaluation from '../pages/settings/evaluations/Questionnaires/QuestionEvaluation';
 import FormationSuggestions from '../pages/settings/evaluations/FormationSuggestion/FormationSuggestions';
+import AdminSettings from '../pages/settings/evaluations/AdminSettings';
 import EvaluationLogin from '../pages/Evaluations/SalaryEval/EvaluationLogin';
 import EvaluationPage from '../pages/Evaluations/SalaryEval/EvaluationPage';
 import ModelList from '../pages/certificateManagement/ModelList';
@@ -76,11 +77,52 @@ function AppRouter() {
       {/* Authentification */}
       <Route path="/Register" element={<Register />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
+
+      {/* Routes protégées avec permissions */}
+      <Route element={<ProtectedRoute requiredPermission="MANAGE_USERS" />}>
+        <Route path="/user-management" element={<UserManagement />} />
+        <Route path="/users-list" element={<UsersList />} />
+        <Route path="/roles-management" element={<RolesManagement />} />
+        <Route path="/permissions-management" element={<PermissionsManagement />} />
+      </Route>
+
+      {/* Routes protégées pour les évaluations */}
+      <Route path="/salary-list" element={<SalaryList />} />
+      <Route path="/notation" element={<Notation />} />
+      <Route path="/planning" element={<SalaryListPlanning />} />
+      <Route path="/history" element={<EvalHistory />} />
+      <Route path="/validation" element={<EvaluationInterviews />} />
+      <Route path="/homeInterview" element={<EvaluationInterviewHome />} />
+
+      {/* Routes protégées pour les paramètres d'évaluation */}
+      <Route element={<ProtectedRoute requiredPermission="MANAGE_EVALUATIONS" />}>
+        <Route path="/EvaluationSettings" element={<Evaluations />} />
+        <Route path="/EvaluationQuestionSettings" element={<QuestionEvaluation />} />
+        <Route path="/EvaluationFormationSettings" element={<FormationSuggestions />} />
+        <Route path="/EvaluationAdminSettings" element={<AdminSettings />} />
+      </Route>
+
+      {/* Nouvelles routes pour la page de notation */}
+      <Route path="/evaluations/notation/employee/:employeeId" element={<EvaluationNotation />} />
+      <Route path="/evaluations/notation/evaluation/:evaluationId" element={<EvaluationNotation />} />
+      <Route path="/evaluations/salary-list" element={<SalaryList />} />
+
+      <Route path="/carriere" element={<ListSalaryPage />} />
+      <Route path="/carriere/creation" element={<CreationCareerPlan />} />
+      <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
+      <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
+      <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
+
+      <Route path="/retraite" element={<RetirementPage />} />
+
+      {/* Route par défaut */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
 
       {/*COMPETENCES */}
       <Route path="/competences" element={<ListSkillSalaryPage />} />
       <Route path="/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
-      
+
       {/* EVALUATIONS */}
       <Route path="/salary-list" element={<SalaryList />} />
       <Route path="/notation" element={<Notation />} />

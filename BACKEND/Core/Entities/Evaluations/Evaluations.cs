@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using soft_carriere_competence.Core.Entities.salary_skills;
 
 namespace soft_carriere_competence.Core.Entities.Evaluations
 {
@@ -12,8 +13,10 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Column("evaluationType_id")]
         public int EvaluationTypeId { get; set; }
 
-        public int UserId { get; set; }
+       
 
+        [Column("employeeId")]
+        public int EmployeeId { get; set; }
 
         [Column(TypeName = "date")]
         public DateTime StartDate { get; set; }
@@ -27,7 +30,6 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         public string? Comments { get; set; }
 
         [Column("IsServiceApproved ")]
-
         public bool? IsServiceApproved {  get; set; }
         [Column("isDgApproved")]
         public bool? isDgApproved {  get; set; }
@@ -44,8 +46,10 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [ForeignKey("EvaluationTypeId")]
         public EvaluationType EvaluationType { get; set; }
 
-        [ForeignKey("UserId")]
-        public User User { get; set; }
+      
+
+        [ForeignKey("EmployeeId")]
+        public Employee Employee { get; set; }
 
         [Column("state")]
         public int state {  get; set; }

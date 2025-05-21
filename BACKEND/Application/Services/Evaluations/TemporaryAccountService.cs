@@ -7,6 +7,7 @@ using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Application.Services.EmailService;
 using soft_carriere_competence.Infrastructure.Data;
 using soft_carriere_competence.Core.Interface.AuthInterface;
+using soft_carriere_competence.Core.Entities.salary_skills;
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -41,20 +42,80 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return tempLogin;
         }
 
-        // Crée un compte temporaire pour un utilisateur
-        public async Task<TemporaryAccount> CreateTemporaryAccountAsync(int userId, int evaluationId)
+        // Génère un login temporaire unique basé sur le nom de l'employé
+        private async Task<string> GenerateTemporaryLoginFromEmployeeAsync(Employee employee)
         {
-            var user = await _context.Users.FindAsync(userId);
+            string baseLogin = $"{employee.FirstName.Substring(0, 1)}{employee.Name}".ToLower();
+            baseLogin = baseLogin.Replace(" ", "").Replace("-", "");
+
+            // Vérifier si ce login existe déjà et ajouter un nombre aléatoire si c'est le cas
+            bool loginExists;
+            string tempLogin;
+            Random random = new Random();
+
+            do
+            {
+                int randomNumber = random.Next(1000, 9999); tempLogin = $"{baseLogin}{randomNumber}";
+                loginExists = await _context.temporaryAccounts.AnyAsync(ta => ta.TempLogin == tempLogin);
+            } while (loginExists);
+
+            return tempLogin;
+        }
+
+        // Crée un compte temporaire pour un utilisateur
+        //public async Task<TemporaryAccount> CreateTemporaryAccountAsync(int userId, int evaluationId)
+        //{
+        //    var user = await _context.Users.FindAsync(userId);
+        //    var evaluation = await _context.Evaluations.FindAsync(evaluationId);
+
+        //    if (user == null || evaluation == null)
+        //        throw new ArgumentException("Utilisateur ou évaluation invalide");
+
+        //    var tempAccount = new TemporaryAccount
+        //    {
+        //        UserId = userId,
+        //        Evaluations_id = evaluationId,
+        //        TempLogin = await GenerateTemporaryLoginAsync(user),
+        //        TempPassword = GenerateTemporaryPassword(),
+        //        CreatedAt = DateTime.UtcNow,
+        //        ExpirationDate = DateTime.UtcNow.AddDays(2)
+        //    };
+
+        //    _context.temporaryAccounts.Add(tempAccount);
+        //    await _context.SaveChangesAsync();
+
+        //    await _emailService.SendEmailAsync(user.Email, "Identifiants temporaires pour l'évaluation",
+        //        $"Votre login : {tempAccount.TempLogin}\nVotre mot de passe : {tempAccount.TempPassword}\n" +
+        //        $"Notez que ces identifiants ne seront valides qu'à partir de {evaluation.StartDate.ToShortDateString()}.");
+
+        //    return tempAccount;
+        //}
+
+        // Surcharge pour inclure l'employeeId
+        public async Task<TemporaryAccount> CreateTemporaryAccountAsync( int employeeId, int evaluationId)
+        {
+            User user = null;
+            Employee employee = null;
             var evaluation = await _context.Evaluations.FindAsync(evaluationId);
 
-            if (user == null || evaluation == null)
-                throw new ArgumentException("Utilisateur ou évaluation invalide");
+            if (evaluation == null)
+                throw new ArgumentException("Évaluation invalide");
+            
+            // Vérifier si un employé existe (obligatoire)
+            employee = await _context.Employee.FindAsync(employeeId);
+            if (employee == null)
+                throw new ArgumentException("Employé invalide");
 
+           
             var tempAccount = new TemporaryAccount
             {
-                UserId = userId,
+                // Suppression de UserId pour éviter la violation de contrainte FK
+                // UserId = userId, 
+                EmployeeId = employeeId,
                 Evaluations_id = evaluationId,
-                TempLogin = await GenerateTemporaryLoginAsync(user),
+                TempLogin = user != null 
+                    ? await GenerateTemporaryLoginAsync(user)
+                    : await GenerateTemporaryLoginFromEmployeeAsync(employee),
                 TempPassword = GenerateTemporaryPassword(),
                 CreatedAt = DateTime.UtcNow,
                 ExpirationDate = DateTime.UtcNow.AddDays(2)
@@ -63,15 +124,19 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             _context.temporaryAccounts.Add(tempAccount);
             await _context.SaveChangesAsync();
 
-            await _emailService.SendEmailAsync(user.Email, "Identifiants temporaires pour l'évaluation",
-                $"Votre login : {tempAccount.TempLogin}\nVotre mot de passe : {tempAccount.TempPassword}\n" +
-                $"Notez que ces identifiants ne seront valides qu'à partir de {evaluation.StartDate.ToShortDateString()}.");
+            // Envoyer un email seulement si un utilisateur existe
+            if (user != null && !string.IsNullOrEmpty(user.Email))
+            {
+                await _emailService.SendEmailAsync(user.Email, "Identifiants temporaires pour l'évaluation",
+                    $"Votre login : {tempAccount.TempLogin}\nVotre mot de passe : {tempAccount.TempPassword}\n" +
+                    $"Notez que ces identifiants ne seront valides qu'à partir de {evaluation.StartDate.ToShortDateString()}.");
+            }
 
             return tempAccount;
         }
 
         // Génère un mot de passe temporaire |
-               private string GenerateTemporaryPassword()
+        private string GenerateTemporaryPassword()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
             var random = new Random();

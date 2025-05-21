@@ -1,0 +1,63 @@
+import React, { useEffect, useState } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useUser } from "../Evaluations/EvaluationInterview/UserContext";
+import PropTypes from 'prop-types';
+
+const ProtectedRoute = ({ requiredPermission }) => {
+  const location = useLocation();
+  const { loading, isInitialized, hasPermission, refreshPermissions, userPermissions } = useUser();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Recharger les permissions au montage du composant et quand la location change
+  useEffect(() => {
+    const loadPermissions = async () => {
+      if (isInitialized && !loading) {
+        console.log('Rechargement des permissions pour la route:', location.pathname);
+        await refreshPermissions();
+      }
+    };
+
+    loadPermissions();
+  }, [isInitialized, loading, refreshPermissions, location.pathname]);
+
+  useEffect(() => {
+    if (userPermissions && userPermissions.length > 0) {
+      setIsAuthorized(hasPermission(requiredPermission));
+      setIsLoading(false);
+    }
+  }, [userPermissions, requiredPermission, hasPermission]);
+
+  // Attendre que l'initialisation soit terminée
+  if (!isInitialized || loading) {
+    console.log('Chargement en cours...');
+    return <div>Chargement...</div>;
+  }
+
+  // Vérifier l'authentification
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.log('Aucun token trouvé, redirection vers login');
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Vérifier les permissions si nécessaire
+  if (requiredPermission) {
+    console.log('Vérification des permissions pour la route:', location.pathname);
+    console.log('Permission requise:', requiredPermission);
+    console.log('Permissions actuelles:', userPermissions);
+    
+    if (!isAuthorized) {
+      console.log('Permission non accordée, redirection vers unauthorized');
+      return <Navigate to="/unauthorized" state={{ from: location }} replace />;
+    }
+  }
+
+  return <Outlet />;
+};
+
+ProtectedRoute.propTypes = {
+  requiredPermission: PropTypes.string,
+};
+
+export default ProtectedRoute;

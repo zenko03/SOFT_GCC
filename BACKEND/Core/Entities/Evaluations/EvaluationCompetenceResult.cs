@@ -1,3 +1,4 @@
+using soft_carriere_competence.Core.Entities.salary_skills;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,8 +14,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Required]
         public int EvaluationId { get; set; }
         
-        [Required]
-        public int UserId { get; set; }
+        public int EmployeeId { get; set; }
         
         [Required]
         public int CompetenceLineId { get; set; }
@@ -32,9 +32,9 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         
         [ForeignKey("EvaluationId")]
         public virtual Evaluation Evaluation { get; set; }
-        
-        [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+
+        [ForeignKey("EmployeeId")]
+        public virtual Employee Employee { get; set; }
         
         [ForeignKey("CompetenceLineId")]
         public virtual CompetenceLine CompetenceLine { get; set; }

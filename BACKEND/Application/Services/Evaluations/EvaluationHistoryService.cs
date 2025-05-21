@@ -303,7 +303,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 // Filtrage des évaluations par date
                 var evaluations = _context.Evaluations
                     .Include(e => e.EvaluationType)
-                    .Include(e => e.User)
+                    .Include(e => e.Employee)
                     .Where(e => (!startDate.HasValue || e.StartDate >= startDate) &&
                                 (!endDate.HasValue || e.EndDate <= endDate))
                     .ToList();
@@ -344,7 +344,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             {
                 var date = eval.StartDate.ToString("yyyy-MM-dd") ?? "N/A";
                 var type = eval.EvaluationType?.Designation ?? "Inconnu";
-                var employee = $"{eval.User?.FirstName ?? "N/A"} {eval.User?.LastName ?? "N/A"}";
+                var employee = $"{eval.Employee?.FirstName ?? "N/A"} {eval.Employee?.Name ?? "N/A"}";
                 var score = eval.OverallScore?.ToString() ?? "N/A";
                 var state = eval.state;
 
@@ -372,7 +372,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             {
                 worksheet.Cell(row, 1).Value = eval.StartDate.ToString("yyyy-MM-dd");
                 worksheet.Cell(row, 2).Value = eval.EvaluationType.Designation;
-                worksheet.Cell(row, 3).Value = $"{eval.User.FirstName} {eval.User.LastName}";
+                worksheet.Cell(row, 3).Value = $"{eval.Employee.FirstName} {eval.Employee.Name}";
                 worksheet.Cell(row, 4).Value = eval.OverallScore;
                 worksheet.Cell(row, 5).Value = eval.state;
                 row++;
@@ -405,7 +405,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             {
                 document.Add(new iTextSharp.text.Paragraph($"Date : {eval.StartDate:yyyy-MM-dd}", bodyFont));
                 document.Add(new iTextSharp.text.Paragraph($"Type d'évaluation : {eval.EvaluationType.Designation}", bodyFont));
-                document.Add(new iTextSharp.text.Paragraph($"Employé : {eval.User.FirstName} {eval.User.LastName}", bodyFont));
+                document.Add(new iTextSharp.text.Paragraph($"Employé : {eval.Employee.FirstName} {eval.Employee.Name}", bodyFont));
                 document.Add(new iTextSharp.text.Paragraph($"Score Global : {eval.OverallScore}", bodyFont));
                 document.Add(new iTextSharp.text.Paragraph($"Statut : {eval.state}", bodyFont));
                 document.Add(new iTextSharp.text.Paragraph("\n")); // Ligne vide
