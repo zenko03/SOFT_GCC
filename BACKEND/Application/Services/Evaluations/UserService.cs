@@ -83,8 +83,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 Password = hashedPassword,
                 RoleId = dto.RoleId,
                 CreationDate = DateTime.UtcNow,
-                DepartmentId = dto.departementId,
-                PositionId = 1,
                 Createdby = 1
 
             };
@@ -173,8 +171,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         new Claim("lastName", user.LastName), // Nom
         new Claim("roleId", user.RoleId.ToString()), // ID du rôle
         new Claim("roleTitle", user.Role?.Title ?? "Unknown"), // Titre du rôle
-        new Claim("positionId", user.PositionId.ToString()), // ID du poste
-        new Claim("departmentId", user.DepartmentId.ToString()) // ID du département
     };
 
             var token = new JwtSecurityToken(
@@ -193,8 +189,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         {
             var query = _context.Users.AsQueryable();
 
-            if (department.HasValue)
-                query = query.Where(u => u.DepartmentId == department.Value);
+            //if (department.HasValue)
+                //query = query.Where(u => u.DepartmentId == department.Value);
 
             return await query.CountAsync();
         }
@@ -303,18 +299,14 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         public async Task<User> GetUserByEmailAsync(string email)
         {
             return await _context.Users
-                .Include(u => u.Department)
                 .Include(u => u.Role)
-                .Include(u => u.Position)
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<User?> GetUserByIdAsync(int userId)
         {
             return await _context.Users
-                .Include(u => u.Department)
                 .Include(u => u.Role)
-                .Include(u => u.Position)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 

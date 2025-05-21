@@ -37,13 +37,13 @@ function SettingSkillPage() {
     return (
         <Template>
             {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
-          
             <PageHeader module={module} action={action} url={url} />
-            <div className='row'>
-                <div className="col-lg-12 skill-header">
-                    <i className="mdi mdi-settings skill-icon"></i>
-                    <h4 className="skill-title">PARAMETRE DES COMPETENCES</h4>
-                </div>             
+           
+            <div className="title-container">
+                <div className="col-lg-10 skill-header">
+                <i className="mdi mdi-settings skill-icon"></i>
+                <p className="skill-title">PARAMETRE DES COMPÉTENCES</p>
+                </div>
             </div>
 
             <div className="row">

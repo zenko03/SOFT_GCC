@@ -327,6 +327,7 @@ CREATE TABLE career_plan (
 	Updated_date DATETIME
 );
 
+
 -------------------------------------------- TABLE POUR GERER LES HISTORIQUES ------------------------------------------------------
 -- Creation de la table module(id, designation)
 CREATE TABLE Module (
@@ -356,8 +357,8 @@ CREATE TABLE Activity_logs (
 );
 
 ---- Donne d'insertion
---INSERT INTO Module(Module_name) VALUES ('Competences');
---INSERT INTO Module(Module_name) VALUES ('Carrieres');
+INSERT INTO Module(Module_name) VALUES ('Competences');
+INSERT INTO Module(Module_name) VALUES ('Carrieres');
 
 -------------------------------------------------- DEPART A LA RETRAITE --------------------------------------------------------------------
 CREATE TABLE Retirement_parameter (

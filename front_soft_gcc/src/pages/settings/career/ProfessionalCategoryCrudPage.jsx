@@ -194,7 +194,7 @@ function ProfessionalCategoryCrudPage() {
                                                 <td>
                                                     <Button
                                                         onClick={() => handleChangeToModifiedPage(item.professionalCategoryId)}
-                                                        className="btn btn-danger btn-sm"
+                                                        className="btn btn-primary btn-sm"
                                                         style={{backgroundColor: 'white'}}
                                                     >
                                                         <i className="mdi mdi-pencil icon-edit" style={{ fontSize: '20px' }}></i>

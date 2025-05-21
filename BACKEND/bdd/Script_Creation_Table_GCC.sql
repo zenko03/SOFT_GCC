@@ -149,6 +149,8 @@ CREATE TABLE Assignment_type (
 	Assignment_type_name NVARCHAR(50)
 );
 
+INSERT INTO Assignment_type (Assignment_type_name) VALUES ('Nomination'), ('Mise en disponibilité'), ('Avancement');
+
 -- Creation de la table etablissement(id, designation)
 CREATE TABLE Establishment (
 	Establishment_id INT PRIMARY KEY IDENTITY(1,1),

@@ -26,17 +26,9 @@ public class User
 
     [MaxLength(255)]
     public string Password { get; set; }
-    [Column("positionId")]
-    public int PositionId {  get; set; }
-
-    
+ 
     [Column("role_id")]
     public int RoleId { get; set; }
-
-    
-    [Column("departmentid")]
-    public int DepartmentId { get; set; }
-
     
 
     [Column("creation_date",TypeName = "date")]
@@ -51,8 +43,4 @@ public class User
     // Navigation Properties
     [ForeignKey("RoleId")]
     public Role? Role { get; set; }
-    public Department? Department { get; set; }
-    [ForeignKey("PositionId")]
-    public Position? Position { get; set; }
-
 }

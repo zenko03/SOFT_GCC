@@ -5,6 +5,7 @@ import Loader from '../../../helpers/Loader';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
+import CancelButton from '../../../helpers/CancelButton';
 
 function DegreeCrudPage() {
     const module = 'Plan de carrière';
@@ -16,6 +17,11 @@ function DegreeCrudPage() {
     const [data, setData] = useState([]);
     const [idItem, setIdItem] = useState(0);
     const [isModifiedPage, setIsModifiedPage] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [currentPage, setCurrentPage] = useState(1);
+
+
     
     const [formData, setFormData] = useState({
         name: ''
@@ -118,14 +124,32 @@ function DegreeCrudPage() {
         setFormData({ name: '' });
     };
 
+    const filteredData = data.filter((item) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <Template>
             <PageHeader module={module} action={action} url={url} />
-            <div className="col-lg-12 skill-header">
-                <i className="mdi mdi-star skill-icon"></i>
-                <h4 className="skill-title">ENTITÉ NIVEAU D'ETUDE</h4>
-            </div>     
+
+            <div className="title-container">
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-star skill-icon"></i>
+                    <p className="skill-title">ENTITÉ NIVEAU D'ÉTUDE</p>
+                </div>
+
+                <div className="col-lg-2">
+                    <CancelButton to="settings/competence" />
+                </div>  
+            </div>
+           
             {isLoading && <Loader />}
             {error && <div className="alert alert-danger">{error}</div>}
                 <div className="row">            
@@ -133,10 +157,9 @@ function DegreeCrudPage() {
                         {isModifiedPage ? (
                             <div className="card">
                                 <form className="forms-sample" onSubmit={handleSubmitModified}>
-                                    <div className="card-header title-container">
-                                        <h5 className="title">
-                                            <i className="mdi mdi-file-document-edit"></i> Formulaire de modification
-                                        </h5>
+                                    <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                        <i className="mdi mdi-file-document-edit me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                        <h3 className="mb-0" style={{color: '#B8860B'}}>Formulaire de modification</h3>
                                     </div>
                                     <div className="card-body">
                                         <div className="form-group">
@@ -153,10 +176,9 @@ function DegreeCrudPage() {
                         ) : (
                             <div className="card">
                                 <form className="forms-sample" onSubmit={handleSubmit}>
-                                    <div className="card-header title-container">
-                                        <h5 className="title">
-                                            <i className="mdi mdi-file-document-edit"></i> Formulaire d'ajout
-                                        </h5>
+                                    <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                        <i className="mdi mdi-file-document-edit me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                        <h3 className="mb-0" style={{color: '#B8860B'}}>Formulaire d'ajout</h3>
                                     </div>
                                     <div className="card-body">
                                         <div className="form-group">
@@ -174,12 +196,45 @@ function DegreeCrudPage() {
                     </div>
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
-                            <div className="card-header title-container">
-                                <h5 className="title">
-                                    <i className="mdi mdi-format-list-bulleted"></i> Liste enregistrée
-                                </h5>
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-format-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}> Liste enregistrée</h3>
                             </div>
                             <div className="card-body">
+                                <div className="d-flex justify-content-between mb-3">
+                                    <div className="form-group">
+                                        <label htmlFor="itemsPerPage" className="me-2">Éléments par page :</label>
+                                        <select
+                                        id="itemsPerPage"
+                                        className="form-select"
+                                        style={{ width: '120px', display: 'inline-block' }}
+                                        value={itemsPerPage}
+                                        onChange={(e) => {
+                                            setItemsPerPage(parseInt(e.target.value));
+                                            setCurrentPage(1); // Réinitialiser la page
+                                        }}
+                                        >
+                                        <option value={5}>5</option>
+                                        <option value={10}>10</option>
+                                        <option value={20}>20</option>
+                                        <option value={50}>50</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Rechercher une désignation..."
+                                        value={searchTerm}
+                                        onChange={(e) => {
+                                            setSearchTerm(e.target.value);
+                                            setCurrentPage(1); // Réinitialiser la page
+                                        }}
+                                        />
+                                    </div>
+                                </div>
+
                                 <table className="table table-hover table-bordered">
                                     <thead className="bg-primary text-white">
                                         <tr>
@@ -189,31 +244,42 @@ function DegreeCrudPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {data.map((item, id) => (
+                                        {currentItems.map((item) => (
                                             <tr key={item.degreeId}>
-                                                <td className="text-center">{item.degreeId}</td>
-                                                <td>{item.name}</td>
-                                                <td>
-                                                    <Button
-                                                        onClick={() => handleChangeToModifiedPage(item.degreeId)}
-                                                        className="btn btn-danger btn-sm"
-                                                        style={{backgroundColor: 'white'}}
-                                                    >
-                                                        <i className="mdi mdi-pencil icon-edit" style={{ fontSize: '20px' }}></i>
-                                                    </Button>
-                                                    <Button
-                                                        onClick={() => handleDeleteConfirmed(item.degreeId)}
-                                                        className="btn btn-danger btn-sm"
-                                                        style={{backgroundColor: 'white', margin: '20px'}}
-                                                    >
-                                                        <i className="mdi mdi-delete icon-delete" 
-                                                        style={{fontSize: '20px'}}></i>
-                                                    </Button>
-                                                </td>
+                                            <td className="text-center">{item.degreeId}</td>
+                                            <td>{item.name}</td>
+                                            <td>
+                                                <Button onClick={() => handleChangeToModifiedPage(item.degreeId)} className="btn btn-danger btn-sm" style={{ backgroundColor: 'white' }}>
+                                                <i className="mdi mdi-pencil icon-edit" style={{ fontSize: '20px' }}></i>
+                                                </Button>
+                                                <Button onClick={() => handleDeleteConfirmed(item.degreeId)} className="btn btn-danger btn-sm" style={{ backgroundColor: 'white', margin: '20px' }}>
+                                                <i className="mdi mdi-delete icon-delete" style={{ fontSize: '20px' }}></i>
+                                                </Button>
+                                            </td>
                                             </tr>
                                         ))}
                                     </tbody>
+
+
                                 </table>
+
+                                <nav className="mt-3">
+                                    <ul className="pagination justify-content-center">
+                                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                        <button className="page-link" onClick={() => paginate(currentPage - 1)}>Précédent</button>
+                                        </li>
+                                        {Array.from({ length: totalPages }, (_, i) => (
+                                        <li key={i + 1} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                            <button onClick={() => paginate(i + 1)} className="page-link">{i + 1}</button>
+                                        </li>
+                                        ))}
+                                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                        <button className="page-link" onClick={() => paginate(currentPage + 1)}>Suivant</button>
+                                        </li>
+                                    </ul>
+                                </nav>
+
+
                             </div>
                         </div>
                     </div>
