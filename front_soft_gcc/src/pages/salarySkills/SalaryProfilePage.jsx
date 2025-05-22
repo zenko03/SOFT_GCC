@@ -8,6 +8,8 @@ import CardSkills from '../../components/salarySkills/cardSkills';
 import Loader from '../../helpers/Loader';
 import Template from '../Template';
 import '../../styles/skillsStyle.css';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
+import CancelButton from '../../helpers/CancelButton';
 
 // Gestion d'affichage du page salaryProfile (profile des competences salaries)
 function SalaryProfilePage({ task }) {
@@ -39,32 +41,13 @@ function SalaryProfilePage({ task }) {
     fetchData();
   }, [idEmployee]);
 
-  // Afficher le loader pendant le chargement
-  if (loading) {
-    return(
-      <Template>
-        <PageHeader module={module} action={action} url={url} />
-        <Loader />
-      </Template>
-    );
-  }
-
   // Vérifier si les données sont bien reçues
   if (!employeeDescription || employeeDescription.length === 0) {
     return(
       <Template>
-        <PageHeader module={module} action={action} url={url} />
         <div style={{ color: 'red' }}>Aucune donnée trouvée. {error}</div>
       </Template>
-    );  }
-
-  if (error) {
-    return(
-      <Template>
-        <PageHeader module={module} action={action} url={url} />
-          {error && <div className="alert alert-danger">{error}</div>}
-        </Template>
-    );
+    ); 
   }
 
   // Si c'est un tableau, on accède au premier élément (l'index 0)
@@ -72,29 +55,29 @@ function SalaryProfilePage({ task }) {
 
   return (
     <Template>
-      <PageHeader module={module} action={action} url={url} />
       <div className="title-container">
-        <p className="title"> 
-          <i className="mdi mdi-note-text"></i> 
-          <span>Description</span>
-        </p>
+        <div className="col-lg-10 skill-header">
+          <i className="mdi mdi-school skill-icon"></i>
+          <p className="skill-title">PROFIL DES COMPÉTENCES</p>
+        </div>
+        <div className="col-lg-2">
+          <CancelButton to="competences" />
+        </div>  
       </div>
+      <BreadcrumbPers
+        items={[
+          { label: 'Accueil', path: '/softGcc/tableauBord' },
+          { label: 'Compétences', path: '/softGcc/competences' },
+          { label: 'Profil', path: '/softGcc/competences/profil' }
+        ]}
+      />
+      {loading && <Loader />}
+      {error && <div className="alert alert-danger">{error}</div>}
+
       <SalaryDescription dataEmployeeDescription={employee} />
 
-      <div className="card-header title-container">
-        <p className="title"> 
-          <i className="mdi mdi-school"></i> 
-          <span>Compétences</span>
-        </p>
-      </div>
       <CardSkills dataEmployeeDescription={employee} idEmployee={idEmployee} />
 
-      <div className="card-header title-container">
-        <p className="title"> 
-          <i className="mdi mdi-chart-bar"></i> 
-          <span>Graphes des compétences</span>
-        </p>
-      </div>
       <SkillSalaryChart employeeId={idEmployee} />
     </Template>
   );

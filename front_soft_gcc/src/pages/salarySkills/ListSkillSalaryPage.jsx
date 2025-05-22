@@ -9,6 +9,7 @@ import '../../styles/skillsStyle.css';
 import Loader from '../../helpers/Loader';
 import '../../styles/pagination.css';
 import DateDisplayWithTime from '../../helpers/DateDisplayWithTime';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 // Fonction debounce pour éviter les appels excessifs
 function debounce(func, delay) {
@@ -21,12 +22,7 @@ function debounce(func, delay) {
 
 // Page liste des competences
 function ListSkillSalaryPage() {
-  // Url d'en-tete de page
-  const module = "Compétences";
-  const action = "Liste";
-  const url = "/competences";
   const navigate = useNavigate();
-  
 
   // Initialisation des variables de states
   const [skills, setSkills] = useState([]);
@@ -147,15 +143,12 @@ function ListSkillSalaryPage() {
 
   // Navigation pour details competences
   const handleSkillsDetails = (employeeId) => {
-    navigate(`/competences/profil/${employeeId}`);
+    navigate(`/softGcc/competences/profil/${employeeId}`);
   };
 
   return (
     <Template>
       {loading && <Loader />}
-
-
-      <PageHeader module={module} action={action} url={url} />
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="title-container">
@@ -164,6 +157,14 @@ function ListSkillSalaryPage() {
           <p className="skill-title">COMPÉTENCES DES SALARIÉS</p>
         </div>
       </div>
+      <BreadcrumbPers
+        items={[
+          { label: 'Accueil', path: '/softGcc/tableauBord' },
+          { label: 'Compétences', path: '/softGcc/competences' },
+          { label: 'Liste des compétences', path: '/softGcc/competences' }
+        ]}
+      />
+      
       <div className="row">                    
         <div className="col-lg-12 grid-margin">
             <div className="search-card">

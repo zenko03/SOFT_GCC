@@ -271,6 +271,10 @@ CREATE TABLE Module (
 	Module_name NVARCHAR(50)
 );
 
+
+INSERT INTO Module(Module_name) VALUES ('Competences');
+INSERT INTO Module(Module_name) VALUES ('Carrieres');
+
 -- Creation de la table historique(id, type, description, date, etat)
 CREATE TABLE History (
 	History_id INT PRIMARY KEY IDENTITY(1,1),

@@ -13,7 +13,7 @@ function MenuBar({ task }) {
           </Link>
         </li>
         <li className="nav-item">
-          <Link className="nav-link" to="/competences">
+          <Link className="nav-link" to="/softGcc/competences">
             <span className="icon-bg"><i className="mdi mdi-school menu-icon"></i></span>
             <span className="menu-title">Compétences</span>
           </Link>

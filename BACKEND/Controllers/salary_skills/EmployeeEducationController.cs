@@ -75,7 +75,6 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
-			await _employeeEducationService.Delete(id);
 			var employeeEducation = await _employeeEducationService.GetById(id);
 			var activityLog = new ActivityLog
 			{
@@ -87,6 +86,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};
 
+			await _employeeEducationService.Delete(id);
 			await _historyService.Add(activityLog);
 			return NoContent();
 		}

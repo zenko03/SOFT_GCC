@@ -387,6 +387,15 @@
   color: #333;
 }
 
+.label-title-salary {
+  display: inline-block;
+  min-width: 140px; /* Ajuste selon la longueur des labels */
+  margin-right: 50px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #333;
+}
+
 .value-profil {
   color: #555;
   font-weight: 500;

@@ -25,9 +25,6 @@ namespace soft_carriere_competence.Core.Entities.salary_skills
 		[Column("School_name")]
 		public String? SchoolName { get; set; }
 
-		[Column("Year")]
-		public int? Year { get; set; }
-
 		[Column("State")]
 		public int? State { get; set; }
 
@@ -57,5 +54,11 @@ namespace soft_carriere_competence.Core.Entities.salary_skills
 
 		[Column("Hiring_date")]
 		public DateTime? HiringDate { get; set; }
-	}
+
+        [Column("Start_date")]
+        public DateTime? StartDate { get; set; }
+
+        [Column("Ending_date")]
+        public DateTime? EndingDate { get; set; }
+    }
 }

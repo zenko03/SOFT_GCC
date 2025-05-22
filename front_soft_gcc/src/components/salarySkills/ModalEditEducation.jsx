@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import Fetcher from '../fetcher';
+import Fetcher from '../Fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
@@ -19,9 +19,10 @@ function ModalEditEducation({ showEditEducation, handleCloseEditEducation, selec
         studyPathId: '',
         degreeId: '',
         schoolId: '',
-        year: '',
         state: '',
-        employeeId: idEmployee, // Valeur par défaut de l'employé, peut être rendue dynamique
+        employeeId: idEmployee,
+        startDate: '',
+        endingDate: ''
     });
 
     const [formErrors, setFormErrors] = useState({});
@@ -35,9 +36,10 @@ function ModalEditEducation({ showEditEducation, handleCloseEditEducation, selec
                 studyPathId: selectedEducation.studyPathId,
                 degreeId: selectedEducation.degreeId || '',
                 schoolId: selectedEducation.schoolId || '',
-                year: selectedEducation.year || '',
                 state: selectedEducation.state || '',
                 employeeId: selectedEducation.employeeId || idEmployee,
+                startDate: new Date(selectedEducation.startDate).toISOString().split('T')[0]  || '',
+                endingDate: new Date(selectedEducation.endingDate).toISOString().split('T')[0]  || '',
             });
         }
     }, [selectedEducation, idEmployee]);
@@ -57,8 +59,7 @@ function ModalEditEducation({ showEditEducation, handleCloseEditEducation, selec
         if (!formData.studyPathId) errors.studyPathId = 'Veuillez sélectionner une filière.';
         if (!formData.degreeId) errors.degreeId = 'Veuillez sélectionner un niveau.';
         if (!formData.schoolId) errors.schoolId = 'Veuillez sélectionner une école.';
-        if (!formData.year) errors.year = 'Veuillez entrer une année.';
-        else if (formData.year < 1900 || formData.year > new Date().getFullYear()) errors.year = 'Veuillez entrer une année valide.';
+        else if (!formData.startDate) errors.startDate = 'Veuillez entrer une date debut.';
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
@@ -138,10 +139,15 @@ function ModalEditEducation({ showEditEducation, handleCloseEditEducation, selec
                             </select>
                             {formErrors.schoolId && <small className="error-text">{formErrors.schoolId}</small>}
                         </div>
+                         <div className="form-group">
+                            <label>Date debut</label>
+                            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} className="form-control" />
+                            {formErrors.startDate && <small className="error-text">{formErrors.startDate}</small>}
+                        </div>
                         <div className="form-group">
-                            <label>Année</label>
-                            <input type="number" name="year" value={formData.year} onChange={handleChange} className="form-control" />
-                            {formErrors.year && <small className="error-text">{formErrors.year}</small>}
+                            <label>Date fin</label>
+                            <input type="date" name="endingDate" value={formData.endingDate} onChange={handleChange} className="form-control" />
+                            {formErrors.endingDate && <small className="error-text">{formErrors.endingDate}</small>}
                         </div>
                         {submitError && <small className="error-text">{submitError}</small>}
                     </form>

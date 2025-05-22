@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import Fetcher from '../fetcher';
+import Fetcher from '../Fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
@@ -17,9 +17,10 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
         studyPathId: '',
         degreeId: '',
         schoolId: '',
-        year: '',
         state: '1',
         employeeId: idEmployee,
+        startDate: '',
+        endingDate: ''
     });
 
     const [formErrors, setFormErrors] = useState({});
@@ -39,8 +40,7 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
         if (!formData.studyPathId) errors.studyPathId = 'Veuillez sélectionner une filière.';
         if (!formData.degreeId) errors.degreeId = 'Veuillez sélectionner un niveau.';
         if (!formData.schoolId) errors.schoolId = 'Veuillez sélectionner une école.';
-        if (!formData.year) errors.year = 'Veuillez entrer une année.';
-        else if (formData.year < 1900 || formData.year > new Date().getFullYear()) errors.year = 'Veuillez entrer une année valide.';
+        else if (!formData.startDate) errors.year = 'Veuillez entrer une date debut.';
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
@@ -121,9 +121,14 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
                             {formErrors.schoolId && <small className="error-text">{formErrors.schoolId}</small>}
                         </div>
                         <div className="form-group">
-                            <label>Année</label>
-                            <input type="number" name="year" value={formData.year} onChange={handleChange} className="form-control" />
-                            {formErrors.year && <small className="error-text">{formErrors.year}</small>}
+                            <label>Date debut</label>
+                            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} className="form-control" />
+                            {formErrors.startDate && <small className="error-text">{formErrors.startDate}</small>}
+                        </div>
+                        <div className="form-group">
+                            <label>Date fin</label>
+                            <input type="date" name="endingDate" value={formData.endingDate} onChange={handleChange} className="form-control" />
+                            {formErrors.endingDate && <small className="error-text">{formErrors.endingDate}</small>}
                         </div>
                         {submitError && <small className="error-text">{submitError}</small>}
                     </form>

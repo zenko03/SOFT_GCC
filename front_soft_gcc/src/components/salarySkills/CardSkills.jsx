@@ -12,6 +12,7 @@ import ModalEditOtherSkill from './ModalEditOtherSkill';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import LoaderComponent from '../../helpers/LoaderComponent';
+import DateDisplayNoTime from '../../helpers/DateDisplayNoTime';
 
 // Lettre d'affichage pour chaque etat
 function getStateLetter(state) {
@@ -97,6 +98,7 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
         otherSkills: otherFormationResponse.data || [],
       });
     } catch (error) {
+      console.log(error);
       setError(`Erreur lors de la recuperation des donnees : ${error}`);
     } finally {
       setIsLoading(false);
@@ -131,7 +133,7 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
 
 /// Fonction pour controler l'affichage du menu education
   const addCardEducation = () => {    
-    setDataColumn(['Filiere', 'Niveau', 'Ecole', 'Annee']);
+    setDataColumn(['Filiere', 'Niveau', 'Ecole', 'Date debut', 'Date fin']);
     setModalDisplay(2);
     setNavLinkEducation("active");
     setNavLinkSkill("");
@@ -222,6 +224,10 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
         <div className="row">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
+                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                  <i className="mdi mdi-school me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                  <h3 className="mb-0" style={{color: '#B8860B'}}> Compétences </h3>
+                </div>
                 <div className="card-body">
                   <div className="d-sm-flex justify-content-between align-items-center transaparent-tab-border {">
                     
@@ -364,7 +370,8 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
                               <td>{item.studyPathName}</td>
                               <td>{item.degreeName}</td>
                               <td>{item.schoolName}</td>
-                              <td>{item.year}</td>
+                              <td><DateDisplayNoTime isoDate= {item.startDate} /></td>
+                              <td><DateDisplayNoTime isoDate= {item.endingDate} /></td>
                               <td>
                                 <Button
                                   onClick={() => {

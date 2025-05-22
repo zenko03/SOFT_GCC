@@ -11,8 +11,12 @@ function SalaryDescription({ dataEmployeeDescription }) {
     <div className="row">
         <div className="col-lg-7 grid-margin stretch-card">
           <div className="card">
+            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+              <i className="mdi mdi-note-text me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+              <h3 className="mb-0" style={{color: '#B8860B'}}> Description </h3>
+            </div>
             <div className="card-body">
-              <div className='col-md-5 image-profil'>
+              <div className='col-md-3 image-profil'>
                 {dataEmployeeDescription.photo ? (
                   <img src={urlApi(`/Employee/photo/${dataEmployeeDescription.employeeId}`)} 
                   alt={'Employe '+dataEmployeeDescription.registrationNumber} width={180} 
@@ -25,12 +29,12 @@ function SalaryDescription({ dataEmployeeDescription }) {
                   />
                 )}
               </div>
-              <div className='col-md-6 decription'>
-                <p>Employe : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployeeDescription.firstName+" "+dataEmployeeDescription.name}</span></p>
-                <p>Matricule : <span className='value-profil' style={{fontWeight: 'bolder'}}>{dataEmployeeDescription.registrationNumber}</span></p>
-                <p>Date naissance : <span className='value-profil' style={{fontWeight: 'bolder'}}><FormattedDate date={dataEmployeeDescription.birthday} /></span></p>
-                <p>Date d'embauche : <span className='value-profil' style={{fontWeight: 'bolder'}}><FormattedDate date={dataEmployeeDescription.hiringDate} /></span></p>
-                <p>Derniere mise a jour : <span className='value-profil' style={{fontWeight: 'bolder'}}><DateDisplayWithTime isoDate={dataEmployeeDescription.updatedDate}/></span></p>
+              <div className="col-md-9">
+                <p><strong className="label-title-salary">Employé :</strong><span className="value-profil">{dataEmployeeDescription.name+" "+dataEmployeeDescription.firstName}</span></p>
+                <p><strong className="label-title-salary">Matricule :</strong><span className="value-profil">{dataEmployeeDescription.registrationNumber}</span></p>
+                <p><strong className="label-title-salary">Date naissance :</strong><span className="value-profil"><FormattedDate date={dataEmployeeDescription.birthday} /></span></p>
+                <p><strong className="label-title-salary">Date d'embauche :</strong><span className="value-profil"><FormattedDate date={dataEmployeeDescription.hiringDate} /></span></p>
+                <p><strong className="label-title-salary">Derniere mise a jour :</strong><span className="value-profil"><FormattedDate date={dataEmployeeDescription.updatedDate} /></span></p>
               </div>
             </div>
           </div>

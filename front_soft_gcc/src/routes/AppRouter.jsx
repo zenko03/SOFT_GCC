@@ -143,8 +143,8 @@ function AppRouter() {
 
       <Route element={<ProtectedRoute />}>
         {/*COMPETENCES */}
-        <Route path="/competences" element={<ListSkillSalaryPage />} />
-        <Route path="/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
+        <Route path="/softGCC/competences" element={<ListSkillSalaryPage />} />
+        <Route path="/softGcc/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
 
         {/* EVALUATIONS */}
         <Route path="/salary-list" element={<SalaryList />} />

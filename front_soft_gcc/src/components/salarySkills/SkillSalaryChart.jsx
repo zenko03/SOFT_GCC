@@ -96,6 +96,10 @@ function SkillSalaryChart({ employeeId }) {
       
       <div className="col-lg-12 grid-margin stretch-card">
         <div className="card">
+          <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+            <i className="mdi mdi-chart-bar me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+            <h3 className="mb-0" style={{color: '#B8860B'}}> Graphes des compétences </h3>
+          </div>
           <div className="card-body">
             <p className="card-description text-left">Niveaux des compétences obtenues</p>
             <div className="form-group row">

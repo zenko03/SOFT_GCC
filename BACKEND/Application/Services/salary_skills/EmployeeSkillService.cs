@@ -51,30 +51,31 @@ namespace soft_carriere_competence.Application.Services.salary_skills
 						 .ToListAsync();
 			}
 
-		// Les competences des employes
-		public async Task<object> GetAllSkills(int pageNumber = 1, int pageSize = 10)
-		{
-			var totalRecords = await _context.VSkills.CountAsync();
+        // Les competences des employes
+        public async Task<object> GetAllSkills(int pageNumber = 1, int pageSize = 10)
+        {
+            var totalRecords = await _context.VSkills.CountAsync();
 
-			var skills = await _context.VSkills
-				.FromSqlRaw("SELECT * FROM v_skills")
-				.Skip((pageNumber - 1) * pageSize)
-				.Take(pageSize)
-				.ToListAsync();
+            var skills = await _context.VSkills
+                .OrderByDescending(s => s.UpdatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-			var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+            var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
 
-			return new
-			{
-				Data = skills,
-				TotalRecords = totalRecords,
-				PageSize = pageSize,
-				CurrentPage = pageNumber,
-				TotalPages = totalPages
-			};
-		}
+            return new
+            {
+                Data = skills,
+                TotalRecords = totalRecords,
+                PageSize = pageSize,
+                CurrentPage = pageNumber,
+                TotalPages = totalPages
+            };
+        }
 
-		public async Task<object> GetAllSkillsFilter(string keyWord, int pageNumber = 1, int pageSize = 10)
+
+        public async Task<object> GetAllSkillsFilter(string keyWord, int pageNumber = 1, int pageSize = 10)
 		{
 			// Utilisation de la requête SQL avec des paramètres pour éviter les injections SQL
 			var filteredQuery = _context.VSkills

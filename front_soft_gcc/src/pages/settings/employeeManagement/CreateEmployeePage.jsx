@@ -30,8 +30,24 @@ function CreateEmployeePage({ onSearch }) {
         hiring_date: '',
         civiliteId: '',
         managerId: null,
-        photo: null
+        photo: null,
+        email: ''
     });
+
+   useEffect(() => {
+        if (dataEmployee && dataEmployee.length > 0) {
+            let newRegistrationNumber = `EMP00${dataEmployee[dataEmployee.length - 1].employeeId + 1}`;
+            setFormData(prev => ({
+                ...prev,
+                registrationNumber: newRegistrationNumber
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                registrationNumber: 'EMP001'
+            }));
+        }
+    }, [dataEmployee]);
 
     useEffect(() => {
         if (success) {
@@ -81,6 +97,7 @@ function CreateEmployeePage({ onSearch }) {
             form.append("department_id", formData.department_id);
             form.append("hiring_date", formData.hiring_date);
             form.append("civiliteId", formData.civiliteId);
+            form.append("email", formData.email);
 
             if (formData.managerId !== null) {
                 form.append("managerId", formData.managerId);
@@ -89,8 +106,7 @@ function CreateEmployeePage({ onSearch }) {
             if (formData.photo) {
                 form.append("photo", formData.photo);
             }
-            console.log(form.get("name"));
-            console.log(form.get("managerId"));
+         
             await axios.post(urlApi('/Employee'), form);
             setFormData({
                 registrationNumber: '',
@@ -101,8 +117,21 @@ function CreateEmployeePage({ onSearch }) {
                 hiring_date: '',
                 civiliteId: '',
                 managerId: null,
-                photo: null
+                photo: null,
+                email: ''
             });
+            if (dataEmployee && dataEmployee.length > 0) {
+                let newRegistrationNumber = `EMP00${dataEmployee[dataEmployee.length - 1].employeeId + 1}`;
+                setFormData(prev => ({
+                    ...prev,
+                    registrationNumber: newRegistrationNumber
+                }));
+            } else {
+                setFormData(prev => ({
+                    ...prev,
+                    registrationNumber: 'EMP001'
+                }));
+            }
             setError(null);
             setSuccess("Creation du nouveau employé "+formData.registrationNumber+" réussi");
         } catch (error) {
@@ -189,7 +218,7 @@ function CreateEmployeePage({ onSearch }) {
                                         <option value="">Selectionner le manager</option>
                                         {dataEmployee && dataEmployee.map((item, id) => (
                                             <option key={item.employeeId} value={item.employeeId}>
-                                                {item.registrationNumber}
+                                                {`${item.registrationNumber} - ${item.name} ${item.firstName}`}
                                             </option>
                                         ))}
                                     </select>  
@@ -198,6 +227,11 @@ function CreateEmployeePage({ onSearch }) {
                                     <label>Photo</label>
                                     <input type="file" accept="image/*" onChange={handleFileChange} className="form-control" />
                                     {formErrors.photo && <div className="error-text">{formErrors.photo}</div>}  
+                                </div>
+                                <div className="form-group">
+                                    <label>Email</label>
+                                    <input type="text" name="email" value={formData.email} onChange={handleChange} className="form-control" />
+                                    {formErrors.email && <div className="error-text">{formErrors.email}</div>}
                                 </div>
                                 <div className="button-save-profil">
                                     <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">

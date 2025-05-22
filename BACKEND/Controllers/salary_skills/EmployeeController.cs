@@ -45,6 +45,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 			[FromForm] DateTime hiring_date,
 			[FromForm] int civiliteId,
 			[FromForm] int? managerId,
+			[FromForm] string? email,
 			[FromForm] IFormFile? photo)
 		{
 			byte[]? photoBytes = null;
@@ -66,6 +67,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 				Hiring_date = hiring_date,
 				CiviliteId = civiliteId,
 				ManagerId = managerId,
+				Email = email
 			};
 			await _employeeService.Add(employee, photoBytes);
 
