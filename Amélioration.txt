@@ -47,5 +47,10 @@ TABLEAU DE BORD ET STATISTIQUES
 - Taux de mobilite interne
 - Duree moyenne d'anciennete
 - Pyramide des ages pour visualiser la repartition des ages de collaborateurs
-- Cartes des competences pour visualiser les talents et les besoins en competences
+- Cartes des competences pour visualiser les talents et les besoins en compétences
+
+
+Compétences
+-----------
+- Selection multiple dans la selection des compétences
 
