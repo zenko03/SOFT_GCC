@@ -116,7 +116,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             var options = await _context.evaluationQuestionOptions
                 .Join(_context.evaluationQuestions,
                     opt => opt.QuestionId,
-                    q => q.questiondId,
+                    q => q.questionId,
                     (opt, q) => new { Option = opt, Question = q })
                 .Where(x => questionIds.Contains(x.Option.QuestionId) && x.Question.ResponseTypeId == 2)
                 .Select(x => x.Option)
@@ -199,7 +199,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         {
             // Vérifier si c'est une réponse QCM
             var question = await _context.evaluationQuestions
-                .FirstOrDefaultAsync(q => q.questiondId == questionId);
+                .FirstOrDefaultAsync(q => q.questionId == questionId);
             
             if (question == null)
                 return false;

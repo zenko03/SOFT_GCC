@@ -80,15 +80,15 @@ namespace soft_carriere_competence.Controllers.Evaluations
                     .Where(esq => esq.EvaluationId == evaluationId)
                     .Join(_context.evaluationQuestions,
                         esq => esq.QuestionId,
-                        eq => eq.questiondId,
+                        eq => eq.questionId,
                         (esq, eq) => new
                         {
-                            QuestionId = eq.questiondId,
+                            QuestionId = eq.questionId,
                             QuestionText = eq.question,
                             CompetenceLineId = eq.CompetenceLineId,
                             ResponseTypeId = eq.ResponseTypeId,
                             Response = _context.evaluationResponses
-                                .FirstOrDefault(er => er.EvaluationId == evaluationId && er.QuestionId == eq.questiondId)
+                                .FirstOrDefault(er => er.EvaluationId == evaluationId && er.QuestionId == eq.questionId)
                         })
                     .Join(_context.ResponseTypes,
                         q => q.ResponseTypeId,

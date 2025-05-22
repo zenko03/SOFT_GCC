@@ -24,7 +24,7 @@ namespace soft_carriere_competence.Infrastructure.Repositories.EvaluationReposit
         }
         public async Task<bool> ExistsAsync(int questionId)
         {
-            return await _context.evaluationQuestions.AnyAsync(q => q.questiondId == questionId);
+            return await _context.evaluationQuestions.AnyAsync(q => q.questionId == questionId);
         }
 
 

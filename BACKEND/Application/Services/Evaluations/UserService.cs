@@ -67,9 +67,14 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         public async Task<string> RegisterAsync(RegisterDto dto)
         {
             // Vérifie si l'email existe déjà dans la base de données.
-            var userExists = await _userRepository.GetFirstOrDefaultAsync(u => u.Email == dto.Email);
-            if (userExists != null)
+            var userWithEmail = await _userRepository.GetFirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (userWithEmail != null)
                 throw new Exception("Email déjà utilisé.");
+
+            // Vérifie si le nom d'utilisateur existe déjà
+            var userWithUsername = await _userRepository.GetFirstOrDefaultAsync(u => u.Username == dto.Username);
+            if (userWithUsername != null)
+                throw new Exception("Nom d'utilisateur déjà utilisé.");
 
             // Hashage sécurisé du mot de passe.
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
@@ -79,12 +84,12 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             {
                 LastName = dto.LastName,
                 FirstName = dto.FirstName,
+                Username = dto.Username,
                 Email = dto.Email,
                 Password = hashedPassword,
                 RoleId = dto.RoleId,
                 CreationDate = DateTime.UtcNow,
                 Createdby = 1
-
             };
 
             await _userRepository.CreateAsync(user); // Ajout de l'utilisateur dans la base de données.
@@ -94,26 +99,39 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         // Méthode pour connecter un utilisateur.
         public async Task<string> LoginAsync(LoginDto dto)
         {
-            Console.WriteLine("Tafiditra ato 1");
+            Console.WriteLine("Tentative de connexion");
 
-            // Recherche de l'utilisateur par email.
-            var user = await _userRepository.GetFirstOrDefaultAsync(u => u.Email == dto.Email);
-            Console.WriteLine("Tafiditra ato 2");
+            User user = null;
+
+            // Compatibilité avec l'ancienne API:
+            // Dans la version précédente, le DTO pouvait avoir une propriété Email 
+            // On vérifie si la propriété Identifier est null ou vide (cas de l'ancienne API)
+            string identifier = dto.Identifier;
+
+            // Si l'identifiant contient @, on le considère comme un email
+            if (identifier.Contains("@"))
+            {
+                user = await _userRepository.GetFirstOrDefaultAsync(u => u.Email == identifier);
+            }
+            else
+            {
+                // Sinon, c'est un nom d'utilisateur
+                user = await _userRepository.GetFirstOrDefaultAsync(u => u.Username == identifier);
+                
+                // Si on ne trouve pas par nom d'utilisateur, on essaie par email
+                // (certains utilisateurs pourraient ne pas avoir de nom d'utilisateur)
+                if (user == null)
+                {
+                    user = await _userRepository.GetFirstOrDefaultAsync(u => u.Email == identifier);
+                }
+            }
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
-                throw new Exception("Email ou mot de passe incorrect.");
+                throw new Exception("Identifiant ou mot de passe incorrect.");
 
             // Génération du token JWT si la connexion est réussie.
-
-            string mdp = "fanja";
-
-            // Hachage du mot de passe
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(mdp);
-
-            // Affichage du mot de passe haché
-            Console.WriteLine("Mot de passe haché pour : "+ mdp+" "+ hashedPassword);
             var token = GenerateJwtToken(user);
-            Console.WriteLine("Token: " , token);
+            Console.WriteLine("Connexion réussie, token généré");
             return token;
         }
 
@@ -191,6 +209,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
             //if (department.HasValue)
                 //query = query.Where(u => u.DepartmentId == department.Value);
+            //    query = query.Where(u => u.DepartmentId == department.Value);
 
             return await query.CountAsync();
         }
@@ -308,6 +327,40 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return await _context.Users
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        // Méthode pour mettre à jour un utilisateur
+        public async Task<string> UpdateUserAsync(User user)
+        {
+            try
+            {
+                // Vérifier si un autre utilisateur a déjà ce nom d'utilisateur
+                if (!string.IsNullOrWhiteSpace(user.Username))
+                {
+                    var existingUser = await _userRepository.GetFirstOrDefaultAsync(u => u.Username == user.Username && u.Id != user.Id);
+                    if (existingUser != null)
+                    {
+                        throw new Exception("Ce nom d'utilisateur est déjà utilisé.");
+                    }
+                }
+
+                // Vérifier si un autre utilisateur a déjà cet email
+                if (!string.IsNullOrWhiteSpace(user.Email))
+                {
+                    var existingUser = await _userRepository.GetFirstOrDefaultAsync(u => u.Email == user.Email && u.Id != user.Id);
+                    if (existingUser != null)
+                    {
+                        throw new Exception("Cet email est déjà utilisé.");
+                    }
+                }
+
+                await _userRepository.UpdateAsync(user);
+                return "Utilisateur mis à jour avec succès.";
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erreur lors de la mise à jour de l'utilisateur: {ex.Message}");
+            }
         }
 
     }
