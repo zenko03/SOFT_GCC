@@ -336,54 +336,6 @@ function FormationSuggestions() {
         setShowEditModal(false);
     };
 
-    // Fonction pour prévisualiser
-    const handleCsvPreview = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        Papa.parse(file, {
-            header: true,
-            complete: (results) => {
-                // Limiter la prévisualisation aux 5 premières lignes
-                setImportPreview(results.data.slice(0, 5));
-            }
-        });
-    };
-
-    // Fonction pour envoyer au backend
-    const handleCsvImport = async () => {
-        const file = document.getElementById('csvFileInput').files[0];
-        if (!file) return;
-
-        setIsImporting(true);
-
-        // Créer un FormData pour envoyer le fichier
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post(
-                'https://localhost:7082/api/Evaluation/import-training-suggestions',
-                formData,
-                {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "multipart/form-data" // Important pour les fichiers
-                    }
-                }
-            );
-
-            alert(`${response.data.imported} suggestions de formation importées avec succès!`);
-            fetchAllData(); // Rafraîchir les données
-        } catch (error) {
-            alert(`Erreur lors de l'import: ${error.response?.data?.error || error.message}`);
-        } finally {
-            setIsImporting(false);
-            setImportPreview([]);
-        }
-    };
-
     return (
         <Template>
             <div className="content-wrapper">
@@ -500,22 +452,6 @@ function FormationSuggestions() {
                                         >
                                             <i className="mdi mdi-plus"></i> Nouvelle suggestion
                                         </button>
-                                        <button
-                                            className="btn btn-secondary btn-sm d-flex align-items-center ms-2"
-                                            onClick={() => document.getElementById('csvFileInput').click()}
-                                            title="Importer depuis CSV"
-                                            style={{ gap: '5px' }}
-                                        >
-                                            <i className="mdi mdi-file-import"></i> Importer CSV
-                                        </button>
-                                        <input
-                                            type="file"
-                                            id="csvFileInput"
-                                            accept=".csv"
-                                            style={{ display: 'none' }}
-                                            onChange={handleCsvPreview}
-                                        />
-
                                     </div>
                                     <div className="card-body">
                                         {suggestions.length === 0 ? (
@@ -775,31 +711,6 @@ function FormationSuggestions() {
                             </div>
                         )}
 
-                        {importPreview.length > 0 && (
-                            <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                                <div className="modal-dialog modal-lg">
-                                    <div className="modal-content">
-                                        <div className="modal-header">
-                                            <h5>Prévisualisation de l&apos;import</h5>
-                                            <button type="button" className="close" onClick={() => setImportPreview([])}>×</button>
-                                        </div>
-                                        <div className="modal-body">
-                                            <div className="table-responsive">
-                                                <table className="table table-sm">
-                                                    {/* Afficher les colonnes et un aperçu des données */}
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div className="modal-footer">
-                                            <button className="btn btn-secondary" onClick={() => setImportPreview([])}>Annuler</button>
-                                            <button className="btn btn-primary" onClick={handleCsvImport} disabled={isImporting}>
-                                                {isImporting ? 'Importation...' : 'Confirmer l\'import'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                         {/* Modal pour modifier une suggestion */}
                         {showEditModal && (
                             <div className="modal fade show"

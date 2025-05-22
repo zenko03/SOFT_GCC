@@ -6,7 +6,6 @@ using soft_carriere_competence.Application.Services.Evaluations;
 using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.career_plan;
 using soft_carriere_competence.Infrastructure.Data;
-using Microsoft.AspNetCore.Authorization;
 
 namespace soft_carriere_competence.Controllers.Evaluations
 {
@@ -19,14 +18,13 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		private readonly EvaluationCompetenceService _evaluationCompetenceService;
 		private readonly CompetenceLineService _competenceLineService;
 		private readonly ResponseTypeService _responseTypeService;
-		private readonly TrainingSuggestionService _trainingSuggestionService;
 
 		private readonly ApplicationDbContext _context;
 
 
 		public EvaluationController(EvaluationService evaluationService,
 		ApplicationDbContext context, EvaluationResponseService responseService, EvaluationCompetenceService evaluationCompetenceService,
-		CompetenceLineService competenceLineService, ResponseTypeService responseTypeService, TrainingSuggestionService trainingSuggestionService)
+		CompetenceLineService competenceLineService, ResponseTypeService responseTypeService)
 		{
 			_evaluationService = evaluationService;
 			_context = context;
@@ -34,7 +32,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 			_evaluationCompetenceService = evaluationCompetenceService;
 			_competenceLineService = competenceLineService;
 			_responseTypeService = responseTypeService;
-			_trainingSuggestionService = trainingSuggestionService;
+
 		}
 
 		// Create a new evaluation question
