@@ -6,12 +6,9 @@ import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 import CancelButton from '../../../helpers/CancelButton';
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 
 function DegreeCrudPage() {
-    const module = 'Plan de carrière';
-    const action = 'Création';
-    const url = '/carriere';
-
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
@@ -137,8 +134,6 @@ function DegreeCrudPage() {
 
     return (
         <Template>
-            <PageHeader module={module} action={action} url={url} />
-
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
                     <i className="mdi mdi-star skill-icon"></i>
@@ -149,6 +144,13 @@ function DegreeCrudPage() {
                     <CancelButton to="settings/competence" />
                 </div>  
             </div>
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/softGcc/tableauBord' },
+                    { label: 'paramètres compétences', path: '/softGcc/settings/competence' },
+                    { label: 'Niveau étude', path: '/softGcc/settings/competence/niveau' },
+                ]}
+            />
            
             {isLoading && <Loader />}
             {error && <div className="alert alert-danger">{error}</div>}

@@ -9,12 +9,10 @@ import '../../styles/pagination.css';
 import BarChart from '../../components/BarChart';
 import { urlApi } from '../../helpers/utils';
 import axios from "axios";
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 // Page de suivi des souhaits d'évolution
 function SettingSkillPage() {
-    const module = 'Parametre';
-    const action = 'Competence';
-    const url = '/Parametre';
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null); 
@@ -37,7 +35,6 @@ function SettingSkillPage() {
     return (
         <Template>
             {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
-            <PageHeader module={module} action={action} url={url} />
            
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
@@ -45,7 +42,15 @@ function SettingSkillPage() {
                 <p className="skill-title">PARAMETRE DES COMPÉTENCES</p>
                 </div>
             </div>
-
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/softGcc/tableauBord' },
+                    { label: 'paramètres compétences', path: '/softGcc/settings/competence' },
+                    { label: 'Menu', path: '/softGcc/settings/competence' },
+                ]}
+            />
+            
+            {error && <div className="alert alert-danger">{error}</div>}
             <div className="row">
                 {listSettings.map((item, id) => (
                     <div key={id} className="col-lg-2 grid-margin stretch-card">
