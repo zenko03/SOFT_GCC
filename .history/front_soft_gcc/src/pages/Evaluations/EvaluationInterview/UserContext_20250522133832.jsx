@@ -124,12 +124,11 @@ export const UserProvider = ({ children }) => {
         setIsInitialized(true);
     };
 
-    // Effet pour l'initialisation au montage du composant
     useEffect(() => {
         initializeUser();
     }, []);
 
-    // Fonction pour vérifier si l'utilisateur a une permission spécifique
+    //  vérifier si l'utilisateur a une permission spécifique
     const hasPermission = (permission) => {
         if (!Array.isArray(userPermissions)) {
             return false;
@@ -138,7 +137,7 @@ export const UserProvider = ({ children }) => {
         return userPermissions.some(p => p.name === permission);
     };
 
-    // Fonction de déconnexion
+    //  déconnexion
     const logout = () => {
         clearUserData();
     };
@@ -165,7 +164,6 @@ export const UserProvider = ({ children }) => {
                 localStorage.setItem('userPermissions', JSON.stringify(response.data));
             } else {
                 console.error("Format de données invalide lors du rechargement des permissions");
-                // Conserver les permissions existantes en cas d'erreur
                 const existingPermissions = JSON.parse(localStorage.getItem('userPermissions') || '[]');
                 setUserPermissions(existingPermissions);
             }
