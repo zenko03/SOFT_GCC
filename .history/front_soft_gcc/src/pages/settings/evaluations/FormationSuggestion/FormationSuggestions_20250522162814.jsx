@@ -780,7 +780,7 @@ function FormationSuggestions() {
                                 <div className="modal-dialog modal-lg">
                                     <div className="modal-content">
                                         <div className="modal-header">
-                                            <h5>Prévisualisation de l&apos;import</h5>
+                                            <h5>Prévisualisation de l'import</h5>
                                             <button type="button" className="close" onClick={() => setImportPreview([])}>×</button>
                                         </div>
                                         <div className="modal-body">

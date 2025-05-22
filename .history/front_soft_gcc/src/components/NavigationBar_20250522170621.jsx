@@ -89,7 +89,7 @@ function NavigationBar({ task }) {
           <li className="nav-item nav-profile dropdown">
             <a className="nav-link dropdown-toggle" id="profileDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
               <div className="nav-profile-img">
-                <img src="/src/assets/images/faces/user.png" alt="image" />
+                <img src="/src/assets/images/faces/face28.png" alt="image" />
               </div>
               <div className="nav-profile-text">
                 <p className="mb-1 text-black">
@@ -99,7 +99,7 @@ function NavigationBar({ task }) {
             </a>
             <div className="dropdown-menu navbar-dropdown dropdown-menu-right p-0 border-0 font-size-sm" aria-labelledby="profileDropdown" data-x-placement="bottom-end">
               <div className="p-3 text-center bg-primary">
-                <img className="img-avatar img-avatar48 img-avatar-thumb" src="/src/assets/images/faces/user.png" alt="" />
+                <img className="img-avatar img-avatar48 img-avatar-thumb" src="/src/assets/images/faces/face28.png" alt="" />
               </div>
               <div className="p-2">
                 <div role="separator" className="dropdown-divider"></div>
