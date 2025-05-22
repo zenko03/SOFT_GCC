@@ -1,7 +1,9 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using soft_carriere_competence.Application.Services.Evaluations;
 using soft_carriere_competence.Application.Services.history;
 using soft_carriere_competence.Application.Services.salary_skills;
 using soft_carriere_competence.Core.Entities.history;
@@ -17,13 +19,14 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		private readonly EmployeeSkillService _employeeSkillService;
 		private readonly HistoryService _historyService;
 		private readonly SkillService _skillService;
+		private readonly UserService _userService;
 
-
-		public EmployeeSkillsController(EmployeeSkillService service, HistoryService historyService, SkillService skillService)
+		public EmployeeSkillsController(EmployeeSkillService service, HistoryService historyService, SkillService skillService, UserService userService)
 		{
 			_employeeSkillService = service;
 			_historyService = historyService;
 			_skillService = skillService;
+			_userService = userService;
 		}
 
 		[HttpGet]
@@ -81,21 +84,31 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		}
 
 		[HttpDelete("{id}")]
+		[Authorize]
 		public async Task<IActionResult> Delete(int id)
 		{
-			await _employeeSkillService.Delete(id);
 			var employeeSkill = await _employeeSkillService.GetById(id);
 			Skill skill = await _skillService.GetById(employeeSkill.SkillId);
+			var userIdClaim = User.FindFirst("userId")?.Value; // Récupération de l'ID utilisateur depuis le token
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
+			
 			var activityLog = new ActivityLog
 			{
-				UserId = 1,
+				UserId = user.Id,
 				Module = 1,
 				Action = "Suppression",
-				Description = "L'user 1 a supprimé la compétence " + skill.Name + " pour l'employé ID " + employeeSkill.EmployeeId,
+				Description = "L'user "+user.Username+" a supprimé la compétence " + skill.Name + " pour l'employé ID " + employeeSkill.EmployeeId,
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};
 
+			await _employeeSkillService.Delete(id);
 			await _historyService.Add(activityLog);
 			return NoContent();
 		}

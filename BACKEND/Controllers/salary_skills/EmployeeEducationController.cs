@@ -75,6 +75,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
+
 			var employeeEducation = await _employeeEducationService.GetById(id);
 			var activityLog = new ActivityLog
 			{

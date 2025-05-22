@@ -13,6 +13,7 @@ import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import LoaderComponent from '../../helpers/LoaderComponent';
 import DateDisplayNoTime from '../../helpers/DateDisplayNoTime';
+import api from '../../helpers/api';
 
 // Lettre d'affichage pour chaque etat
 function getStateLetter(state) {
@@ -112,11 +113,16 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
   // Valider une suppression d'item de competence
   const handleDeleteConfirmed = async () => {
     try {
-      await axios.delete(urlApi(itemToDelete));
+      await api.delete(itemToDelete);
       setShowConfirmDelete(false);
       // Récupérer à nouveau les données après la suppression
       await fetchData(); // Appelez votre fonction fetchData ici
     } catch (error) {
+      if (error.response?.status === 401) {
+        alert("Non autorisé. Merci de vous reconnecter.");
+      } else {
+        setError(`Erreur lors de la suppression : ${error.message}`);
+      }
       console.error('Erreur lors de la suppression:', error);
     }
   };
@@ -261,7 +267,9 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
                       <Modal.Header closeButton>
                         <Modal.Title>Confirmer la suppression</Modal.Title>
                       </Modal.Header>
-                      <Modal.Body>Êtes-vous sûr de vouloir supprimer {descriptionToDelete} ?</Modal.Body>
+                      <Modal.Body>Êtes-vous sûr de vouloir supprimer {descriptionToDelete} ?
+                        {error && <div className="alert alert-danger">{error}</div>}
+                      </Modal.Body>
                       <Modal.Footer>
                         <Button variant="secondary" onClick={handleCloseDelete}>
                           Non
