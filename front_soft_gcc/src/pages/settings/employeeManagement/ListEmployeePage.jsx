@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSWR from 'swr';
-import Fetcher from '../../../components/Fetcher';
+import Fetcher from '../../../components/fetcher';
 import PageHeader from '../../../components/PageHeader';
 import Template from '../../Template';
 import '../../../styles/skillsStyle.css';
@@ -12,6 +12,7 @@ import { urlApi } from '../../../helpers/utils';
 import defaultImg from '../../../assets/images/male-default.webp';
 import '../../../styles/orgChart.css';
 import ModalImportEmployee from '../../../components/organizationalChart/ModalImportEmployee';
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 
 // Map des images des départements
 const departmentImages = {
@@ -144,31 +145,53 @@ function ListEmployeePage() {
     <Template>
       {loading && <Loader />}
       <ModalImportEmployee showModalImport={showModalImport} handleCloseModalImport={handleCloseModalImport} />
-      <PageHeader module={module} action={action} url={url} />
-
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="row">
-        <div className="col-lg-8">
-          <h4 className="card-title">LISTE DES EMPLOYES</h4>
+
+      <div className="title-container">
+        <div className="col-lg-8 skill-header">
+          <i className="mdi mdi-settings skill-icon"></i>
+          <p className="skill-title">LISTE DES EMPLOYÉS</p>
         </div>
-        <div className="col-lg-4 d-flex justify-content-end">
-          <button type="button" style={{margin: '2px'}} onClick={handleShowModalImport} className="btn btn-success">
-            <i className="mdi mdi-import button-logo"></i>
-            Import employés
+        
+      </div>
+      <BreadcrumbPers
+        items={[
+          { label: 'Accueil', path: '/softGcc/tableauBord' },
+          { label: 'Gestion employés', path: '/softGcc/settings/employeeManagement/liste' },
+          { label: 'Liste', path: '/softGcc/settings/employeeManagement/liste' },
+        ]}
+      />
+
+      <div className="row mt-3">
+        <div className="col-12 d-flex justify-content-end" style={{marginBottom: '10px'}}>
+          <button
+            type="button"
+            className="btn btn-success me-2"
+            onClick={handleShowModalImport}
+            style={{marginRight: '10px'}}
+          >
+            <i className="mdi mdi-import button-logo"></i> Import employés
           </button>
-          <button type="button" style={{margin: '2px'}} onClick={handleClick} className="btn btn-primary">
-            <i className="mdi mdi-plus button-logo"></i>
-            Ajouter
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleClick}
+          >
+            <i className="mdi mdi-plus button-logo"></i> Ajouter
           </button>
         </div>
       </div>
 
+
       <div className="row">
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
+            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+              <i className="mdi mdi-filter-outline me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+              <h3 className="mb-0" style={{color: '#B8860B'}}>Filtres</h3>
+            </div>
             <div className="card-body">
-              <h5 className="card-title subtitle">Filtre</h5>
               <form className="filter-form">
                 <div className="form-group">
                   <label>Nom, prénom, matricule ou responsable</label>
@@ -225,8 +248,11 @@ function ListEmployeePage() {
       <div className="row">
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
+            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+              <i className="mdi mdi-format-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+              <h3 className="mb-0" style={{color: '#B8860B'}}>Liste</h3>
+            </div>
             <div className="card-body">
-              <h5 className="card-title subtitle">Liste</h5>
               {!loading && !error && (
                 <>
                   <table className="table table-competences">
