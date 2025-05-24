@@ -279,6 +279,7 @@ SELECT
 	c.Net_salary,
 	c.state,
 	CASE
+		WHEN c.Ending_contract is null THEN 'en cours'
 		WHEN GETDATE() BETWEEN c.Assignment_date AND c.Ending_contract THEN 'en cours'
 		WHEN GETDATE() >= c.Ending_contract THEN 'terminé'
         WHEN GETDATE() < c.Assignment_date THEN 'en attente'  
