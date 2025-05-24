@@ -7,16 +7,12 @@ import LayOffForm from '../../../components/career/LayOffForm';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 import Loader from '../../../helpers/Loader';
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
+import CancelButton from '../../../helpers/CancelButton';
 import { useNavigate } from 'react-router-dom';
-
 
 // Page de creation d'un plan de carriere
 function CreationCareerPlan({ onSearch }) {
-    // Url d'en-tete de page
-    const module = "Plan de carrière";
-    const action = "Creation";
-    const url = "/carriere";
-
     // Initialisation des states
     const [selectedItem, setSelectedItem] = useState('1');
     const [formErrors, setFormErrors] = useState({});
@@ -61,7 +57,7 @@ function CreationCareerPlan({ onSearch }) {
 
     // Fonction qui gère le retour en arrière de la page
     const handleRetour = () => {
-        navigate(`/carriere`);
+        navigate(`/SoftGcc/carriere`);
     };
 
 
@@ -229,11 +225,9 @@ function CreationCareerPlan({ onSearch }) {
             echelonId: undefined
         });
     };
-
     return (
         <Template>
             {isLoading && <Loader />}
-            <PageHeader module={module} action={action} url={url} />
             {error && <div className="alert alert-danger">{error}</div>}
 
             <div className="title-container">
@@ -242,12 +236,17 @@ function CreationCareerPlan({ onSearch }) {
                     <p className="skill-title">CREATION D'UN PLAN DE CARRIÈRE</p>
                 </div>
                 <div className="col-lg-2">
-                    <button onClick={handleRetour} className="btn-outline-dark btn-fw" style={{float: 'right'}}>
-                        <i className="mdi mdi-arrow-left-circle icon-cancel" style={{}}></i>
-                        Retour
-                    </button>
+                    <CancelButton to="carriere" />
                 </div>  
             </div>
+            <BreadcrumbPers
+                items={[
+                { label: 'Accueil', path: '/SoftGcc/tableauBord' },
+                { label: 'Plan de carrière', path: '/SoftGcc/carriere' },
+                { label: 'Creation', path: '/SoftGcc/carriere/creation' }
+                ]}
+            />
+            
             <div className="row">
                 <div className="button-save-profil">
                     <button onClick={handleSubmit} type="button" className="btn btn-success btn-fw">

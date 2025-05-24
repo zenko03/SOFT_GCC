@@ -209,7 +209,7 @@ function ListSkillSalaryPage() {
                           Nom complet {sortColumn === 'firstName' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
                         </th>
                         <th onClick={() => handleSort('updatedDate')} className="sortable-header">
-                          Dernière mise à jour {sortColumn === 'updatedDate' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
+                          Dernière modification {sortColumn === 'updatedDate' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
                         </th>
                         <th onClick={() => handleSort('educationNumber')} className="sortable-header">
                           Diplômes & formations {sortColumn === 'educationNumber' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}

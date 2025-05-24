@@ -8,6 +8,7 @@ import '../../../styles/pagination.css';
 import FormattedDate from '../../../helpers/FormattedDate';
 import useSWR from 'swr';
 import Fetcher from '../../../components/fetcher';
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 
 // Fonction debounce pour éviter les appels excessifs
 const debounce = (func, delay) => {
@@ -139,17 +140,16 @@ const ListCareerPage = () => {
     }
   };
 
-  const handleClick = () => navigate('/carriere/creation');
+  const handleClick = () => navigate('/SoftGcc/carriere/creation');
 
   // Navigation pour details carrieres
   const handleCareersDetails = (registrationNumber) => {
-    navigate(`/carriere/fiche/${registrationNumber}`);
+    navigate(`/SoftGcc/carriere/fiche/${registrationNumber}`);
   };
 
   return (
     <Template>
       {loading && <Loader />}
-      <PageHeader module={module} action={action} url={url} />
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="title-container">
@@ -158,12 +158,21 @@ const ListCareerPage = () => {
           <p className="skill-title">PLAN DE CARRIÈRE</p>
         </div>
                             
-        <div className="col-lg-2">
+      </div>
+      <BreadcrumbPers
+        items={[
+          { label: 'Accueil', path: '/softGcc/tableauBord' },
+          { label: 'Plan de carrière', path: '/softGcc/carriere' },
+          { label: 'Liste', path: '/softGcc/carriere' }
+        ]}
+      />
+      <div className="row mt-3">
+        <div className="col-12 d-flex justify-content-end" style={{marginBottom: '10px'}}>
           <button className="btn-add btn-success btn-fw" onClick={handleClick} style={{float: 'right'}}>
             <i className="mdi mdi-plus"></i>
             Nouveau Plan
           </button>
-        </div>  
+        </div>
       </div>
      
       <div className="card mb-4 search-card">
@@ -279,7 +288,7 @@ const ListCareerPage = () => {
                       <tr key={id} onClick={() => {handleCareersDetails(career.registrationNumber)}}>
                         <td>{career.registrationNumber}</td>
                         <td>
-                          {career.firstName} {career.name}
+                          {career.name} {career.firstName} 
                         </td>
                         <td>{career.departmentName}</td>
                         <td>{career.positionName}</td>

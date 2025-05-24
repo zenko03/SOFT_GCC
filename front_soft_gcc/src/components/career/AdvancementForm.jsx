@@ -24,7 +24,7 @@ function AdvancementForm({ handleChange, formData }) {
                                 borderBottom: '2px solid #B8860B', 
                                 paddingBottom: '5px'
                             }}
-                        >Employe</h4>
+                        >Avancement</h4>
 
                         <div className="form-group">
                             <label htmlFor="exampleInputUsername1">Departement</label>
@@ -33,17 +33,6 @@ function AdvancementForm({ handleChange, formData }) {
                                 {dataDepartment && dataDepartment.map((item, id) => (
                                     <option key={item.departmentId} value={item.departmentId}>
                                     {item.name}
-                                    </option>
-                                ))}
-                            </select>    
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="exampleInputUsername1">Categorie socio-professionnelle</label>
-                            <select name="socioCategoryProfessionalId" value={formData.socioCategoryProfessionalId} onChange={handleChange} className="form-control" id="exampleSelectGender">
-                                <option value="">Sélectionner une categorie socio-professionnelle</option>
-                                {dataSocioCategoryProfessional && dataSocioCategoryProfessional.map((item, id) => (
-                                    <option key={item.socioCategoryProfessionalId} value={item.socioCategoryProfessionalId}>
-                                    {item.socioCategoryProfessionalId}
                                     </option>
                                 ))}
                             </select>    
@@ -82,7 +71,7 @@ function AdvancementForm({ handleChange, formData }) {
                                 borderBottom: '2px solid #B8860B', 
                                 paddingBottom: '5px'
                             }}
-                        >Contrat</h4>
+                        >Avancement</h4>
 
                         <div className="form-group">
                             <label htmlFor="exampleInputUsername1">Catégorie professionnelle</label>

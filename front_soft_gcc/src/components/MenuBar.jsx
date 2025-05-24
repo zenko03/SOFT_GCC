@@ -27,7 +27,7 @@ function MenuBar({ task }) {
           <div className="collapse" id="ui-basic">
             <ul className="nav flex-column sub-menu">
               <li className="nav-item">
-                <Link className="nav-link" to="/carriere">Plan de carrière</Link>
+                <Link className="nav-link" to="/SoftGcc/carriere">Plan de carrière</Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to="/retraite">Depart a la retraite</Link>

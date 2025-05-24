@@ -11,6 +11,7 @@ import Loader from '../../../helpers/Loader';
 import { useParams } from 'react-router-dom';
 import FormattedDate from '../../../helpers/FormattedDate';
 import { useNavigate } from 'react-router-dom';
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 
 // Page détails du plan de carrière
 function CareerProfilePage({ onSearch }) {
@@ -64,13 +65,12 @@ function CareerProfilePage({ onSearch }) {
 
     // Fonction qui gère le retour en arrière de la page
     const handleRetour = () => {
-        navigate(`/carriere`);
+        navigate(`/SoftGcc/carriere`);
     };
 
     return (
         <Template>
             {isLoading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}            
-            <PageHeader module={module} action={action} url={url} />
             {error && <div className="alert alert-danger">{error}</div>}
 
             <div className="title-container">
@@ -87,8 +87,13 @@ function CareerProfilePage({ onSearch }) {
                 </div>  
             </div>
 
-           
-
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/softGcc/tableauBord' },
+                    { label: 'Plan de carrière', path: '/softGcc/carriere' },
+                    { label: 'Détails', path: '/softGcc/carriere/fiche' }
+                ]}
+            />
 
             <div className="row description">
                 <div className="col-md-12">
@@ -125,7 +130,7 @@ function CareerProfilePage({ onSearch }) {
                             {/* Menu de navigation des compétences */}
                             <ul className="nav nav-tabs tab-transparent" role="tablist">
                                 <li className="nav-item">
-                                    <a onClick={() => updateComponent(2)} className="nav-link" id="home-tab" data-toggle="tab" href="#" role="tab" aria-selected="true">Attestation</a>
+                                    <a onClick={() => updateComponent(2)} className="nav-link" id="home-tab" data-toggle="tab" href="#" role="tab" aria-selected="true">Attestation de travail</a>
                                 </li>
                                 <li className="nav-item">
                                     <a onClick={() => updateComponent(1)} className="nav-link active" id="business-tab" data-toggle="tab" href="#business-1" role="tab" aria-selected="false">Suivi carriere</a>

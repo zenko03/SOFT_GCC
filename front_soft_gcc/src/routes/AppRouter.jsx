@@ -164,11 +164,11 @@ function AppRouter() {
 
 
         {/*CARRIERE */}
-        <Route path="/carriere" element={<ListSalaryPage />} />
-        <Route path="/carriere/creation" element={<CreationCareerPlan />} />
-        <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
-        <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
-        <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
+        <Route path="SoftGcc/carriere" element={<ListSalaryPage />} />
+        <Route path="SoftGcc/carriere/creation" element={<CreationCareerPlan />} />
+        <Route path="SoftGcc/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
+        <Route path="SoftGcc/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
+        <Route path="SoftGcc/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
 
         {/*Gestion retraite */}
         <Route path="/retraite" element={<RetirementPage />} />

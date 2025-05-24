@@ -89,10 +89,12 @@ function ModalImportEmployee ({showModalImport, handleCloseModalImport}) {
           className="modal-content"
           overlayClassName="modal-overlay"
         >
-            <div className="modal-header">
-                <h3 className='subtitle'>Importer des employés</h3>
+            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                <i className="mdi mdi-file-delimited me-2 fs-4" style={{fontSize: '30px', marginRight: '5px'}}></i>
+                <h3 className="mb-0" style={{color: '#B8860B'}}>IMPORT CSV DES EMPLOYÉS</h3>
                 <button onClick={handleCloseModalImport} className="close-button">&times;</button>
             </div>
+           
             <div className="modal-body">
                 <div>
                     <div className="form-group">
@@ -111,11 +113,16 @@ function ModalImportEmployee ({showModalImport, handleCloseModalImport}) {
                 </div>
             </div>
             <div className="modal-footer">
-                <button onClick={handleCloseModalImport} className="button button-secondary">Fermer</button>
+                <button onClick={handleCloseModalImport} className="btn btn-danger">
+                    <i className="mdi mdi-close-circle-outline me-1" style={{ marginRight: '5px'}}></i>
+                    Fermer
+                </button>
                 <button onClick={handleSubmit} className="button button-primary" disabled={uploading || csvData.length === 0}>
+                    <i className="mdi mdi-file-import me-1" style={{ marginRight: '5px'}}></i>
                     {uploading ? "En cours d'importation..." : "Importer"}
                 </button>
-          </div>
+            </div>
+
         </Modal>
       );
     }
