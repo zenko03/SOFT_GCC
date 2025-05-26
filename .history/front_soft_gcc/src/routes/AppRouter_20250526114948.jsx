@@ -70,7 +70,6 @@ import RolesManagement from '../pages/settings/UserManagement/RolesManagement';
 import PermissionsManagement from '../pages/settings/UserManagement/PermissionsManagement';
 import Unauthorized from '../pages/Authentification/Unauthorized';
 import EvaluationNotation from '../pages/Evaluations/Notations/EvaluationNotation';
-import EvaluationTypesSettings from '../pages/settings/evaluations/EvaluationTypesSettings';
 
 function AppRouter() {
   return (
