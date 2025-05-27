@@ -5,13 +5,11 @@ import { urlApi } from '../../helpers/utils';
 import axios from "axios";
 import Loader from '../../helpers/Loader';
 import OrgChart from '../../components/organizationalChart/OrgChart';
+import CancelButton from '../../helpers/CancelButton';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 // Page d'organigramme des employes
 function EmployeeOrgChart() {
-    const module = 'Organigramme';
-    const action = 'employee';
-    const url = '/Organigramme';
-
     // Initialisation des states
     const [orgData, setOrgData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -38,16 +36,27 @@ function EmployeeOrgChart() {
     
     return (
         <Template>          
-            {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
+            {loading && <Loader />}
 
-            {error && <div className="alert alert-danger">{error}</div>} {/* Affichez l'erreur si elle existe */}
+            <div className="title-container">
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-sitemap skill-icon"></i>
+                    <p className="skill-title"> ORGANIGRAMME DE L'ENTREPRISE</p>
+                </div>
 
-            <PageHeader module={module} action={action} url={url} />
-
-            <div className="col-lg-10 skill-header">
-                <i className="mdi mdi-sitemap skill-icon"></i>
-                <h4 className="skill-title">Organigramme de l'entreprise</h4>
+                <div className="col-lg-2">
+                    <CancelButton to="effectif" />
+                </div>  
             </div>
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/softGcc/tableauBord' },
+                    { label: 'Effectif par département', path: '/softGcc/effectif' },
+                    { label: 'Organigramme entreprise', path: '/softGcc/organigramme' },
+                ]}
+            />
+            {error && <div className="alert alert-danger">{error}</div>}
+
             <div className="container-responsive">
                 <div className="row">
                     <div className="col-lg-12 grid-margin stretch-card">

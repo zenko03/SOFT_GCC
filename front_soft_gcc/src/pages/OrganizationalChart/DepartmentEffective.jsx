@@ -8,6 +8,7 @@ import Loader from '../../helpers/Loader';
 import '../../styles/orgChart.css';
 import defaultImg from '../../assets/images/default.jpg';
 import ModalImportEmployee from '../../components/organizationalChart/ModalImportEmployee';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 // Map des images des départements
 const departmentImages = {
@@ -22,9 +23,6 @@ const getDepartmentImage = (departmentName) => {
 
 // Page pour les nombres des employés par département
 function DepartmentEffective() {
-    const module = 'Effectif';
-    const action = 'employee par departement';
-    const url = '/Effectif';
     const navigate = useNavigate();
 
     // Initialisation des states
@@ -62,24 +60,31 @@ function DepartmentEffective() {
 
     return (
         <Template>
-            {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
-            {error && <div className="alert alert-danger">{error}</div>} {/* Affichez les erreurs */}
-            <PageHeader module={module} action={action} url={url} />
+            {loading && <Loader />}
 
-            <div className="row mb-3">
+            <div className="title-container">
                 <div className="col-lg-10 skill-header">
-                    <i className="mdi mdi-account-group skill-icon"></i>
-                    <h4 className="skill-title">Effectif par département</h4>
-                </div>
-                <div className="col-lg-2">
-                    <div className="action-buttons text-left my-1">
-                        <button type="button" onClick={handleClickOrg} className="btn btn-success">
-                            <i className="mdi mdi-sitemap button-logo"></i>
-                            Voir organigramme
-                        </button>
-                    </div>
+                    <i className="mdi mdi-calendar-check skill-icon"></i>
+                    <p className="skill-title">EFFECTIF PAR DÉPARTEMENT</p>
                 </div>
             </div>
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/softGcc/tableauBord' },
+                    { label: 'Effectif par département', path: '/softGcc/effectif' },
+                    { label: 'Liste', path: '/softGcc/effectif' }
+                ]}
+            />
+            {error && <div className="alert alert-danger">{error}</div>}
+            <div className="row mt-3">
+                <div className="col-12 d-flex justify-content-end" style={{marginBottom: '10px'}}>
+                    <button className="btn-add btn-success btn-fw" onClick={handleClickOrg} style={{float: 'right'}}>
+                        <i className="mdi mdi-sitemap"></i>
+                        Voir organigramme
+                    </button>
+                </div>
+            </div>
+
             <div className="row">
                 {numberEmployeeByDepartment.map((item) => (
                     <div onClick={() => (handleClickDetails(item.departmentId))} key={item.departmentId} className="col-lg-3 col-md-6 col-sm-12 grid-margin stretch-card">

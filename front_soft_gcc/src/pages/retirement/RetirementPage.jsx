@@ -8,6 +8,7 @@ import ModalParameter from '../../components/retirement/ModalParameter';
 import Fetcher from '../../components/Fetcher';
 import useSWR from 'swr';
 import FormattedDate from '../../helpers/FormattedDate';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 // Fonction debounce pour éviter les appels excessifs
 function debounce(func, delay) {
@@ -19,10 +20,6 @@ function debounce(func, delay) {
 }
 
 function RetirementPage() {
-  const module = "Retraite";
-  const action = "Liste";
-  const url = "/retraite";
-
   const [filters, setFilters] = useState({
     keyWord: '',
     civiliteId: '',
@@ -78,6 +75,7 @@ function RetirementPage() {
       if (response.success) {
         if (!Array.isArray(response.data)) {
           console.error("Données invalides reçues :", response.data);
+          setError("Données invalides reçues :", response.data);
           setDataRetirement([]);
         } else {
           setDataRetirement(response.data);
@@ -160,27 +158,36 @@ function RetirementPage() {
     <Template>
       {loading && <Loader />}
       <ModalParameter Fetcher={Fetcher} showParameter={showParameter} handleCloseParameter={() => setShowParameter(false)} fetchFilteredData={fetchFilteredData} />
-      <PageHeader module={module} action={action} url={url} />
-       
-      <div className="row header-title">
+
+      <div className="title-container">
         <div className="col-lg-10 skill-header">
           <i className="mdi mdi-calendar-check skill-icon"></i>
-          <h4 className="skill-title">DÉPART À LA RETRAITE</h4>
+          <p className="skill-title">DÉPART À LA RETRAITE</p>
         </div>
-        <div className="col-lg-2">
-          <button className="btn-add btn-success btn-fw" type="button" onClick={() => setShowParameter(true)}>
+      </div>
+      <BreadcrumbPers
+        items={[
+          { label: 'Accueil', path: '/softGcc/tableauBord' },
+          { label: 'Souhait évolution', path: '/softGcc/souhaitEvolution/suivi' },
+          { label: 'Liste', path: '/softGcc/souhaitEvolution/suivi' }
+        ]}
+      />
+      {error && <div className="alert alert-danger">{error}</div>}
+      <div className="row mt-3">
+        <div className="col-12 d-flex justify-content-end" style={{marginBottom: '10px'}}>
+          <button className="btn-add btn-success btn-fw" onClick={() => setShowParameter(true)} style={{float: 'right'}}>
             <i className="mdi mdi-settings"></i>
               Paramètre
           </button>
-        </div>  
+        </div>
       </div>
+
       <div className="row">
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card search-card">
-            <div className="card-header title-container">
-              <h5 className="title">
-                <i className="mdi mdi-filter-outline"></i> Filtres
-              </h5>
+           <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+              <i className="mdi mdi-filter-outline me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+              <h3 className="mb-0" style={{color: '#B8860B'}}>Filtres</h3>
             </div>
             <div className="card-body">
               <form className="form-sample">
@@ -273,10 +280,9 @@ function RetirementPage() {
       <div className="row">
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card">
-            <div className="card-header title-container">
-              <h5 className="title">
-                <i className="mdi mdi-format-list-bulleted"></i> Liste
-              </h5>
+            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+              <i className="mdi mdi-format-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+              <h3 className="mb-0" style={{color: '#B8860B'}}>Liste</h3>
             </div>
             <div className="card-body">
               {dataRetirement?.length > 0 ? (

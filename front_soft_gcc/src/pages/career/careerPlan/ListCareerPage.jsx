@@ -7,7 +7,7 @@ import Loader from '../../../helpers/Loader';
 import '../../../styles/pagination.css';
 import FormattedDate from '../../../helpers/FormattedDate';
 import useSWR from 'swr';
-import Fetcher from '../../../components/fetcher';
+import Fetcher from '../../../components/Fetcher';
 import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 
 // Fonction debounce pour éviter les appels excessifs

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Template from '../../Template';
 import PageHeader from '../../../components/PageHeader';
 import useSWR from 'swr';
-import Fetcher from '../../../components/fetcher';
+import Fetcher from '../../../components/Fetcher';
 import Loader from '../../../helpers/Loader';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
@@ -11,10 +11,6 @@ import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 import CancelButton from '../../../helpers/CancelButton';
 
 function CreateEmployeePage({ onSearch }) {
-    const module = "Souhait evolution";
-    const action = "Ajouter";
-    const url = "/SouhaitEvolution/Ajouter";
-
     const { data: dataEmployee } = useSWR('/Employee', Fetcher);
     const { data: dataDepartment } = useSWR('/Department', Fetcher);
 

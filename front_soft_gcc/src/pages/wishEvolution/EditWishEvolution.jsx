@@ -8,14 +8,11 @@ import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import { useParams } from "react-router-dom";
 import "../../styles/careerStyle.css";
+import CancelButton from '../../helpers/CancelButton';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 // Page de creation d'un plan de carriere
 function EditWishEvolution({ onSearch }) {
-    // Url d'en-tete de page
-    const module = "Souhait evolution";
-    const action = "Ajouter";
-    const url = "/SouhaitEvolution/Ajouter";
-
     const { WishEvolutionId } = useParams();
 
     // Preparation des donnees de formulaire
@@ -135,21 +132,33 @@ function EditWishEvolution({ onSearch }) {
     return (
         <Template>
             {isLoading && <Loader />}
-            <PageHeader module={module} action={action} url={url} />
+            <div className="title-container">
+                <div className="col-lg-10 skill-header">
+                <i className="mdi mdi-pencil-outline skill-icon"></i>
+                <p className="skill-title">MODIFICATION DU SOUHAIT D'ÉVALUATION ID {WishEvolutionId}</p>
+                </div>
+                <div className="col-lg-2">
+                <CancelButton to={`souhaitEvolution/details/${WishEvolutionId}`} />
+                </div>  
+            </div>
+            <BreadcrumbPers
+                items={[
+                { label: 'Accueil', path: '/softGcc/tableauBord' },
+                { label: 'Souhait évolution', path: '/softGcc/souhaitEvolution/suivi' },
+                { label: 'Détails', path: `/softGcc/souhaitEvolution/details/${WishEvolutionId}`},
+                { label: 'Modifier', path: `/softGcc/souhaitEvolution/edit/${WishEvolutionId}` },
+                ]}
+            />
             {success && <div className="alert alert-success">{success}</div>}
             {error && <div className="alert alert-danger">{error}</div>}
-            <div className="col-lg-12 skill-header">
-              <i className="mdi mdi-pencil-outline skill-icon"></i>
-              <h4 className="skill-title">MODIFICATION DU SOUHAIT D'ÉVALUATION ID {WishEvolutionId}</h4>
-            </div>
+           
             <form className="forms-sample">
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
-                            <div className="card-header title-container">
-                                <h5 className="title">
-                                    <i className="mdi mdi-file-document-edit "></i> Formulaire d'ajout
-                                </h5>
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-file-document-edit me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}>Formulaire de modification</h3>
                             </div>
                             <div className="card-body">
                                 <div className="form-group">
@@ -215,10 +224,9 @@ function EditWishEvolution({ onSearch }) {
                     </div>
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
-                            <div className="card-header title-container">
-                                <h5 className="title">
-                                    <i className="mdi mdi-playlist-star"></i> Liste de Suggestions
-                                </h5>
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-playlist-star me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}>Liste de Suggestions</h3>
                             </div>
                             <div className="card-body">
                                 <table className="table table-bordered table-skill">

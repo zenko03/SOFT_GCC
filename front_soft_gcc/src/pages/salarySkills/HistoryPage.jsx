@@ -8,6 +8,7 @@ import { urlApi } from '../../helpers/utils';
 import Loader from '../../helpers/Loader';
 import DateDisplayWithTime from '../../helpers/DateDisplayWithTime';
 import '../../styles/skillsStyle.css';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 const HistoryPage = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -50,25 +51,28 @@ const HistoryPage = () => {
   return (
     <Template>
       {loading && <Loader />}
-      {error && <div className="error-message">{error}</div>}
-
-      <PageHeader module={module} action={action} url={url} />
-
-      <div className="row">
-        <div className="col-lg-12 skill-header">
+      <div className="title-container">
+        <div className="col-lg-10 skill-header">
           <i className="mdi mdi-history skill-icon"></i>
-          <h4 className="skill-title">HISTORIQUES DES ACTIVITES</h4>
+          <p className="skill-title">HISTORIQUES DES ACTIONS</p>
         </div>
       </div>
+      <BreadcrumbPers
+        items={[
+          { label: 'Accueil', path: '/softGcc/tableauBord' },
+          { label: 'Historiques actions', path: '/softGcc/activityHistory' },
+          { label: 'Liste', path: '/softGcc/activityHistory' }
+        ]}
+      />
+      {error && <div className="error-message">{error}</div>}
 
       <div className="row">
         <div className="col-lg-12 grid-margin stretch-card">
           <div className="card shadow-sm rounded-lg">
-          <div className="card-header title-container">
-            <h5 className="title">
-              <i className="mdi mdi-format-list-bulleted"></i> Liste des Historiques
-            </h5>
-          </div>
+            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+              <i className="mdi mdi-format-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+              <h3 className="mb-0" style={{color: '#B8860B'}}> Liste des Historiques </h3>
+            </div>
             <div className="card-body">
               <div className="table-responsive">
                 {activityLogs.length > 0 ? (

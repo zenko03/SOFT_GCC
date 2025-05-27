@@ -16,7 +16,7 @@ import EvaluationInterviews from '../pages/Evaluations/EvaluationInterview/Evalu
 import RetirementPage from '../pages/retirement/RetirementPage';
 import FollowedWishEvolution from '../pages/wishEvolution/FollowedWishEvolution';
 import DetailsWishEvolution from '../pages/wishEvolution/DetailsWishEvolution';
-import AddWishEvolution from '../pages/wishEvolution/addWishEvolution';
+import AddWishEvolution from '../pages/wishEvolution/AddWishEvolution';
 import EditWishEvolution from '../pages/wishEvolution/EditWishEvolution';
 import Login from '../pages/Authentification/Login';
 import Register from '../pages/Authentification/Register';

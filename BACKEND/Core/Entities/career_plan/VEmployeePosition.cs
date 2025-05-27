@@ -41,7 +41,7 @@ namespace soft_carriere_competence.Core.Entities.career_plan
 		public DateTime HiringDate { get; set; }
 
 		[Column("Seniority")]
-		public int? Seniority { get; set; }
+		public string? Seniority { get; set; }
 
         [Column("employee_photo")]
         public byte[]? Photo { get; set; }

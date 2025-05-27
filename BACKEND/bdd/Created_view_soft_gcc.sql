@@ -719,22 +719,28 @@ GROUP BY department_id, department_name, department_photo
 
 -- Vue pour les details des employes
 CREATE VIEW v_employee_position AS
-select 
-	e.employee_id, 
-	e.registration_number, 
-	e.name, 
-	e.firstName, 
-	e.Department_id,
-	e.Department_name,
-	e.civilite_id,
-	e.civilite_name,
-	e.manager_id,
-	ec.position_id,
-	ec.Position_name,
-	e.hiring_date,
-	e.Birthday,
-	e.employee_photo,
-    DATEDIFF(YEAR, e.hiring_date, GETDATE()) AS Seniority
-from v_employee e
-left join v_employee_career ec
-on e.Registration_number = ec.Registration_number
+SELECT 
+    e.employee_id, 
+    e.registration_number, 
+    e.name, 
+    e.firstName, 
+    e.Department_id,
+    e.Department_name,
+    e.civilite_id,
+    e.civilite_name,
+    e.manager_id,
+    ec.position_id,
+    ec.Position_name,
+    e.hiring_date,
+    e.Birthday,
+    e.employee_photo,
+
+    -- Calcul de l'ancienneté exacte (années et mois)
+    CONCAT(
+        DATEDIFF(MONTH, e.hiring_date, GETDATE()) / 12, ' an(s) et ',
+        DATEDIFF(MONTH, e.hiring_date, GETDATE()) % 12, ' mois'
+    ) AS Seniority
+
+FROM v_employee e
+LEFT JOIN v_employee_career ec
+    ON e.Registration_number = ec.Registration_number

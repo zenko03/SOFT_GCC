@@ -33,7 +33,7 @@ namespace soft_carriere_competence.Application.Services.entrepriseOrg
 		public async Task<List<EmployeeNode>> GetOrgChart()
 		{
 			var employees = await _context.VEmployeePosition.ToListAsync();
-			var orgChart = BuildOrgChart(employees, null); // Root has ManagerId = null
+			var orgChart = BuildOrgChart(employees, null); 
 			return orgChart;
 		}
 

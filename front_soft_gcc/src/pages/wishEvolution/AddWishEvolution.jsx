@@ -7,14 +7,11 @@ import Loader from '../../helpers/Loader';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import "../../styles/careerStyle.css";
+import CancelButton from '../../helpers/CancelButton';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 // Page de creation d'un plan de carriere
 function AddWishEvolution({ onSearch }) {
-    // Url d'en-tete de page
-    const module = "Souhait evolution";
-    const action = "Ajouter";
-    const url = "/SouhaitEvolution/Ajouter";
-
     // Preparation des donnees de formulaire
     const { data: dataEmployee } = useSWR('/Employee', Fetcher);
     const { data: dataPosition } = useSWR('/Position', Fetcher);
@@ -48,7 +45,7 @@ function AddWishEvolution({ onSearch }) {
                 creationDate: new Date().toISOString(),
                 updatedDate: new Date().toISOString(),
             };
-
+            console.log(dataToSend);
             const response = await axios.post(urlApi('/WishEvolution'), dataToSend);
             setFormData({
                 positionId: '',
@@ -63,6 +60,7 @@ function AddWishEvolution({ onSearch }) {
             setSuccess("Insertion de la nouvelle demande reussie");
 
         } catch (error) {
+            console.log(error);
             setError('Erreur lors de l\'insertion : '+error.message);
         } finally {
             setIsLoading(false);
@@ -118,20 +116,32 @@ function AddWishEvolution({ onSearch }) {
     return (
         <Template>
             {isLoading && <Loader />}
-            <PageHeader module={module} action={action} url={url} />
-            {success && <div className="alert alert-success">{success}</div>}
-            {error && <div className="alert alert-danger">{error}</div>}
-            <div className="skill-header">
-                <h4 className="skill-title">AJOUT D'UN SOUHAIT D'ÉVALUATION</h4>
+            <div className="title-container">
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-format-list-checks skill-icon"></i>
+                    <p className="skill-title">AJOUT D'UN SOUHAIT D'ÉVALUATION</p>
+                </div>
+
+                <div className="col-lg-2">
+                    <CancelButton to="souhaitEvolution/suivi" />
+                </div>  
             </div>
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/softGcc/tableauBord' },
+                    { label: 'Souhait évolution', path: '/softGcc/souhaitEvolution/suivi' },
+                    { label: 'Ajout', path: '/softGcc/souhaitEvolution/ajouter' },
+                ]}
+            />
+            {error && <div className="alert alert-danger">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
             <form className="forms-sample">
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
-                            <div className="card-header title-container">
-                                <h5 className="title">
-                                    <i className="mdi mdi-file-document-edit "></i> Formulaire d'ajout
-                                </h5>
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-file-document-edit me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}>Formulaire d'ajout</h3>
                             </div>
                             <div className="card-body">
                                 <div className="form-group">
@@ -140,14 +150,14 @@ function AddWishEvolution({ onSearch }) {
                                         <option value="">Selectionner une employe</option>
                                         {dataEmployee && dataEmployee.map((item, id) => (
                                             <option key={item.employeeId} value={item.employeeId}>
-                                                {item.registrationNumber}
+                                                {`${item.registrationNumber} - ${item.name} ${item.firstName}`}
                                             </option>
                                         ))}
                                     </select>    
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="exampleInputUsername1">Poste souhait</label>
-                                    <select name="positionId" value={formData.positionIdId} onChange={handleChange} className="form-control" id="exampleSelectGender">
+                                    <select name="positionId" value={formData.positionId} onChange={handleChange} className="form-control" id="exampleSelectGender">
                                         <option value="">Selectionner une poste souhait</option>
                                         {dataPosition && dataPosition.map((item, id) => (
                                             <option key={item.positionId} value={item.positionId}>
@@ -198,10 +208,9 @@ function AddWishEvolution({ onSearch }) {
                     </div>
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
-                            <div className="card-header title-container">
-                                <h5 className="title">
-                                    <i className="mdi mdi-playlist-star"></i> Liste de Suggestions
-                                </h5>
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-playlist-star me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}>Postes recommandées</h3>
                             </div>
                             <div className="card-body">
                             <table className="table table-bordered table-skill">
