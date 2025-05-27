@@ -46,6 +46,8 @@ CREATE TABLE Employee (
 	Email NVARCHAR(255) NULL
 );
 
+
+
 -- Insérer des employés avec des données de test
 -- Pour cet exemple, nous allons supposer que l'Employee_id 1 est un manager
 --INSERT INTO Employee (Registration_number, Name, FirstName, Birthday, Hiring_date, Department_id, 
@@ -404,6 +406,7 @@ CREATE TABLE Skill_position (
 	Skill_position_id INT PRIMARY KEY IDENTITY(1,1),
 	Position_id INT NOT NULL REFERENCES Position(Position_id),
 	Skill_id INT NOT NULL REFERENCES Skill(Skill_id),
+	Required_level DOUBLE PRECISION NULL,
 	State INT,
 	Creation_date DATETIME,
 	Updated_date DATETIME

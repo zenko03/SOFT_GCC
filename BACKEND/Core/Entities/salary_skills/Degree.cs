@@ -10,7 +10,6 @@ namespace soft_carriere_competence.Core.Entities.salary_skills
 		[Column("Degree_id")]
 		public int DegreeId { get; set; }
 
-
 		[Column("Degree_name")]
 		public string? Name { get; set; }
 	}

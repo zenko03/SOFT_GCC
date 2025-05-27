@@ -22,10 +22,13 @@ namespace soft_carriere_competence.Controllers.dashboard
 		{
 			int employeeTotal = await _dashboardService.GetEmployeeCount();
 			int wishEvolutionTotal = await _dashboardService.GetWishEvolutionTotal();
+			double averageSkill = await _dashboardService.GetAverageSkillPerEmployee();
+
 			return Ok(new 
 			{
 				EmployeeTotal = employeeTotal,
-				WishEvolutionTotal = wishEvolutionTotal
+				WishEvolutionTotal = wishEvolutionTotal,
+				AverageSkill = averageSkill
 			});
 		}
 

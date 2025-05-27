@@ -47,8 +47,23 @@ namespace soft_carriere_competence.Application.Services.dashboard
 			}
 		}
 
-		// Competences des employees par departments
-		public async Task<List<VNEmployeeSkillByDepartment>> GetEmployeeSkillByDepartment(int idDepartment, int state)
+        // Compétences moyenne par employé
+        public async Task<double> GetAverageSkillPerEmployee()
+        {
+            using (var command = _context.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = "SELECT SUM(skill_number)/count(*)  FROM v_skills";
+                command.CommandType = System.Data.CommandType.Text;
+
+                _context.Database.OpenConnection();
+
+                var result = await command.ExecuteScalarAsync();
+                return Convert.ToDouble(result);
+            }
+        }
+
+        // Competences des employees par departments
+        public async Task<List<VNEmployeeSkillByDepartment>> GetEmployeeSkillByDepartment(int idDepartment, int state)
 		{
 			return await _context.VNEmployeeSkillByDepartment
 				.FromSqlRaw("SELECT * FROM v_n_employee_skill_by_department WHERE Department_id = {0} AND state = {1}", idDepartment, state)
