@@ -1,0 +1,367 @@
+.evaluation-configuration {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Barre de progression */
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.progress-steps::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #e0e0e0;
+  z-index: 1;
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  background: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 2px solid #e0e0e0;
+  color: #666;
+}
+
+.step.active {
+  border-color: #007bff;
+  color: #007bff;
+  font-weight: bold;
+}
+
+/* Contenu principal */
+.configuration-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.step-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.date-range {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.date-input {
+  flex: 1;
+}
+
+.date-input label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* Sélection des superviseurs */
+.supervisor-selection {
+  margin-top: 10px;
+}
+
+.selected-employees {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.employee-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.employee-tag button {
+  padding: 2px 8px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+}
+
+.selected-supervisors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.supervisor-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.supervisor-tag button {
+  padding: 2px 8px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 50%;
+}
+
+/* Questions par employé */
+.employee-questions {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* Style des sections de compétences */
+.competence-section {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+}
+
+.competence-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.competence-title .badge {
+  font-size: 0.8rem;
+  font-weight: normal;
+}
+
+/* Style de la liste des questions */
+.questions-list {
+  padding: 1rem;
+}
+
+.question-item {
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.8rem;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+  background-color: #f8f9fa;
+}
+
+.question-item:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.question-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Style des cases à cocher */
+.form-check {
+  display: flex;
+  align-items: flex-start;
+}
+
+.form-check-input {
+  margin-top: 0.3rem;
+  margin-right: 0.8rem;
+  cursor: pointer;
+}
+
+.form-check-label {
+  flex: 1;
+  color: #495057;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+/* Style de l'en-tête de l'employé */
+.employee-name {
+  color: #2c3e50;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 1.5rem;
+}
+
+/* Message quand il n'y a pas de questions */
+.no-questions {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Boutons d'action */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #dee2e6;
+}
+
+/* État de chargement */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .evaluation-configuration {
+    padding: 10px;
+  }
+
+  .progress-steps {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .progress-steps::before {
+    display: none;
+  }
+
+  .step {
+    width: 100%;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .supervisor-selection .d-flex {
+    flex-direction: column;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+}
+
+/* Résumé de la configuration */
+.configuration-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.summary-section {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.summary-section h4 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.summary-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.summary-section li {
+  padding: 8px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.summary-section li:last-child {
+  border-bottom: none;
+}
+
+.employee-summary {
+  padding: 10px;
+  background: white;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.employee-summary h5 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.employee-summary p {
+  margin: 5px 0 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+/* Styles pour les questions déjà utilisées par d'autres employés */
+.question-item.border-warning {
+  border-left: 3px solid #ffc107;
+  background-color: #fff8e5;
+}
+
+.badge.badge-warning.text-white {
+  background-color: #f0ad4e;
+  font-weight: normal;
+  font-size: 0.75rem;
+}
+
+/* Style pour les boutons de sélection rapide */
+.btn-group-sm .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Style pour le compteur de questions sélectionnées */
+.badge.badge-success {
+  font-size: 0.8rem;
+  padding: 0.35em 0.65em;
+} 

@@ -92,45 +92,41 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         //}
 
         // Surcharge pour inclure l'employeeId
-        public async Task<TemporaryAccount> CreateTemporaryAccountAsync( int employeeId, int evaluationId)
+        public async Task<TemporaryAccount> CreateTemporaryAccountAsync(int employeeId, int evaluationId)
         {
-            User user = null;
-            Employee employee = null;
-            var evaluation = await _context.Evaluations.FindAsync(evaluationId);
-
-            if (evaluation == null)
-                throw new ArgumentException("Évaluation invalide");
-            
-            // Vérifier si un employé existe (obligatoire)
-            employee = await _context.Employee.FindAsync(employeeId);
+            // Vérifier si l'employé existe
+            var employee = await _context.Employee.FindAsync(employeeId);
             if (employee == null)
-                throw new ArgumentException("Employé invalide");
+            {
+                throw new Exception($"Employé avec ID {employeeId} non trouvé");
+            }
 
-           
+            // Vérifier si l'évaluation existe
+            var evaluation = await _context.Evaluations.FindAsync(evaluationId);
+            if (evaluation == null)
+            {
+                throw new Exception($"Évaluation avec ID {evaluationId} non trouvée");
+            }
+
+            // Générer les identifiants temporaires
+            string tempLogin = GenerateTemporaryLogin(employee);
+            string tempPassword = GenerateTemporaryPassword();
+
+            // Créer le compte temporaire
             var tempAccount = new TemporaryAccount
             {
-                // Suppression de UserId pour éviter la violation de contrainte FK
-                // UserId = userId, 
                 EmployeeId = employeeId,
                 Evaluations_id = evaluationId,
-                TempLogin = user != null 
-                    ? await GenerateTemporaryLoginAsync(user)
-                    : await GenerateTemporaryLoginFromEmployeeAsync(employee),
-                TempPassword = GenerateTemporaryPassword(),
-                CreatedAt = DateTime.UtcNow,
-                ExpirationDate = DateTime.UtcNow.AddDays(2)
+                TempLogin = tempLogin,
+                TempPassword = tempPassword,
+                ExpirationDate = evaluation.EndDate.AddDays(1), // Expire un jour après la fin de l'évaluation
+                IsUsed = false,
+                CreatedAt = DateTime.UtcNow
             };
 
-            _context.temporaryAccounts.Add(tempAccount);
+            // Sauvegarder dans la base de données
+            await _context.temporaryAccounts.AddAsync(tempAccount);
             await _context.SaveChangesAsync();
-
-            // Envoyer un email seulement si un utilisateur existe
-            if (user != null && !string.IsNullOrEmpty(user.Email))
-            {
-                await _emailService.SendEmailAsync(user.Email, "Identifiants temporaires pour l'évaluation",
-                    $"Votre login : {tempAccount.TempLogin}\nVotre mot de passe : {tempAccount.TempPassword}\n" +
-                    $"Notez que ces identifiants ne seront valides qu'à partir de {evaluation.StartDate.ToShortDateString()}.");
-            }
 
             return tempAccount;
         }
@@ -142,6 +138,22 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             var random = new Random();
             return new string(Enumerable.Repeat(chars, 10)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        // Méthode pour générer un login temporaire à partir d'un employé
+        private string GenerateTemporaryLogin(Employee employee)
+        {
+            if (employee == null)
+                throw new ArgumentNullException(nameof(employee));
+
+            // Construire un login basé sur le prénom et le nom
+            string baseName = $"{employee.FirstName?.Substring(0, Math.Min(3, employee.FirstName?.Length ?? 0))}{employee.Name?.Substring(0, Math.Min(3, employee.Name?.Length ?? 0))}".ToLower();
+            
+            // Ajouter un timestamp pour l'unicité
+            string timestamp = DateTime.UtcNow.ToString("yyMMddHHmm");
+            
+            // Retourner le login temporaire
+            return $"{baseName}{timestamp}";
         }
     }
 }

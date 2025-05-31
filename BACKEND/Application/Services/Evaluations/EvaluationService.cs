@@ -360,41 +360,34 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             );
         }
 
-        public async Task<int> CreateEvaluationAsync(int userId, int employeeId, int evaluationTypeId, List<int> supervisorIds, DateTime startDate, DateTime endDate)
+        public async Task<int> CreateEvaluationAsync(
+            int userId,
+            int employeeId,
+            int evaluationTypeId,
+            List<int> supervisorIds,
+            DateTime startDate,
+            DateTime endDate,
+            bool enableReminders = false)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    // Vérifier si l'employé existe (obligatoire)
                     var employee = await _context.Employee.FindAsync(employeeId);
                     if (employee == null)
-                        throw new Exception($"Employee with ID {employeeId} not found.");
-
-                    // Vérifier si le type d'évaluation existe
-                    var evaluationType = await _evaluationTypeRepository.GetByIdAsync(evaluationTypeId);
-                    if (evaluationType == null)
-                        throw new Exception($"EvaluationType with ID {evaluationTypeId} not found.");
-
-                    // Vérifier si tous les superviseurs existent et sont uniques
-                    var uniqueSupervisorIds = supervisorIds.Distinct().ToList();
-                    foreach (var supervisorId in uniqueSupervisorIds)
                     {
-                        var supervisor = await _userRepository.GetByIdAsync(supervisorId);
-                        if (supervisor == null)
-                            throw new Exception($"Supervisor with ID {supervisorId} not found.");
+                        throw new Exception($"Employé avec ID {employeeId} non trouvé");
                     }
 
-                    // Créer l'évaluation - Ne pas inclure UserId
+                    // Créer une nouvelle évaluation
                     var newEvaluation = new Evaluation
                     {
-                        EmployeeId = employeeId, // Uniquement l'employé évalué
+                        EmployeeId = employeeId,
                         EvaluationTypeId = evaluationTypeId,
                         StartDate = startDate,
                         EndDate = endDate,
-                        OverallScore = 0,
-                        Comments = null,
-                        state = 10 // Actif
+                        state = 10, // État "Planifié"
+                        EnableReminders = enableReminders
                     };
 
                     // Sauvegarder l'évaluation
@@ -408,7 +401,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     {
                         evaluationId = newEvaluation.EvaluationId,
                         employeeId = employeeId,
-                        totalQuestions = 0, // Sera mis à jour lors de la sélection des questions
+                        totalQuestions = 0,
                         answeredQuestions = 0,
                         progressPercentage = 0,
                         lastUpdate = DateTime.UtcNow
@@ -417,7 +410,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     await _context.SaveChangesAsync();
 
                     // Créer les associations superviseur-évaluation
-                    var evaluationSupervisors = uniqueSupervisorIds.Select(supervisorId => new EvaluationSupervisors
+                    var evaluationSupervisors = supervisorIds.Select(supervisorId => new EvaluationSupervisors
                     {
                         EvaluationId = newEvaluation.EvaluationId,
                         SupervisorId = supervisorId
@@ -428,6 +421,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     await _context.SaveChangesAsync();
 
                     Console.WriteLine($"Added {evaluationSupervisors.Count} supervisors to evaluation {newEvaluation.EvaluationId}");
+
+                    // Récupérer le type d'évaluation pour l'objet du mail
+                    var evaluationType = await _evaluationTypeRepository.GetByIdAsync(evaluationTypeId);
+                    string evaluationTypeName = evaluationType?.Designation ?? "Évaluation";
 
                     // Créer un compte temporaire pour l'employé
                     var tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(
@@ -441,14 +438,43 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                         // Envoyer l'email de notification à l'employé
                         await _emailService.SendEmailAsync(
                             employee.Email,
-                            "Planification évaluation",
-                            $"Vous avez une évaluation programmée du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}.\n\n" +
-                            $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
-                            $"Login : {tempAccount.TempLogin}\n" +
-                            $"Mot de passe : {tempAccount.TempPassword}\n\n" +
-                            $"Ces identifiants ne seront valides qu'à partir du {startDate.ToShortDateString()}.\n" +
-                            $"Lien pour vous connecter : https://votre-application.com/evaluation-login"
+                            $"{evaluationTypeName} - Planification",
+                            $"Bonjour {employee.FirstName} {employee.Name},<br><br>" +
+                            $"Nous vous informons qu'une {evaluationTypeName.ToLower()} a été planifiée à votre attention.<br><br>" +
+                            $"<strong>Période d'évaluation :</strong> Du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}<br><br>" +
+                            $"<div class='credentials'>" +
+                            $"<strong>Vos identifiants de connexion :</strong><br>" +
+                            $"<strong>Login :</strong> {tempAccount.TempLogin}<br>" +
+                            $"<strong>Mot de passe :</strong> {tempAccount.TempPassword}<br>" +
+                            $"</div><br>" +
+                            $"Ces identifiants seront valides à partir du {startDate.ToShortDateString()}.<br><br>" +
+                            $"<a href='http://localhost:5173/EvaluationLogin' class='button'>Accéder à l'évaluation</a><br><br>" +
+                            $"Cordialement,<br>" +
+                            $"L'équipe Gestion des Carrières et Compétences"
                         );
+                    }
+
+                    // Envoyer des notifications par email à tous les superviseurs
+                    foreach (var supervisorId in supervisorIds)
+                    {
+                        var supervisor = await _userRepository.GetByIdAsync(supervisorId);
+                        if (supervisor != null && !string.IsNullOrEmpty(supervisor.Email))
+                        {
+                            string employeeName = employee != null ? $"{employee.FirstName} {employee.Name}" : "Un employé";
+                            
+                            await _emailService.SendEmailAsync(
+                                supervisor.Email,
+                                $"{evaluationTypeName} - Planification à superviser",
+                                $"Bonjour {supervisor.FirstName} {supervisor.LastName},<br><br>" +
+                                $"Vous avez été désigné comme superviseur pour une {evaluationTypeName.ToLower()}.<br><br>" +
+                                $"<strong>Employé concerné :</strong> {employeeName}<br>" +
+                                $"<strong>Période d'évaluation :</strong> Du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}<br><br>" +
+                                $"Veuillez vous connecter à votre compte pour consulter et gérer cette évaluation.<br><br>" +
+                                $"<a href='http://localhost:5173/' class='button'>Accéder au système</a><br><br>" +
+                                $"Cordialement,<br>" +
+                                $"L'équipe Gestion des Carrières et Compétences"
+                            );
+                        }
                     }
 
                     await transaction.CommitAsync();
@@ -495,7 +521,14 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         {
             var upcomingEvaluations = await GetUpcomingEvaluationsAsync();
 
-            foreach (var evaluation in upcomingEvaluations)
+            // Ne traiter que les évaluations avec reminders activés
+            var evaluationsToRemind = upcomingEvaluations
+                .Where(e => e.EnableReminders)
+                .ToList();
+        
+            Console.WriteLine($"Sending reminders for {evaluationsToRemind.Count} evaluations (out of {upcomingEvaluations.Count} upcoming)");
+
+            foreach (var evaluation in evaluationsToRemind)
             {
                 await SendReminderEmailAsync(evaluation.EmployeeId, evaluation.StartDate);
             }
@@ -526,6 +559,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             if (evaluation == null || !evaluation.Any()) return;
 
             var currentEvaluation = evaluation.First();
+            
+            // Récupérer le type d'évaluation
+            var evaluationType = await _evaluationTypeRepository.GetByIdAsync(currentEvaluation.EvaluationTypeId);
+            string evaluationTypeName = evaluationType?.Designation ?? "Évaluation";
 
             // Récupérer le compte temporaire existant ou en créer un nouveau
             var tempAccount = await _context.temporaryAccounts
@@ -539,17 +576,49 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 tempAccount = await _temporaryAccountService.CreateTemporaryAccountAsync(userId, currentEvaluation.EvaluationId);
             }
 
-            // Envoyer l'email de rappel avec les identifiants
+            // Envoyer l'email de rappel avec les identifiants à l'employé
             await _emailService.SendEmailAsync(
                 user.Email,
-                "Rappel d'évaluation",
-                $"Ceci est un rappel que vous avez une évaluation prévue le {evaluationDate.ToShortDateString()}.\n\n" +
-                $"Voici vos identifiants temporaires pour accéder à votre évaluation :\n" +
-                $"Login : {tempAccount.TempLogin}\n" +
-                $"Mot de passe : {tempAccount.TempPassword}\n\n" +
-                $"Ces identifiants ne seront valides qu'à partir du {currentEvaluation.StartDate.ToShortDateString()}.\n" +
-                $"Lien pour vous connecter : http://localhost:5173/EvaluationLogin"
+                $"{evaluationTypeName} - Rappel",
+                $"Bonjour {user.FirstName} {user.LastName},<br><br>" +
+                $"Ceci est un rappel que vous avez une {evaluationTypeName.ToLower()} prévue le {evaluationDate.ToShortDateString()}.<br><br>" +
+                $"<div class='credentials'>" +
+                $"<strong>Vos identifiants de connexion :</strong><br>" +
+                $"<strong>Login :</strong> {tempAccount.TempLogin}<br>" +
+                $"<strong>Mot de passe :</strong> {tempAccount.TempPassword}<br>" +
+                $"</div><br>" +
+                $"Ces identifiants ne seront valides qu'à partir du {currentEvaluation.StartDate.ToShortDateString()}.<br><br>" +
+                $"<a href='http://localhost:5173/EvaluationLogin' class='button'>Accéder à l'évaluation</a><br><br>" +
+                $"Cordialement,<br>" +
+                $"L'équipe Gestion des Carrières et Compétences"
             );
+            
+            // Envoyer des rappels aux superviseurs également
+            var supervisors = await _context.EvaluationSupervisors
+                .Where(es => es.EvaluationId == currentEvaluation.EvaluationId)
+                .Join(_context.Users,
+                    es => es.SupervisorId,
+                    u => u.Id,
+                    (es, u) => u)
+                .ToListAsync();
+
+            foreach (var supervisor in supervisors)
+            {
+                if (!string.IsNullOrEmpty(supervisor.Email))
+                {
+                    await _emailService.SendEmailAsync(
+                        supervisor.Email,
+                        $"{evaluationTypeName} - Rappel de supervision",
+                        $"Bonjour {supervisor.FirstName} {supervisor.LastName},<br><br>" +
+                        $"Ceci est un rappel concernant une {evaluationTypeName.ToLower()} que vous devez superviser, prévue pour le {evaluationDate.ToShortDateString()}.<br><br>" +
+                        $"<strong>Employé concerné:</strong> {user.FirstName} {user.LastName}<br><br>" +
+                        $"Veuillez vous connecter à votre compte pour effectuer cette supervision.<br><br>" +
+                        $"<a href='http://localhost:5173/' class='button'>Accéder au système</a><br><br>" +
+                        $"Cordialement,<br>" +
+                        $"L'équipe Gestion des Carrières et Compétences"
+                    );
+                }
+            }
         }
 
         // Existing rappelerEvaluation method (if needed for manual reminders)
@@ -671,20 +740,19 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         public async Task<List<int>> CreateEvaluationWithSelectedQuestionsAsync(CreateEvaluationWithQuestionsDto dto)
         {
-            var evaluationIds = new List<int>();
+            var createdEvaluationIds = new List<int>();
 
-            try
-            {
                 foreach (var employeeQuestion in dto.EmployeeQuestions)
                 {
-                    // Créer l'évaluation pour l'employé
+                // Créer l'évaluation
                     var evaluationId = await CreateEvaluationAsync(
-                        employeeQuestion.UserId, 
+                    0, // UserId (not specified in this flow)
                         employeeQuestion.EmployeeId,
-                        employeeQuestion.EvaluationTypeId,
+                    dto.EvaluationTypeId,
                         dto.SupervisorIds,
                         dto.StartDate,
-                        dto.EndDate
+                    dto.EndDate,
+                    dto.EnableReminders // Ajouter le paramètre de rappel
                     );
 
                     // Ajouter les questions sélectionnées avec leurs compétences
@@ -713,16 +781,11 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                         await _context.SaveChangesAsync();
                     }
 
-                    evaluationIds.Add(evaluationId);
+                createdEvaluationIds.Add(evaluationId);
                 }
 
                 await _context.SaveChangesAsync();
-                return evaluationIds;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erreur lors de la création des évaluations avec questions sélectionnées : {ex.Message}");
-            }
+            return createdEvaluationIds;
         }
 
         private async Task<int> GetCompetenceLineIdForQuestion(int questionId)
@@ -806,6 +869,32 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             {
                 throw new Exception($"Erreur lors de la récupération des questions paginées : {ex.Message}");
             }
+        }
+
+        public async Task<IEnumerable<EvaluationQuestion>> GetEvaluationQuestionsByPositionAsync(int positionId)
+        {
+            return await _questionRepository.GetQuestionsByPositionAsync(positionId);
+        }
+
+        public async Task<IEnumerable<EvaluationQuestion>> GetEvaluationQuestionsByTypePositionAndCompetenceAsync(int evaluationTypeId, int positionId, int competenceLineId)
+        {
+            return await _questionRepository.GetQuestionsByEvaluationTypePositionAndCompetenceAsync(evaluationTypeId, positionId, competenceLineId);
+        }
+
+        // Méthode pour récupérer une évaluation par son ID
+        public async Task<Evaluation> GetEvaluationByIdAsync(int evaluationId)
+        {
+            return await _evaluationRepository.GetByIdAsync(evaluationId);
+        }
+
+        // Méthode pour mettre à jour une évaluation
+        public async Task<bool> UpdateEvaluationAsync(Evaluation evaluation)
+        {
+            if (evaluation == null) throw new ArgumentNullException(nameof(evaluation));
+            
+            // Mettre à jour l'évaluation dans le repository
+            await _evaluationRepository.UpdateAsync(evaluation);
+            return true;
         }
     }
 }
