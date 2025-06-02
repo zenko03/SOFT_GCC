@@ -5,6 +5,7 @@ using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.salary_skills;
 using soft_carriere_competence.Core.Interface;
 using soft_carriere_competence.Infrastructure.Data;
+using soft_carriere_competence.Core.Interface.AuthInterface;
 
 namespace soft_carriere_competence.Application.Services.Evaluations
 {
@@ -13,12 +14,16 @@ namespace soft_carriere_competence.Application.Services.Evaluations
         private readonly ApplicationDbContext _context;
         private readonly IGenericRepository<Position> _posteRepository;
         private readonly IGenericRepository<Department> _departementRepository;
+        private readonly IGenericRepository<User> _userRepository;
+        private readonly IEmailService _emailService;
 
-        public EvaluationInterviewService(ApplicationDbContext context, IGenericRepository<Position> posteRepository, IGenericRepository<Department> departementRepository)
+        public EvaluationInterviewService(ApplicationDbContext context, IGenericRepository<Position> posteRepository, IGenericRepository<Department> departementRepository, IGenericRepository<User> userRepository, IEmailService emailService)
         {
             _context = context;
             _posteRepository = posteRepository;
             _departementRepository = departementRepository;
+            _userRepository = userRepository;
+            _emailService = emailService;
         }
 
         public async Task<IEnumerable<VEmployeesFinishedEvaluation>> GetEmployeesWithFinishedEvalAsync(
@@ -151,7 +156,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
 
         // Planifier un entretien
-        public async Task<(bool Success, string Message, int? InterviewId)> ScheduleInterviewAsync(int evaluationId, DateTime scheduledDate, List<int> participantIds, int? employeeId = null)
+        public async Task<(bool Success, string Message, int? InterviewId)> ScheduleInterviewAsync(int evaluationId, DateTime scheduledDate, List<int> participantIds, int? employeeId = null, bool sendEmails = true)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -220,6 +225,9 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                     Console.WriteLine($"Nouvel entretien créé avec ID: {interview.InterviewId}");
                 }
 
+                // Liste pour collecter les participants (pour l'envoi d'emails)
+                var participantsInfo = new List<(int ParticipantId, bool IsEvaluatedEmployee)>();
+
                 // Ajouter l'employé concerné par l'évaluation (si fourni)
                 if (employeeId.HasValue && employeeId.Value > 0)
                 {
@@ -231,49 +239,167 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                         EmployeeId = employeeId.Value,
                         UserId = null  // L'employé évalué n'est pas lié à un utilisateur
                     });
+                    
+                    // Ajouter à la liste pour l'envoi d'emails
+                    participantsInfo.Add((employeeId.Value, true));
                 }
 
-                // Ajouter les participants (RH, managers, directeurs) qui sont des Users
+                // Ajouter les participants
                 if (participantIds != null && participantIds.Any())
                 {
-                    Console.WriteLine($"Ajout de {participantIds.Count} participants");
-                    
                     foreach (var participantId in participantIds)
                     {
-                        // Éviter de dupliquer l'employé évalué s'il est dans la liste
-                        if (employeeId.HasValue && participantId == employeeId.Value)
-                        {
-                            Console.WriteLine($"Participant {participantId} ignoré car c'est l'employé évalué");
+                        // Éviter les doublons avec l'employé évalué
+                        if (employeeId.HasValue && participantId == employeeId.Value) 
                             continue;
-                        }
-                        
-                        Console.WriteLine($"Ajout du participant (UserId): {participantId}");
                         
                         _context.interviewParticipants.Add(new InterviewParticipants
                         {
                             InterviewId = interview.InterviewId,
-                            UserId = participantId,
-                            EmployeeId = null  // Les participants sont des utilisateurs
+                            UserId = participantId
                         });
+                        
+                        // Ajouter à la liste pour l'envoi d'emails
+                        participantsInfo.Add((participantId, false));
                     }
                 }
 
                 await _context.SaveChangesAsync();
+                
+                // Envoi des notifications par email si demandé
+                if (sendEmails)
+                {
+                    await SendInterviewNotificationsAsync(interview, participantsInfo);
+                }
+
                 await transaction.CommitAsync();
                 
-                string successMessage = isUpdate ? "Entretien reprogrammé avec succès." : "Entretien planifié avec succès.";
-                Console.WriteLine(successMessage);
-                return (true, successMessage, interview.InterviewId);
+                return (true, isUpdate ? "Entretien mis à jour avec succès." : "Entretien planifié avec succès.", interview.InterviewId);
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                Console.WriteLine($"Erreur lors de la planification: {ex.Message}");
+                Console.WriteLine($"Exception lors de la planification: {ex.Message}");
                 Console.WriteLine($"StackTrace: {ex.StackTrace}");
-                return (false, $"Une erreur s'est produite lors de la planification de l'entretien: {ex.Message}", null);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"InnerException: {ex.InnerException.Message}");
+                }
+                return (false, $"Erreur lors de la planification: {ex.Message}", null);
             }
         }
 
+        // Méthode pour envoyer des notifications d'entretien par email
+        private async Task SendInterviewNotificationsAsync(EvaluationInterviews interview, List<(int ParticipantId, bool IsEvaluatedEmployee)> participants)
+        {
+            try
+            {
+                // Récupérer les détails de l'évaluation
+                var evaluation = await _context.Evaluations
+                    .Include(e => e.EvaluationType)
+                    .FirstOrDefaultAsync(e => e.EvaluationId == interview.EvaluationId);
+                
+                if (evaluation == null) 
+                {
+                    Console.WriteLine("Impossible d'envoyer des emails: évaluation non trouvée");
+                    return;
+                }
+                
+                var evaluationTypeName = evaluation.EvaluationType?.Designation ?? "Entretien d'évaluation";
+                
+                // Formater la date pour l'affichage
+                string formattedDate = interview.InterviewDate.ToString("dd MMMM yyyy à HH:mm");
+                
+                // Initialiser l'employé évalué pour le message aux autres participants
+                string evaluatedEmployeeName = "l'employé concerné";
+                
+                foreach (var (participantId, isEvaluatedEmployee) in participants)
+                {
+                    // Récupérer les informations du participant
+                    User userInfo = null;
+                    string firstName = "", lastName = "", email = "";
+                    
+                    if (isEvaluatedEmployee)
+                    {
+                        // Cas de l'employé évalué
+                        var employee = await _context.Employee
+                            .FirstOrDefaultAsync(e => e.EmployeeId == participantId);
+                        
+                        if (employee != null)
+                        {
+                            firstName = employee.FirstName;
+                            lastName = employee.Name;
+                            email = employee.Email;
+                            
+                            // Mise à jour du nom pour les autres participants
+                            evaluatedEmployeeName = $"{firstName} {lastName}";
+                        }
+                    }
+                    else
+                    {
+                        // Cas d'un autre participant (manager, directeur, etc.)
+                        userInfo = await _userRepository.GetByIdAsync(participantId);
+                        
+                        if (userInfo != null)
+                        {
+                            firstName = userInfo.FirstName;
+                            lastName = userInfo.LastName;
+                            email = userInfo.Email;
+                        }
+                    }
+                    
+                    // Si l'email n'est pas disponible, passer au suivant
+                    if (string.IsNullOrEmpty(email))
+                    {
+                        Console.WriteLine($"Email non disponible pour le participant ID: {participantId}");
+                        continue;
+                    }
+                    
+                    string emailBody;
+                    
+                    if (isEvaluatedEmployee)
+                    {
+                        // Email spécifique pour l'employé évalué
+                        emailBody = $"Bonjour {firstName} {lastName},<br><br>" +
+                                   $"Nous vous informons qu'un entretien d'évaluation a été planifié pour vous.<br><br>" +
+                                   $"<strong>Type d'entretien :</strong> {evaluationTypeName}<br>" +
+                                   $"<strong>Date et heure :</strong> {formattedDate}<br><br>" +
+                                   $"Veuillez vous connecter à votre compte pour consulter les détails de cet entretien.<br><br>" +
+                                   $"<a href='http://localhost:5173/' class='button'>Accéder au système</a><br><br>" +
+                                   $"Cordialement,<br>" +
+                                   $"L'équipe Gestion des Carrières et Compétences";
+                    }
+                    else
+                    {
+                        // Email pour les autres participants (managers, directeurs)
+                        emailBody = $"Bonjour {firstName} {lastName},<br><br>" +
+                                   $"Vous avez été ajouté(e) comme participant à un entretien d'évaluation.<br><br>" +
+                                   $"<strong>Type d'entretien :</strong> {evaluationTypeName}<br>" +
+                                   $"<strong>Employé concerné :</strong> {evaluatedEmployeeName}<br>" +
+                                   $"<strong>Date et heure :</strong> {formattedDate}<br><br>" +
+                                   $"Veuillez vous connecter à votre compte pour consulter les détails de cet entretien.<br><br>" +
+                                   $"<a href='http://localhost:5173/' class='button'>Accéder au système</a><br><br>" +
+                                   $"Cordialement,<br>" +
+                                   $"L'équipe Gestion des Carrières et Compétences";
+                    }
+                    
+                    // Envoi de l'email
+                    await _emailService.SendEmailAsync(
+                        email,
+                        $"{evaluationTypeName} - Planification",
+                        emailBody
+                    );
+                    
+                    Console.WriteLine($"Email de planification envoyé à {firstName} {lastName} ({email})");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de l'envoi des notifications par email: {ex.Message}");
+                // Ne pas relancer l'exception pour éviter de perturber le processus principal
+                // même si l'envoi d'email échoue
+            }
+        }
 
         // Démarrer un entretien
         public async Task<bool> StartInterviewAsync(int interviewId)

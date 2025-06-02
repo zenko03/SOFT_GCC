@@ -1,0 +1,154 @@
+.step-navigation {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .step-navigation li {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .step-navigation li.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .card {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+/* Styles pour le modal et les sélecteurs de participants */
+.custom-modal .modal-content {
+  overflow: hidden;
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+.custom-modal .modal-header {
+  background-color: #f7f9fc;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+}
+
+.custom-modal .modal-title {
+  font-weight: 600;
+  color: #343a40;
+}
+
+.custom-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.custom-modal .modal-footer {
+  background-color: #f7f9fc;
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+}
+
+/* Styles pour le sélecteur de participants */
+.participants-selector {
+  margin-bottom: 1rem;
+}
+
+.participants-selector .form-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.participants-selector .input-group .input-group-text {
+  background-color: #f8f9fa;
+  border-color: #ced4da;
+}
+
+.participants-selector .avatar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.participant-item {
+  transition: all 0.2s ease;
+}
+
+.participant-item:hover {
+  transform: translateY(-2px);
+}
+
+.participant-item .card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.participant-item.primary-participant .card {
+  border-left: 4px solid #4B89DC;
+  background-color: #f8fbff;
+}
+
+.participant-item .btn-outline-danger {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.participant-item .btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.participants-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* Styles pour la section "settings" */
+.settings-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+}
+
+.settings-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border-color: #007bff;
+}
+
+.settings-icon {
+  font-size: 2rem;
+  color: #007bff;
+  margin-right: 15px;
+  vertical-align: middle;
+}
+
+.settings-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  vertical-align: middle;
+  color: #333;
+}
+
+/* Style pour les en-têtes de carte */
+.card-header.d-flex.align-items-center {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+  
