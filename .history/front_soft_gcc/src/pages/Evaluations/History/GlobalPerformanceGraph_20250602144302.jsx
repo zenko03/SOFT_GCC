@@ -24,13 +24,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [chartType, setChartType] = useState('bar'); // bar, line, pie
   const [showLegend, setShowLegend] = useState(true);
-  const [detailedStats, setDetailedStats] = useState({
-    scoreDistribution: {},
-    departmentDistribution: [],
-    evaluationTypeDistribution: [],
-    performanceByYear: [],
-    trendData: {}
-  });
 
   // Palettes de couleurs professionnelles
   const colorSchemes = {
@@ -76,23 +69,12 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
 
       if (response.data && Array.isArray(response.data)) {
         // Formater les données pour le graphique en barres
-        const formattedData = response.data
-          .filter(item => item !== null)
-          .map(item => {
-            // S'assurer que toutes les valeurs sont valides ou fournir des valeurs par défaut
-            const year = item.year !== null && item.year !== undefined ? 
-              (typeof item.year === 'string' ? item.year : `${item.year}`) : 'N/A';
-            
-            const averageScore = item.averageScore !== null && item.averageScore !== undefined && !isNaN(item.averageScore) ? 
-              Number(Number(item.averageScore).toFixed(2)) : 0;
-            
-            return {
-              year: year,
-              averageScore: averageScore,
-              evaluationCount: item.evaluationCount || 0,
-              departmentName: item.department || 'Tous'
-            };
-          });
+        const formattedData = response.data.map(item => ({
+          year: typeof item.year === 'string' ? item.year : `${item.year}`,
+          averageScore: Number(item.averageScore.toFixed(2)),
+          evaluationCount: item.evaluationCount || 0,
+          departmentName: item.department || 'Tous'
+        }));
         console.log('Données formatées pour les barres:', formattedData);
         setChartData(formattedData);
 
@@ -100,18 +82,10 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
         const lineData = [
           {
             id: "Score moyen",
-            data: response.data
-              .filter(item => item !== null)
-              .map(item => {
-                const x = item.year !== null && item.year !== undefined ? 
-                  (typeof item.year === 'string' ? item.year : `${item.year}`) : 'N/A';
-                
-                const y = item.averageScore !== null && item.averageScore !== undefined && !isNaN(item.averageScore) ? 
-                  Number(Number(item.averageScore).toFixed(2)) : 0;
-                
-                return { x, y };
-              })
-              .filter(point => point.x !== 'N/A') // Filtrer les valeurs invalides
+            data: response.data.map(item => ({
+              x: typeof item.year === 'string' ? item.year : `${item.year}`,
+              y: Number(item.averageScore.toFixed(2))
+            }))
           }
         ];
         console.log('Données formatées pour les lignes:', lineData);
@@ -119,21 +93,13 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
 
         // Formater les données pour le graphique en camembert
         if (formattedData.length) {
-          const pieData = formattedData
-            .filter(item => item.year !== 'N/A' && item.evaluationCount > 0)
-            .map(item => ({
-              id: item.year,
-              label: item.year,
-              value: item.evaluationCount
-            }));
+          const pieData = formattedData.map(item => ({
+            id: item.year,
+            label: item.year,
+            value: item.evaluationCount
+          }));
           console.log('Données formatées pour le camembert:', pieData);
-          
-          if (pieData.length > 0) {
-            setPieChartData(pieData);
-          } else {
-            console.log('Pas assez de données valides pour le camembert, utilisation de données par défaut');
-            setPieChartData([{ id: "Aucune donnée", label: "Aucune donnée", value: 1 }]);
-          }
+          setPieChartData(pieData);
         } else {
           console.log('Pas de données pour le camembert, utilisation de données par défaut');
           setPieChartData([{ id: "Aucune donnée", label: "Aucune donnée", value: 1 }]);
@@ -154,123 +120,13 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
     }
   }, [startDate, endDate, department, evaluationType]);
 
-  // Récupérer les statistiques détaillées
-  const fetchDetailedStatistics = useCallback(async () => {
-    try {
-      console.log('Récupération des statistiques détaillées...');
-      
-      const response = await axios.get('https://localhost:7082/api/EvaluationHistory/detailed-statistics', {
-        params: {
-          startDate: startDate?.toISOString(),
-          endDate: endDate?.toISOString(),
-          department: department || null,
-          evaluationType: evaluationType || null,
-        },
-      });
-
-      console.log('Statistiques détaillées reçues:', response.data);
-
-      // Définir un objet de statistiques par défaut pour éviter les erreurs
-      const defaultStats = {
-        scoreDistribution: {
-          low: 0,
-          medium: 0,
-          high: 0,
-          average: 0,
-          min: 0,
-          max: 0
-        },
-        departmentDistribution: [],
-        evaluationTypeDistribution: [],
-        performanceByYear: [],
-        trendData: {
-          isIncreasing: false,
-          percentageChange: 0,
-          startValue: 0,
-          endValue: 0,
-          standardDeviation: 0
-        }
-      };
-
-      // Si la réponse est nulle, utiliser les valeurs par défaut
-      if (!response.data) {
-        console.warn("Les statistiques détaillées sont nulles");
-        setDetailedStats(defaultStats);
-        return;
-      }
-
-      // Fusionner les données reçues avec les valeurs par défaut pour s'assurer que toutes les propriétés existent
-      const safeStats = {
-        ...defaultStats,
-        ...response.data,
-        scoreDistribution: {
-          ...defaultStats.scoreDistribution,
-          ...(response.data.scoreDistribution || {})
-        },
-        trendData: {
-          ...defaultStats.trendData,
-          ...(response.data.trendData || {})
-        }
-      };
-
-      // S'assurer que les tableaux sont bien définis
-      safeStats.departmentDistribution = Array.isArray(safeStats.departmentDistribution) ? 
-        safeStats.departmentDistribution : [];
-      
-      safeStats.evaluationTypeDistribution = Array.isArray(safeStats.evaluationTypeDistribution) ? 
-        safeStats.evaluationTypeDistribution : [];
-      
-      safeStats.performanceByYear = Array.isArray(safeStats.performanceByYear) ? 
-        safeStats.performanceByYear : [];
-
-      setDetailedStats(safeStats);
-      
-      // Préparer les données pour le graphique en camembert si nécessaire
-      if (safeStats && safeStats.evaluationTypeDistribution && safeStats.evaluationTypeDistribution.length > 0) {
-        const pieData = safeStats.evaluationTypeDistribution
-          .filter(item => item && item.label && item.value !== undefined && item.value !== null)
-          .map(item => ({
-            id: item.label,
-            label: item.label,
-            value: typeof item.value === 'number' ? item.value : 0
-          }));
-        
-        if (pieData.length > 0) {
-          setPieChartData(pieData);
-        }
-      }
-    } catch (err) {
-      console.error("Erreur lors du chargement des statistiques détaillées:", err);
-      
-      // En cas d'erreur, utiliser des valeurs par défaut
-      setDetailedStats({
-        scoreDistribution: {
-          low: 0,
-          medium: 0,
-          high: 0,
-          average: 0,
-          min: 0,
-          max: 0
-        },
-        departmentDistribution: [],
-        evaluationTypeDistribution: [],
-        performanceByYear: [],
-        trendData: {
-          isIncreasing: false,
-          percentageChange: 0,
-          startValue: 0,
-          endValue: 0,
-          standardDeviation: 0
-        }
-      });
-    }
-  }, [startDate, endDate, department, evaluationType]);
-
   useEffect(() => {
     fetchDepartments();
+  }, [fetchDepartments]);
+
+  useEffect(() => {
     fetchGlobalPerformanceData();
-    fetchDetailedStatistics();
-  }, [fetchDepartments, fetchGlobalPerformanceData, fetchDetailedStatistics]);
+  }, [fetchGlobalPerformanceData]);
 
   // Effet pour mettre à jour les données quand les props changent
   useEffect(() => {
@@ -512,10 +368,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
         );
       
       case 'pie':
-        if (pieChartData.length === 0) {
-          return <div className="no-data">Aucune donnée disponible pour la période sélectionnée</div>;
-        }
-        
         return (
           <div className="chart-container" style={{ height: '400px', width: '100%' }}>
             <ResponsivePie
@@ -552,146 +404,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
       default:
         return <div>Sélectionnez un type de graphique</div>;
     }
-  };
-
-  // Afficher les statistiques détaillées si disponibles
-  const renderDetailedStats = () => {
-    if (!detailedStats) return null;
-
-    // Vérifier que scoreDistribution existe et contient des valeurs valides
-    const scoreDistribution = detailedStats.scoreDistribution || {};
-    const trendData = detailedStats.trendData || {};
-    
-    // S'assurer que toutes les valeurs requises existent ou fournir des valeurs par défaut
-    const low = scoreDistribution.low || 0;
-    const medium = scoreDistribution.medium || 0;
-    const high = scoreDistribution.high || 0;
-    const totalScores = low + medium + high || 1; // Éviter division par zéro
-    
-    const averageScore = isFinite(scoreDistribution.average) ? scoreDistribution.average.toFixed(2) : "0.00";
-    const percentChange = isFinite(trendData.percentageChange) ? Math.abs(trendData.percentageChange).toFixed(2) : "0.00";
-    const isIncreasing = !!trendData.isIncreasing;
-    
-    // Calculer l'équilibre seulement si nous avons des données valides
-    const hasDistribution = Array.isArray(detailedStats.evaluationTypeDistribution) && 
-      detailedStats.evaluationTypeDistribution.length > 0;
-    
-    let balance = "0.00";
-    if (hasDistribution && totalScores > 0) {
-      try {
-        const calculatedBalance = detailedStats.evaluationTypeDistribution.reduce((sum, item) => {
-          const value = item.value || 0;
-          return sum + Math.pow(value / totalScores, 2);
-        }, 0) * 100;
-        
-        balance = isFinite(calculatedBalance) ? calculatedBalance.toFixed(2) : "0.00";
-      } catch (error) {
-        console.error("Erreur lors du calcul de l'équilibre:", error);
-        balance = "0.00";
-      }
-    }
-
-    return (
-      <div className="detailed-stats">
-        <h4 className="stats-title">Statistiques détaillées</h4>
-        
-        {chartType === 'pie' && pieChartData.length > 0 && (
-          <div className="chart-summary">
-            <div className="summary-card">
-              <h4>Période la plus active</h4>
-              <p className="summary-value">
-                {detailedStats.performanceByYear && detailedStats.performanceByYear.length > 0 ? 
-                  detailedStats.performanceByYear.reduce((max, item) => 
-                    (item.count || 0) > (max.count || 0) ? item : max, { year: 'N/A', count: 0 }).year : 'N/A'}
-              </p>
-            </div>
-            <div className="summary-card">
-              <h4>Distribution des évaluations</h4>
-              <p className="summary-value">
-                {pieChartData && pieChartData.length || 0} types
-              </p>
-            </div>
-            <div className="summary-card">
-              <h4>Total des évaluations</h4>
-              <p className="summary-value">
-                {totalScores}
-              </p>
-            </div>
-            <div className="summary-card">
-              <h4>Répartition</h4>
-              <p className="summary-value">
-                {balance}% d&apos;équilibre
-              </p>
-            </div>
-          </div>
-        )}
-
-        {chartType === 'bar' && detailedStats.performanceByYear && detailedStats.performanceByYear.length > 0 && (
-          <div className="chart-summary">
-            <div className="summary-card">
-              <h4>Moyenne globale</h4>
-              <p className="summary-value">
-                {averageScore}
-              </p>
-            </div>
-            <div className="summary-card">
-              <h4>Total des évaluations</h4>
-              <p className="summary-value">
-                {totalScores}
-              </p>
-            </div>
-            <div className="summary-card">
-              <h4>Meilleur département</h4>
-              <p className="summary-value">
-                {detailedStats.departmentDistribution && detailedStats.departmentDistribution.length > 0 ? 
-                  detailedStats.departmentDistribution.reduce((best, item) => 
-                    (item.averageScore || 0) > (best.averageScore || 0) ? item : best, 
-                    { label: 'N/A', averageScore: 0 }).label : 'N/A'}
-              </p>
-            </div>
-            <div className="summary-card">
-              <h4>Progression</h4>
-              <p className="summary-value" style={{ 
-                color: isIncreasing ? '#4caf50' : '#e74c3c'
-              }}>
-                {percentChange}%
-              </p>
-            </div>
-          </div>
-        )}
-
-        {chartType === 'line' && detailedStats.performanceByYear && detailedStats.performanceByYear.length > 0 && (
-          <div className="chart-summary">
-            <div className="summary-card">
-              <h4>Tendance</h4>
-              <p className="summary-value" style={{ 
-                color: isIncreasing ? '#4caf50' : '#e74c3c'
-              }}>
-                {isIncreasing ? 'En hausse' : 'En baisse'}
-              </p>
-            </div>
-            <div className="summary-card">
-              <h4>Score maximal</h4>
-              <p className="summary-value">
-                {isFinite(scoreDistribution.max) ? scoreDistribution.max.toFixed(2) : "0.00"}
-              </p>
-            </div>
-            <div className="summary-card">
-              <h4>Score minimal</h4>
-              <p className="summary-value">
-                {isFinite(scoreDistribution.min) ? scoreDistribution.min.toFixed(2) : "0.00"}
-              </p>
-            </div>
-            <div className="summary-card">
-              <h4>Écart-type</h4>
-              <p className="summary-value">
-                {isFinite(trendData.standardDeviation) ? trendData.standardDeviation.toFixed(2) : "0.00"}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -871,7 +583,108 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
         {renderChart()}
       </div>
       
-      {renderDetailedStats()}
+      {chartType === 'bar' && chartData.length > 0 && (
+        <div className="chart-summary">
+          <div className="summary-card">
+            <h4>Moyenne globale</h4>
+            <p className="summary-value">
+              {(chartData.reduce((sum, item) => sum + item.averageScore, 0) / chartData.length).toFixed(2)}
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>Total des évaluations</h4>
+            <p className="summary-value">
+              {chartData.reduce((sum, item) => sum + item.evaluationCount, 0)}
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>Meilleure année</h4>
+            <p className="summary-value">
+              {chartData.reduce((best, item) => item.averageScore > best.averageScore ? item : best, { year: 'N/A', averageScore: 0 }).year}
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>Progression sur {chartData.length > 1 ? chartData.length - 1 : 0} ans</h4>
+            <p className="summary-value" style={{ 
+              color: chartData.length > 1 ? 
+                (chartData[chartData.length - 1].averageScore > chartData[0].averageScore ? '#4caf50' : '#e74c3c') : '#D4AC0D' 
+            }}>
+              {chartData.length > 1 ? 
+                `${((chartData[chartData.length - 1].averageScore - chartData[0].averageScore) / chartData[0].averageScore * 100).toFixed(2)}%` :
+                'N/A'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {chartType === 'pie' && pieChartData.length > 0 && (
+        <div className="chart-summary">
+          <div className="summary-card">
+            <h4>Période la plus active</h4>
+            <p className="summary-value">
+              {pieChartData.reduce((max, item) => item.value > max.value ? item : max, { id: 'N/A', value: 0 }).id}
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>Distribution des évaluations</h4>
+            <p className="summary-value">
+              {pieChartData.length} périodes
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>Total des évaluations</h4>
+            <p className="summary-value">
+              {pieChartData.reduce((sum, item) => sum + item.value, 0)}
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>Répartition</h4>
+            <p className="summary-value">
+              {(pieChartData.reduce((sum, item) => sum + Math.pow(item.value / pieChartData.reduce((s, i) => s + i.value, 0), 2), 0) * 100).toFixed(2)}% d'équilibre
+            </p>
+          </div>
+        </div>
+      )}
+
+      {chartType === 'line' && lineChartData[0]?.data.length > 0 && (
+        <div className="chart-summary">
+          <div className="summary-card">
+            <h4>Tendance</h4>
+            <p className="summary-value" style={{ 
+              color: lineChartData[0].data.length > 1 ? 
+                (lineChartData[0].data[lineChartData[0].data.length - 1].y > lineChartData[0].data[0].y ? '#4caf50' : '#e74c3c') : '#D4AC0D' 
+            }}>
+              {lineChartData[0].data.length > 1 ? 
+                (lineChartData[0].data[lineChartData[0].data.length - 1].y > lineChartData[0].data[0].y ? 'En hausse' : 'En baisse') : 
+                'Stable'}
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>Score maximal</h4>
+            <p className="summary-value">
+              {lineChartData[0].data.reduce((max, point) => point.y > max ? point.y : max, 0).toFixed(2)}
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>Score minimal</h4>
+            <p className="summary-value">
+              {lineChartData[0].data.reduce((min, point) => point.y < min ? point.y : min, 5).toFixed(2)}
+            </p>
+          </div>
+          <div className="summary-card">
+            <h4>Écart-type</h4>
+            <p className="summary-value">
+              {(() => {
+                const values = lineChartData[0].data.map(point => point.y);
+                const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
+                const squareDiffs = values.map(value => Math.pow(value - avg, 2));
+                const variance = squareDiffs.reduce((sum, val) => sum + val, 0) / values.length;
+                return Math.sqrt(variance).toFixed(2);
+              })()}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

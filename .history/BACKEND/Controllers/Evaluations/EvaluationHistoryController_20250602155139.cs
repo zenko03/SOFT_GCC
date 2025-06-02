@@ -173,43 +173,13 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		{
 			try
 			{
-				Console.WriteLine($"Requête de statistiques détaillées reçue: startDate={startDate}, endDate={endDate}, department={department}, evaluationType={evaluationType}");
-				
 				var statistics = await _evaluationHistoryService.GetDetailedStatisticsAsync(
 					startDate, endDate, department, evaluationType);
-					
-				Console.WriteLine("Statistiques détaillées générées avec succès");
 				return Ok(statistics);
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Erreur lors de la récupération des statistiques détaillées : {ex.Message}");
-				Console.WriteLine($"Stack trace: {ex.StackTrace}");
-				
-				// Retourner un objet vide mais valide au lieu d'une erreur 500
-				return Ok(new 
-				{
-					ScoreDistribution = new 
-					{
-						Low = 0,
-						Medium = 0, 
-						High = 0,
-						Average = 0,
-						Min = 0,
-						Max = 0
-					},
-					DepartmentDistribution = new object[0],
-					EvaluationTypeDistribution = new object[0],
-					PerformanceByYear = new object[0],
-					TrendData = new
-					{
-						IsIncreasing = false,
-						PercentageChange = 0,
-						StartValue = 0,
-						EndValue = 0,
-						StandardDeviation = 0
-					}
-				});
+				return StatusCode(500, $"Erreur lors de la récupération des statistiques détaillées : {ex.Message}");
 			}
 		}
 	}

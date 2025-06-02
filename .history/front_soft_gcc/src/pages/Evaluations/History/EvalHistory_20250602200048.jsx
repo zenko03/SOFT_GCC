@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import Template from '../../Template';
 import { ResponsivePie } from '@nivo/pie';
+import { ResponsiveLine } from '@nivo/line';
 import '../../../assets/css/Evaluations/EvaluationHistory.css';
 import axios from 'axios';
 import EvaluationDetailsModal from './EvaluationDetailsModal';
-import GlobalPerformanceGraph from './GlobalPerformanceGraph';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -119,6 +119,14 @@ const EvaluationHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [detailedStats, setDetailedStats] = useState({
+    scoreDistribution: { low: 0, medium: 0, high: 0, average: 0 },
+    departmentDistribution: [],
+    evaluationTypeDistribution: [],
+    performanceByYear: [],
+    trendData: { isIncreasing: false, percentageChange: 0 }
+  });
+  const [loadingDetailedStats, setLoadingDetailedStats] = useState(false);
 
   // Récupérer les départements et les types d'évaluation
   const fetchMetadata = useCallback(async () => {
@@ -152,6 +160,45 @@ const EvaluationHistory = () => {
       console.error('Erreur lors du chargement des métadonnées:', err);
     }
   }, []);
+
+  // Récupérer les statistiques détaillées
+  const fetchDetailedStatistics = useCallback(async () => {
+    setLoadingDetailedStats(true);
+    try {
+      console.log("Récupération des statistiques détaillées avec paramètres:", {
+        startDate: filters.startDate || null,
+        endDate: filters.endDate || null,
+        department: filters.department || '',
+        evaluationType: filters.evaluationType || '',
+      });
+      
+      const response = await axios.get(`${API_BASE_URL}/detailed-statistics`, {
+        params: {
+          startDate: filters.startDate || null,
+          endDate: filters.endDate || null,
+          department: filters.department || '',
+          evaluationType: filters.evaluationType || '',
+        },
+      });
+      
+      console.log("Statistiques détaillées reçues:", response.data);
+      setDetailedStats(response.data);
+      
+      // Préparer les données pour le graphique de performance
+      if (response.data.performanceByYear && response.data.performanceByYear.length > 0) {
+        // Données traitées mais non utilisées
+        response.data.performanceByYear.map(year => ({
+          date: `${year.year}`,
+          score: year.averageScore
+        })).sort((a, b) => a.date.localeCompare(b.date));
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des statistiques détaillées:", error);
+      setError("Erreur lors de la récupération des statistiques détaillées.");
+    } finally {
+      setLoadingDetailedStats(false);
+    }
+  }, [filters.startDate, filters.endDate, filters.department, filters.evaluationType]);
 
   const fetchEvaluations = useCallback(async () => {
     setLoading(true);
@@ -210,11 +257,12 @@ const EvaluationHistory = () => {
   // Effet pour charger les données quand les filtres changent
   useEffect(() => {
     const loadData = async () => {
+      await fetchDetailedStatistics();
       await fetchEvaluations();
     };
     
     loadData();
-    // Ne pas inclure fetchEvaluations comme dépendance
+    // Ne pas inclure fetchDetailedStatistics et fetchEvaluations comme dépendances
     // car cela crée une boucle infinie
   }, [filters.startDate, filters.endDate, filters.department, filters.evaluationType, 
       currentPage, pageSize, searchQuery, selectedEmployee]);
@@ -655,15 +703,127 @@ const EvaluationHistory = () => {
               <div className="card-header">
                 <h5 className="mb-0">Évolution des performances</h5>
               </div>
-              <div className="card-body p-0">
-                <GlobalPerformanceGraph 
-                  filters={{
-                    startDate: filters.startDate || undefined,
-                    endDate: filters.endDate || undefined,
-                    department: filters.department || undefined,
-                    evaluationType: filters.evaluationType || undefined
-                  }}
-                />
+              <div className="card-body">
+                {loadingDetailedStats ? (
+                  <div className="text-center p-5">
+                    <div className="spinner-border text-warning" role="status">
+                      <span className="visually-hidden">Chargement...</span>
+                    </div>
+                    <p className="mt-2">Chargement des statistiques...</p>
+                  </div>
+                ) : (
+                  <div className="performance-graph-wrapper">
+                    {/* Graphique d'évolution des performances */}
+                    {detailedStats.performanceByYear && detailedStats.performanceByYear.length > 0 ? (
+                      <div className="chart-container" style={{ height: '300px' }}>
+                        <ResponsiveLine
+                          data={[
+                            {
+                              id: "Score moyen",
+                              data: detailedStats.performanceByYear
+                                .sort((a, b) => a.year - b.year)
+                                .map(item => ({
+                                  x: item.year.toString(),
+                                  y: Number(item.averageScore.toFixed(2))
+                                }))
+                            }
+                          ]}
+                          margin={{ top: 20, right: 30, bottom: 50, left: 50 }}
+                          xScale={{ type: 'point' }}
+                          yScale={{ 
+                            type: 'linear',
+                            min: 0,
+                            max: 5,
+                            stacked: false
+                          }}
+                          curve="monotoneX"
+                          axisBottom={{
+                            tickSize: 5,
+                            tickPadding: 5,
+                            tickRotation: 0,
+                            legend: 'Année',
+                            legendOffset: 40,
+                            legendPosition: 'middle'
+                          }}
+                          axisLeft={{
+                            tickSize: 5,
+                            tickPadding: 5,
+                            tickRotation: 0,
+                            legend: 'Score moyen',
+                            legendOffset: -40,
+                            legendPosition: 'middle'
+                          }}
+                          enableGridX={false}
+                          colors={['#D4AC0D']}
+                          lineWidth={3}
+                          pointSize={10}
+                          pointColor={'#ffffff'}
+                          pointBorderWidth={2}
+                          pointBorderColor={'#D4AC0D'}
+                          pointLabelYOffset={-12}
+                          enableArea={true}
+                          areaOpacity={0.15}
+                          useMesh={true}
+                          enableSlices="x"
+                          sliceTooltip={({ slice }) => (
+                            <div style={{
+                              background: 'white',
+                              padding: '9px 12px',
+                              border: '1px solid #ccc',
+                              borderRadius: '4px',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                            }}>
+                              <div style={{ marginBottom: '6px', fontWeight: 'bold' }}>
+                                Année {slice.points[0].data.x}
+                              </div>
+                              {slice.points.map(point => (
+                                <div key={point.id} style={{ padding: '3px 0' }}>
+                                  <strong style={{ color: '#D4AC0D', marginRight: '8px' }}>
+                                    Score moyen:
+                                  </strong>
+                                  {point.data.y.toFixed(2)}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        />
+                      </div>
+                    ) : (
+                      <div className="alert alert-info">
+                        <h6>Évolution des performances</h6>
+                        <p>Aucune donnée disponible pour afficher l&apos;évolution.</p>
+                      </div>
+                    )}
+
+                    {/* Indicateurs clés */}
+                    {detailedStats && detailedStats.scoreDistribution && (
+                      <div className="performance-stats mt-4">
+                        <h6 className="text-center mb-3">Indicateurs clés</h6>
+                        <div className="row g-2">
+                          <div className="col-6">
+                            <div className="stats-card p-2 rounded bg-light">
+                              <div className="small text-muted">Tendance</div>
+                              <div className="h5 mb-0" style={{ 
+                                color: detailedStats.trendData.isIncreasing ? '#4caf50' : '#e74c3c'
+                              }}>
+                                {detailedStats.trendData.isIncreasing ? '↑' : '↓'} 
+                                {Math.abs(detailedStats.trendData.percentageChange).toFixed(1)}%
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-6">
+                            <div className="stats-card p-2 rounded bg-light">
+                              <div className="small text-muted">Score moyen</div>
+                              <div className="h5 mb-0">
+                                {detailedStats.scoreDistribution.average.toFixed(2)}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

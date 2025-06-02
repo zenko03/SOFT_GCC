@@ -76,23 +76,12 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
 
       if (response.data && Array.isArray(response.data)) {
         // Formater les données pour le graphique en barres
-        const formattedData = response.data
-          .filter(item => item !== null)
-          .map(item => {
-            // S'assurer que toutes les valeurs sont valides ou fournir des valeurs par défaut
-            const year = item.year !== null && item.year !== undefined ? 
-              (typeof item.year === 'string' ? item.year : `${item.year}`) : 'N/A';
-            
-            const averageScore = item.averageScore !== null && item.averageScore !== undefined && !isNaN(item.averageScore) ? 
-              Number(Number(item.averageScore).toFixed(2)) : 0;
-            
-            return {
-              year: year,
-              averageScore: averageScore,
-              evaluationCount: item.evaluationCount || 0,
-              departmentName: item.department || 'Tous'
-            };
-          });
+        const formattedData = response.data.map(item => ({
+          year: typeof item.year === 'string' ? item.year : `${item.year}`,
+          averageScore: Number(item.averageScore.toFixed(2)),
+          evaluationCount: item.evaluationCount || 0,
+          departmentName: item.department || 'Tous'
+        }));
         console.log('Données formatées pour les barres:', formattedData);
         setChartData(formattedData);
 
@@ -100,18 +89,10 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
         const lineData = [
           {
             id: "Score moyen",
-            data: response.data
-              .filter(item => item !== null)
-              .map(item => {
-                const x = item.year !== null && item.year !== undefined ? 
-                  (typeof item.year === 'string' ? item.year : `${item.year}`) : 'N/A';
-                
-                const y = item.averageScore !== null && item.averageScore !== undefined && !isNaN(item.averageScore) ? 
-                  Number(Number(item.averageScore).toFixed(2)) : 0;
-                
-                return { x, y };
-              })
-              .filter(point => point.x !== 'N/A') // Filtrer les valeurs invalides
+            data: response.data.map(item => ({
+              x: typeof item.year === 'string' ? item.year : `${item.year}`,
+              y: Number(item.averageScore.toFixed(2))
+            }))
           }
         ];
         console.log('Données formatées pour les lignes:', lineData);
@@ -119,21 +100,13 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
 
         // Formater les données pour le graphique en camembert
         if (formattedData.length) {
-          const pieData = formattedData
-            .filter(item => item.year !== 'N/A' && item.evaluationCount > 0)
-            .map(item => ({
-              id: item.year,
-              label: item.year,
-              value: item.evaluationCount
-            }));
+          const pieData = formattedData.map(item => ({
+            id: item.year,
+            label: item.year,
+            value: item.evaluationCount
+          }));
           console.log('Données formatées pour le camembert:', pieData);
-          
-          if (pieData.length > 0) {
-            setPieChartData(pieData);
-          } else {
-            console.log('Pas assez de données valides pour le camembert, utilisation de données par défaut');
-            setPieChartData([{ id: "Aucune donnée", label: "Aucune donnée", value: 1 }]);
-          }
+          setPieChartData(pieData);
         } else {
           console.log('Pas de données pour le camembert, utilisation de données par défaut');
           setPieChartData([{ id: "Aucune donnée", label: "Aucune donnée", value: 1 }]);
@@ -163,106 +136,26 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
         params: {
           startDate: startDate?.toISOString(),
           endDate: endDate?.toISOString(),
-          department: department || null,
-          evaluationType: evaluationType || null,
+          department: department || undefined,
+          evaluationType: evaluationType || undefined,
         },
       });
 
       console.log('Statistiques détaillées reçues:', response.data);
-
-      // Définir un objet de statistiques par défaut pour éviter les erreurs
-      const defaultStats = {
-        scoreDistribution: {
-          low: 0,
-          medium: 0,
-          high: 0,
-          average: 0,
-          min: 0,
-          max: 0
-        },
-        departmentDistribution: [],
-        evaluationTypeDistribution: [],
-        performanceByYear: [],
-        trendData: {
-          isIncreasing: false,
-          percentageChange: 0,
-          startValue: 0,
-          endValue: 0,
-          standardDeviation: 0
-        }
-      };
-
-      // Si la réponse est nulle, utiliser les valeurs par défaut
-      if (!response.data) {
-        console.warn("Les statistiques détaillées sont nulles");
-        setDetailedStats(defaultStats);
-        return;
+      setDetailedStats(response.data);
+      
+      // Préparer les données pour le graphique en camembert
+      if (response.data && response.data.evaluationTypeDistribution) {
+        const pieData = response.data.evaluationTypeDistribution.map(item => ({
+          id: item.label,
+          label: item.label,
+          value: item.value
+        }));
+        setPieChartData(pieData);
       }
-
-      // Fusionner les données reçues avec les valeurs par défaut pour s'assurer que toutes les propriétés existent
-      const safeStats = {
-        ...defaultStats,
-        ...response.data,
-        scoreDistribution: {
-          ...defaultStats.scoreDistribution,
-          ...(response.data.scoreDistribution || {})
-        },
-        trendData: {
-          ...defaultStats.trendData,
-          ...(response.data.trendData || {})
-        }
-      };
-
-      // S'assurer que les tableaux sont bien définis
-      safeStats.departmentDistribution = Array.isArray(safeStats.departmentDistribution) ? 
-        safeStats.departmentDistribution : [];
       
-      safeStats.evaluationTypeDistribution = Array.isArray(safeStats.evaluationTypeDistribution) ? 
-        safeStats.evaluationTypeDistribution : [];
-      
-      safeStats.performanceByYear = Array.isArray(safeStats.performanceByYear) ? 
-        safeStats.performanceByYear : [];
-
-      setDetailedStats(safeStats);
-      
-      // Préparer les données pour le graphique en camembert si nécessaire
-      if (safeStats && safeStats.evaluationTypeDistribution && safeStats.evaluationTypeDistribution.length > 0) {
-        const pieData = safeStats.evaluationTypeDistribution
-          .filter(item => item && item.label && item.value !== undefined && item.value !== null)
-          .map(item => ({
-            id: item.label,
-            label: item.label,
-            value: typeof item.value === 'number' ? item.value : 0
-          }));
-        
-        if (pieData.length > 0) {
-          setPieChartData(pieData);
-        }
-      }
     } catch (err) {
       console.error("Erreur lors du chargement des statistiques détaillées:", err);
-      
-      // En cas d'erreur, utiliser des valeurs par défaut
-      setDetailedStats({
-        scoreDistribution: {
-          low: 0,
-          medium: 0,
-          high: 0,
-          average: 0,
-          min: 0,
-          max: 0
-        },
-        departmentDistribution: [],
-        evaluationTypeDistribution: [],
-        performanceByYear: [],
-        trendData: {
-          isIncreasing: false,
-          percentageChange: 0,
-          startValue: 0,
-          endValue: 0,
-          standardDeviation: 0
-        }
-      });
     }
   }, [startDate, endDate, department, evaluationType]);
 

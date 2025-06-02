@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Template from '../../Template';
 import { ResponsivePie } from '@nivo/pie';
+import { ResponsiveLine } from '@nivo/line';
 import '../../../assets/css/Evaluations/EvaluationHistory.css';
 import axios from 'axios';
 import EvaluationDetailsModal from './EvaluationDetailsModal';
@@ -153,6 +154,99 @@ const EvaluationHistory = () => {
     }
   }, []);
 
+  // Récupérer les statistiques détaillées
+  const fetchDetailedStatistics = useCallback(async () => {
+    setLoadingDetailedStats(true);
+    try {
+      console.log("Récupération des statistiques détaillées avec paramètres:", {
+        startDate: filters.startDate || null,
+        endDate: filters.endDate || null,
+        department: filters.department || null,
+        evaluationType: filters.evaluationType || null,
+      });
+      
+      const response = await axios.get(`${API_BASE_URL}/detailed-statistics`, {
+        params: {
+          startDate: filters.startDate || null,
+          endDate: filters.endDate || null,
+          department: filters.department || null,
+          evaluationType: filters.evaluationType || null,
+        },
+      });
+      
+      console.log("Statistiques détaillées reçues:", response.data);
+      
+      // Vérifier si les données sont valides
+      if (!response.data) {
+        throw new Error("Les données reçues sont nulles");
+      }
+
+      // Initialiser les données par défaut si certaines propriétés sont manquantes
+      const defaultStats = {
+        scoreDistribution: {
+          low: 0,
+          medium: 0,
+          high: 0,
+          average: 0,
+          min: 0,
+          max: 0
+        },
+        departmentDistribution: [],
+        evaluationTypeDistribution: [],
+        performanceByYear: [],
+        trendData: {
+          isIncreasing: false,
+          percentageChange: 0,
+          startValue: 0,
+          endValue: 0,
+          standardDeviation: 0
+        }
+      };
+
+      // Fusionner les données reçues avec les valeurs par défaut
+      const mergedStats = {
+        ...defaultStats,
+        ...response.data,
+        scoreDistribution: {
+          ...defaultStats.scoreDistribution,
+          ...(response.data.scoreDistribution || {})
+        },
+        trendData: {
+          ...defaultStats.trendData,
+          ...(response.data.trendData || {})
+        }
+      };
+
+      setDetailedStats(mergedStats);
+      
+    } catch (error) {
+      console.error("Erreur lors de la récupération des statistiques détaillées:", error);
+      // Initialiser avec des données par défaut en cas d'erreur
+      setDetailedStats({
+        scoreDistribution: {
+          low: 0,
+          medium: 0,
+          high: 0,
+          average: 0,
+          min: 0,
+          max: 0
+        },
+        departmentDistribution: [],
+        evaluationTypeDistribution: [],
+        performanceByYear: [],
+        trendData: {
+          isIncreasing: false,
+          percentageChange: 0,
+          startValue: 0,
+          endValue: 0,
+          standardDeviation: 0
+        }
+      });
+    } finally {
+      setLoadingDetailedStats(false);
+    }
+  }, [filters.startDate, filters.endDate, filters.department, filters.evaluationType]);
+
   const fetchEvaluations = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -210,11 +304,12 @@ const EvaluationHistory = () => {
   // Effet pour charger les données quand les filtres changent
   useEffect(() => {
     const loadData = async () => {
+      await fetchDetailedStatistics();
       await fetchEvaluations();
     };
     
     loadData();
-    // Ne pas inclure fetchEvaluations comme dépendance
+    // Ne pas inclure fetchDetailedStatistics et fetchEvaluations comme dépendances
     // car cela crée une boucle infinie
   }, [filters.startDate, filters.endDate, filters.department, filters.evaluationType, 
       currentPage, pageSize, searchQuery, selectedEmployee]);

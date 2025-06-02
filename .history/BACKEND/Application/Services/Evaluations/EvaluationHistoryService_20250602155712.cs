@@ -471,182 +471,119 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         public async Task<DetailedStatisticsDto> GetDetailedStatisticsAsync(DateTime? startDate, DateTime? endDate, string? department = null, string? evaluationType = null)
         {
-            try
+            var query = _context.vEvaluationHistories.AsQueryable();
+
+            // Appliquer les filtres
+            if (startDate.HasValue)
+                query = query.Where(e => e.StartDate >= startDate.Value);
+
+            if (endDate.HasValue)
+                query = query.Where(e => e.EndDate <= endDate.Value);
+
+            if (!string.IsNullOrEmpty(department))
+                query = query.Where(e => e.Department == department);
+
+            if (!string.IsNullOrEmpty(evaluationType))
+                query = query.Where(e => e.EvaluationType == evaluationType);
+
+            // Récupérer toutes les évaluations filtrées
+            var evaluations = await query.ToListAsync();
+            
+            if (evaluations.Count == 0)
             {
-                var query = _context.vEvaluationHistories.AsQueryable();
-
-                // Appliquer les filtres
-                if (startDate.HasValue)
-                    query = query.Where(e => e.StartDate >= startDate.Value);
-
-                if (endDate.HasValue)
-                    query = query.Where(e => e.EndDate <= endDate.Value);
-
-                if (!string.IsNullOrEmpty(department))
-                    query = query.Where(e => e.Department == department);
-
-                if (!string.IsNullOrEmpty(evaluationType))
-                    query = query.Where(e => e.EvaluationType == evaluationType);
-
-                // Récupérer toutes les évaluations filtrées
-                var evaluations = await query.ToListAsync();
-                
-                // Valeurs par défaut en cas de données vides
-                var defaultStats = new DetailedStatisticsDto
+                return new DetailedStatisticsDto
                 {
-                    ScoreDistribution = new ScoreDistributionDto 
-                    {
-                        Low = 0,
-                        Medium = 0,
-                        High = 0,
-                        Average = 0,
-                        Min = 0,
-                        Max = 0
-                    },
+                    ScoreDistribution = new ScoreDistributionDto(),
                     DepartmentDistribution = new List<DistributionItemDto>(),
                     EvaluationTypeDistribution = new List<DistributionItemDto>(),
                     PerformanceByYear = new List<YearlyPerformanceDto>(),
-                    TrendData = new TrendDto 
-                    { 
-                        IsIncreasing = false,
-                        PercentageChange = 0,
-                        StartValue = 0,
-                        EndValue = 0,
-                        StandardDeviation = 0
-                    }
-                };
-                
-                if (evaluations.Count == 0)
-                {
-                    return defaultStats;
-                }
-
-                // Utilisation de valeurs sûres avec ?? pour éviter les NullReferenceException
-                var validScores = evaluations.Where(e => e.OverallScore.HasValue).Select(e => e.OverallScore.Value).ToList();
-                
-                // 1. Distribution des scores - avec vérification des nulls
-                var scoreDistribution = new ScoreDistributionDto
-                {
-                    Low = evaluations.Count(e => e.OverallScore.HasValue && e.OverallScore.Value < 2.5m),
-                    Medium = evaluations.Count(e => e.OverallScore.HasValue && e.OverallScore.Value >= 2.5m && e.OverallScore.Value < 4m),
-                    High = evaluations.Count(e => e.OverallScore.HasValue && e.OverallScore.Value >= 4m),
-                    Average = validScores.Any() ? validScores.Average() : 0m,
-                    Min = validScores.Any() ? validScores.Min() : 0m,
-                    Max = validScores.Any() ? validScores.Max() : 0m
-                };
-
-                // 2. Distribution par département - avec vérification des nulls
-                var departmentDistribution = await query
-                    .GroupBy(e => e.Department)
-                    .Where(g => g.Key != null)
-                    .Select(g => new DistributionItemDto
-                    {
-                        Label = g.Key ?? "Non défini",
-                        Value = g.Count(),
-                        AverageScore = g.Any(e => e.OverallScore.HasValue) ? g.Where(e => e.OverallScore.HasValue).Average(e => e.OverallScore.Value) : 0m
-                    })
-                    .ToListAsync();
-
-                // 3. Distribution par type d'évaluation - avec vérification des nulls
-                var evaluationTypeDistribution = await query
-                    .GroupBy(e => e.EvaluationType)
-                    .Where(g => g.Key != null)
-                    .Select(g => new DistributionItemDto
-                    {
-                        Label = g.Key ?? "Non défini",
-                        Value = g.Count(),
-                        AverageScore = g.Any(e => e.OverallScore.HasValue) ? g.Where(e => e.OverallScore.HasValue).Average(e => e.OverallScore.Value) : 0m
-                    })
-                    .ToListAsync();
-
-                // 4. Performance par année - avec vérification des nulls
-                var performanceByYear = await query
-                    .GroupBy(e => e.StartDate.Year)
-                    .Select(g => new YearlyPerformanceDto
-                    {
-                        Year = g.Key,
-                        AverageScore = g.Any(e => e.OverallScore.HasValue) ? g.Where(e => e.OverallScore.HasValue).Average(e => e.OverallScore.Value) : 0m,
-                        Count = g.Count(),
-                        BestDepartment = g.GroupBy(e => e.Department)
-                                        .Where(dg => dg.Key != null)
-                                        .OrderByDescending(dg => dg.Any(e => e.OverallScore.HasValue) ? 
-                                            dg.Where(e => e.OverallScore.HasValue).Average(e => e.OverallScore.Value) : 0m)
-                                        .Select(dg => dg.Key)
-                                        .FirstOrDefault() ?? "N/A"
-                    })
-                    .OrderBy(y => y.Year)
-                    .ToListAsync();
-
-                // 5. Données de tendance - avec vérification des valeurs vides et division par zéro
-                var trendData = new TrendDto
-                {
-                    IsIncreasing = performanceByYear.Count > 1 && 
-                                performanceByYear.Last().AverageScore > performanceByYear.First().AverageScore,
-                    PercentageChange = performanceByYear.Count > 1 && performanceByYear.First().AverageScore != 0 ?
-                                    (performanceByYear.Last().AverageScore - performanceByYear.First().AverageScore) / 
-                                    performanceByYear.First().AverageScore * 100 : 0,
-                    StartValue = performanceByYear.FirstOrDefault()?.AverageScore ?? 0,
-                    EndValue = performanceByYear.LastOrDefault()?.AverageScore ?? 0,
-                    StandardDeviation = CalculateStandardDeviation(validScores)
-                };
-
-                // Retourner toutes les statistiques
-                return new DetailedStatisticsDto
-                {
-                    ScoreDistribution = scoreDistribution,
-                    DepartmentDistribution = departmentDistribution,
-                    EvaluationTypeDistribution = evaluationTypeDistribution,
-                    PerformanceByYear = performanceByYear,
-                    TrendData = trendData
+                    TrendData = new TrendDto()
                 };
             }
-            catch (Exception ex)
+
+            // 1. Distribution des scores
+            var scoreDistribution = new ScoreDistributionDto
             {
-                Console.WriteLine($"Erreur lors du calcul des statistiques détaillées: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                
-                // En cas d'erreur, retourner un objet vide mais valide
-                return new DetailedStatisticsDto
+                Low = evaluations.Count(e => e.OverallScore.HasValue && e.OverallScore.Value < 2.5m),
+                Medium = evaluations.Count(e => e.OverallScore.HasValue && e.OverallScore.Value >= 2.5m && e.OverallScore.Value < 4m),
+                High = evaluations.Count(e => e.OverallScore.HasValue && e.OverallScore.Value >= 4m),
+                Average = evaluations.Any(e => e.OverallScore.HasValue) ? evaluations.Where(e => e.OverallScore.HasValue).Average(e => e.OverallScore.Value) : 0m,
+                Min = evaluations.Any(e => e.OverallScore.HasValue) ? evaluations.Where(e => e.OverallScore.HasValue).Min(e => e.OverallScore.Value) : 0m,
+                Max = evaluations.Any(e => e.OverallScore.HasValue) ? evaluations.Where(e => e.OverallScore.HasValue).Max(e => e.OverallScore.Value) : 0m
+            };
+
+            // 2. Distribution par département
+            var departmentDistribution = await query
+                .GroupBy(e => e.Department)
+                .Where(g => g.Key != null)
+                .Select(g => new DistributionItemDto
                 {
-                    ScoreDistribution = new ScoreDistributionDto 
-                    {
-                        Low = 0,
-                        Medium = 0,
-                        High = 0,
-                        Average = 0,
-                        Min = 0,
-                        Max = 0
-                    },
-                    DepartmentDistribution = new List<DistributionItemDto>(),
-                    EvaluationTypeDistribution = new List<DistributionItemDto>(),
-                    PerformanceByYear = new List<YearlyPerformanceDto>(),
-                    TrendData = new TrendDto 
-                    { 
-                        IsIncreasing = false,
-                        PercentageChange = 0,
-                        StartValue = 0,
-                        EndValue = 0,
-                        StandardDeviation = 0
-                    }
-                };
-            }
+                    Label = g.Key,
+                    Value = g.Count(),
+                    AverageScore = g.Any(e => e.OverallScore.HasValue) ? g.Where(e => e.OverallScore.HasValue).Average(e => e.OverallScore.Value) : 0m
+                })
+                .ToListAsync();
+
+            // 3. Distribution par type d'évaluation
+            var evaluationTypeDistribution = await query
+                .GroupBy(e => e.EvaluationType)
+                .Where(g => g.Key != null)
+                .Select(g => new DistributionItemDto
+                {
+                    Label = g.Key,
+                    Value = g.Count(),
+                    AverageScore = g.Any(e => e.OverallScore.HasValue) ? g.Where(e => e.OverallScore.HasValue).Average(e => e.OverallScore.Value) : 0m
+                })
+                .ToListAsync();
+
+            // 4. Performance par année
+            var performanceByYear = await query
+                .GroupBy(e => e.StartDate.Year)
+                .Select(g => new YearlyPerformanceDto
+                {
+                    Year = g.Key,
+                    AverageScore = g.Any(e => e.OverallScore.HasValue) ? g.Where(e => e.OverallScore.HasValue).Average(e => e.OverallScore.Value) : 0m,
+                    Count = g.Count(),
+                    BestDepartment = g.GroupBy(e => e.Department)
+                                      .OrderByDescending(dg => dg.Any(e => e.OverallScore.HasValue) ? dg.Where(e => e.OverallScore.HasValue).Average(e => e.OverallScore.Value) : 0m)
+                                      .Select(dg => dg.Key)
+                                      .FirstOrDefault() ?? "N/A"
+                })
+                .OrderBy(y => y.Year)
+                .ToListAsync();
+
+            // 5. Données de tendance
+            var orderedYears = performanceByYear.OrderBy(y => y.Year).ToList();
+            var trendData = new TrendDto
+            {
+                IsIncreasing = orderedYears.Count > 1 && 
+                              orderedYears.Last().AverageScore > orderedYears.First().AverageScore,
+                PercentageChange = orderedYears.Count > 1 && orderedYears.First().AverageScore != 0 ?
+                                  (orderedYears.Last().AverageScore - orderedYears.First().AverageScore) / 
+                                  orderedYears.First().AverageScore * 100 : 0,
+                StartValue = orderedYears.FirstOrDefault()?.AverageScore ?? 0,
+                EndValue = orderedYears.LastOrDefault()?.AverageScore ?? 0,
+                StandardDeviation = CalculateStandardDeviation(evaluations.Where(e => e.OverallScore.HasValue).Select(e => e.OverallScore.Value).ToList())
+            };
+
+            // Retourner toutes les statistiques
+            return new DetailedStatisticsDto
+            {
+                ScoreDistribution = scoreDistribution,
+                DepartmentDistribution = departmentDistribution,
+                EvaluationTypeDistribution = evaluationTypeDistribution,
+                PerformanceByYear = performanceByYear,
+                TrendData = trendData
+            };
         }
 
         private double CalculateStandardDeviation(List<decimal> values)
         {
-            try
-            {
-                if (!values.Any()) return 0;
-                
-                double avg = (double)values.Average();
-                double sumOfSquaredDifferences = values.Sum(val => Math.Pow((double)val - avg, 2));
-                return Math.Sqrt(sumOfSquaredDifferences / values.Count);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erreur lors du calcul de l'écart-type: {ex.Message}");
-                return 0;
-            }
+            if (!values.Any()) return 0;
+            
+            double avg = (double)values.Average();
+            double sumOfSquaredDifferences = values.Sum(val => Math.Pow((double)val - avg, 2));
+            return Math.Sqrt(sumOfSquaredDifferences / values.Count);
         }
 
         public async Task<IEnumerable<string>> GetEvaluationTypesAsync()
@@ -674,25 +611,61 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             }
         }
 
-        public async Task<IEnumerable<Employee>> GetEmployeesAsync()
+        public async Task<IEnumerable<object>> GetEmployeesAsync()
         {
             try
             {
-                return await _context.Employee
-                    .Select(e => new Employee
+                // Récupérer les employés avec leur position en utilisant la vue VEmployeePosition
+                var employees = await _context.VEmployeePosition
+                    .Select(e => new
                     {
-                        EmployeeId = e.EmployeeId,
-                        FirstName = e.FirstName,
-                        Name = e.Name,
-                        RegistrationNumber = e.RegistrationNumber
-                        // Position n'existe pas dans le modèle Employee
+                        id = e.EmployeeId,
+                        firstName = e.FirstName,
+                        lastName = e.Name,
+                        registrationNumber = e.RegistrationNumber,
+                        position = e.PositionName
                     })
                     .ToListAsync();
+
+                // Si aucun employé n'est trouvé avec VEmployeePosition, essayer avec Employee
+                if (!employees.Any())
+                {
+                    employees = await _context.Employee
+                        .Select(e => new
+                        {
+                            id = e.EmployeeId,
+                            firstName = e.FirstName,
+                            lastName = e.Name,
+                            registrationNumber = e.RegistrationNumber,
+                            position = (string)null
+                        })
+                        .ToListAsync();
+                }
+
+                return employees;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erreur lors de la récupération des employés : {ex.Message}");
-                return new List<Employee>();
+                
+                // En cas d'erreur, essayer de récupérer uniquement les données de base des employés
+                try
+                {
+                    return await _context.Employee
+                        .Select(e => new
+                        {
+                            id = e.EmployeeId,
+                            firstName = e.FirstName,
+                            lastName = e.Name,
+                            registrationNumber = e.RegistrationNumber,
+                            position = (string)null
+                        })
+                        .ToListAsync();
+                }
+                catch
+                {
+                    return new List<object>();
+                }
             }
         }
 

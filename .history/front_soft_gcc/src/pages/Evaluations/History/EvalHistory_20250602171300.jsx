@@ -4,7 +4,6 @@ import { ResponsivePie } from '@nivo/pie';
 import '../../../assets/css/Evaluations/EvaluationHistory.css';
 import axios from 'axios';
 import EvaluationDetailsModal from './EvaluationDetailsModal';
-import GlobalPerformanceGraph from './GlobalPerformanceGraph';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -94,6 +93,7 @@ const EvaluationHistory = () => {
   const [loadingExport, setLoadingExport] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [evaluationTypes, setEvaluationTypes] = useState([]);
+  const [advancedSearch, setAdvancedSearch] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -119,6 +119,14 @@ const EvaluationHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [detailedStats, setDetailedStats] = useState({
+    scoreDistribution: { low: 0, medium: 0, high: 0, average: 0 },
+    departmentDistribution: [],
+    evaluationTypeDistribution: [],
+    performanceByYear: [],
+    trendData: { isIncreasing: false, percentageChange: 0 }
+  });
+  const [loadingDetailedStats, setLoadingDetailedStats] = useState(false);
 
   // Récupérer les départements et les types d'évaluation
   const fetchMetadata = useCallback(async () => {
@@ -153,6 +161,45 @@ const EvaluationHistory = () => {
     }
   }, []);
 
+  // Récupérer les statistiques détaillées
+  const fetchDetailedStatistics = useCallback(async () => {
+    setLoadingDetailedStats(true);
+    try {
+      console.log("Récupération des statistiques détaillées avec paramètres:", {
+        startDate: filters.startDate || null,
+        endDate: filters.endDate || null,
+        department: filters.department || '',
+        evaluationType: filters.evaluationType || '',
+      });
+      
+      const response = await axios.get(`${API_BASE_URL}/detailed-statistics`, {
+        params: {
+          startDate: filters.startDate || null,
+          endDate: filters.endDate || null,
+          department: filters.department || '',
+          evaluationType: filters.evaluationType || '',
+        },
+      });
+      
+      console.log("Statistiques détaillées reçues:", response.data);
+      setDetailedStats(response.data);
+      
+      // Préparer les données pour le graphique de performance
+      if (response.data.performanceByYear && response.data.performanceByYear.length > 0) {
+        // Données traitées mais non utilisées
+        response.data.performanceByYear.map(year => ({
+          date: `${year.year}`,
+          score: year.averageScore
+        })).sort((a, b) => a.date.localeCompare(b.date));
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des statistiques détaillées:", error);
+      setError("Erreur lors de la récupération des statistiques détaillées.");
+    } finally {
+      setLoadingDetailedStats(false);
+    }
+  }, [filters.startDate, filters.endDate, filters.department, filters.evaluationType]);
+
   const fetchEvaluations = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -162,9 +209,12 @@ const EvaluationHistory = () => {
         pageSize: pageSize,
         startDate: filters.startDate || null,
         endDate: filters.endDate || null,
-        evaluationType: filters.evaluationType || null,
-        department: filters.department || null,
-        employeeName: searchQuery || null,
+        evaluationType: filters.evaluationType || '',
+        department: filters.department || '',
+        employeeName: searchQuery || '',
+        minScore: filters.minScore || '',
+        maxScore: filters.maxScore || '',
+        employeeId: selectedEmployee?.id || '',
       });
       
       const response = await axios.get(`${API_BASE_URL}/evaluation-history-paginated`, {
@@ -173,34 +223,40 @@ const EvaluationHistory = () => {
           pageSize: pageSize,
           startDate: filters.startDate || null,
           endDate: filters.endDate || null,
-          evaluationType: filters.evaluationType || null,
-          department: filters.department || null,
-          employeeName: searchQuery || null,
+          evaluationType: filters.evaluationType || '',
+          department: filters.department || '',
+          employeeName: searchQuery || '',
+          minScore: filters.minScore || '',
+          maxScore: filters.maxScore || '',
+          employeeId: selectedEmployee?.id || '',
         },
       });
       
       console.log("Données d'évaluations reçues:", response.data);
       
-      // Filtrer les évaluations null et formater les données
-      const formattedEvaluations = response.data.evaluations
-        .filter(evaluation => evaluation !== null)
-        .map(evaluation => ({
-          ...evaluation,
-          evaluationType: evaluation.evaluationType || 'Non définie',
-          overallScore: evaluation.overallScore || 0,
-          status: evaluation.status || 10, // 10 = Planifiée par défaut
-        }));
-
-      setEvaluations(formattedEvaluations);
+      setEvaluations(response.data.evaluations);
       setTotalPages(response.data.totalPages);
-      setTotalEvaluations(response.data.totalItems || formattedEvaluations.length);
+      setTotalEvaluations(response.data.totalItems || response.data.evaluations.length);
+      
+      // Préparer les données pour le graphique de performance si détaillées non disponibles
+      if ((!detailedStats.performanceByYear || detailedStats.performanceByYear.length === 0) && 
+          response.data.evaluations && response.data.evaluations.length > 0) {
+        // Données traitées mais non utilisées
+        response.data.evaluations.map(evaluation => ({
+          date: new Date(evaluation.startDate).toLocaleDateString('fr-FR', {
+            year: 'numeric',
+            month: 'short',
+          }),
+          score: evaluation.overallScore
+        })).sort((a, b) => new Date(a.date) - new Date(b.date));
+      }
     } catch (fetchError) { 
       console.error('Erreur lors de la récupération des évaluations:', fetchError);
       setError('Erreur lors de la récupération des évaluations.');
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, searchQuery, filters]);
+  }, [currentPage, pageSize, searchQuery, selectedEmployee, filters, detailedStats.performanceByYear]);
 
   // Effet initial pour charger les métadonnées
   useEffect(() => {
@@ -210,11 +266,12 @@ const EvaluationHistory = () => {
   // Effet pour charger les données quand les filtres changent
   useEffect(() => {
     const loadData = async () => {
+      await fetchDetailedStatistics();
       await fetchEvaluations();
     };
     
     loadData();
-    // Ne pas inclure fetchEvaluations comme dépendance
+    // Ne pas inclure fetchDetailedStatistics et fetchEvaluations comme dépendances
     // car cela crée une boucle infinie
   }, [filters.startDate, filters.endDate, filters.department, filters.evaluationType, 
       currentPage, pageSize, searchQuery, selectedEmployee]);
@@ -391,101 +448,159 @@ const EvaluationHistory = () => {
             <div className="card shadow">
               <div className="card-header d-flex justify-content-between align-items-center">
                 <h5 className="mb-0">Filtres de recherche</h5>
+                <button
+                  className="btn btn-link"
+                  onClick={() => setAdvancedSearch(!advancedSearch)}
+                  style={{ textDecoration: 'none' }}
+                >
+                  {advancedSearch ? 'Recherche simple' : 'Recherche avancée'}
+                </button>
               </div>
               <div className="card-body">
-                <div className="filters card p-3 mb-4">
-                  <div className="row align-items-center g-3 flex-wrap" style={{ rowGap: '1rem' }}>
-                    {/* Champ de recherche */}
-                    <div className="col-md-3 mb-2">
-                      <div className="input-group">
-                        <span className="input-group-text border-end-0" style={{ backgroundColor: '#f7f9fc', borderColor: '#e9ecef' }}>
-                          <FaSearch className="text-primary" />
-                        </span>
+                <div className="filters-section">
+                  <div className="row g-3">
+                    <div className="col-md-4">
+                      <div className="form-floating">
                         <input
                           type="text"
-                          className="form-control ps-0 border-start-0"
-                          style={{ backgroundColor: '#f7f9fc', borderColor: '#e9ecef' }}
-                          placeholder="Rechercher un employé..."
+                          className="form-control"
+                          id="searchInput"
+                          placeholder="Rechercher un employé"
                           value={searchQuery}
                           onChange={handleSearchChange}
-                          aria-label="Rechercher un employé"
                         />
+                        <label htmlFor="searchInput">
+                          <FaSearch className="me-2" />Rechercher un employé
+                        </label>
                       </div>
                     </div>
-                    {/* Filtre par Année */}
-                    <div className="col-md-2 mb-2">
-                      <select
-                        className="form-control"
-                        value={filters.year || ''}
-                        onChange={e => {
-                          const year = e.target.value;
-                          setFilters(prev => ({
-                            ...prev,
-                            year: year,
-                            startDate: year ? `${year}-01-01` : '',
-                            endDate: year ? `${year}-12-31` : ''
-                          }));
-                        }}
-                        style={{ backgroundColor: '#f7f9fc', borderColor: '#e9ecef' }}
-                        aria-label="Filtrer par année"
-                      >
-                        <option value="">Toutes les années</option>
-                        {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
+                    <div className="col-md-4">
+                      <div className="form-floating">
+                        <select
+                          id="yearSelect"
+                          className="form-select"
+                          value={filters.year || ''}
+                          onChange={(e) => {
+                            const year = e.target.value;
+                            setFilters(prev => ({
+                              ...prev,
+                              year: year,
+                              startDate: year ? `${year}-01-01` : '',
+                              endDate: year ? `${year}-12-31` : ''
+                            }));
+                          }}
+                        >
+                          <option value="">Sélectionner une année</option>
+                          {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                            <option key={year} value={year}>{year}</option>
+                          ))}
+                        </select>
+                        <label htmlFor="yearSelect">Année</label>
+                      </div>
                     </div>
-                    {/* Filtre par Type d'évaluation */}
-                    <div className="col-md-2 mb-2">
-                      <select
-                        name="evaluationType"
-                        className="form-control"
-                        value={filters.evaluationType}
-                        onChange={handleFilterChange}
-                        style={{ backgroundColor: '#f7f9fc', borderColor: '#e9ecef' }}
-                        aria-label="Filtrer par type d'évaluation"
-                      >
-                        <option value="">Tous les types</option>
-                        {evaluationTypes.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="col-md-4">
+                      <div className="form-floating">
+                        <select
+                          id="departmentSelect"
+                          className="form-select"
+                          name="department"
+                          value={filters.department}
+                          onChange={handleFilterChange}
+                        >
+                          <option value="">Sélectionner un département</option>
+                          {departments.map((dept) => (
+                            <option key={dept.departmentId || dept.id} value={dept.name || dept.departmentName}>
+                              {dept.name || dept.departmentName}
+                            </option>
+                          ))}
+                        </select>
+                        <label htmlFor="departmentSelect">Département</label>
+                      </div>
                     </div>
-                    {/* Filtre par Département */}
-                    <div className="col-md-2 mb-2">
-                      <select
-                        name="department"
-                        className="form-control"
-                        value={filters.department}
-                        onChange={handleFilterChange}
-                        style={{ backgroundColor: '#f7f9fc', borderColor: '#e9ecef' }}
-                        aria-label="Filtrer par département"
-                      >
-                        <option value="">Tous les départements</option>
-                        {departments.map((dep) => (
-                          <option key={dep.departmentId} value={dep.name}>
-                            {dep.name}
-                          </option>
-                        ))}
-                      </select>
+                  </div>
+                  
+                  {advancedSearch && (
+                    <div className="row g-3 mt-2">
+                      <div className="col-md-3">
+                        <div className="form-floating">
+                          <select
+                            id="evaluationTypeSelect"
+                            className="form-select"
+                            name="evaluationType"
+                            value={filters.evaluationType}
+                            onChange={handleFilterChange}
+                          >
+                            <option value="">Sélectionner un type</option>
+                            {evaluationTypes.map((type) => (
+                              <option key={type} value={type}>{type}</option>
+                            ))}
+                          </select>
+                          <label htmlFor="evaluationTypeSelect">Type d&apos;évaluation</label>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="form-floating">
+                          <select
+                            id="statusSelect"
+                            className="form-select"
+                            name="status"
+                            value={filters.status}
+                            onChange={handleFilterChange}
+                          >
+                            <option value="">Sélectionner un statut</option>
+                            <option value="10">Planifiée</option>
+                            <option value="20">En cours</option>
+                            <option value="30">Terminée</option>
+                            <option value="40">Annulée</option>
+                          </select>
+                          <label htmlFor="statusSelect">Statut</label>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="form-floating">
+                          <input
+                            type="number"
+                            id="minScoreInput"
+                            className="form-control"
+                            name="minScore"
+                            value={filters.minScore}
+                            onChange={handleFilterChange}
+                            min="0"
+                            max="5"
+                            step="0.5"
+                            placeholder="Score minimum"
+                          />
+                          <label htmlFor="minScoreInput">Score minimum</label>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="form-floating">
+                          <input
+                            type="number"
+                            id="maxScoreInput"
+                            className="form-control"
+                            name="maxScore"
+                            value={filters.maxScore}
+                            onChange={handleFilterChange}
+                            min="0"
+                            max="5"
+                            step="0.5"
+                            placeholder="Score maximum"
+                          />
+                          <label htmlFor="maxScoreInput">Score maximum</label>
+                        </div>
+                      </div>
                     </div>
-                    {/* Bouton de réinitialisation */}
-                    <div className="col-md-auto mb-2">
-                      <button
-                        className="btn btn-outline-secondary"
-                        onClick={resetFilters}
-                        title="Réinitialiser les filtres"
-                        style={{ 
-                          backgroundColor: '#f7f9fc',
-                          borderColor: '#e9ecef',
-                          color: '#6c757d'
-                        }}
-                      >
-                        <FaUndo />
-                      </button>
-                    </div>
+                  )}
+                  
+                  <div className="d-flex justify-content-end mt-3">
+                    <button
+                      className="btn btn-outline-secondary"
+                      onClick={resetFilters}
+                      title="Réinitialiser les filtres"
+                    >
+                      <FaUndo className="me-1" /> Réinitialiser
+                    </button>
                   </div>
                 </div>
               </div>
@@ -536,19 +651,19 @@ const EvaluationHistory = () => {
                                 day: 'numeric'
                               }) : 'N/A'}
                             </td>
-                            <td>{evaluation.evaluationType}</td>
+                            <td>{evaluation.evaluationType || 'N/A'}</td>
                             <td>
                               <div className="d-flex align-items-center">
                                 <div 
                                   className="me-2"
                                   style={{
-                                    width: `${(evaluation.overallScore || 0) * 20}%`,
+                                    width: `${evaluation.overallScore * 20}%`,
                                     height: '8px',
-                                    backgroundColor: `hsl(${(evaluation.overallScore || 0) * 24}, 70%, 50%)`,
+                                    backgroundColor: `hsl(${evaluation.overallScore * 24}, 70%, 50%)`,
                                     borderRadius: '4px'
                                   }}
                                 ></div>
-                                <span>{evaluation.overallScore?.toFixed(1) || '0.0'}</span>
+                                <span>{evaluation.overallScore?.toFixed(1) || 'N/A'}</span>
                               </div>
                             </td>
                             <td>
@@ -655,15 +770,84 @@ const EvaluationHistory = () => {
               <div className="card-header">
                 <h5 className="mb-0">Évolution des performances</h5>
               </div>
-              <div className="card-body p-0">
-                <GlobalPerformanceGraph 
-                  filters={{
-                    startDate: filters.startDate || undefined,
-                    endDate: filters.endDate || undefined,
-                    department: filters.department || undefined,
-                    evaluationType: filters.evaluationType || undefined
-                  }}
-                />
+              <div className="card-body">
+                {loadingDetailedStats ? (
+                  <div className="text-center p-5">
+                    <div className="spinner-border text-warning" role="status">
+                      <span className="visually-hidden">Chargement...</span>
+                    </div>
+                    <p className="mt-2">Chargement des statistiques...</p>
+                  </div>
+                ) : (
+                  <div className="performance-graph-wrapper">
+                    {/* Graphique en camembert pour les types d'évaluation */}
+                    {detailedStats.evaluationTypeDistribution && detailedStats.evaluationTypeDistribution.length > 0 ? (
+                      <StatisticsPieChart 
+                        data={detailedStats.evaluationTypeDistribution.map(item => ({
+                          id: item.label,
+                          label: item.label,
+                          value: item.value
+                        }))}
+                        title="Répartition par type d&apos;évaluation"
+                      />
+                    ) : (
+                      <div className="alert alert-info">
+                        <h6>Répartition par type d&apos;évaluation</h6>
+                        <p>Aucune donnée disponible.</p>
+                      </div>
+                    )}
+                    
+                    {/* Statistiques supplémentaires */}
+                    {detailedStats && detailedStats.scoreDistribution && (
+                      <div className="performance-stats mt-4">
+                        <h6 className="text-center mb-3">Statistiques</h6>
+                        <div className="row g-2">
+                          <div className="col-6">
+                            <div className="stats-card p-2 rounded bg-light">
+                              <div className="small text-muted">Nombre d&apos;évaluations</div>
+                              <div className="h5 mb-0">
+                                {(detailedStats.scoreDistribution.low + 
+                                  detailedStats.scoreDistribution.medium + 
+                                  detailedStats.scoreDistribution.high) || 0}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-6">
+                            <div className="stats-card p-2 rounded bg-light">
+                              <div className="small text-muted">Score moyen</div>
+                              <div className="h5 mb-0">
+                                {detailedStats.scoreDistribution && typeof detailedStats.scoreDistribution.average === 'number' 
+                                  ? detailedStats.scoreDistribution.average.toFixed(2) 
+                                  : '0.00'}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-6">
+                            <div className="stats-card p-2 rounded bg-light">
+                              <div className="small text-muted">Taux de complétion</div>
+                              <div className="h5 mb-0" style={{ color: '#4caf50' }}>
+                                {detailedStats.departmentDistribution && detailedStats.departmentDistribution.length > 0
+                                  ? Math.round((detailedStats.scoreDistribution.high + detailedStats.scoreDistribution.medium) / 
+                                    (detailedStats.scoreDistribution.low + detailedStats.scoreDistribution.medium + detailedStats.scoreDistribution.high) * 100) + '%'
+                                  : '0%'}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-6">
+                            <div className="stats-card p-2 rounded bg-light">
+                              <div className="small text-muted">Meilleur département</div>
+                              <div className="h5 mb-0" style={{ fontSize: '0.9rem' }}>
+                                {detailedStats.departmentDistribution && detailedStats.departmentDistribution.length > 0
+                                  ? detailedStats.departmentDistribution.sort((a, b) => b.averageScore - a.averageScore)[0].label
+                                  : 'N/A'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

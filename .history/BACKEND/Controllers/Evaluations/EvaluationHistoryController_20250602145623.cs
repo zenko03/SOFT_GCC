@@ -30,13 +30,14 @@ namespace soft_carriere_competence.Controllers.Evaluations
 
 		[HttpGet("evaluation-history-paginated")]
 		public async Task<IActionResult> GetEvaluationHistoryPaginated(
-		[FromQuery] DateTime? startDate,
-		[FromQuery] DateTime? endDate ,
-		[FromQuery] string? evaluationType,
-		[FromQuery] string? department ,
-		[FromQuery] string? employeeName,
-		int pageNumber = 1,
-		int pageSize = 10)
+	
+	[FromQuery] DateTime? startDate,
+	[FromQuery] DateTime? endDate ,
+	[FromQuery] string? evaluationType,
+	[FromQuery] string? department ,
+	[FromQuery] string? employeeName,
+	int pageNumber = 1,
+	int pageSize = 10)
 		{
 			var (evaluations, totalPages) = await _evaluationHistoryService.GetEvaluationHistoryPaginatedAsync(
 				pageNumber,
@@ -125,43 +126,8 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		[HttpGet("departments")]
 		public async Task<IActionResult> GetAllDepartments()
 		{
-			try
-			{
-				var departments = await _evaluationHistoryService.GetAllDepartmentsAsync();
-				return Ok(departments);
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Erreur lors de la récupération des départements : {ex.Message}");
-			}
-		}
-
-		[HttpGet("evaluation-types")]
-		public async Task<IActionResult> GetEvaluationTypes()
-		{
-			try
-			{
-				var types = await _evaluationHistoryService.GetEvaluationTypesAsync();
-				return Ok(types);
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Erreur lors de la récupération des types d'évaluation : {ex.Message}");
-			}
-		}
-
-		[HttpGet("employees")]
-		public async Task<IActionResult> GetEmployees()
-		{
-			try
-			{
-				var employees = await _evaluationHistoryService.GetEmployeesAsync();
-				return Ok(employees);
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Erreur lors de la récupération des employés : {ex.Message}");
-			}
+			var departments = await _evaluationHistoryService.GetAllDepartmentsAsync();
+			return Ok(departments);
 		}
 
 		[HttpGet("detailed-statistics")]
@@ -173,43 +139,13 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		{
 			try
 			{
-				Console.WriteLine($"Requête de statistiques détaillées reçue: startDate={startDate}, endDate={endDate}, department={department}, evaluationType={evaluationType}");
-				
 				var statistics = await _evaluationHistoryService.GetDetailedStatisticsAsync(
 					startDate, endDate, department, evaluationType);
-					
-				Console.WriteLine("Statistiques détaillées générées avec succès");
 				return Ok(statistics);
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Erreur lors de la récupération des statistiques détaillées : {ex.Message}");
-				Console.WriteLine($"Stack trace: {ex.StackTrace}");
-				
-				// Retourner un objet vide mais valide au lieu d'une erreur 500
-				return Ok(new 
-				{
-					ScoreDistribution = new 
-					{
-						Low = 0,
-						Medium = 0, 
-						High = 0,
-						Average = 0,
-						Min = 0,
-						Max = 0
-					},
-					DepartmentDistribution = new object[0],
-					EvaluationTypeDistribution = new object[0],
-					PerformanceByYear = new object[0],
-					TrendData = new
-					{
-						IsIncreasing = false,
-						PercentageChange = 0,
-						StartValue = 0,
-						EndValue = 0,
-						StandardDeviation = 0
-					}
-				});
+				return StatusCode(500, $"Erreur lors de la récupération des statistiques détaillées : {ex.Message}");
 			}
 		}
 	}
