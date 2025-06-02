@@ -505,7 +505,7 @@ const EvaluationDetails = ({ interview: propInterview, employeeId: propEmployeeI
                                                 <p className="mb-1 text-muted">Date de l&apos;entretien</p>
                                                 <p className="mb-0">{interviewDetails.interviewDate ? new Date(interviewDetails.interviewDate).toLocaleDateString() : "Non spécifiée"}</p>
                                             </div>
-                                            {/* <div className="col-6">
+                                            <div className="col-6">
                                                 <p className="mb-1 text-muted">Statut</p>
                                                 <p className="mb-0">
                                                     <span className={`badge ${
@@ -524,7 +524,7 @@ const EvaluationDetails = ({ interview: propInterview, employeeId: propEmployeeI
                                                         interviewDetails.status === 50 ? "Annulé" : "Inconnu"}
                                                     </span>
                                                 </p>
-                                            </div> */}
+                                            </div>
                                         </div>
                                         
                                         <div className="row mb-3">

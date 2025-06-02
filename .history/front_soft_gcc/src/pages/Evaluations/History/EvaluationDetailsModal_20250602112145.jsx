@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Modal, Button, Tab, Nav } from "react-bootstrap";
 import { ResponsiveLine } from "@nivo/line";
 import { ResponsiveRadar } from "@nivo/radar";
@@ -15,22 +15,18 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
 
   // Extraire les détails des questions sous forme de tableau si disponible
   const extractQuestionDetails = () => {
-    console.log("EvaluationDetailsModal - données reçues:", evaluation);
     if (!evaluation || !evaluation.questionDetails) {
-      console.log("Aucun détail de question disponible");
       // Si pas de détails disponibles, créer un tableau vide
       return [];
     }
     
     // Vérifier le format des données
     if (Array.isArray(evaluation.questionDetails)) {
-      console.log("QuestionDetails est un tableau:", evaluation.questionDetails);
       return evaluation.questionDetails;
     }
     
     // Si c'est une chaîne, essayer de la parser
     if (typeof evaluation.questionDetails === 'string') {
-      console.log("QuestionDetails est une chaîne, tentative de parsing:", evaluation.questionDetails);
       try {
         const questions = evaluation.questionDetails.split(';')
           .filter(q => q.trim().length > 0)
@@ -41,7 +37,6 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
               score: scorePart ? parseFloat(scorePart[1]) : 0
             };
           });
-        console.log("Questions après parsing:", questions);
         return questions;
       } catch (e) {
         console.error("Erreur lors du parsing des détails de questions:", e);
@@ -49,7 +44,6 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
       }
     }
     
-    console.log("Format de QuestionDetails non reconnu:", typeof evaluation.questionDetails);
     return [];
   };
 

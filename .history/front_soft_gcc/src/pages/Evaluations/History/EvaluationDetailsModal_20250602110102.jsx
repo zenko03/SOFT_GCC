@@ -1,9 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Modal, Button, Tab, Nav } from "react-bootstrap";
 import { ResponsiveLine } from "@nivo/line";
 import { ResponsiveRadar } from "@nivo/radar";
 import { ResponsiveBar } from "@nivo/bar";
-import PropTypes from 'prop-types';
 import '../../../assets/css/Evaluations/EvaluationDetailsModal.css';
 
 const EvaluationDetailsModal = ({ evaluation, onClose }) => {
@@ -13,72 +12,32 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
   const handlePreviousStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
   const handleStepChange = (step) => setCurrentStep(step);
 
-  // Extraire les détails des questions sous forme de tableau si disponible
-  const extractQuestionDetails = () => {
-    console.log("EvaluationDetailsModal - données reçues:", evaluation);
-    if (!evaluation || !evaluation.questionDetails) {
-      console.log("Aucun détail de question disponible");
-      // Si pas de détails disponibles, créer un tableau vide
-      return [];
-    }
-    
-    // Vérifier le format des données
-    if (Array.isArray(evaluation.questionDetails)) {
-      console.log("QuestionDetails est un tableau:", evaluation.questionDetails);
-      return evaluation.questionDetails;
-    }
-    
-    // Si c'est une chaîne, essayer de la parser
-    if (typeof evaluation.questionDetails === 'string') {
-      console.log("QuestionDetails est une chaîne, tentative de parsing:", evaluation.questionDetails);
-      try {
-        const questions = evaluation.questionDetails.split(';')
-          .filter(q => q.trim().length > 0)
-          .map(q => {
-            const scorePart = q.match(/Score:(\d+(\.\d+)?)/);
-            return {
-              question: q.match(/Question:(.*?),/)?.[1] || "Question sans titre",
-              score: scorePart ? parseFloat(scorePart[1]) : 0
-            };
-          });
-        console.log("Questions après parsing:", questions);
-        return questions;
-      } catch (e) {
-        console.error("Erreur lors du parsing des détails de questions:", e);
-        return [];
-      }
-    }
-    
-    console.log("Format de QuestionDetails non reconnu:", typeof evaluation.questionDetails);
-    return [];
-  };
-
   // Préparer les données du graphique en ligne
-  const questionDetails = extractQuestionDetails();
-  const lineChartData = questionDetails.length > 0 ? [
+  const lineChartData = evaluation?.questionDetails ? [
     {
       id: "Scores par question",
-      data: questionDetails.map((q, index) => ({
+      data: evaluation.questionDetails.map((q, index) => ({
         x: `Q${index + 1}`,
-        y: q.score || 0
-      }))
+        y: q.score
+      })),
+      color: "#2196f3"
     }
   ] : [];
 
   // Préparer les données du graphique radar
-  const radarData = questionDetails.length > 0 ? 
-    questionDetails.map((q, index) => ({
+  const radarData = evaluation?.questionDetails ? 
+    evaluation.questionDetails.map((q, index) => ({
       question: `Q${index + 1}`,
-      score: q.score || 0,
+      score: q.score,
       scoreMax: 5
     })) : [];
 
   // Préparer les données du graphique en barres
-  const barChartData = questionDetails.length > 0 ? 
-    questionDetails.map((q, index) => ({
+  const barChartData = evaluation?.questionDetails ? 
+    evaluation.questionDetails.map((q, index) => ({
       question: `Question ${index + 1}`,
-      score: q.score || 0,
-      color: (q.score || 0) < 2 ? "#f44336" : (q.score || 0) < 4 ? "#ff9800" : "#4caf50"
+      score: q.score,
+      color: q.score < 2 ? "#f44336" : q.score < 4 ? "#ff9800" : "#4caf50"
     })) : [];
 
   // Thème commun pour les graphiques
@@ -411,11 +370,6 @@ const EvaluationDetailsModal = ({ evaluation, onClose }) => {
       </Modal.Footer>
     </Modal>
   );
-};
-
-EvaluationDetailsModal.propTypes = {
-  evaluation: PropTypes.object.isRequired,
-  onClose: PropTypes.func.isRequired
 };
 
 export default EvaluationDetailsModal;

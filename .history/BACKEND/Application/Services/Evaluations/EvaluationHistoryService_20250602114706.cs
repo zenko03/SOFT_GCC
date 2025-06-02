@@ -275,11 +275,11 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             int? departmentId = null;
             if (!string.IsNullOrEmpty(departmentName))
             {
-                // Rechercher par Name qui est mappé à Department_name dans la base de données
-                var department = await _context.Department.FirstOrDefaultAsync(d => d.Name == departmentName);
+                // Rechercher par Department_name qui est la colonne correcte dans la table Department
+                var department = await _context.Department.FirstOrDefaultAsync(d => d.Department_name == departmentName);
                 if (department != null)
                 {
-                    departmentId = department.DepartmentId; // Utiliser DepartmentId qui est mappé à Department_id
+                    departmentId = department.Department_id; // Utiliser Department_id qui est la colonne correcte
                     Console.WriteLine($"Département trouvé: {departmentId} pour le nom {departmentName}");
                 }
                 else

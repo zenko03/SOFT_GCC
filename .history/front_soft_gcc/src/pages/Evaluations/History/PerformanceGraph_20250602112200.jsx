@@ -1,16 +1,12 @@
 import { ResponsiveLine } from '@nivo/line';
 import PropTypes from 'prop-types';
-import '../../../assets/css/Evaluations/EvaluationHistory.css';
 
 const PerformanceGraph = ({ performanceData }) => {
-  console.log("PerformanceGraph reçoit les données:", performanceData);
   // Vérification des données
   if (!performanceData || performanceData.length === 0) {
     return (
       <div className="alert alert-info">
-        <h5>Évolution des performances</h5>
-        <p>Aucune donnée de performance disponible pour afficher le graphique.</p>
-        <p>Assurez-vous que des évaluations ont été complétées et rechargez la page.</p>
+        Aucune donnée de performance disponible pour afficher le graphique.
       </div>
     );
   }
@@ -26,7 +22,7 @@ const PerformanceGraph = ({ performanceData }) => {
     }
   ];
 
-  // Thème personnalisé avec la couleur jaune moutarde
+  // Thème personnalisé
   const theme = {
     background: 'transparent',
     textColor: '#333333',
@@ -35,23 +31,16 @@ const PerformanceGraph = ({ performanceData }) => {
       domain: { line: { stroke: '#777777', strokeWidth: 1 } },
       ticks: {
         line: { stroke: '#777777', strokeWidth: 1 },
-        text: { fontSize: 12, fill: '#333333' }
-      },
-      legend: {
-        text: {
-          fontSize: 12,
-          fill: '#333333',
-          fontWeight: 'bold'
-        }
+        text: { fontSize: 12 }
       }
     },
     grid: { line: { stroke: '#dddddd', strokeWidth: 1 } }
   };
 
   return (
-    <div className="performance-graph-container" style={{ marginBottom: '30px' }}>
-      <h5 className="graph-title">Évolution des performances</h5>
-      <div style={{ height: '400px', width: '100%', position: 'relative' }}>
+    <div className="performance-graph-container">
+      <h5>Évolution des performances</h5>
+      <div style={{ height: 400 }}>
         <ResponsiveLine
           data={chartData}
           margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
@@ -82,11 +71,11 @@ const PerformanceGraph = ({ performanceData }) => {
             truncateTickAt: 0
           }}
           enableGridX={false}
-          colors={['#D4AC0D']} // Couleur jaune moutarde
+          colors={['#1976D2']}
           pointSize={10}
-          pointColor="#ffffff"
+          pointColor={{ theme: 'background' }}
           pointBorderWidth={2}
-          pointBorderColor="#D4AC0D"
+          pointBorderColor={{ from: 'serieColor' }}
           pointLabel="y"
           pointLabelYOffset={-12}
           enableArea={true}
@@ -106,8 +95,7 @@ const PerformanceGraph = ({ performanceData }) => {
               itemOpacity: 0.75,
               symbolSize: 12,
               symbolShape: 'circle',
-              symbolBorderColor: 'rgba(0, 0, 0, .5)',
-              itemTextColor: '#333333'
+              symbolBorderColor: 'rgba(0, 0, 0, .5)'
             }
           ]}
           theme={theme}

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ResponsiveBar } from '@nivo/bar';
 import { ResponsiveLine } from '@nivo/line';
 import { ResponsivePie } from '@nivo/pie';
@@ -6,30 +6,30 @@ import { FaChartBar, FaFilter, FaSync, FaChartLine, FaChartPie, FaTimes } from '
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import PropTypes from 'prop-types';
 import '../../../assets/css/Evaluations/GlobalPerformance.css';
 
-const GlobalPerformanceGraph = ({ filters = {} }) => {
+const GlobalPerformanceGraph = () => {
   const [chartData, setChartData] = useState([]);
   const [lineChartData, setLineChartData] = useState([]);
   const [pieChartData, setPieChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [startDate, setStartDate] = useState(filters.startDate ? new Date(filters.startDate) : null);
-  const [endDate, setEndDate] = useState(filters.endDate ? new Date(filters.endDate) : null);
-  const [department, setDepartment] = useState(filters.department || '');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [department, setDepartment] = useState('');
   const [departments, setDepartments] = useState([]);
-  const [evaluationType, setEvaluationType] = useState(filters.evaluationType || '');
-  const [evaluationTypes] = useState(['Annuelle', 'Trimestrielle', 'Probatoire', 'Promotion']);
+  const [evaluationType, setEvaluationType] = useState('');
+  const [evaluationTypes, setEvaluationTypes] = useState(['Annuelle', 'Trimestrielle', 'Probatoire', 'Promotion']);
   const [showFilters, setShowFilters] = useState(false);
   const [chartType, setChartType] = useState('bar'); // bar, line, pie
   const [showLegend, setShowLegend] = useState(true);
+  const [yearFilter, setYearFilter] = useState(new Date().getFullYear());
 
   // Palettes de couleurs professionnelles
   const colorSchemes = {
-    bar: ['#D4AC0D', '#F39C12', '#F1C40F', '#FFC300', '#FFD700'],
-    line: ['#D4AC0D', '#F39C12', '#F1C40F', '#FFC300', '#FFD700'],
-    pie: ['#D4AC0D', '#F39C12', '#F1C40F', '#FFC300', '#FFD700']
+    bar: ['#2E7D32', '#388E3C', '#43A047', '#4CAF50', '#66BB6A'],
+    line: ['#1565C0', '#1976D2', '#1E88E5', '#2196F3', '#42A5F5'],
+    pie: ['#C2185B', '#D81B60', '#E91E63', '#EC407A', '#F06292']
   };
 
   // Récupérer la liste des départements
@@ -48,14 +48,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
     setError(null);
 
     try {
-      console.log('Tentative de récupération des données de performance globale...');
-      console.log('Paramètres:', {
-        startDate: startDate?.toISOString(),
-        endDate: endDate?.toISOString(),
-        department: department || undefined,
-        evaluationType: evaluationType || undefined,
-      });
-      
       const response = await axios.get('https://localhost:7082/api/EvaluationHistory/global-performance', {
         params: {
           startDate: startDate?.toISOString(),
@@ -65,8 +57,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
         },
       });
 
-      console.log('Données reçues:', response.data);
-
       if (response.data && Array.isArray(response.data)) {
         // Formater les données pour le graphique en barres
         const formattedData = response.data.map(item => ({
@@ -75,7 +65,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
           evaluationCount: item.evaluationCount || 0,
           departmentName: item.department || 'Tous'
         }));
-        console.log('Données formatées pour les barres:', formattedData);
         setChartData(formattedData);
 
         // Formater les données pour le graphique en ligne
@@ -88,7 +77,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
             }))
           }
         ];
-        console.log('Données formatées pour les lignes:', lineData);
         setLineChartData(lineData);
 
         // Formater les données pour le graphique en camembert
@@ -98,23 +86,13 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
             label: item.year,
             value: item.evaluationCount
           }));
-          console.log('Données formatées pour le camembert:', pieData);
           setPieChartData(pieData);
-        } else {
-          console.log('Pas de données pour le camembert, utilisation de données par défaut');
-          setPieChartData([{ id: "Aucune donnée", label: "Aucune donnée", value: 1 }]);
         }
       } else {
         throw new Error('Format de données invalide');
       }
     } catch (err) {
-      console.error("Erreur lors du chargement des données:", err);
       setError(err.message || 'Erreur lors du chargement des données');
-      
-      // Initialiser avec des données vides mais valides pour éviter des erreurs d'affichage
-      setChartData([]);
-      setLineChartData([{ id: "Score moyen", data: [] }]);
-      setPieChartData([{ id: "Aucune donnée", label: "Aucune donnée", value: 1 }]);
     } finally {
       setLoading(false);
     }
@@ -128,13 +106,8 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
     fetchGlobalPerformanceData();
   }, [fetchGlobalPerformanceData]);
 
-  // Effet pour mettre à jour les données quand les props changent
-  useEffect(() => {
-    if (filters.startDate !== undefined) setStartDate(filters.startDate ? new Date(filters.startDate) : null);
-    if (filters.endDate !== undefined) setEndDate(filters.endDate ? new Date(filters.endDate) : null);
-    if (filters.department !== undefined) setDepartment(filters.department || '');
-    if (filters.evaluationType !== undefined) setEvaluationType(filters.evaluationType || '');
-  }, [filters]);
+  // Années disponibles pour le filtrage
+  const availableYears = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
   // Réinitialiser les filtres
   const resetFilters = () => {
@@ -142,7 +115,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
     setEndDate(null);
     setDepartment('');
     setEvaluationType('');
-    // setYearFilter(new Date().getFullYear()); // yearFilter n'est plus utilisé
+    setYearFilter(new Date().getFullYear());
     // Rafraîchir les données après réinitialisation
     setTimeout(() => fetchGlobalPerformanceData(), 100);
   };
@@ -231,7 +204,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
     switch(chartType) {
       case 'bar':
         return (
-          <div className="chart-container" style={{ height: '400px', width: '100%' }}>
+          <div className="chart-container">
             <ResponsiveBar
               data={chartData}
               keys={['averageScore']}
@@ -282,11 +255,11 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
               animate={true}
               motionStiffness={90}
               motionDamping={15}
-              tooltip={({ value, color, indexValue }) => (
-                <div style={{
-                  background: 'white',
-                  padding: '10px',
-                  border: '1px solid #ccc',
+              tooltip={({ id, value, color, indexValue }) => (
+                <div style={{ 
+                  background: 'white', 
+                  padding: '10px', 
+                  border: '1px solid #ccc', 
                   borderRadius: '4px',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
                 }}>
@@ -296,7 +269,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
                     Score moyen: <strong>{value}</strong>
                   </div>
                   <div>
-                    Nombre d&apos;évaluations: <strong>{chartData.find(d => d.year === indexValue)?.evaluationCount || 'N/A'}</strong>
+                    Nombre d'évaluations: <strong>{chartData.find(d => d.year === indexValue)?.evaluationCount || 'N/A'}</strong>
                   </div>
                 </div>
               )}
@@ -306,7 +279,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
       
       case 'line':
         return (
-          <div className="chart-container" style={{ height: '400px', width: '100%' }}>
+          <div className="chart-container">
             <ResponsiveLine
               data={lineChartData}
               margin={{ top: 50, right: 110, bottom: 70, left: 60 }}
@@ -369,7 +342,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
       
       case 'pie':
         return (
-          <div className="chart-container" style={{ height: '400px', width: '100%' }}>
+          <div className="chart-container">
             <ResponsivePie
               data={pieChartData}
               margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
@@ -413,7 +386,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
   };
 
   return (
-    <div className="global-performance-graph-container" style={{ backgroundColor: '#ffffff', padding: '20px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', marginBottom: '30px' }}>
+    <div className="global-performance-graph-container">
       <div className="graph-header">
         <h3><FaChartBar /> Performance Globale</h3>
         <div className="chart-controls">
@@ -422,15 +395,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
               className={chartType === 'bar' ? 'active' : ''}
               onClick={() => setChartType('bar')}
               title="Graphique en barres"
-              style={{
-                backgroundColor: chartType === 'bar' ? '#D4AC0D' : '#f8f9fc',
-                color: chartType === 'bar' ? '#fff' : '#333',
-                border: 'none',
-                padding: '6px 10px',
-                borderRadius: '4px',
-                margin: '0 2px',
-                cursor: 'pointer'
-              }}
             >
               <FaChartBar />
             </button>
@@ -438,15 +402,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
               className={chartType === 'line' ? 'active' : ''}
               onClick={() => setChartType('line')}
               title="Graphique en ligne"
-              style={{
-                backgroundColor: chartType === 'line' ? '#D4AC0D' : '#f8f9fc',
-                color: chartType === 'line' ? '#fff' : '#333',
-                border: 'none',
-                padding: '6px 10px',
-                borderRadius: '4px',
-                margin: '0 2px',
-                cursor: 'pointer'
-              }}
             >
               <FaChartLine />
             </button>
@@ -454,15 +409,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
               className={chartType === 'pie' ? 'active' : ''}
               onClick={() => setChartType('pie')}
               title="Graphique en camembert"
-              style={{
-                backgroundColor: chartType === 'pie' ? '#D4AC0D' : '#f8f9fc',
-                color: chartType === 'pie' ? '#fff' : '#333',
-                border: 'none',
-                padding: '6px 10px',
-                borderRadius: '4px',
-                margin: '0 2px',
-                cursor: 'pointer'
-              }}
             >
               <FaChartPie />
             </button>
@@ -471,15 +417,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
             onClick={() => setShowLegend(!showLegend)}
             className={`legend-toggle ${showLegend ? 'active' : ''}`}
             title={showLegend ? 'Masquer la légende' : 'Afficher la légende'}
-            style={{
-              backgroundColor: showLegend ? '#D4AC0D' : '#f8f9fc',
-              color: showLegend ? '#fff' : '#333',
-              border: 'none',
-              padding: '6px 10px',
-              borderRadius: '4px',
-              margin: '0 5px',
-              cursor: 'pointer'
-            }}
           >
             Légende
           </button>
@@ -487,17 +424,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
             onClick={() => setShowFilters(!showFilters)}
             className={`filter-toggle ${showFilters ? 'active' : ''}`}
             title={showFilters ? 'Masquer les filtres' : 'Afficher les filtres'}
-            style={{
-              backgroundColor: showFilters ? '#D4AC0D' : '#f8f9fc',
-              color: showFilters ? '#fff' : '#333',
-              border: 'none',
-              padding: '6px 10px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
           >
             <FaFilter /> {showFilters ? 'Masquer filtres' : 'Filtres'}
           </button>
@@ -552,7 +478,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
               </select>
             </div>
             <div className="filter-group">
-              <label htmlFor="evaluationTypeSelect">Type d&apos;évaluation</label>
+              <label htmlFor="evaluationTypeSelect">Type d'évaluation</label>
               <select 
                 id="evaluationTypeSelect"
                 value={evaluationType} 
@@ -585,7 +511,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
         </div>
       )}
 
-      <div className="chart-wrapper" style={{ marginTop: '20px', marginBottom: '20px' }}>
+      <div className="chart-wrapper">
         {renderChart()}
       </div>
       
@@ -613,15 +539,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
       )}
     </div>
   );
-};
-
-GlobalPerformanceGraph.propTypes = {
-  filters: PropTypes.shape({
-    startDate: PropTypes.string,
-    endDate: PropTypes.string,
-    department: PropTypes.string,
-    evaluationType: PropTypes.string
-  })
 };
 
 export default GlobalPerformanceGraph;

@@ -243,12 +243,6 @@ const EvaluationHistory = () => {
     <Template>
       <div className="container mt-4">
         <h2 className="mb-4">Historique des Évaluations</h2>
-        
-        {error && (
-          <div className="alert alert-danger mb-4">
-            <strong>Erreur:</strong> {error}
-          </div>
-        )}
 
         <div className="card shadow mb-4">
           <div className="card-header d-flex justify-content-between align-items-center">

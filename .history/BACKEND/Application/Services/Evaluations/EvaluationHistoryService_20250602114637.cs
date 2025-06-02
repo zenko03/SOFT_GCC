@@ -269,23 +269,18 @@ namespace soft_carriere_competence.Application.Services.Evaluations
 
         public async Task<KPIResult> GetKPIsAsync(DateTime? startDate, DateTime? endDate, string? departmentName)
         {
-            Console.WriteLine($"Recherche de KPI pour département: {departmentName ?? "tous"}");
             // Récupérez les évaluations terminées
             // Convertir departmentName en departmentId si nécessaire, ou adapter la logique de filtrage
             int? departmentId = null;
             if (!string.IsNullOrEmpty(departmentName))
             {
-                // Rechercher par Name qui est mappé à Department_name dans la base de données
-                var department = await _context.Department.FirstOrDefaultAsync(d => d.Name == departmentName);
+                // Rechercher par Department_name qui est la colonne correcte dans la table Department
+                var department = await _context.Department.FirstOrDefaultAsync(d => d.Department_name == departmentName);
                 if (department != null)
                 {
-                    departmentId = department.DepartmentId; // Utiliser DepartmentId qui est mappé à Department_id
-                    Console.WriteLine($"Département trouvé: {departmentId} pour le nom {departmentName}");
+                    departmentId = department.Department_id; // Utiliser Department_id qui est la colonne correcte
                 }
-                else
-                {
-                    Console.WriteLine($"Département non trouvé pour le nom: {departmentName}");
-                }
+                Console.WriteLine($"Département trouvé: {departmentId} pour le nom {departmentName}");
             }
             else
             {
@@ -293,7 +288,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             }
 
             var evaluations = await _evaluationService.GetEmployeesWithFinishedEvalAsync(department: departmentId);
-            Console.WriteLine($"Nombre d'évaluations trouvées: {evaluations.Count()}");
+            Console.WriteLine($"Nombre d'évaluations trouvées: {evaluations.Count}");
 
             // Filtrez par dates si spécifiées
             if (startDate.HasValue)

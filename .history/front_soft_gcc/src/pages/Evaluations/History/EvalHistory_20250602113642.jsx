@@ -10,7 +10,6 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { FaFileExcel, FaFilePdf, FaFileCsv, FaChartBar, FaSync } from 'react-icons/fa';
-import PropTypes from 'prop-types';
 
 const API_BASE_URL = 'https://localhost:7082/api/EvaluationHistory';
 
@@ -46,13 +45,6 @@ const KpiCard = ({ title, value, icon, color }) => (
     {icon && <div className="kpi-icon">{icon}</div>}
   </div>
 );
-
-KpiCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  icon: PropTypes.element,
-  color: PropTypes.string
-};
 
 const EvaluationHistory = () => {
   const [loadingCSV, setLoadingCSV] = useState(false);
@@ -101,21 +93,13 @@ const EvaluationHistory = () => {
   const fetchKpis = useCallback(async () => {
     setLoadingKpi(true);
     try {
-      console.log("Récupération des KPI avec paramètres:", {
-        startDate: new Date(kpiYear, 0, 1).toISOString(),
-        endDate: new Date(kpiYear, 11, 31).toISOString(),
-        departmentName: filters.position || '',
-      });
-      
       const response = await axios.get(`${API_BASE_URL}/kpis`, {
         params: {
           startDate: new Date(kpiYear, 0, 1).toISOString(),
           endDate: new Date(kpiYear, 11, 31).toISOString(),
-          departmentName: filters.position || '',
+          department: filters.position || '',
         },
       });
-      
-      console.log("Données KPI reçues:", response.data);
       setKpiData(response.data);
     } catch (err) {
       console.error('Erreur lors de la récupération des KPI :', err);
@@ -128,16 +112,6 @@ const EvaluationHistory = () => {
     setLoading(true);
     setError(null);
     try {
-      console.log("Récupération des évaluations avec paramètres:", {
-        pageNumber: currentPage,
-        pageSize: pageSize,
-        startDate: filters.startDate || null,
-        endDate: filters.endDate || null,
-        evaluationType: filters.evaluationType || '',
-        department: filters.position || '',
-        employeeName: searchQuery || '',
-      });
-      
       const response = await axios.get(`${API_BASE_URL}/evaluation-history-paginated`, {
         params: {
           pageNumber: currentPage,
@@ -149,13 +123,9 @@ const EvaluationHistory = () => {
           employeeName: searchQuery || '',
         },
       });
-      
-      console.log("Données d'évaluations reçues:", response.data);
-      
       setEvaluations(response.data.evaluations);
       setTotalPages(response.data.totalPages);
       
-      // Préparer les données pour le graphique de performance
       if (response.data.evaluations && response.data.evaluations.length > 0) {
         const performanceHistory = response.data.evaluations.map(evaluation => ({
           date: new Date(evaluation.startDate).toLocaleDateString('fr-FR', {
@@ -165,13 +135,9 @@ const EvaluationHistory = () => {
           score: evaluation.overallScore
         })).sort((a, b) => new Date(a.date) - new Date(b.date));
         
-        console.log("Données formatées pour le graphique de performance:", performanceHistory);
         setPerformanceData(performanceHistory);
-      } else {
-        console.log("Aucune donnée d'évaluation disponible pour le graphique");
-        setPerformanceData([]);
       }
-    } catch (fetchError) { 
+    } catch (fetchError) {
       console.error('Erreur lors de la récupération des évaluations:', fetchError);
       setError('Erreur lors de la récupération des évaluations.');
     } finally {
@@ -243,12 +209,6 @@ const EvaluationHistory = () => {
     <Template>
       <div className="container mt-4">
         <h2 className="mb-4">Historique des Évaluations</h2>
-        
-        {error && (
-          <div className="alert alert-danger mb-4">
-            <strong>Erreur:</strong> {error}
-          </div>
-        )}
 
         <div className="card shadow mb-4">
           <div className="card-header d-flex justify-content-between align-items-center">

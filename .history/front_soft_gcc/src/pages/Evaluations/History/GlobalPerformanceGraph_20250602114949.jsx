@@ -27,9 +27,9 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
 
   // Palettes de couleurs professionnelles
   const colorSchemes = {
-    bar: ['#D4AC0D', '#F39C12', '#F1C40F', '#FFC300', '#FFD700'],
-    line: ['#D4AC0D', '#F39C12', '#F1C40F', '#FFC300', '#FFD700'],
-    pie: ['#D4AC0D', '#F39C12', '#F1C40F', '#FFC300', '#FFD700']
+    bar: ['#2E7D32', '#388E3C', '#43A047', '#4CAF50', '#66BB6A'],
+    line: ['#1565C0', '#1976D2', '#1E88E5', '#2196F3', '#42A5F5'],
+    pie: ['#C2185B', '#D81B60', '#E91E63', '#EC407A', '#F06292']
   };
 
   // Récupérer la liste des départements
@@ -231,7 +231,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
     switch(chartType) {
       case 'bar':
         return (
-          <div className="chart-container" style={{ height: '400px', width: '100%' }}>
+          <div className="chart-container">
             <ResponsiveBar
               data={chartData}
               keys={['averageScore']}
@@ -306,7 +306,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
       
       case 'line':
         return (
-          <div className="chart-container" style={{ height: '400px', width: '100%' }}>
+          <div className="chart-container">
             <ResponsiveLine
               data={lineChartData}
               margin={{ top: 50, right: 110, bottom: 70, left: 60 }}
@@ -369,7 +369,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
       
       case 'pie':
         return (
-          <div className="chart-container" style={{ height: '400px', width: '100%' }}>
+          <div className="chart-container">
             <ResponsivePie
               data={pieChartData}
               margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
@@ -413,7 +413,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
   };
 
   return (
-    <div className="global-performance-graph-container" style={{ backgroundColor: '#ffffff', padding: '20px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', marginBottom: '30px' }}>
+    <div className="global-performance-graph-container">
       <div className="graph-header">
         <h3><FaChartBar /> Performance Globale</h3>
         <div className="chart-controls">
@@ -422,15 +422,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
               className={chartType === 'bar' ? 'active' : ''}
               onClick={() => setChartType('bar')}
               title="Graphique en barres"
-              style={{
-                backgroundColor: chartType === 'bar' ? '#D4AC0D' : '#f8f9fc',
-                color: chartType === 'bar' ? '#fff' : '#333',
-                border: 'none',
-                padding: '6px 10px',
-                borderRadius: '4px',
-                margin: '0 2px',
-                cursor: 'pointer'
-              }}
             >
               <FaChartBar />
             </button>
@@ -438,15 +429,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
               className={chartType === 'line' ? 'active' : ''}
               onClick={() => setChartType('line')}
               title="Graphique en ligne"
-              style={{
-                backgroundColor: chartType === 'line' ? '#D4AC0D' : '#f8f9fc',
-                color: chartType === 'line' ? '#fff' : '#333',
-                border: 'none',
-                padding: '6px 10px',
-                borderRadius: '4px',
-                margin: '0 2px',
-                cursor: 'pointer'
-              }}
             >
               <FaChartLine />
             </button>
@@ -454,15 +436,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
               className={chartType === 'pie' ? 'active' : ''}
               onClick={() => setChartType('pie')}
               title="Graphique en camembert"
-              style={{
-                backgroundColor: chartType === 'pie' ? '#D4AC0D' : '#f8f9fc',
-                color: chartType === 'pie' ? '#fff' : '#333',
-                border: 'none',
-                padding: '6px 10px',
-                borderRadius: '4px',
-                margin: '0 2px',
-                cursor: 'pointer'
-              }}
             >
               <FaChartPie />
             </button>
@@ -471,15 +444,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
             onClick={() => setShowLegend(!showLegend)}
             className={`legend-toggle ${showLegend ? 'active' : ''}`}
             title={showLegend ? 'Masquer la légende' : 'Afficher la légende'}
-            style={{
-              backgroundColor: showLegend ? '#D4AC0D' : '#f8f9fc',
-              color: showLegend ? '#fff' : '#333',
-              border: 'none',
-              padding: '6px 10px',
-              borderRadius: '4px',
-              margin: '0 5px',
-              cursor: 'pointer'
-            }}
           >
             Légende
           </button>
@@ -487,17 +451,6 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
             onClick={() => setShowFilters(!showFilters)}
             className={`filter-toggle ${showFilters ? 'active' : ''}`}
             title={showFilters ? 'Masquer les filtres' : 'Afficher les filtres'}
-            style={{
-              backgroundColor: showFilters ? '#D4AC0D' : '#f8f9fc',
-              color: showFilters ? '#fff' : '#333',
-              border: 'none',
-              padding: '6px 10px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
           >
             <FaFilter /> {showFilters ? 'Masquer filtres' : 'Filtres'}
           </button>
@@ -585,7 +538,7 @@ const GlobalPerformanceGraph = ({ filters = {} }) => {
         </div>
       )}
 
-      <div className="chart-wrapper" style={{ marginTop: '20px', marginBottom: '20px' }}>
+      <div className="chart-wrapper">
         {renderChart()}
       </div>
       

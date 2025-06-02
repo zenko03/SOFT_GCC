@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Template from '../../Template';
 import PerformanceGraph from './PerformanceGraph';
 import GlobalPerformanceGraph from './GlobalPerformanceGraph';
@@ -9,8 +9,7 @@ import { CSVLink } from 'react-csv';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { FaFileExcel, FaFilePdf, FaFileCsv, FaChartBar, FaSync } from 'react-icons/fa';
-import PropTypes from 'prop-types';
+import { FaFileExcel, FaFilePdf, FaFileCsv, FaSearch, FaFilter, FaChartBar, FaAngleLeft, FaAngleRight, FaSync, FaCalendarAlt } from 'react-icons/fa';
 
 const API_BASE_URL = 'https://localhost:7082/api/EvaluationHistory';
 
@@ -37,6 +36,7 @@ const LoadingBar = () => (
   </div>
 );
 
+// Définition du composant KpiCard
 const KpiCard = ({ title, value, icon, color }) => (
   <div className="kpi-card">
     <h6>{title}</h6>
@@ -47,23 +47,19 @@ const KpiCard = ({ title, value, icon, color }) => (
   </div>
 );
 
-KpiCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  icon: PropTypes.element,
-  color: PropTypes.string
-};
-
 const EvaluationHistory = () => {
+  const [format, setFormat] = useState("csv"); // Format par défaut
   const [loadingCSV, setLoadingCSV] = useState(false);
-  const [loadingExcel] = useState(false);
-  const [loadingPDF] = useState(false);
+  const [loadingExcel, setLoadingExcel] = useState(false);
+  const [loadingPDF, setLoadingPDF] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [loadingKpi, setLoadingKpi] = useState(false);
 
+  // Année pour les KPIs
   const [kpiYear, setKpiYear] = useState(new Date().getFullYear());
   const availableYears = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
+  // PAGINATION
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -78,17 +74,27 @@ const EvaluationHistory = () => {
     evaluationType: '',
   });
 
+  // Options pour le graphique global
+  const [graphTimeRange, setGraphTimeRange] = useState('lastYear');
+  const [customGraphStartDate, setCustomGraphStartDate] = useState('');
+  const [customGraphEndDate, setCustomGraphEndDate] = useState('');
+  const [aggregationPeriod, setAggregationPeriod] = useState('month');
+
   const [evaluations, setEvaluations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
+  // Données pour le graphique de performance individuelle
   const [performanceData, setPerformanceData] = useState([]);
+
   const [kpiData, setKpiData] = useState({
     participationRate: 0,
     approvalRate: 0,
     overallAverage: 0,
   });
 
+  // Fonction pour récupérer les départements
   const fetchDepartments = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/departments`);
@@ -98,24 +104,17 @@ const EvaluationHistory = () => {
     }
   }, []);
 
+  // Récupération des KPIs
   const fetchKpis = useCallback(async () => {
     setLoadingKpi(true);
     try {
-      console.log("Récupération des KPI avec paramètres:", {
-        startDate: new Date(kpiYear, 0, 1).toISOString(),
-        endDate: new Date(kpiYear, 11, 31).toISOString(),
-        departmentName: filters.position || '',
-      });
-      
       const response = await axios.get(`${API_BASE_URL}/kpis`, {
         params: {
           startDate: new Date(kpiYear, 0, 1).toISOString(),
           endDate: new Date(kpiYear, 11, 31).toISOString(),
-          departmentName: filters.position || '',
+          department: filters.position || '',
         },
       });
-      
-      console.log("Données KPI reçues:", response.data);
       setKpiData(response.data);
     } catch (err) {
       console.error('Erreur lors de la récupération des KPI :', err);
@@ -124,20 +123,11 @@ const EvaluationHistory = () => {
     }
   }, [kpiYear, filters]);
 
+  // Récupération des évaluations
   const fetchEvaluations = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      console.log("Récupération des évaluations avec paramètres:", {
-        pageNumber: currentPage,
-        pageSize: pageSize,
-        startDate: filters.startDate || null,
-        endDate: filters.endDate || null,
-        evaluationType: filters.evaluationType || '',
-        department: filters.position || '',
-        employeeName: searchQuery || '',
-      });
-      
       const response = await axios.get(`${API_BASE_URL}/evaluation-history-paginated`, {
         params: {
           pageNumber: currentPage,
@@ -149,30 +139,22 @@ const EvaluationHistory = () => {
           employeeName: searchQuery || '',
         },
       });
-      
-      console.log("Données d'évaluations reçues:", response.data);
-      
       setEvaluations(response.data.evaluations);
       setTotalPages(response.data.totalPages);
       
       // Préparer les données pour le graphique de performance
       if (response.data.evaluations && response.data.evaluations.length > 0) {
-        const performanceHistory = response.data.evaluations.map(evaluation => ({
-          date: new Date(evaluation.startDate).toLocaleDateString('fr-FR', {
+        const performanceHistory = response.data.evaluations.map(eval => ({
+          date: new Date(eval.startDate).toLocaleDateString('fr-FR', {
             year: 'numeric',
             month: 'short',
           }),
-          score: evaluation.overallScore
+          score: eval.overallScore
         })).sort((a, b) => new Date(a.date) - new Date(b.date));
         
-        console.log("Données formatées pour le graphique de performance:", performanceHistory);
         setPerformanceData(performanceHistory);
-      } else {
-        console.log("Aucune donnée d'évaluation disponible pour le graphique");
-        setPerformanceData([]);
       }
-    } catch (fetchError) { 
-      console.error('Erreur lors de la récupération des évaluations:', fetchError);
+    } catch (err) {
       setError('Erreur lors de la récupération des évaluations.');
     } finally {
       setLoading(false);
@@ -243,13 +225,8 @@ const EvaluationHistory = () => {
     <Template>
       <div className="container mt-4">
         <h2 className="mb-4">Historique des Évaluations</h2>
-        
-        {error && (
-          <div className="alert alert-danger mb-4">
-            <strong>Erreur:</strong> {error}
-          </div>
-        )}
 
+        {/* Section KPI */}
         <div className="card shadow mb-4">
           <div className="card-header d-flex justify-content-between align-items-center">
             <h5 className="mb-0">Indicateurs Clés de Performance (KPI)</h5>
@@ -269,11 +246,8 @@ const EvaluationHistory = () => {
                 className="btn btn-outline-primary btn-sm d-flex align-items-center"
                 onClick={fetchKpis}
               >
-                {loadingKpi ? (
-                  <span><FaSync className="fa-spin mr-2" /> Chargement...</span>
-                ) : (
-                  <span><FaSync className="mr-2" /> Rafraîchir</span>
-                )}
+                <FaSync className={loadingKpi ? "mr-1 fa-spin" : "mr-1"} />
+                {loadingKpi ? 'Chargement...' : 'Rafraîchir'}
               </button>
             </div>
           </div>
@@ -291,7 +265,9 @@ const EvaluationHistory = () => {
             </div>
           </div>
         </div>
+        {/* Fin de la section KPI */}
 
+        {/* Section des exports */}
         <div className="card shadow mb-4">
           <div className="card-header" style={{ position: 'relative' }}>
             <div className="btn-group">
@@ -406,9 +382,9 @@ const EvaluationHistory = () => {
                     <tr>
                       <th>Nom</th>
                       <th>Poste</th>
-                      <th>Date d&apos;évaluation</th>
+                      <th>Date d'évaluation</th>
                       <th>Note</th>
-                      <th>Type d&apos;évaluation</th>
+                      <th>Type d'évaluation</th>
                       <th>Action</th>
                     </tr>
                   </thead>

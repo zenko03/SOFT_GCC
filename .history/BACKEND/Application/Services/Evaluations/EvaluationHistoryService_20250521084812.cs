@@ -267,33 +267,10 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return groupedData;
         }
 
-        public async Task<KPIResult> GetKPIsAsync(DateTime? startDate, DateTime? endDate, string? departmentName)
+        public async Task<KPIResult> GetKPIsAsync(DateTime? startDate, DateTime? endDate, int? department)
         {
-            Console.WriteLine($"Recherche de KPI pour département: {departmentName ?? "tous"}");
             // Récupérez les évaluations terminées
-            // Convertir departmentName en departmentId si nécessaire, ou adapter la logique de filtrage
-            int? departmentId = null;
-            if (!string.IsNullOrEmpty(departmentName))
-            {
-                // Rechercher par Name qui est mappé à Department_name dans la base de données
-                var department = await _context.Department.FirstOrDefaultAsync(d => d.Name == departmentName);
-                if (department != null)
-                {
-                    departmentId = department.DepartmentId; // Utiliser DepartmentId qui est mappé à Department_id
-                    Console.WriteLine($"Département trouvé: {departmentId} pour le nom {departmentName}");
-                }
-                else
-                {
-                    Console.WriteLine($"Département non trouvé pour le nom: {departmentName}");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Aucun nom de département spécifié, récupération de tous les départements");
-            }
-
-            var evaluations = await _evaluationService.GetEmployeesWithFinishedEvalAsync(department: departmentId);
-            Console.WriteLine($"Nombre d'évaluations trouvées: {evaluations.Count()}");
+            var evaluations = await _evaluationService.GetEmployeesWithFinishedEvalAsync(department: department);
 
             // Filtrez par dates si spécifiées
             if (startDate.HasValue)

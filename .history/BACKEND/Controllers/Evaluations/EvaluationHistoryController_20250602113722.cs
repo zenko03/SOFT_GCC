@@ -92,7 +92,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		}
 
 		[HttpGet("kpis")]
-		public async Task<IActionResult> GetKPIs([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? departmentName = null)
+		public async Task<IActionResult> GetKPIs([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string departmentName)
 		{
 			try
 			{

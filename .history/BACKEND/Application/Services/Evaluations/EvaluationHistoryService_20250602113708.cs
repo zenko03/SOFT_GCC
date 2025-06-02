@@ -267,33 +267,24 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return groupedData;
         }
 
-        public async Task<KPIResult> GetKPIsAsync(DateTime? startDate, DateTime? endDate, string? departmentName)
+        public async Task<KPIResult> GetKPIsAsync(DateTime? startDate, DateTime? endDate, string departmentName)
         {
-            Console.WriteLine($"Recherche de KPI pour département: {departmentName ?? "tous"}");
             // Récupérez les évaluations terminées
             // Convertir departmentName en departmentId si nécessaire, ou adapter la logique de filtrage
             int? departmentId = null;
             if (!string.IsNullOrEmpty(departmentName))
             {
-                // Rechercher par Name qui est mappé à Department_name dans la base de données
-                var department = await _context.Department.FirstOrDefaultAsync(d => d.Name == departmentName);
+                var department = await _context.Departments.FirstOrDefaultAsync(d => d.Department_name == departmentName);
                 if (department != null)
                 {
-                    departmentId = department.DepartmentId; // Utiliser DepartmentId qui est mappé à Department_id
-                    Console.WriteLine($"Département trouvé: {departmentId} pour le nom {departmentName}");
+                    departmentId = department.Department_id;
                 }
-                else
-                {
-                    Console.WriteLine($"Département non trouvé pour le nom: {departmentName}");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Aucun nom de département spécifié, récupération de tous les départements");
+                // Si aucun département correspondant n'est trouvé, departmentId restera null,
+                // ce qui signifie que les KPIs seront calculés pour tous les départements.
+                // Vous pouvez choisir de lever une exception ou de retourner des KPI vides si un nom de département est fourni mais non trouvé.
             }
 
             var evaluations = await _evaluationService.GetEmployeesWithFinishedEvalAsync(department: departmentId);
-            Console.WriteLine($"Nombre d'évaluations trouvées: {evaluations.Count()}");
 
             // Filtrez par dates si spécifiées
             if (startDate.HasValue)

@@ -10,7 +10,6 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { FaFileExcel, FaFilePdf, FaFileCsv, FaChartBar, FaSync } from 'react-icons/fa';
-import PropTypes from 'prop-types';
 
 const API_BASE_URL = 'https://localhost:7082/api/EvaluationHistory';
 
@@ -46,13 +45,6 @@ const KpiCard = ({ title, value, icon, color }) => (
     {icon && <div className="kpi-icon">{icon}</div>}
   </div>
 );
-
-KpiCard.propTypes = {
-  title: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  icon: PropTypes.element,
-  color: PropTypes.string
-};
 
 const EvaluationHistory = () => {
   const [loadingCSV, setLoadingCSV] = useState(false);
@@ -243,12 +235,6 @@ const EvaluationHistory = () => {
     <Template>
       <div className="container mt-4">
         <h2 className="mb-4">Historique des Évaluations</h2>
-        
-        {error && (
-          <div className="alert alert-danger mb-4">
-            <strong>Erreur:</strong> {error}
-          </div>
-        )}
 
         <div className="card shadow mb-4">
           <div className="card-header d-flex justify-content-between align-items-center">
