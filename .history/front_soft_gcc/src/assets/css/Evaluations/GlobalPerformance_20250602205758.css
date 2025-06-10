@@ -1,0 +1,384 @@
+.global-performance-graph-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+  }
+  
+  .graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .graph-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .chart-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .chart-type-selector {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .chart-type-selector button {
+    background-color: #f8f9fc;
+    color: #333;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  
+  .chart-type-selector button.active {
+    background-color: #D4AC0D;
+    color: #fff;
+  }
+  
+  .chart-wrapper {
+    height: 400px;
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  /* Styles pour les filtres */
+  .filters-panel {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    animation: slideDown 0.3s ease forwards;
+  }
+  
+  .filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+  }
+  
+  .filter-group {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #555;
+  }
+  
+  .select-input,
+  .date-picker {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 0.9rem;
+  }
+  
+  .filter-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-refresh,
+  .btn-reset {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-refresh {
+    background-color: #D4AC0D;
+    color: white;
+  }
+  
+  .btn-reset {
+    background-color: #f1f1f1;
+    color: #666;
+  }
+  
+  .btn-refresh:hover {
+    background-color: #B7950B;
+  }
+  
+  .btn-reset:hover {
+    background-color: #e5e5e5;
+  }
+  
+  /* Animation pour l'affichage des filtres */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Styles pour les états de chargement et erreurs */
+  .chart-loading, 
+  .chart-error, 
+  .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    text-align: center;
+    color: #666;
+    font-size: 1rem;
+  }
+  
+  .chart-error {
+    color: #dc3545;
+  }
+  
+  /* Statistiques détaillées */
+  .detailed-stats {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+  }
+  
+  .stats-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .chart-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .summary-card {
+    flex: 1;
+    min-width: 200px;
+    background-color: #f8f8f8;
+    border-radius: 6px;
+    padding: 15px;
+    border-left: 3px solid #D4AC0D;
+    transition: all 0.3s ease;
+  }
+  
+  .summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .summary-card h4 {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  .summary-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  /* Réactivité pour les mobiles */
+  @media (max-width: 992px) {
+    .filters-form {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .filter-group {
+      width: 100%;
+    }
+    
+    .graph-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    
+    .chart-controls {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .chart-wrapper {
+      height: 350px;
+    }
+    
+    .summary-card {
+      min-width: 100%;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .chart-wrapper {
+      height: 300px;
+    }
+  }
+
+/* Styles pour le composant GlobalPerformanceGraph */
+
+.global-performance-graph {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.global-performance-graph:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour l'en-tête du graphique */
+.graph-header h5 {
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+/* Styles pour les filtres */
+.filters-panel {
+  background-color: #f8f9fc;
+  border: 1px solid #e3e6f0;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Style du sélecteur de date */
+.form-control, .form-select {
+  border: 1px solid #d1d3e2;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #D4AC0D;
+  box-shadow: 0 0 0 0.2rem rgba(212, 172, 13, 0.25);
+}
+
+/* Styles pour les boutons */
+.btn-primary {
+  background-color: #D4AC0D;
+  border-color: #D4AC0D;
+}
+
+.btn-primary:hover {
+  background-color: #b8940b;
+  border-color: #b8940b;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #e9ecef;
+}
+
+/* Styles pour les cartes de résumé */
+.graph-summary .card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 6px;
+}
+
+.graph-summary .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.graph-summary .card-body {
+  padding: 15px;
+}
+
+.graph-summary .card-title {
+  font-weight: 700;
+  margin-top: 5px;
+  font-size: 1.2rem;
+}
+
+.graph-summary .card-subtitle {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* Styles pour les tooltips personnalisés */
+.custom-tooltip {
+  background-color: white;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.tooltip-label {
+  font-weight: 600;
+  margin-bottom: 3px;
+  color: #333;
+}
+
+.tooltip-score {
+  font-weight: 700;
+  color: #D4AC0D;
+  margin-left: 5px;
+}
+
+.tooltip-count {
+  margin-top: 5px;
+  font-size: 0.9rem;
+}
+
+/* Animation du spinner de chargement */
+.spinner-border.text-warning {
+  color: #D4AC0D !important;
+}
+
+/* Media queries pour la responsivité */
+@media (max-width: 768px) {
+  .filters-panel .row {
+    flex-direction: column;
+  }
+  .col-md-2, .col-md-3 {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .graph-summary .row {
+    flex-direction: column;
+  }
+  .graph-summary .col-md-3 {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+}

@@ -1,0 +1,147 @@
+/* EvaluationDetailsModal.css */
+
+/* Styles spécifiques au modal EvaluationDetailsModal */
+.evaluation-details-modal .modal-content {
+    background-color: #F4F4F4; /* Blanc cassé */
+    color: #333333; /* Noir */
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: none;
+  }
+  
+  .evaluation-details-modal .modal-header {
+    background-color: #FFD700; /* Jaune moutarde */
+    color: #2C3E50; /* Gris anthracite */
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 10px 10px 0 0;
+    padding: 15px;
+    font-size: 18px;
+  }
+  
+  .evaluation-details-modal .modal-title {
+    font-weight: bold;
+  }
+  
+  .evaluation-details-modal .modal-body {
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  .evaluation-details-modal .modal-footer {
+    background-color: #F4F4F4; /* Blanc cassé */
+    border-top: 1px solid #dee2e6;
+    border-radius: 0 0 10px 10px;
+    padding: 15px;
+  }
+  
+  /* Styles pour les onglets */
+  .evaluation-details-modal .nav-tabs {
+    border-bottom: 2px solid #FFD700; /* Jaune moutarde */
+  }
+  
+  .evaluation-details-modal .nav-link {
+    color: #2C3E50; /* Gris anthracite */
+    border: none;
+    border-radius: 5px 5px 0 0;
+    transition: all 0.3s ease;
+  }
+  
+  .evaluation-details-modal .nav-link.active {
+    background-color: #FFD700; /* Jaune moutarde */
+    color: white;
+    border: none;
+  }
+  
+  .evaluation-details-modal .nav-link:hover {
+    background-color: rgba(255, 215, 0, 0.1); /* Jaune moutarde léger */
+  }
+  
+  /* Styles pour les boutons */
+  .evaluation-details-modal .btn {
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .evaluation-details-modal .btn-primary {
+    background-color: #3498DB; /* Bleu */
+    border-color: #3498DB;
+  }
+  
+  .evaluation-details-modal .btn-primary:hover {
+    background-color: #2980B9; /* Bleu foncé */
+    border-color: #2980B9;
+  }
+  
+  .evaluation-details-modal .btn-secondary {
+    background-color: #2C3E50; /* Gris anthracite */
+    border-color: #2C3E50;
+  }
+  
+  .evaluation-details-modal .btn-secondary:hover {
+    background-color: #1C2833; /* Gris plus foncé */
+    border-color: #1C2833;
+  }
+  
+  .evaluation-details-modal .btn-danger {
+    background-color: #dc3545; /* Rouge */
+    border-color: #dc3545;
+  }
+  
+  .evaluation-details-modal .btn-danger:hover {
+    background-color: #c82333; /* Rouge plus foncé */
+    border-color: #c82333;
+  }
+  
+  /* Styles pour le graphique */
+  .evaluation-details-modal .chart-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Styles pour les étapes */
+  .evaluation-details-modal .step-content h5 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #3498DB; /* Bleu */
+  }
+  
+  .evaluation-details-modal .step-content p {
+    font-size: 14px;
+    color: #333333; /* Noir */
+    line-height: 1.6;
+  }
+  
+  .evaluation-details-modal .step-content ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .evaluation-details-modal .step-content ul li {
+    font-size: 14px;
+    color: #333333; /* Noir */
+  }
+
+  /* EvaluationDetailsModal.css */
+
+/* Style pour le bouton de fermeture (X) */
+.evaluation-details-modal .btn-close {
+    background-color: transparent; /* Fond transparent */
+    border: none; /* Pas de bordure */
+    box-shadow: none; /* Pas d'ombre */
+    opacity: 0.7; /* Légère transparence */
+    transition: opacity 0.3s ease; /* Transition fluide */
+  }
+  
+  .evaluation-details-modal .btn-close:hover {
+    opacity: 1; /* Pleine opacité au survol */
+  }
+  
+  .evaluation-details-modal .btn-close:focus {
+    outline: none; /* Supprime le contour lors du focus */
+    box-shadow: none; /* Pas d'ombre */
+  }

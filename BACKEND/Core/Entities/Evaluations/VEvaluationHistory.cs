@@ -17,7 +17,7 @@
         public string? Weaknesses { get; set; }
         public string? Department { get; set; }
         public DateTime? InterviewDate { get; set; }
-        public int InterviewStatus { get; set; }
+        public int? InterviewStatus { get; set; }
         public string? Recommendations { get; set; }
         public string? ParticipantNames {  get; set; }
         public string? QuestionDetails { get; set; } // Nouveau champ

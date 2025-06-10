@@ -34,7 +34,7 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [ForeignKey("CompetenceLineId")]
         public CompetenceLine competenceLine { get; set; }
         [ForeignKey("TrainingId")]
-        public CompetenceTraining training { get; set; }
+        public CompetenceTraining competenceTraining { get; set; }
        
 
     }

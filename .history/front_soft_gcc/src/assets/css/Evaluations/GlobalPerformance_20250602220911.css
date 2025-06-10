@@ -1,0 +1,551 @@
+.global-performance-graph-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+  }
+  
+  .graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .graph-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .chart-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .chart-type-selector {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .chart-type-selector button {
+    background-color: #f8f9fc;
+    color: #333;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  
+  .chart-type-selector button.active {
+    background-color: #D4AC0D;
+    color: #fff;
+  }
+  
+  .chart-wrapper {
+    height: 400px;
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  /* Styles pour les filtres */
+  .filters-panel {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    animation: slideDown 0.3s ease forwards;
+  }
+  
+  .filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+  }
+  
+  .filter-group {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #555;
+  }
+  
+  .select-input,
+  .date-picker {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 0.9rem;
+  }
+  
+  .filter-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-refresh,
+  .btn-reset {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-refresh {
+    background-color: #D4AC0D;
+    color: white;
+  }
+  
+  .btn-reset {
+    background-color: #f1f1f1;
+    color: #666;
+  }
+  
+  .btn-refresh:hover {
+    background-color: #B7950B;
+  }
+  
+  .btn-reset:hover {
+    background-color: #e5e5e5;
+  }
+  
+  /* Animation pour l'affichage des filtres */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Styles pour les états de chargement et erreurs */
+  .chart-loading, 
+  .chart-error, 
+  .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    text-align: center;
+    color: #666;
+    font-size: 1rem;
+  }
+  
+  .chart-error {
+    color: #dc3545;
+  }
+  
+  /* Statistiques détaillées */
+  .detailed-stats {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+  }
+  
+  .stats-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  .chart-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .summary-card {
+    flex: 1;
+    min-width: 200px;
+    background-color: #f8f8f8;
+    border-radius: 6px;
+    padding: 15px;
+    border-left: 3px solid #D4AC0D;
+    transition: all 0.3s ease;
+  }
+  
+  .summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .summary-card h4 {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  .summary-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  /* Réactivité pour les mobiles */
+  @media (max-width: 992px) {
+    .filters-form {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .filter-group {
+      width: 100%;
+    }
+    
+    .graph-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    
+    .chart-controls {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .chart-wrapper {
+      height: 350px;
+    }
+    
+    .summary-card {
+      min-width: 100%;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .chart-wrapper {
+      height: 300px;
+    }
+  }
+
+/* Styles pour le composant GlobalPerformanceGraph */
+
+.global-performance-graph {
+  background-color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+}
+
+.graph-header {
+  margin-bottom: 20px;
+}
+
+.graph-header h5 {
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+/* KPI Section Styles */
+.kpi-section {
+  margin-bottom: 30px;
+}
+
+.kpi-header {
+  margin-bottom: 15px;
+}
+
+.kpi-header h6 {
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.kpi-cards .row {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.kpi-cards .col-md-3 {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  height: 100%;
+  border-left: 4px solid transparent;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 18px;
+  margin-right: 15px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.kpi-content {
+  flex: 1;
+}
+
+.kpi-content h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+
+.kpi-content p {
+  font-size: 13px;
+  margin-bottom: 0;
+  color: #6c757d;
+}
+
+/* Individual KPI Card Styles */
+.kpi-card.participation {
+  background-color: #f8fdff;
+  border-left-color: #3498db;
+}
+
+.kpi-card.participation .kpi-icon {
+  color: #3498db;
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.kpi-card.participation h3 {
+  color: #3498db;
+}
+
+.kpi-card.approval {
+  background-color: #f9fff8;
+  border-left-color: #2ecc71;
+}
+
+.kpi-card.approval .kpi-icon {
+  color: #2ecc71;
+  background-color: rgba(46, 204, 113, 0.1);
+}
+
+.kpi-card.approval h3 {
+  color: #2ecc71;
+}
+
+.kpi-card.average {
+  background-color: #fffcf5;
+  border-left-color: #f39c12;
+}
+
+.kpi-card.average .kpi-icon {
+  color: #f39c12;
+  background-color: rgba(243, 156, 18, 0.1);
+}
+
+.kpi-card.average h3 {
+  color: #f39c12;
+}
+
+.kpi-card.total-evaluations {
+  background-color: #fcf5ff;
+  border-left-color: #9b59b6;
+}
+
+.kpi-card.total-evaluations .kpi-icon {
+  color: #9b59b6;
+  background-color: rgba(155, 89, 182, 0.1);
+}
+
+.kpi-card.total-evaluations h3 {
+  color: #9b59b6;
+}
+
+/* Chart Container Styles */
+.chart-container {
+  position: relative;
+  background: white;
+  border-radius: 4px;
+  padding: 15px 0;
+  margin-bottom: 20px;
+}
+
+/* Performance Stats Styles */
+.performance-stats {
+  margin-top: 30px;
+}
+
+.stats-header {
+  margin-bottom: 15px;
+}
+
+.stats-header h6 {
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.stats-cards .row {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.stats-cards .col-md-3 {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.stat-card {
+  padding: 15px;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  height: 100%;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.stat-value span {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.stat-card.average-score {
+  background-color: #f8fdff;
+  color: #3498db;
+}
+
+.stat-card.total-evals {
+  background-color: #fcf5ff;
+  color: #9b59b6;
+}
+
+.stat-card.best-year {
+  background-color: #f9fff8;
+  color: #2ecc71;
+}
+
+.stat-card.trend-up {
+  background-color: #f9fff8;
+  color: #2ecc71;
+}
+
+.stat-card.trend-down {
+  background-color: #fff5f5;
+  color: #e74c3c;
+}
+
+/* Loading and Error Styles */
+.text-center {
+  text-align: center;
+}
+
+.alert {
+  border-radius: 4px;
+  padding: 15px;
+}
+
+.alert-danger {
+  background-color: #fff5f5;
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+.alert-info {
+  background-color: #f8fdff;
+  color: #3498db;
+  border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+/* Tooltip Styles */
+.custom-tooltip {
+  background-color: #ffffff;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #eaeaea;
+}
+
+.tooltip-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 5px;
+  color: #555;
+}
+
+.tooltip-value {
+  margin: 5px 0;
+}
+
+.tooltip-score {
+  font-weight: 700;
+  font-size: 14px;
+  color: #f39c12;
+}
+
+.tooltip-count {
+  font-size: 12px;
+  margin-bottom: 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .kpi-card {
+    margin-bottom: 15px;
+  }
+  
+  .kpi-content h3 {
+    font-size: 18px;
+  }
+  
+  .stat-value {
+    font-size: 16px;
+  }
+}
