@@ -1,4 +1,5 @@
 ﻿using System;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class EmployeeSkillsController : ControllerBase
 	{
 		private readonly EmployeeSkillService _employeeSkillService;
@@ -48,13 +50,22 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> Create(EmployeeSkill employeeSkill)
 		{
 			await _employeeSkillService.Add(employeeSkill);
-			Skill skill = await _skillService.GetById(employeeSkill.SkillId);
+			VEmployeeSkill vEmployeeSkill = await _employeeSkillService.GetEmployeeSkillById(employeeSkill.EmployeeSkillId);
+			var userIdClaim = User.FindFirst("userId")?.Value;
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
+
 			var activityLog = new ActivityLog
 			{
-				UserId = 1,
+				UserId = user.Id,
 				Module = 1,
 				Action = "Création",
-				Description = "L'user 1 a crée une nouvelle compétence "+skill.Name+ " pour l'employé ID "+employeeSkill.EmployeeId,
+				Description = "L'user "+ user.Username +" a crée une nouvelle compétence "+vEmployeeSkill.SkillName+ " pour l'employé matricule "+vEmployeeSkill.RegistrationNumber,
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};
@@ -67,29 +78,35 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> Update(int id, EmployeeSkill employeeSkill)
 		{
 			if (id != employeeSkill.EmployeeSkillId) return BadRequest();
-			await _employeeSkillService.Update(employeeSkill);
-			Skill skill = await _skillService.GetById(employeeSkill.SkillId);
+			VEmployeeSkill vEmployeeSkill = await _employeeSkillService.GetEmployeeSkillById(id);
+			var userIdClaim = User.FindFirst("userId")?.Value;
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
+
 			var activityLog = new ActivityLog
 			{
-				UserId = 1,
+				UserId = user.Id,
 				Module = 1,
 				Action = "Modification",
-				Description = "L'user 1 a modifié la compétence " + skill.Name + " pour l'employé ID " + employeeSkill.EmployeeId,
+				Description = "L'user "+user.Username+" a modifié la compétence " + vEmployeeSkill.SkillName + " de l'employé matricule " + vEmployeeSkill.RegistrationNumber,
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};
-
+			await _employeeSkillService.Update(employeeSkill);
 			await _historyService.Add(activityLog);
 			return NoContent();
 		}
 
 		[HttpDelete("{id}")]
-		[Authorize]
 		public async Task<IActionResult> Delete(int id)
 		{
-			var employeeSkill = await _employeeSkillService.GetById(id);
-			Skill skill = await _skillService.GetById(employeeSkill.SkillId);
-			var userIdClaim = User.FindFirst("userId")?.Value; // Récupération de l'ID utilisateur depuis le token
+			VEmployeeSkill vEmployeeSkill = await _employeeSkillService.GetEmployeeSkillById(id);
+			var userIdClaim = User.FindFirst("userId")?.Value;
 			if (string.IsNullOrEmpty(userIdClaim))
 			{
 				return Unauthorized("Utilisateur non authentifié.");
@@ -103,7 +120,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 				UserId = user.Id,
 				Module = 1,
 				Action = "Suppression",
-				Description = "L'user "+user.Username+" a supprimé la compétence " + skill.Name + " pour l'employé ID " + employeeSkill.EmployeeId,
+				Description = "L'user "+user.Username+" a supprimé la compétence " + vEmployeeSkill.SkillName + " de l'employé matricule " + vEmployeeSkill.RegistrationNumber,
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};

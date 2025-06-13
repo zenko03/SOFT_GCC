@@ -9,6 +9,7 @@ import Loader from "../../helpers/Loader";
 import { useNavigate } from 'react-router-dom';
 import CancelButton from "../../helpers/CancelButton";
 import BreadcrumbPers from "../../helpers/BreadcrumbPers";
+import api from "../../helpers/api";
 
 // Fonction utilitaire pour créer le tableau `skillNecessary`
 const createSkillNecessary = (skillPosition, skillEmployee) => {
@@ -56,7 +57,7 @@ function DetailsWishEvolution() {
       // Récupérer les compétences nécessaires et les compétences de l'employé
       const [skillPositionResponse, employeeSkillResponse, suggestionResponse] = await Promise.all([
         axios.get(urlApi(`/WishEvolution/skillPosition/${descriptionData.wishPositionId}`)),
-        axios.get(urlApi(`/EmployeeSkills/employee/${descriptionData.employeeId}`)),
+        api.get(urlApi(`/EmployeeSkills/employee/${descriptionData.employeeId}`)),
         axios.get(urlApi(`/WishEvolution/suggestionPosition/${descriptionData.employeeId}`))
       ]);
 

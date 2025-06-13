@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using soft_carriere_competence.Application.Services.Evaluations;
 using soft_carriere_competence.Application.Services.history;
 using soft_carriere_competence.Application.Services.salary_skills;
 using soft_carriere_competence.Core.Entities.history;
@@ -9,15 +11,18 @@ namespace soft_carriere_competence.Controllers.salary_skills
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class EmployeeEducationController : ControllerBase
 	{
 		private readonly EmployeeEducationService _employeeEducationService;
 		private readonly HistoryService _historyService;
+		private readonly UserService _userService;
 
-		public EmployeeEducationController(EmployeeEducationService service, HistoryService historyService)
+		public EmployeeEducationController(EmployeeEducationService service, HistoryService historyService, UserService userService)
 		{
 			_employeeEducationService = service;
 			_historyService = historyService;
+			_userService = userService;
 		}
 
 		[HttpGet]
@@ -39,12 +44,24 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> Create(EmployeeEducation employeeEducation)
 		{
 			await _employeeEducationService.Add(employeeEducation);
+			VEmployeeEducation vEmployeeEducation = await _employeeEducationService.GetEmployeeEducationById(employeeEducation.EmployeeEducationId);
+
+			var userIdClaim = User.FindFirst("userId")?.Value;
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
 			var activityLog = new ActivityLog
 			{
-				UserId = 1,
+				UserId = user.Id,
 				Module = 1,
 				Action = "Création",
-				Description = "L'user 1 a crée une nouvelle éducation ID " + employeeEducation.EmployeeEducationId + " pour l'employé ID " + employeeEducation.EmployeeId,
+				Description = $"L'utilisateur {user.Username} a créé une nouvelle éducation ID {employeeEducation.EmployeeEducationId} " +
+						  $"({vEmployeeEducation.StudyPathName} - {vEmployeeEducation.DegreeName} - {vEmployeeEducation.SchoolName}) " +
+						  $"pour l'employé matricule {vEmployeeEducation.RegistrationNumber}",
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};
@@ -58,12 +75,23 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		{
 			if (id != employeeEducation.EmployeeEducationId) return BadRequest();
 			await _employeeEducationService.Update(employeeEducation);
+			VEmployeeEducation vEmployeeEducation = await _employeeEducationService.GetEmployeeEducationById(employeeEducation.EmployeeEducationId);
+			var userIdClaim = User.FindFirst("userId")?.Value;
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
 			var activityLog = new ActivityLog
 			{
-				UserId = 1,
+				UserId = user.Id,
 				Module = 1,
 				Action = "Modification",
-				Description = "L'user 1 a modifié l'éducation ID " + employeeEducation.EmployeeEducationId + " pour l'employé ID " + employeeEducation.EmployeeId,
+				Description = $"L'utilisateur {user.Username} a modifié une éducation existente ID {employeeEducation.EmployeeEducationId} " +
+						  $"({vEmployeeEducation.StudyPathName} - {vEmployeeEducation.DegreeName} - {vEmployeeEducation.SchoolName}) " +
+						  $"de l'employé matricule {vEmployeeEducation.RegistrationNumber}",
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};
@@ -75,14 +103,23 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
+			VEmployeeEducation vEmployeeEducation = await _employeeEducationService.GetEmployeeEducationById(id);
+			var userIdClaim = User.FindFirst("userId")?.Value;
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
 
-			var employeeEducation = await _employeeEducationService.GetById(id);
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
 			var activityLog = new ActivityLog
 			{
-				UserId = 1,
+				UserId = user.Id,
 				Module = 1,
 				Action = "Suppression",
-				Description = "L'user 1 a supprimé l'éducation ID " + employeeEducation.EmployeeEducationId + " pour l'employé ID " + employeeEducation.EmployeeId,
+				Description = $"L'utilisateur {user.Username} a supprimé une éducation existente ID {vEmployeeEducation.EmployeeEducationId} " +
+						  $"({vEmployeeEducation.StudyPathName} - {vEmployeeEducation.DegreeName} - {vEmployeeEducation.SchoolName}) " +
+						  $"de l'employé matricule {vEmployeeEducation.RegistrationNumber}",
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};

@@ -7,8 +7,11 @@ import Loader from '../../../helpers/Loader';
 import '../../../styles/pagination.css';
 import FormattedDate from '../../../helpers/FormattedDate';
 import useSWR from 'swr';
-import Fetcher from '../../../components/Fetcher';
+import Fetcher from '../../../components/fetcher';
 import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
+import { mdiEyeOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+
 
 // Fonction debounce pour éviter les appels excessifs
 const debounce = (func, delay) => {
@@ -280,6 +283,7 @@ const ListCareerPage = () => {
                     <th onClick={() => handleSort('careerPlan')} className="sortable-header">
                       Plan de carrière {sortColumn === 'careerPlan' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
                     </th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -296,6 +300,11 @@ const ListCareerPage = () => {
                           <FormattedDate date={career.assignmentDate} />
                         </td>
                         <td>{career.careerPlanNumber}</td>
+                        <td>
+                          <button className="btn-details text-primary" >
+                            <Icon path={mdiEyeOutline} size={1} /> Voir détails
+                          </button>
+                        </td>
                       </tr>
                     ))
                   ) : (

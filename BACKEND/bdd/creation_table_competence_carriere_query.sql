@@ -437,6 +437,18 @@ CREATE TABLE Certificate_history (
 	Updated_date DATETIME DEFAULT GETDATE()
 );
 
+-- Pour vérifier les attestations
+CREATE TABLE Work_certificates (
+	Work_certificate_id INT PRIMARY KEY IDENTITY(1,1),
+    Employee_name NVARCHAR(100),
+    Position NVARCHAR(100),
+    Start_date DATE,
+    End_date DATE,
+    Reference NVARCHAR(50),
+    Token NVARCHAR(200) UNIQUE NOT NULL,
+	Society NVARCHAR(50),
+    Created_at DATETIME DEFAULT GETDATE()
+);
 
 --insert into skill_position (Position_id, Skill_id, State, Creation_date, Updated_date) Values
 --(7, 45, 1, GETDATE(), GETDATE()),

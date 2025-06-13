@@ -39,7 +39,7 @@ function SettingSkillPage() {
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
                 <i className="mdi mdi-settings skill-icon"></i>
-                <p className="skill-title">PARAMETRE DES COMPÉTENCES</p>
+                <p className="skill-title">PARAMÈTRE DES COMPÉTENCES</p>
                 </div>
             </div>
             <BreadcrumbPers

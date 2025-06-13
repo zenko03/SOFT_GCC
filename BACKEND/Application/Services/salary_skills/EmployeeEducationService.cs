@@ -49,6 +49,15 @@ namespace soft_carriere_competence.Application.Services.salary_skills
 					 .FromSqlRaw("SELECT * FROM v_employee_education WHERE Employee_id = {0}", idEmployee)
 					 .ToListAsync();
 		}
-	}
+
+        // Recuperer un diplome et formation par son id
+        public async Task<VEmployeeEducation?> GetEmployeeEducationById(int idEmployeeEducation)
+        {
+            return await _context.VEmployeeEducation
+                .FromSqlRaw("SELECT * FROM v_employee_education WHERE Employee_education_id = {0}", idEmployeeEducation)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+        }
+    }
 
 }

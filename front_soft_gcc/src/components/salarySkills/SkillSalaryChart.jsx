@@ -5,6 +5,8 @@ import BarChart from '../../components/BarChart';
 import { urlApi } from '../../helpers/utils';
 import axios from "axios";
 import LoaderComponent from '../../helpers/LoaderComponent';
+import BarNivoChart from '../chart/BarNivoChart';
+import api from '../../helpers/api';
 
 function debounce(func, delay) {
   let timeout;
@@ -40,7 +42,7 @@ function SkillSalaryChart({ employeeId }) {
 
     try {
       const queryParams = new URLSearchParams(appliedFilter).toString();
-      const response = await axios.get(urlApi(`/EmployeeSkills/skillLevel?${queryParams}`));
+      const response = await api.get(`/EmployeeSkills/skillLevel?${queryParams}`);
       setDatasLevelSkills(response.data || []);
     } catch (err) {
       setDatasLevelSkills([]);
@@ -66,28 +68,6 @@ function SkillSalaryChart({ employeeId }) {
     color: item.state === 1 ? 'rgba(255, 99, 132, 0.7)' : item.state === 5 ? 'rgba(255, 206, 86, 0.7)' : 'rgba(75, 192, 192, 0.7)',
     borderColor: item.state === 1 ? 'rgba(255, 99, 132, 1)' : item.state === 5 ? 'rgba(255, 206, 86, 1)' : 'rgba(75, 192, 192, 1)'
   }));
-
-  const statusSkills = [
-    { label: 'Non validé', backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)' },
-    { label: 'Validé par évaluation', backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)'}
-  ];
-
-  const renderStatusSkills = () => (
-    statusSkills.map((status, index) => (
-      <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-        <div 
-          style={{
-            backgroundColor: status.backgroundColor,
-            border: `1px solid ${status.borderColor}`,
-            width: '20px',
-            height: '20px',
-            marginRight: '10px'
-          }}
-        />
-        <span>{status.label}</span>
-      </div>
-    ))
-  );
 
   return (
     <div className="row">
@@ -116,7 +96,7 @@ function SkillSalaryChart({ employeeId }) {
                 </select>
               </div>
             </div>
-            <BarChart datas={preparedDatas} states={renderStatusSkills()} labelLetter="Compétences" />
+            <BarNivoChart datas={preparedDatas} type={1} legendBottom='Compétences' legendLeft={'Nombre de compétences'} />
           </div>
         </div>
       </div>

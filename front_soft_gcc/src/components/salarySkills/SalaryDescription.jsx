@@ -35,6 +35,7 @@ function SalaryDescription({ dataEmployeeDescription }) {
                 <p><strong className="label-title-salary">Date naissance :</strong><span className="value-profil"><FormattedDate date={dataEmployeeDescription.birthday} /></span></p>
                 <p><strong className="label-title-salary">Date d'embauche :</strong><span className="value-profil"><FormattedDate date={dataEmployeeDescription.hiringDate} /></span></p>
                 <p><strong className="label-title-salary">Derniere mise a jour :</strong><span className="value-profil"><FormattedDate date={dataEmployeeDescription.updatedDate} /></span></p>
+                <p><strong className="label-title-salary">Departement :</strong><span className="value-profil">{dataEmployeeDescription.departmentName}</span></p>
               </div>
             </div>
           </div>

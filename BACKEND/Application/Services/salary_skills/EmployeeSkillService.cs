@@ -167,5 +167,14 @@ namespace soft_carriere_competence.Application.Services.salary_skills
 				return ex.Message; // Retourne le message d'erreur personnalisé pour l'interface utilisateur
 			}
 		}
-	}
+
+        // Recuperer une compétence d'un employé par son id
+        public async Task<VEmployeeSkill?> GetEmployeeSkillById(int id)
+        {
+            return await _context.VEmployeeSkill
+                .FromSqlRaw("SELECT * FROM v_employee_skill WHERE Employee_skill_id = {0}", id)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+        }
+    }
 }

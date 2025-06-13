@@ -70,6 +70,7 @@ import RolesManagement from '../pages/settings/UserManagement/RolesManagement';
 import PermissionsManagement from '../pages/settings/UserManagement/PermissionsManagement';
 import Unauthorized from '../pages/Authentification/Unauthorized';
 import EvaluationNotation from '../pages/Evaluations/Notations/EvaluationNotation';
+import VerifyAttestationPage from '../pages/certificateManagement/VerifyAttestationPage';
 
 function AppRouter() {
   return (
@@ -139,6 +140,7 @@ function AppRouter() {
 
       <Route path="/EvaluationLogin" element={<EvaluationLogin />} />
       <Route path="/employee-evaluation" element={<EvaluationPage />} />
+      <Route path="/verify/:Token" element={<VerifyAttestationPage />} />
 
 
       <Route element={<ProtectedRoute />}>

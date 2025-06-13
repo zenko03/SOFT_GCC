@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import Fetcher from '../Fetcher';
+import Fetcher from '../fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import '../../styles/modal.css';
+import api from '../../helpers/api';
     
 // Gerer la modification d'une education
 function ModalEditEducation({ showEditEducation, handleCloseEditEducation, selectedEducation, idEmployee, fetchData, error }) {
@@ -76,7 +77,7 @@ function ModalEditEducation({ showEditEducation, handleCloseEditEducation, selec
             };
 
             // Requête PUT pour mettre à jour les données
-            const response = await axios.put(urlApi(`/EmployeeEducation/${selectedEducation.employeeEducationId}`), dataToSend);
+            const response = await api.put(`/EmployeeEducation/${selectedEducation.employeeEducationId}`, dataToSend);
             handleCloseEditEducation();
             await fetchData();
         } catch (error) {

@@ -48,5 +48,14 @@ namespace soft_carriere_competence.Application.Services.salary_skills
 					 .FromSqlRaw("SELECT * FROM v_employee_other_formation WHERE Employee_id = {0}", idEmployee)
 					 .ToListAsync();
 		}
-	}
+
+        // Recuperer une autre formation par son id
+        public async Task<VEmployeeOtherSkill?> GetEmployeeOtherFormationById(int id)
+        {
+            return await _context.VEmployeeOtherSkill
+                .FromSqlRaw("SELECT * FROM v_employee_other_formation WHERE Employee_other_formation_id = {0}", id)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+        }
+    }
 }

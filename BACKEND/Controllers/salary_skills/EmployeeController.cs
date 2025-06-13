@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using soft_carriere_competence.Application.Services.retirement;
@@ -10,6 +11,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class EmployeeController : ControllerBase
 	{
 		private readonly EmployeeService _employeeService;
@@ -117,6 +119,7 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		}
 
 		[HttpGet("photo/{id}")]
+		[AllowAnonymous]
 		public async Task<IActionResult> GetPhoto(int id)
 		{
 			var employee = await _employeeService.GetById(id);

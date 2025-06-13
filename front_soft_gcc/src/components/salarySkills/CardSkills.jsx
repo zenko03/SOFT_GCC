@@ -87,10 +87,10 @@ function CardSkills({ dataEmployeeDescription, idEmployee }) {
     setIsLoading(true);
     try {
       const [skillsResponse, educationResponse, languageResponse, otherFormationResponse] = await Promise.all([
-        axios.get(urlApi(`/EmployeeSkills/employee/${idEmployee}`)),
-        axios.get(urlApi(`/EmployeeEducation/employee/${idEmployee}`)),
-        axios.get(urlApi(`/EmployeeLanguage/employee/${idEmployee}`)),
-        axios.get(urlApi(`/EmployeeOtherFormation/employee/${idEmployee}`))
+        api.get(`/EmployeeSkills/employee/${idEmployee}`),
+        api.get(`/EmployeeEducation/employee/${idEmployee}`),
+        api.get(`/EmployeeLanguage/employee/${idEmployee}`),
+        api.get(`/EmployeeOtherFormation/employee/${idEmployee}`)
       ]);
       setData({
         skills: skillsResponse.data || [],

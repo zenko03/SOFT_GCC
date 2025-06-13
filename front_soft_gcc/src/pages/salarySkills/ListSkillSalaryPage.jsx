@@ -10,6 +10,9 @@ import Loader from '../../helpers/Loader';
 import '../../styles/pagination.css';
 import DateDisplayWithTime from '../../helpers/DateDisplayWithTime';
 import BreadcrumbPers from '../../helpers/BreadcrumbPers';
+import api from '../../helpers/api';
+import { mdiEyeOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 
 // Fonction debounce pour éviter les appels excessifs
 function debounce(func, delay) {
@@ -73,7 +76,7 @@ function ListSkillSalaryPage() {
         ? { keyWord: searchTerm, pageNumber: currentPage, pageSize }
         : { pageNumber: currentPage, pageSize };
 
-      const response = await axios.get(urlApi(route), { params });
+      const response = await api.get(route, { params });
       setSkills(response.data.data);
       setTotalPages(response.data.totalPages);
       setPaginationResult({
@@ -223,6 +226,7 @@ function ListSkillSalaryPage() {
                         <th onClick={() => handleSort('otherFormationNumber')} className="sortable-header">
                           Autres {sortColumn === 'otherFormationNumber' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
                         </th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -245,6 +249,11 @@ function ListSkillSalaryPage() {
                             <td>{item.skillNumber}</td>
                             <td>{item.languageNumber}</td>
                             <td>{item.otherFormationNumber}</td>
+                            <td>
+                              <button className="btn-details text-primary" >
+                                <Icon path={mdiEyeOutline} size={1} /> Voir profil
+                              </button>
+                            </td>
                           </tr>
                         ))
                       ) : (

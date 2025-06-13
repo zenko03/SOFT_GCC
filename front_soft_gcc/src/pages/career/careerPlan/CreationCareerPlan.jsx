@@ -10,6 +10,7 @@ import Loader from '../../../helpers/Loader';
 import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 import CancelButton from '../../../helpers/CancelButton';
 import { useNavigate } from 'react-router-dom';
+import api from '../../../helpers/api';
 
 // Page de creation d'un plan de carriere
 function CreationCareerPlan({ onSearch }) {
@@ -31,7 +32,7 @@ function CreationCareerPlan({ onSearch }) {
         setIsLoading(true);
         try {
             const [employeeResponse, assignmentTypeResponse] = await Promise.all([
-                axios.get(urlApi(`/Employee`)),
+                api.get(urlApi(`/Employee`)),
                 axios.get(urlApi(`/AssignmentType`))
             ]);
             setDataEmployee(employeeResponse.data || []);

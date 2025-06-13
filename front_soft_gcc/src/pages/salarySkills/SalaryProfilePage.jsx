@@ -4,12 +4,13 @@ import { urlApi } from '../../helpers/utils';
 import PageHeader from '../../components/PageHeader';
 import SkillSalaryChart from '../../components/salarySkills/SkillSalaryChart';
 import SalaryDescription from '../../components/salarySkills/salaryDescription';
-import CardSkills from '../../components/salarySkills/cardSkills';
+import CardSkills from '../../components/salarySkills/CardSkills';
 import Loader from '../../helpers/Loader';
 import Template from '../Template';
 import '../../styles/skillsStyle.css';
 import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 import CancelButton from '../../helpers/CancelButton';
+import api from '../../helpers/api';
 
 // Gestion d'affichage du page salaryProfile (profile des competences salaries)
 function SalaryProfilePage({ task }) {
@@ -29,8 +30,8 @@ function SalaryProfilePage({ task }) {
     const fetchData = async () => {
       setLoading(true); 
       try {
-        const response = await fetch(urlApi(`/EmployeeSkills/description/${idEmployee}`));
-        const data = await response.json();
+        const response = await api.get(`/EmployeeSkills/description/${idEmployee}`);
+        const data = await response.data;
         setEmployeeDescription(data);
       } catch (error) {
         setError(`Erreur lors de la récupération des données de description des employés : ${error.message}`);

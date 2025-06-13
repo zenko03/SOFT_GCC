@@ -134,6 +134,9 @@ builder.Services.AddScoped<DashboardService>();
 
 builder.Services.AddScoped<OrgService>();
 
+builder.Services.AddScoped<WorkCertificatesService>();
+builder.Services.AddScoped<ICrudRepository<WorkCertificates>, CrudRepository<WorkCertificates>>();
+
 // EVALUATIONS
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 builder.Services.AddScoped<EvaluationService>();

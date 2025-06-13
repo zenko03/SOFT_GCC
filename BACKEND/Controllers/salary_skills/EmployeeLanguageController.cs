@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using soft_carriere_competence.Application.Services.Evaluations;
 using soft_carriere_competence.Application.Services.history;
 using soft_carriere_competence.Application.Services.salary_skills;
 using soft_carriere_competence.Core.Entities.history;
@@ -9,15 +11,18 @@ namespace soft_carriere_competence.Controllers.salary_skills
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class EmployeeLanguageController : ControllerBase
 	{
 		private readonly EmployeeLanguageService _employeeLanguageService;
 		private readonly HistoryService _historyService;
+		private readonly UserService _userService;
 
-		public EmployeeLanguageController(EmployeeLanguageService service, HistoryService historyService)
+		public EmployeeLanguageController(EmployeeLanguageService service, HistoryService historyService, UserService userService)
 		{
 			_employeeLanguageService = service;
 			_historyService = historyService;
+			_userService = userService;
 		}
 
 		[HttpGet]
@@ -39,12 +44,26 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		public async Task<IActionResult> Create(EmployeeLanguage employeeLanguage)
 		{
 			await _employeeLanguageService.Add(employeeLanguage);
+
+			VEmployeeLanguage vEmployeeLanguage = await _employeeLanguageService.GetEmployeeLanguageById(employeeLanguage.EmployeeLanguageId);
+
+			var userIdClaim = User.FindFirst("userId")?.Value;
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
+
 			var activityLog = new ActivityLog
 			{
-				UserId = 1,
+				UserId = user.Id,
 				Module = 1,
 				Action = "Création",
-				Description = "L'user 1 a crée une nouvelle language ID " + employeeLanguage.EmployeeLanguageId + " pour l'employé ID " + employeeLanguage.EmployeeId,
+				Description = $"L'utilisateur {user.Username} a créé une nouvelle language ID {vEmployeeLanguage.EmployeeLanguageId} " +
+						  $"({vEmployeeLanguage.LanguageName}) " +
+						  $"pour l'employé matricule {vEmployeeLanguage.RegistrationNumber}",
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};
@@ -56,20 +75,31 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Update(int id, EmployeeLanguage employeeLanguage)
 		{
-			Console.WriteLine("Tsia");
 			if (id != employeeLanguage.EmployeeLanguageId) return BadRequest();
-			Console.WriteLine("Tonga");
-			await _employeeLanguageService.Update(employeeLanguage);
+			VEmployeeLanguage vEmployeeLanguage = await _employeeLanguageService.GetEmployeeLanguageById(employeeLanguage.EmployeeLanguageId);
+
+			var userIdClaim = User.FindFirst("userId")?.Value;
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
+
 			var activityLog = new ActivityLog
 			{
-				UserId = 1,
+				UserId = user.Id,
 				Module = 1,
 				Action = "Modification",
-				Description = "L'user 1 a modifié la language ID " + employeeLanguage.EmployeeLanguageId + " pour l'employé ID " + employeeLanguage.EmployeeId,
+				Description = $"L'utilisateur {user.Username} a modifié une language existante ID {vEmployeeLanguage.EmployeeLanguageId} " +
+						  $"({vEmployeeLanguage.LanguageName}) " +
+						  $"de l'employé matricule {vEmployeeLanguage.RegistrationNumber}",
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};
 
+			await _employeeLanguageService.Update(employeeLanguage);
 			await _historyService.Add(activityLog);
 			return NoContent();
 		}
@@ -77,18 +107,31 @@ namespace soft_carriere_competence.Controllers.salary_skills
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
-			await _employeeLanguageService.Delete(id);
 			var employeeLanguage = await _employeeLanguageService.GetById(id);
+
+			VEmployeeLanguage vEmployeeLanguage = await _employeeLanguageService.GetEmployeeLanguageById(employeeLanguage.EmployeeLanguageId);
+
+			var userIdClaim = User.FindFirst("userId")?.Value;
+			if (string.IsNullOrEmpty(userIdClaim))
+			{
+				return Unauthorized("Utilisateur non authentifié.");
+			}
+
+			var user = await _userService.GetUserByIdAsync(int.Parse(userIdClaim));
+			if (user == null) return NotFound("Utilisateur introuvable.");
+
 			var activityLog = new ActivityLog
 			{
-				UserId = 1,
+				UserId = user.Id,
 				Module = 1,
 				Action = "Suppression",
-				Description = "L'user 1 a supprimé la language ID " + employeeLanguage.EmployeeLanguageId + " pour l'employé ID " + employeeLanguage.EmployeeId,
+				Description = $"L'utilisateur {user.Username} a supprimé une language existante ID {vEmployeeLanguage.EmployeeLanguageId} " +
+						  $"({vEmployeeLanguage.LanguageName}) " +
+						  $"de l'employé matricule {vEmployeeLanguage.RegistrationNumber}",
 				Timestamp = DateTime.UtcNow,
 				Metadata = HttpContext.Connection.RemoteIpAddress.ToString()
 			};
-
+			await _employeeLanguageService.Delete(id);
 			await _historyService.Add(activityLog);
 			return NoContent();
 		}
