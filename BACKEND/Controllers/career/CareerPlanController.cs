@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.InkML;
+﻿using System.Runtime.ConstrainedExecution;
+using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,13 +26,15 @@ namespace soft_carriere_competence.Controllers.career
 		private readonly HistoryService _historyService;
 		private readonly AssignmentTypeService _assignmentTypeService;
 		private readonly CertificateHistoryService _certificateHistoryService;
+		private readonly WorkCertificatesService _workCertificatesService;
 
-		public CareerPlanController(CareerPlanService service, HistoryService historyService, AssignmentTypeService assignmentTypeService, CertificateHistoryService certificateHistoryService)
+		public CareerPlanController(CareerPlanService service, HistoryService historyService, AssignmentTypeService assignmentTypeService, CertificateHistoryService certificateHistoryService, WorkCertificatesService workCertificatesService)
 		{
 			_careerPlanService = service;
 			_historyService = historyService;
 			_assignmentTypeService = assignmentTypeService;
 			_certificateHistoryService = certificateHistoryService;
+			_workCertificatesService = workCertificatesService;
 		}
 
 		/// Recupérer un plan de carrière par son çid
@@ -364,7 +368,8 @@ namespace soft_carriere_competence.Controllers.career
 		[FromForm] string registrationNumber,
 		[FromForm] int certificateTypeId,
 		[FromForm] string reference,
-		[FromForm] int state)
+		[FromForm] int state,
+		[FromForm] string token)
 		{
 			if (file == null || file.Length == 0 || !file.ContentType.Contains("pdf"))
 				return BadRequest("Fichier invalide.");
@@ -377,6 +382,19 @@ namespace soft_carriere_competence.Controllers.career
 				{
 					return Conflict("Une attestation avec cette référence existe déjà.");
 				}
+
+				if (string.IsNullOrWhiteSpace(token))
+					return BadRequest("Le token est requis.");
+
+				// Vérifie que le token est bien une chaîne hexadécimale ou UUID sans tirets
+				var tokenRegex = new Regex("^[a-fA-F0-9]{32}$");
+				if (!tokenRegex.IsMatch(token))
+					return BadRequest("Le format du token est invalide.");
+
+				// Vérifie l’unicité
+				var exists = await _workCertificatesService.IsExist(token);
+				if (exists)
+					return Conflict("Ce token est déjà utilisé.");
 
 				using var ms = new MemoryStream();
 				await file.CopyToAsync(ms);
@@ -395,7 +413,22 @@ namespace soft_carriere_competence.Controllers.career
 					UpdatedDate = DateTime.UtcNow
 				};
 
+				var employeeCareer = await _careerPlanService.GetCareerByEmployee(registrationNumber);
+				if (employeeCareer == null) return NotFound();
+				var workCertificates = new WorkCertificates
+				{
+					EmployeeName = $"{employeeCareer.FirstName} {employeeCareer.Name}",
+					Position = employeeCareer.PositionName,
+					StartDate = employeeCareer.HiringDate,
+					EndDate = employeeCareer.EndingContract,
+					Reference = reference,
+					Token = token,
+					Society = "Softwell",
+					CreatedAt = DateTime.UtcNow
+				};
+
 				await _certificateHistoryService.Add(certificateHistory);
+				await _workCertificatesService.Add(workCertificates);
 
 				return Ok("Fichier pdf enregistré avec succès.");
 			}
@@ -460,6 +493,31 @@ namespace soft_carriere_competence.Controllers.career
 				certificate.ContentType ?? "application/pdf",
 				certificate.FileName ?? "attestation.pdf"
 			);
+		}
+
+		[HttpGet]
+		[Route("verify/{token}")]
+		public async Task<IActionResult> VerifyCertificate(string token)
+		{
+			var cert = await _workCertificatesService.GetValidCertificateByToken(token);
+
+			if (cert == null)
+				return NotFound(new { valid = false, message = "Attestation invalide." });
+
+			return Ok(new
+			{
+				valid = true,
+				employee = new
+				{
+					fullName = cert.EmployeeName,
+					position = cert.Position,
+					startDate = cert.StartDate,
+					endDate = cert.EndDate
+				},
+				reference = cert.Reference,
+				society = cert.Society,
+				createdAt = cert.CreatedAt
+			});
 		}
 	}
 }

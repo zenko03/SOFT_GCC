@@ -7,9 +7,12 @@ import ChartLine from '../../components/ChartLine';
 import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../../helpers/Loader';
 import '../../styles/pagination.css';
-import Fetcher from '../../components/Fetcher';
+import Fetcher from '../../components/fetcher';
 import useSWR from 'swr';
 import BreadcrumbPers from '../../helpers/BreadcrumbPers';
+import { mdiEyeOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+
  
 // Fonction debounce pour éviter les appels excessifs
 function debounce(func, delay) {
@@ -338,6 +341,7 @@ function FollowedWishEvolution() {
                         <th>Priorite</th>
                         <th>Date de demande</th>
                         <th>Statut</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -359,6 +363,11 @@ function FollowedWishEvolution() {
                             ) : (
                               <td><label className="badge badge-danger">{item.stateLetter}</label ></td>
                             )}
+                            <td>
+                              <button className="btn-details text-primary" >
+                                <Icon path={mdiEyeOutline} size={1} /> Voir détails
+                              </button>
+                            </td>
                           </tr>
                         ))
                       ) : (

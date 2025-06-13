@@ -7,3 +7,13 @@ competences
 15h30 : Creation d'affichage pour voir les historiques sur les competences
 16h30: Integration des historiques sur les competences
 17h30 : Test et correction des bugs sur les historiques des competences.
+
+pour installer nivo
+
+npm install @nivo/pie @nivo/core
+
+npm install @nivo/bar @mui/material @emotion/react @emotion/styled
+
+npm install @nivo/bar @mui/material @emotion/react @emotion/styled
+
+compétence 

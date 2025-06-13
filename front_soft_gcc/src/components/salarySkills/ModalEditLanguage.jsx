@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import '../../styles/modal.css';
+import api from '../../helpers/api';
     
 // Gerer la modification d'une langue
 function ModalEditLanguage ({ showEditLanguage, handleCloseEditLanguage, selectedLanguage, idEmployee, fetchData, error }) {
@@ -85,7 +86,7 @@ function ModalEditLanguage ({ showEditLanguage, handleCloseEditLanguage, selecte
                 updateDate: new Date().toISOString(),
             };
             // Requête PUT pour mettre à jour les données
-            const response = await axios.put(urlApi(`/EmployeeLanguage/${selectedLanguage.employeeLanguageId}`), dataToSend);
+            const response = await api.put(`/EmployeeLanguage/${selectedLanguage.employeeLanguageId}`, dataToSend);
             handleCloseEditLanguage();
             await fetchData();
             setFormData({

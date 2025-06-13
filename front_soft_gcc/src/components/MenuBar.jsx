@@ -9,7 +9,7 @@ function MenuBar({ task }) {
         <li className="nav-item">
           <Link className="nav-link" to="/softGcc/tableauBord">
             <span className="icon-bg"><i className="mdi mdi-view-grid menu-icon"></i></span>
-            <span className="menu-title">Tableau de bord</span>
+            <span className="menu-title">Analyse statistiques</span>
           </Link>
         </li>
         <li className="nav-item">

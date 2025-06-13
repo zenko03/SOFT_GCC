@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import '../../styles/modal.css';
+import api from '../../helpers/api';
     
 // Gerer la modification d'autre formation
 function ModalEditOtherSkill ({ showEditOtherSkill, handleCloseEditOtherSkill, selectedOtherSkill, idEmployee, fetchData, error }) {
@@ -77,7 +78,7 @@ function ModalEditOtherSkill ({ showEditOtherSkill, handleCloseEditOtherSkill, s
             };
 
             // Requête PUT pour mettre à jour les données
-            const response = await axios.put(urlApi(`/EmployeeOtherFormation/${selectedOtherSkill.employeeOtherFormationId}`), dataToSend);
+            const response = await api.put(`/EmployeeOtherFormation/${selectedOtherSkill.employeeOtherFormationId}`, dataToSend);
             handleCloseEditOtherSkill();
             await fetchData();
         } catch (error) {

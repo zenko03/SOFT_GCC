@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import Fetcher from '../Fetcher';
+import Fetcher from '../fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import '../../styles/modal.css';
+import api from '../../helpers/api';
 
 Modal.setAppElement('#root');
 
@@ -56,7 +57,7 @@ function ModalAddEducation({ showEducation, handleCloseEducation, idEmployee, fe
         };
 
         try {
-            const response = await axios.post(urlApi('/EmployeeEducation'), dataToSend);
+            const response = await api.post('/EmployeeEducation', dataToSend);
             handleCloseEducation();
             await fetchData();
             dataEmployeeDescription.educationNumber++;

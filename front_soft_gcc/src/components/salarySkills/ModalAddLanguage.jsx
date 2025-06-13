@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import Fetcher from '../Fetcher';
+import Fetcher from '../fetcher';
 import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import '../../styles/modal.css';
+import api from '../../helpers/api';
     
 // Gerer l'inertion d'une langue
 function ModalAddLanguage ({ showLanguage, handleCloseLanguage, idEmployee, fetchData, error, dataEmployeeDescription }) {
@@ -58,7 +59,7 @@ function ModalAddLanguage ({ showLanguage, handleCloseLanguage, idEmployee, fetc
               updateDate: new Date().toISOString(),
           };
 
-          const response = await axios.post(urlApi('/EmployeeLanguage'), dataToSend);
+          const response = await api.post('/EmployeeLanguage', dataToSend);
           handleCloseLanguage(); 
           await fetchData();
           dataEmployeeDescription.languageNumber++;

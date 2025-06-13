@@ -46,6 +46,8 @@ CREATE TABLE Employee (
 	Email NVARCHAR(255) NULL
 );
 
+
+
 -- Insérer des employés avec des données de test
 -- Pour cet exemple, nous allons supposer que l'Employee_id 1 est un manager
 --INSERT INTO Employee (Registration_number, Name, FirstName, Birthday, Hiring_date, Department_id, 
@@ -404,6 +406,7 @@ CREATE TABLE Skill_position (
 	Skill_position_id INT PRIMARY KEY IDENTITY(1,1),
 	Position_id INT NOT NULL REFERENCES Position(Position_id),
 	Skill_id INT NOT NULL REFERENCES Skill(Skill_id),
+	Required_level DOUBLE PRECISION NULL,
 	State INT,
 	Creation_date DATETIME,
 	Updated_date DATETIME
@@ -434,6 +437,18 @@ CREATE TABLE Certificate_history (
 	Updated_date DATETIME DEFAULT GETDATE()
 );
 
+-- Pour vérifier les attestations
+CREATE TABLE Work_certificates (
+	Work_certificate_id INT PRIMARY KEY IDENTITY(1,1),
+    Employee_name NVARCHAR(100),
+    Position NVARCHAR(100),
+    Start_date DATE,
+    End_date DATE,
+    Reference NVARCHAR(50),
+    Token NVARCHAR(200) UNIQUE NOT NULL,
+	Society NVARCHAR(50),
+    Created_at DATETIME DEFAULT GETDATE()
+);
 
 --insert into skill_position (Position_id, Skill_id, State, Creation_date, Updated_date) Values
 --(7, 45, 1, GETDATE(), GETDATE()),

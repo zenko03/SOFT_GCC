@@ -10,6 +10,11 @@ import BarChart from '../../components/BarChart';
 import { urlApi } from '../../helpers/utils';
 import axios from "axios";
 import BreadcrumbPers from '../../helpers/BreadcrumbPers';
+import MyPieChart from '../../components/chart/MyPieChart';
+import HorizontalBarChart from '../../components/chart/HorizontalBarChart';
+import SummaryCards from '../../components/chart/SummaryCards';
+import BarNivoChart from '../../components/chart/BarNivoChart';
+import api from '../../helpers/api';
 
 // Fonction debounce pour éviter les appels excessifs
 function debounce(func, delay) {
@@ -20,26 +25,46 @@ function debounce(func, delay) {
     };
   }
 
+// Transformer le format du datas
+function transformDataDistribution(datas, helper) {
+    let transformedData = [];
+    if(helper === 1) {
+        transformedData = datas.map(({ ageDistribution, employeesNumber }) => ({
+            id: ageDistribution,
+            label: ageDistribution,
+            value: employeesNumber,
+            details: 'employés'
+        }));   
+    } else {
+        transformedData = datas.map(({ experienceRange, employeeCount }) => ({
+            ageGroup: experienceRange,
+            count: employeeCount,
+            details: 'employés'
+        }));   
+    }
+
+    return transformedData;
+}
+
 // Page de suivi des souhaits d'évolution
 function DashboardPage() {
-    const module = 'Statistiques';
-    const action = 'Analyse';
-    const url = '/Statistiques';
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null); 
-    const [employeeTotal, setEmployeeTotal] = useState(null); 
-    const [wishEvolutionTotal, setWishEvolutionTotal] = useState(null); 
     const [departments, setDepartments] = useState([]); 
     const [skills, setSkills] = useState([]); 
     const [careers, setCareers] = useState([]); 
     const [datasSkills, setDatasSkills] = useState([]);
     const [datasCareer, setDatasCareer] = useState([]);
+    const [dashboard, setDashboard] = useState([]);
+    const [employeesAgeDistribution, setEmployeesAgeDistribution] = useState([]);
+    const [employeesExperienceDistribution, setEmployeesExperienceDistribution] = useState([]);
+    const [displaySkillsType, setDisplaySkillsType] = useState('1'); 
+    const [displayCareersType, setDisplayCareersType] = useState('1'); 
 
     // États pour les filtres
     const [filterSkills, setFilterSkills] = useState({
-        departmentId: 2,
-        state: 10
+        departmentId: 1,
+        state: 1
     });
 
     const [filterCareers, setFilterCareers] = useState({
@@ -58,6 +83,15 @@ function DashboardPage() {
         setFilterCareers((prevFilters) => ({ ...prevFilters, [name]: value }));
     };
 
+    // Type d'affichage
+    const handleDisplaySkillsType = (e) => {
+        setDisplaySkillsType(e.target.value);
+    };
+
+    const handleDisplayCareersType = (e) => {
+        setDisplayCareersType(e.target.value);
+    };
+
     // Fetch des données avec filtres
     const fetchFilteredData = useCallback(
         async (appliedFilterSkills, appliedFilterCareers) => {
@@ -74,8 +108,8 @@ function DashboardPage() {
             }).toString();
             
             const [skillsResponse, careersResponse] = await Promise.all([
-                axios.get(urlApi(`/Dashboard/employeeSkillByDepartment?${queryParamSkills}`)),
-                axios.get(urlApi(`/Dashboard/employeeCareerByDepartment?${queryParamCareers}`))
+                api.get(`/Dashboard/employeeSkillByDepartment?${queryParamSkills}`),
+                api.get(`/Dashboard/employeeCareerByDepartment?${queryParamCareers}`)
             ]);
 
             setSkills(skillsResponse.data || []);
@@ -97,15 +131,19 @@ function DashboardPage() {
     const fetchData = useCallback(async () => {
         setLoading(true);
         try {
-            const [rapportResponse, departmentListResponse] = await Promise.all([
-                axios.get(urlApi('/Dashboard/employeeNumberTotal')),
-                axios.get(urlApi('/Department'))
+            const [rapportResponse, departmentListResponse, employeeDistributionAgeResponse, employeeDistributionExperienceResponse] = await Promise.all([
+                api.get('/Dashboard'),
+                api.get('/Department'),
+                api.get('/Dashboard/employeeAgeDistribution'),
+                api.get('/Dashboard/employeeExperienceDistribution')
             ]);
 
-            setEmployeeTotal(rapportResponse.data.employeeTotal || 0);
-            setWishEvolutionTotal(rapportResponse.data.wishEvolutionTotal || 0);
+            setDashboard(rapportResponse.data);
             setDepartments(departmentListResponse.data || []);
+            setEmployeesAgeDistribution(transformDataDistribution(employeeDistributionAgeResponse.data, 1));
+            setEmployeesExperienceDistribution(transformDataDistribution(employeeDistributionExperienceResponse.data, 2));
         } catch (error) {
+            console.log(error);
             setError(`Erreur lors de la récupération des données : ${error.message}`);
         } finally {
             setLoading(false);
@@ -144,31 +182,7 @@ function DashboardPage() {
             borderColor: 'rgba(75, 192, 192, 1)'
         })));
     }, [skills, careers]);
-    
 
-    const renderStatus = (statuses) => {
-        return statuses.map((status, index) => (
-            <li key={index}>
-                <div className='help-graph'>
-                    <div className='color-graph' style={{ backgroundColor: status.backgroundColor, border: `1px solid ${status.borderColor}` }}></div>
-                    <div className='descri-graph'>{status.label}</div>
-                </div>
-            </li>
-        ));
-    };
-
-    const statusCareer = [];
-
-    const statusSkills = [
-        { label: 'Non validé', backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)' },
-        { label: 'Validé par évaluation', backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)' },
-    ];
-
-    /*const statusCareer = [
-        { label: 'En attente', backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgba(255, 99, 132, 1)' },
-        { label: 'En cours', backgroundColor: 'rgba(255, 206, 86, 0.2)', borderColor: 'rgba(255, 206, 86, 1)' },
-        { label: 'Terminé', backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgba(75, 192, 192, 1)' }
-    ];*/
 
     return (
         <Template>
@@ -188,34 +202,32 @@ function DashboardPage() {
                 <p className="skill-title">Taleau de bord</p>
                 </div>
             </div>
+            <SummaryCards dashboard={dashboard} />
 
             <div className="row">
-                <div className="col-lg-3 col-md-6">
-                    <div className="card stats-card">
-                        <div className="card-body text-center">
-                            <i className="mdi mdi-account-group stats-icon"></i>
-                            <h5 className="card-title">
-                                <span className="stats-number">{employeeTotal}</span>
-                                <br />
-                                Employés
-                            </h5>
+                <div className="col-lg-6 grid-margin stretch-card">
+                    <div className="card">
+                        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                            <i className="mdi mdi-chart-pie me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                            <h3 className="mb-0" style={{color: '#B8860B'}}> Nombre d'employés par tranche d'ages </h3>
+                        </div>
+                        <div className="card-body">
+                            <MyPieChart datas={employeesAgeDistribution} />
                         </div>
                     </div>
                 </div>
-
-                <div className="col-lg-3 col-md-6">
-                    <div className="card stats-card">
-                        <div className="card-body text-center">
-                            <i className="mdi mdi-trending-up stats-icon"></i>
-                            <h5 className="card-title">
-                                <span className="stats-number">{wishEvolutionTotal}</span>
-                                <br />
-                                Souhaits d'évolution
-                            </h5>
+                <div className="col-lg-6 grid-margin stretch-card">
+                    <div className="card">
+                        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                            <i className="mdi mdi-chart-bar me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                            <h3 className="mb-0" style={{color: '#B8860B'}}> Nombre d'employés par année d'experience </h3>
+                        </div>
+                        <div className="card-body">
+                            <HorizontalBarChart datas={employeesExperienceDistribution} />
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>  
 
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
@@ -235,12 +247,24 @@ function DashboardPage() {
                             <div className="form-group row">
                                 <div className="col-sm-3">
                                     <select
+                                        name="displaySkillsType"
+                                        className="form-control"
+                                        value={displaySkillsType}
+                                        onChange={handleDisplaySkillsType}
+                                    >
+                                        <option value="">Sélectionner le type d'affichage</option>
+                                        <option value="1">Graphique en barre</option>
+                                        <option value="2">Liste</option>                               
+                                    </select>
+                                </div>
+                                <div className="col-sm-3">
+                                    <select
                                         name="departmentId"
                                         className="form-control"
                                         value={filterSkills.departmentId}
                                         onChange={handleFilterSkillsChange}
                                     >
-                                        <option selected value="">Sélectionner un département</option>
+                                        <option value="">Sélectionner un département</option>
                                         {departments?.map((item) => (
                                             <option key={item.departmentId} value={item.departmentId}>
                                                 {item.name}
@@ -265,54 +289,55 @@ function DashboardPage() {
                     </div>
                 </div>
             </div>  
-
-            <div className="row">
-                <div className="col-lg-12 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
-                            <i className="mdi mdi-chart-bar me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
-                            <h3 className="mb-0" style={{color: '#B8860B'}}> Sous-forme de Graphique en barre </h3>
-                        </div>
-                        <div className="card-body">
-                            <p className="card-description text-left">Nombre des employés par compétences dans un département</p>
-                            <BarChart datas = {datasSkills} states = {renderStatus(statusSkills)} labelLetter = {'Compétences'} />
-                        </div>
-                    </div>
-                </div>
-            </div>  
-
-            <div className="row">
-                <div className="col-lg-12 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
-                            <i className="mdi mdi-ormat-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
-                            <h3 className="mb-0" style={{color: '#B8860B'}}> Sous-forme de liste </h3>
-                        </div>
-                        <div className="card-body">
-                            <table className="table table-competences">
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Departement</th>
-                                    <th>Compétence</th>
-                                    <th>Employé</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    {skills?.map((item) => (
-                                        <tr>
-                                            <td>{item.skillId}</td>
-                                            <td>{item.departmentName}</td>
-                                            <td>{item.skillName}</td>
-                                            <td>{item.nEmployee}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+            { displaySkillsType === '1' ? (
+                <div className="row">
+                    <div className="col-lg-12 grid-margin stretch-card">
+                        <div className="card">
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-chart-bar me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}> Sous-forme de Graphique en barre </h3>
+                            </div>
+                            <div className="card-body">
+                                <p className="card-description text-left">Nombre des employés par compétences dans un département</p>
+                                <BarNivoChart datas={datasSkills} type={1} legendBottom='Compétences' legendLeft={'Nombre d\'employés'} />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>  
+                </div>  
+            ) : (
+                <div className="row">
+                    <div className="col-lg-12 grid-margin stretch-card">
+                        <div className="card">
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-ormat-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}> Sous-forme de liste </h3>
+                            </div>
+                            <div className="card-body">
+                                <table className="table table-competences">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Departement</th>
+                                        <th>Compétence</th>
+                                        <th>Employé</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {skills?.map((item) => (
+                                            <tr key={item.skillId}>
+                                                <td>{item.skillId}</td>
+                                                <td>{item.departmentName}</td>
+                                                <td>{item.skillName}</td>
+                                                <td>{item.nEmployee}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+            )}            
 
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
@@ -330,6 +355,18 @@ function DashboardPage() {
                         </div>
                         <div className="card-body">
                             <div className="form-group row">
+                                <div className="col-sm-3">
+                                    <select
+                                        name="displaySkillsType"
+                                        className="form-control"
+                                        value={displayCareersType}
+                                        onChange={handleDisplayCareersType}
+                                    >
+                                        <option value="">Sélectionner le type d'affichage</option>
+                                        <option value="1">Graphique en barre</option>
+                                        <option value="2">Liste</option>                               
+                                    </select>
+                                </div>
                                 <div className="col-sm-3">
                                     <select
                                         name="departmentId"
@@ -351,54 +388,56 @@ function DashboardPage() {
                 </div>
             </div>       
 
-            <div className="row">
-                <div className="col-lg-12 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
-                            <i className="mdi mdi-chart-bar me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
-                            <h3 className="mb-0" style={{color: '#B8860B'}}> Sous-forme de Graphique en barre </h3>
-                        </div>
-                        <div className="card-body">
-                            <p className="card-description text-left">Rapport nombre total des employés dans des postes de carrières par département</p>
-                            
-                            <BarChart datas = {datasCareer} states = {renderStatus(statusCareer)} labelLetter={'Poste de carrière'} />
+            { displayCareersType === '1' ? (
+                <div className="row">
+                    <div className="col-lg-12 grid-margin stretch-card">
+                        <div className="card">
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-chart-bar me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}> Sous-forme de Graphique en barre </h3>
+                            </div>
+                            <div className="card-body">
+                                <p className="card-description text-left">Rapport nombre total des employés dans des postes de carrières par département</p>
+                                <BarNivoChart datas = {datasCareer} type={2} legendBottom='Carrières' legendLeft={'Nombre d\'employés'} />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>      
+                </div>   
+            ) : (
+                <div className="row">
+                    <div className="col-lg-12 grid-margin stretch-card">
+                        <div className="card">
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-ormat-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}> Sous-forme de liste </h3>
+                            </div>
+                            <div className="card-body">
+                                <table className="table table-competences">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Departement</th>
+                                        <th>Poste</th>
+                                        <th>Employé</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {careers?.map((item) => (
+                                            <tr>
+                                                <td>{item.positionId}</td>
+                                                <td>{item.departmentName}</td>
+                                                <td>{item.positionName}</td>
+                                                <td>{item.nEmployee}</td>
+                                            </tr> 
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>      
+            )}
 
-            <div className="row">
-                <div className="col-lg-12 grid-margin stretch-card">
-                    <div className="card">
-                        <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
-                            <i className="mdi mdi-ormat-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
-                            <h3 className="mb-0" style={{color: '#B8860B'}}> Sous-forme de liste </h3>
-                        </div>
-                        <div className="card-body">
-                            <table className="table table-competences">
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Departement</th>
-                                    <th>Poste</th>
-                                    <th>Employé</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    {careers?.map((item) => (
-                                        <tr>
-                                            <td>{item.positionId}</td>
-                                            <td>{item.departmentName}</td>
-                                            <td>{item.positionName}</td>
-                                            <td>{item.nEmployee}</td>
-                                        </tr> 
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>      
         </Template>
       );
 }
