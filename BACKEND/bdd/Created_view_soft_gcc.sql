@@ -401,6 +401,7 @@ WITH Ranked_posts AS (
         Base_salary,
         Net_salary,
 		Establishment_id,
+		Ending_contract,
         ROW_NUMBER() OVER (
             PARTITION BY Registration_number 
             ORDER BY Assignment_date DESC
@@ -420,7 +421,8 @@ SELECT
     p.Position_name,
     rp.Base_salary,
     rp.Net_salary,
-	rp.Establishment_id
+	rp.Establishment_id,
+	rp.Ending_contract
 FROM Ranked_posts rp
 LEFT JOIN Department d 
 ON d.Department_id = rp.Department_id
@@ -450,7 +452,8 @@ SELECT
     ep.Base_salary,
     ep.Net_salary,
 	cpen.career_plan_number,
-	ep.Establishment_id
+	ep.Establishment_id,
+	ep.Ending_contract
 FROM v_employee_get_last_position ep
 JOIN v_career_plan_employee_number cpen
 ON ep.Registration_number = cpen.Registration_number;

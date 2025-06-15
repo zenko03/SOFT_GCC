@@ -206,10 +206,13 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy("AllowReactApp", policy =>
 	{
-		policy.WithOrigins("http://localhost:5173") // Autoriser uniquement cette origine
-			  .AllowAnyHeader() // Autoriser tous les en-t�tes
-			  .AllowAnyMethod() // Autoriser toutes les m�thodes (GET, POST, etc.)
-			  .AllowCredentials(); // Autoriser l'envoi des cookies ou des credentials
+		 policy.WithOrigins(
+                "http://localhost:5173",
+                "http://151.80.218.41:5173"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
 	});
 });
 #endregion

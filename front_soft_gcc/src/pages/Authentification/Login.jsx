@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "./UserContext";
 import './Login.css';
 import { FaUser, FaLock, FaEye, FaEyeSlash, FaUserTie } from 'react-icons/fa'; // Modifier les icônes
+import { urlApi } from "../../helpers/utils";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -32,7 +33,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "https://localhost:7082/api/Authentification/login",
+        urlApi("/Authentification/login"),
         formData,
         {
           headers: { "Content-Type": "application/json" },
@@ -54,7 +55,7 @@ const Login = () => {
 
   const fetchUserDetails = async (token) => {
     try {
-      const response = await axios.get("https://localhost:7082/api/Authentification/current-user", {
+      const response = await axios.get(urlApi("/Authentification/current-user"), {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;

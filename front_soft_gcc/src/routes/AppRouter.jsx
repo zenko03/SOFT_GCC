@@ -79,6 +79,7 @@ function AppRouter() {
       <Route path="/Register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
+      <Route path="/verify/:Token" element={<VerifyAttestationPage />} />
 
       {/* Routes protégées avec permissions */}
       <Route element={<ProtectedRoute requiredPermission="MANAGE_USERS" />}>
@@ -140,7 +141,6 @@ function AppRouter() {
 
       <Route path="/EvaluationLogin" element={<EvaluationLogin />} />
       <Route path="/employee-evaluation" element={<EvaluationPage />} />
-      <Route path="/verify/:Token" element={<VerifyAttestationPage />} />
 
 
       <Route element={<ProtectedRoute />}>

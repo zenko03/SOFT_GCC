@@ -222,7 +222,7 @@ const ModelEdit = ({ dataEmployee }) => {
   }, [dataEmployee]);
 
   const attestationId = "ATT-" + new Date().getTime(); // Simulé
-  const qrValue = `http://localhost:5173/verify?${token}`; // lien de vérification
+  const qrValue = `http://151.80.218.41:5173/verify?${token}`; // lien de vérification
 
   const addSection = () => {
     setSections([...sections, { id: sections.length + 1, content: "" }]);
