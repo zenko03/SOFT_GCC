@@ -16,11 +16,10 @@ function MenuBar() {
     return paths.some(path => currentPath.startsWith(path));
   };
 
-  // Style pour le lien actif
+  // Style pour le lien actif (texte jaune moutarde uniquement)
   const activeLinkStyle = {
-    backgroundColor: 'rgba(26, 115, 232, 0.1)',
-    borderLeft: '4px solid #1a73e8',
-    color: '#1a73e8'
+    color: '#FFC107', // Jaune moutarde
+    fontWeight: 'bold'
   };
 
   return (
@@ -65,7 +64,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/carriere') ? 'active-submenu' : ''}`} 
                   to="/carriere"
-                  style={isActiveLink('/carriere') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/carriere') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 >
                   Plan de carrière
                 </Link>
@@ -74,7 +73,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/retraite') ? 'active-submenu' : ''}`} 
                   to="/retraite"
-                  style={isActiveLink('/retraite') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/retraite') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 >
                   Depart a la retraite
                 </Link>
@@ -83,7 +82,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/softGcc/souhaitEvolution/suivi') ? 'active-submenu' : ''}`} 
                   to="/softGcc/souhaitEvolution/suivi"
-                  style={isActiveLink('/softGcc/souhaitEvolution/suivi') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/softGcc/souhaitEvolution/suivi') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 >
                   Evolution de carrière
                 </Link>
@@ -110,7 +109,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/softGcc/attestationManagement/list') ? 'active-submenu' : ''}`} 
                   to="/softGcc/attestationManagement/list"
-                  style={isActiveLink('/softGcc/attestationManagement/list') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/softGcc/attestationManagement/list') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 >
                   Modèles d'attestations
                 </Link>
@@ -119,7 +118,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/softGcc/settings/carriere') ? 'active-submenu' : ''}`} 
                   to="/softGcc/settings/carriere"
-                  style={isActiveLink('/softGcc/settings/carriere') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/softGcc/settings/carriere') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 > 
                   Signature électronique et sécurisation 
                 </Link>
@@ -128,7 +127,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/softGcc/settings/employeeManagement/liste') ? 'active-submenu' : ''}`} 
                   to="/softGcc/settings/employeeManagement/liste"
-                  style={isActiveLink('/softGcc/settings/employeeManagement/liste') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/softGcc/settings/employeeManagement/liste') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 > 
                   Archivage et historique 
                 </Link>
@@ -155,7 +154,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/salary-list') ? 'active-submenu' : ''}`} 
                   to="/salary-list"
-                  style={isActiveLink('/salary-list') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/salary-list') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 >
                   Notation D'evaluation
                 </Link>
@@ -164,7 +163,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/planning') ? 'active-submenu' : ''}`} 
                   to="/planning"
-                  style={isActiveLink('/planning') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/planning') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 > 
                   Planning d'evaluations 
                 </Link>
@@ -173,7 +172,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/homeInterview') ? 'active-submenu' : ''}`} 
                   to="/homeInterview"
-                  style={isActiveLink('/homeInterview') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/homeInterview') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 > 
                   Entretien d'evaluations 
                 </Link>
@@ -182,7 +181,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/history') ? 'active-submenu' : ''}`} 
                   to="/history"
-                  style={isActiveLink('/history') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/history') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 > 
                   Historique d'evaluations 
                 </Link>
@@ -229,7 +228,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/softGcc/settings/competence') ? 'active-submenu' : ''}`} 
                   to="/softGcc/settings/competence"
-                  style={isActiveLink('/softGcc/settings/competence') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/softGcc/settings/competence') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 >
                   Gestion Compétences
                 </Link>
@@ -238,7 +237,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/softGcc/settings/carriere') ? 'active-submenu' : ''}`} 
                   to="/softGcc/settings/carriere"
-                  style={isActiveLink('/softGcc/settings/carriere') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/softGcc/settings/carriere') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 > 
                   Gestion Carrières 
                 </Link>
@@ -247,7 +246,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/softGcc/settings/employeeManagement/liste') ? 'active-submenu' : ''}`} 
                   to="/softGcc/settings/employeeManagement/liste"
-                  style={isActiveLink('/softGcc/settings/employeeManagement/liste') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/softGcc/settings/employeeManagement/liste') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 > 
                   Gestion employés 
                 </Link>
@@ -256,7 +255,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/EvaluationSettings') ? 'active-submenu' : ''}`} 
                   to="/EvaluationSettings"
-                  style={isActiveLink('/EvaluationSettings') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/EvaluationSettings') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 > 
                   Gestion des évaluations 
                 </Link>
@@ -265,7 +264,7 @@ function MenuBar() {
                 <Link 
                   className={`nav-link ${isActiveLink('/user-management') ? 'active-submenu' : ''}`} 
                   to="/user-management"
-                  style={isActiveLink('/user-management') ? {color: '#1a73e8', fontWeight: '600'} : {}}
+                  style={isActiveLink('/user-management') ? {color: '#FFC107', fontWeight: 'bold'} : {}}
                 > 
                   Gestion des utilisateurs 
                 </Link>
