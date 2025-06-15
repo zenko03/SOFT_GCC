@@ -8,8 +8,9 @@ import GlobalPerformanceGraph from './GlobalPerformanceGraph';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { FaFileExcel, FaFilePdf, FaFileCsv, FaDownload, FaSearch, FaUndo } from 'react-icons/fa';
+import { FaFileExcel, FaFilePdf, FaFileCsv, FaDownload, FaSearch, FaUndo, FaTrash } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 
 const API_BASE_URL = 'https://localhost:7082/api/EvaluationHistory';
 
@@ -128,6 +129,8 @@ const EvaluationHistory = () => {
     departmentDistribution: []
   });
   const [loadingStats, setLoadingStats] = useState(true);
+  // Nouvel état pour l'annulation d'évaluation
+  const [cancellingEvaluation, setCancellingEvaluation] = useState(false);
 
   // Récupérer les départements et les types d'évaluation
   const fetchMetadata = useCallback(async () => {
@@ -304,6 +307,36 @@ const EvaluationHistory = () => {
   const closeModal = () => {
     setSelectedEvaluation(null);
     setShowModal(false);
+  };
+
+  // Fonction pour annuler une évaluation
+  const handleCancelEvaluation = async (evaluationId) => {
+    if (!evaluationId) {
+      toast.error("Identifiant d'évaluation manquant");
+      return;
+    }
+
+    const confirmed = window.confirm("Êtes-vous sûr de vouloir annuler cette évaluation ? Cette action est irréversible.");
+    if (!confirmed) return;
+
+    try {
+      setCancellingEvaluation(true);
+      const response = await axios.put(`https://localhost:7082/api/EvaluationPlanning/cancel-evaluation/${evaluationId}`);
+      
+      if (response.status === 200) {
+        toast.success("Évaluation annulée avec succès");
+        // Fermer le modal si ouvert
+        closeModal();
+        // Rafraîchir les données
+        await fetchEvaluations();
+        await fetchGlobalStatistics();
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'annulation de l'évaluation:", error);
+      toast.error(error.response?.data?.error || "Une erreur est survenue lors de l'annulation");
+    } finally {
+      setCancellingEvaluation(false);
+    }
   };
 
   const handleExport = async (format) => {

@@ -8,8 +8,9 @@ import GlobalPerformanceGraph from './GlobalPerformanceGraph';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { FaFileExcel, FaFilePdf, FaFileCsv, FaDownload, FaSearch, FaUndo } from 'react-icons/fa';
+import { FaFileExcel, FaFilePdf, FaFileCsv, FaDownload, FaSearch, FaUndo, FaTrash } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 
 const API_BASE_URL = 'https://localhost:7082/api/EvaluationHistory';
 
@@ -128,6 +129,8 @@ const EvaluationHistory = () => {
     departmentDistribution: []
   });
   const [loadingStats, setLoadingStats] = useState(true);
+  // Nouvel état pour l'annulation d'évaluation
+  const [cancellingEvaluation, setCancellingEvaluation] = useState(false);
 
   // Récupérer les départements et les types d'évaluation
   const fetchMetadata = useCallback(async () => {

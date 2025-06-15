@@ -130,9 +130,9 @@ const Login = () => {
               </button>
             </form>
 
-            {/* <p className="signup-link">
+            <p className="signup-link">
               Pas encore de compte ? <a href="/register">Créer un compte</a>
-            </p> */}
+            </p>
           </div>
         </div>
       </div>

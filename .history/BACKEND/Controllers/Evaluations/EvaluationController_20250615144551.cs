@@ -7,7 +7,6 @@ using soft_carriere_competence.Core.Entities.Evaluations;
 using soft_carriere_competence.Core.Entities.career_plan;
 using soft_carriere_competence.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
-using soft_carriere_competence.Core.Interface.AuthInterface;
 
 namespace soft_carriere_competence.Controllers.Evaluations
 {

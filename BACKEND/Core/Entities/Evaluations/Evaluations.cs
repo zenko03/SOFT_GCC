@@ -13,7 +13,6 @@ namespace soft_carriere_competence.Core.Entities.Evaluations
         [Column("evaluationType_id")]
         public int EvaluationTypeId { get; set; }
 
-       public EvaluationType EvaluationType { get; set; }
 
         [Column("employeeId")]
         public int EmployeeId { get; set; }

@@ -490,28 +490,6 @@ function SalaryListPlanning() {
       <div className="salary-list-planning">
         <h4 className="title">Planification des évaluations</h4>
 
-        {/* Onglets pour basculer entre les vues */}
-        <div className="view-tabs mb-3">
-          <ul className="nav nav-tabs">
-            <li className="nav-item">
-              <button 
-                className={`nav-link ${activeView === 'employees' ? 'active' : ''}`}
-                onClick={() => setActiveView('employees')}
-              >
-                Employés disponibles
-              </button>
-            </li>
-            <li className="nav-item">
-              <button 
-                className={`nav-link ${activeView === 'evaluations' ? 'active' : ''}`}
-                onClick={() => setActiveView('evaluations')}
-              >
-                Évaluations planifiées
-              </button>
-            </li>
-          </ul>
-        </div>
-
         {showConfiguration ? (
           <EvaluationConfiguration
             selectedEmployees={selectedEmployees}

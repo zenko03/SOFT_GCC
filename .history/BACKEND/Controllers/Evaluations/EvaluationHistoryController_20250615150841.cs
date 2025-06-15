@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using soft_carriere_competence.Application.Services.Evaluations;
-using soft_carriere_competence.Application.Dtos.EvaluationsDto;
-using soft_carriere_competence.Core.Entities.Evaluations;
 
 namespace soft_carriere_competence.Controllers.Evaluations
 {

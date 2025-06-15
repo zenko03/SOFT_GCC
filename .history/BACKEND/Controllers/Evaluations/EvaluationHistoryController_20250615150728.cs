@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using soft_carriere_competence.Application.Services.Evaluations;
-using soft_carriere_competence.Application.Dtos.EvaluationsDto;
-using soft_carriere_competence.Core.Entities.Evaluations;
 
 namespace soft_carriere_competence.Controllers.Evaluations
 {
@@ -289,20 +287,20 @@ namespace soft_carriere_competence.Controllers.Evaluations
 					totalEvaluationsCount = evaluations?.Count ?? 0,
 					
 					// Score moyen global
-					averageScore = kpis?.OverallAverage ?? 0,
+					averageScore = kpis?.averageScore ?? 0,
 					
 					// Taux de participation et d'approbation
-					participationRate = kpis?.ParticipationRate ?? 0,
-					approvalRate = kpis?.ApprovalRate ?? 0,
+					participationRate = kpis?.participationRate ?? 0,
+					approvalRate = kpis?.approvalRate ?? 0,
 					
 					// Distribution par département
-					departmentDistribution = detailedStats?.DepartmentDistribution ?? new List<DistributionItemDto>(),
+					departmentDistribution = detailedStats?.DepartmentDistribution ?? new object[0],
 					
 					// Distribution par type d'évaluation
-					evaluationTypeDistribution = detailedStats?.EvaluationTypeDistribution ?? new List<DistributionItemDto>(),
+					evaluationTypeDistribution = detailedStats?.EvaluationTypeDistribution ?? new object[0],
 					
 					// Données de tendance
-					trendData = detailedStats?.TrendData ?? new TrendDto
+					trendData = detailedStats?.TrendData ?? new
 					{
 						IsIncreasing = false,
 						PercentageChange = 0,
@@ -312,7 +310,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 					},
 					
 					// Distribution des scores
-					scoreDistribution = detailedStats?.ScoreDistribution ?? new ScoreDistributionDto
+					scoreDistribution = detailedStats?.ScoreDistribution ?? new
 					{
 						Low = 0,
 						Medium = 0,
@@ -338,9 +336,9 @@ namespace soft_carriere_competence.Controllers.Evaluations
 					averageScore = 0,
 					participationRate = 0,
 					approvalRate = 0,
-					departmentDistribution = new List<DistributionItemDto>(),
-					evaluationTypeDistribution = new List<DistributionItemDto>(),
-					trendData = new TrendDto
+					departmentDistribution = new object[0],
+					evaluationTypeDistribution = new object[0],
+					trendData = new
 					{
 						IsIncreasing = false,
 						PercentageChange = 0,
@@ -348,7 +346,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 						EndValue = 0,
 						StandardDeviation = 0
 					},
-					scoreDistribution = new ScoreDistributionDto
+					scoreDistribution = new
 					{
 						Low = 0,
 						Medium = 0,

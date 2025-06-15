@@ -399,7 +399,30 @@ const EvaluationHistory = () => {
       <div className="container-fluid mt-4">
         <header className="d-flex justify-content-between align-items-center mb-4">
           <h2>Historique des Évaluations</h2>
-          
+          <div className="export-actions">
+            <div className="btn-group">
+              <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <FaDownload className="me-1" /> Exporter
+              </button>
+              <ul className="dropdown-menu">
+                <li>
+                  <button className="dropdown-item" onClick={() => handleExport('csv')}>
+                    <FaFileCsv className="me-2" /> CSV
+                  </button>
+                </li>
+                <li>
+                  <button className="dropdown-item" onClick={() => handleExport('excel')}>
+                    <FaFileExcel className="me-2" /> Excel
+                  </button>
+                </li>
+                <li>
+                  <button className="dropdown-item" onClick={() => handleExport('pdf')}>
+                    <FaFilePdf className="me-2" /> PDF
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
         </header>
         
         {error && (

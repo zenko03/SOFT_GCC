@@ -78,17 +78,6 @@ function SalaryListPlanning() {
     direction: null
   });
 
-  // Nouveaux états pour les évaluations planifiées et l'annulation
-  const [plannedEvaluations, setPlannedEvaluations] = useState([]);
-  const [showCancelConfirmModal, setShowCancelConfirmModal] = useState(false);
-  const [evaluationToCancel, setEvaluationToCancel] = useState(null);
-  const [cancelSuccess, setCancelSuccess] = useState(false);
-  const [cancelError, setCancelError] = useState('');
-  const [loadingCancel, setLoadingCancel] = useState(false);
-  
-  // État pour basculer entre les vues
-  const [activeView, setActiveView] = useState('employees'); // 'employees' ou 'evaluations'
-
   // Gestion du changement de superviseur actuel
   const handleCurrentSupervisorChange = (e) => {
     setCurrentSupervisor(e.target.value);
@@ -183,43 +172,12 @@ function SalaryListPlanning() {
     }
   };
 
-  // Fonction pour récupérer les évaluations planifiées
-  const fetchPlannedEvaluations = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        'https://localhost:7082/api/EvaluationPlanning/planned-evaluations',
-        {
-          params: {
-            pageNumber: currentPage,
-            pageSize: pageSize,
-            position: filters.position,
-            department: filters.department,
-            search: searchQuery,
-            sortBy: sortConfig.key,
-            sortDirection: sortConfig.direction
-          },
-        }
-      );
-      setPlannedEvaluations(response.data.evaluations);
-      setTotalPages(response.data.totalPages);
-    } catch (error) {
-      console.error('Erreur lors de la récupération des évaluations planifiées :', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (activeView === 'employees') {
-      fetchEmployeesWithoutEvaluations();
-    } else {
-      fetchPlannedEvaluations();
-    }
+    fetchEmployeesWithoutEvaluations();
     fetchFilterOptions();
     fetchEvaluationTypes();
     fetchSupervisors();
-  }, [filters, searchQuery, currentPage, pageSize, sortConfig, activeView]);
+  }, [filters, searchQuery, currentPage, pageSize, sortConfig]);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value.toLowerCase().trim());
@@ -293,17 +251,7 @@ function SalaryListPlanning() {
   };
 
   const handleOpenModal = () => {
-    // Vérifier si parmi les employés sélectionnés, certains ont déjà une évaluation planifiée
-    const employeesWithPlannedEval = selectedEmployees
-      .map(id => filteredEmployees.find(emp => emp.employeeId === id))
-      .filter(emp => emp.plannedEvaluationId);
-    
-    if (employeesWithPlannedEval.length > 0) {
-      setEmployeesWithConflict(employeesWithPlannedEval);
-      setShowConflictModal(true);
-    } else {
-      setShowModal(true);
-    }
+    setShowModal(true);
   };
 
   const handleCloseModal = () => {
@@ -452,65 +400,10 @@ function SalaryListPlanning() {
     }
   };
 
-  // Fonction pour annuler une évaluation
-  const handleCancelEvaluation = async (evaluationId) => {
-    setEvaluationToCancel(evaluationId);
-    setShowCancelConfirmModal(true);
-  };
-
-  // Fonction pour confirmer l'annulation
-  const confirmCancelEvaluation = async () => {
-    setLoadingCancel(true);
-    setCancelError('');
-    try {
-      await axios.put(`https://localhost:7082/api/EvaluationPlanning/cancel-evaluation/${evaluationToCancel}`);
-      setCancelSuccess(true);
-      setTimeout(() => {
-        setShowCancelConfirmModal(false);
-        setCancelSuccess(false);
-        fetchPlannedEvaluations(); // Rafraîchir la liste après annulation
-      }, 2000);
-    } catch (error) {
-      console.error('Erreur lors de l\'annulation de l\'évaluation :', error);
-      setCancelError('Une erreur est survenue lors de l\'annulation de l\'évaluation.');
-    } finally {
-      setLoadingCancel(false);
-    }
-  };
-
-  // Fermer la modal de confirmation d'annulation
-  const closeCancelConfirmModal = () => {
-    setShowCancelConfirmModal(false);
-    setEvaluationToCancel(null);
-    setCancelError('');
-  };
-
   return (
     <Template>
       <div className="salary-list-planning">
         <h4 className="title">Planification des évaluations</h4>
-
-        {/* Onglets pour basculer entre les vues */}
-        <div className="view-tabs mb-3">
-          <ul className="nav nav-tabs">
-            <li className="nav-item">
-              <button 
-                className={`nav-link ${activeView === 'employees' ? 'active' : ''}`}
-                onClick={() => setActiveView('employees')}
-              >
-                Employés disponibles
-              </button>
-            </li>
-            <li className="nav-item">
-              <button 
-                className={`nav-link ${activeView === 'evaluations' ? 'active' : ''}`}
-                onClick={() => setActiveView('evaluations')}
-              >
-                Évaluations planifiées
-              </button>
-            </li>
-          </ul>
-        </div>
 
         {showConfiguration ? (
           <EvaluationConfiguration
@@ -705,118 +598,7 @@ function SalaryListPlanning() {
             {emailSent && <p>Email envoyé avec succès !</p>} {/* Indication d'email envoyé */}
           </>
         )}
-
-        {activeView === 'evaluations' && (
-          <>
-            {loading ? (
-              <div className="text-center">Chargement des évaluations planifiées...</div>
-            ) : (
-              <>
-                <table className="table table-bordered">
-                  <thead className="thead-light">
-                    <tr>
-                      <th style={getSortableStyle('employeeLastName')} onClick={() => handleSort('employeeLastName')}>
-                        Employé {getSortIcon('employeeLastName')}
-                      </th>
-                      <th style={getSortableStyle('positionName')} onClick={() => handleSort('positionName')}>
-                        Poste {getSortIcon('positionName')}
-                      </th>
-                      <th style={getSortableStyle('departmentName')} onClick={() => handleSort('departmentName')}>
-                        Département {getSortIcon('departmentName')}
-                      </th>
-                      <th style={getSortableStyle('evaluationTypeName')} onClick={() => handleSort('evaluationTypeName')}>
-                        Type d'évaluation {getSortIcon('evaluationTypeName')}
-                      </th>
-                      <th style={getSortableStyle('startDate')} onClick={() => handleSort('startDate')}>
-                        Date de début {getSortIcon('startDate')}
-                      </th>
-                      <th style={getSortableStyle('endDate')} onClick={() => handleSort('endDate')}>
-                        Date de fin {getSortIcon('endDate')}
-                      </th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {plannedEvaluations.length > 0 ? (
-                      plannedEvaluations.map((evaluation) => (
-                        <tr key={evaluation.evaluationId}>
-                          <td>{evaluation.employeeFirstName} {evaluation.employeeLastName}</td>
-                          <td>{evaluation.positionName}</td>
-                          <td>{evaluation.departmentName}</td>
-                          <td>{evaluation.evaluationTypeName}</td>
-                          <td>{new Date(evaluation.startDate).toLocaleDateString()}</td>
-                          <td>{new Date(evaluation.endDate).toLocaleDateString()}</td>
-                          <td>
-                            <button 
-                              className="btn btn-danger btn-sm" 
-                              onClick={() => handleCancelEvaluation(evaluation.evaluationId)}
-                            >
-                              Annuler
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="7" className="text-center">
-                          Aucune évaluation planifiée trouvée.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </>
-            )}
-          </>
-        )}
       </div>
-
-      {/* Modal de confirmation d'annulation */}
-      {showCancelConfirmModal && (
-        <div className="modal show d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Confirmation d'annulation</h5>
-                <button type="button" className="close" onClick={closeCancelConfirmModal}>
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                {cancelSuccess ? (
-                  <div className="alert alert-success">
-                    L'évaluation a été annulée avec succès.
-                  </div>
-                ) : (
-                  <>
-                    <p>Êtes-vous sûr de vouloir annuler cette évaluation ?</p>
-                    <p>Cette action ne peut pas être annulée.</p>
-                    {cancelError && <div className="alert alert-danger">{cancelError}</div>}
-                  </>
-                )}
-              </div>
-              <div className="modal-footer">
-                {!cancelSuccess && (
-                  <>
-                    <button type="button" className="btn btn-secondary" onClick={closeCancelConfirmModal}>
-                      Fermer
-                    </button>
-                    <button 
-                      type="button" 
-                      className="btn btn-danger" 
-                      onClick={confirmCancelEvaluation}
-                      disabled={loadingCancel}
-                    >
-                      {loadingCancel ? 'Annulation en cours...' : 'Confirmer l\'annulation'}
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="modal-backdrop show"></div>
-        </div>
-      )}
     </Template>
   );
 }

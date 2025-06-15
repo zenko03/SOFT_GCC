@@ -119,15 +119,6 @@ const EvaluationHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  
-  // Nouvel état pour les statistiques globales
-  const [globalStats, setGlobalStats] = useState({
-    totalEvaluationsCount: 0,
-    averageScore: 0,
-    completionRate: 0,
-    departmentDistribution: []
-  });
-  const [loadingStats, setLoadingStats] = useState(true);
 
   // Récupérer les départements et les types d'évaluation
   const fetchMetadata = useCallback(async () => {
@@ -161,35 +152,6 @@ const EvaluationHistory = () => {
       console.error('Erreur lors du chargement des métadonnées:', err);
     }
   }, []);
-
-  // Nouvelle fonction pour récupérer les statistiques globales
-  const fetchGlobalStatistics = useCallback(async () => {
-    setLoadingStats(true);
-    try {
-      // Appel API pour récupérer les statistiques globales (sans pagination)
-      const response = await axios.get(`${API_BASE_URL}/global-statistics`, {
-        params: {
-          // On peut conserver certains filtres pour les statistiques
-          startDate: filters.startDate || null,
-          endDate: filters.endDate || null,
-          evaluationType: filters.evaluationType || null,
-          department: filters.department || null,
-          employeeName: searchQuery || null,
-          // Mais on n'inclut PAS les paramètres de pagination
-        }
-      });
-      
-      if (response.data) {
-        setGlobalStats(response.data);
-        // Mettre à jour le total des évaluations pour l'affichage global
-        setTotalEvaluations(response.data.totalEvaluationsCount || 0);
-      }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des statistiques globales:', error);
-    } finally {
-      setLoadingStats(false);
-    }
-  }, [filters.startDate, filters.endDate, filters.department, filters.evaluationType, searchQuery]);
 
   const fetchEvaluations = useCallback(async () => {
     setLoading(true);
@@ -231,9 +193,7 @@ const EvaluationHistory = () => {
 
       setEvaluations(formattedEvaluations);
       setTotalPages(response.data.totalPages);
-      
-      // Ne pas mettre à jour totalEvaluations ici, car cela sera fait par fetchGlobalStatistics
-      // setTotalEvaluations(response.data.totalItems || formattedEvaluations.length);
+      setTotalEvaluations(response.data.totalItems || formattedEvaluations.length);
     } catch (fetchError) { 
       console.error('Erreur lors de la récupération des évaluations:', fetchError);
       setError('Erreur lors de la récupération des évaluations.');
@@ -258,11 +218,6 @@ const EvaluationHistory = () => {
     // car cela crée une boucle infinie
   }, [filters.startDate, filters.endDate, filters.department, filters.evaluationType, 
       currentPage, pageSize, searchQuery, selectedEmployee]);
-      
-  // Nouvel effet pour charger les statistiques globales uniquement quand les filtres principaux changent
-  useEffect(() => {
-    fetchGlobalStatistics();
-  }, [fetchGlobalStatistics]);
 
   const handleSearchChange = (e) => {
     const query = e.target.value.trim();
@@ -399,7 +354,30 @@ const EvaluationHistory = () => {
       <div className="container-fluid mt-4">
         <header className="d-flex justify-content-between align-items-center mb-4">
           <h2>Historique des Évaluations</h2>
-          
+          <div className="export-actions">
+            <div className="btn-group">
+              <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <FaDownload className="me-1" /> Exporter
+              </button>
+              <ul className="dropdown-menu">
+                <li>
+                  <button className="dropdown-item" onClick={() => handleExport('csv')}>
+                    <FaFileCsv className="me-2" /> CSV
+                  </button>
+                </li>
+                <li>
+                  <button className="dropdown-item" onClick={() => handleExport('excel')}>
+                    <FaFileExcel className="me-2" /> Excel
+                  </button>
+                </li>
+                <li>
+                  <button className="dropdown-item" onClick={() => handleExport('pdf')}>
+                    <FaFilePdf className="me-2" /> PDF
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
         </header>
         
         {error && (
@@ -606,6 +584,8 @@ const EvaluationHistory = () => {
                   </div>
                 )}
 
+                {/* Pagination */}
+
                 {/* Nouvelle pagination similaire à SalaryListPlanning.jsx */}
                 <div className="pagination-controls mt-4">
                   <button
@@ -652,24 +632,14 @@ const EvaluationHistory = () => {
                 <h5 className="mb-0">Évolution des performances</h5>
               </div>
               <div className="card-body p-0">
-                {loadingStats ? (
-                  <div className="text-center p-5">
-                    <div className="spinner-border text-warning" role="status">
-                      <span className="visually-hidden">Chargement des statistiques...</span>
-                    </div>
-                    <p className="mt-2">Chargement des statistiques globales...</p>
-                  </div>
-                ) : (
-                  <GlobalPerformanceGraph 
-                    filters={{
-                      startDate: filters.startDate || undefined,
-                      endDate: filters.endDate || undefined,
-                      department: filters.department || undefined,
-                      evaluationType: filters.evaluationType || undefined
-                    }}
-                    globalStats={globalStats}
-                  />
-                )}
+                <GlobalPerformanceGraph 
+                  filters={{
+                    startDate: filters.startDate || undefined,
+                    endDate: filters.endDate || undefined,
+                    department: filters.department || undefined,
+                    evaluationType: filters.evaluationType || undefined
+                  }}
+                />
               </div>
             </div>
           </div>
