@@ -46,7 +46,7 @@ function SalaryProfilePage({ task }) {
   if (!employeeDescription || employeeDescription.length === 0) {
     return(
       <Template>
-        <div style={{ color: 'red' }}>Aucune donnée trouvée. {error}</div>
+        <div>Aucune donnée trouvée. {error}</div>
       </Template>
     ); 
   }

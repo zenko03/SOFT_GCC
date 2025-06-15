@@ -13,6 +13,7 @@ import defaultImg from '../../../assets/images/male-default.webp';
 import '../../../styles/orgChart.css';
 import ModalImportEmployee from '../../../components/organizationalChart/ModalImportEmployee';
 import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
+import api from '../../../helpers/api';
 
 // Map des images des départements
 const departmentImages = {
@@ -75,15 +76,14 @@ function ListEmployeePage() {
         pageSize: pageSize
       }).toString();
 
-      const response = await Fetcher(`/Employee/filter?${queryParams}`);
+      const response = await api.get(`/Employee/filter?${queryParams}`);
       
-      if (response.success) {
-        setEmployees(response.data);
-        setTotalPages(response.totalPages);
-        console.log(totalPages);
+      if (response.data.success) {
+        setEmployees(response.data.data);
+        setTotalPages(response.data.totalPages);
       } else {
         setEmployees([]);
-        setError(response.message);
+        setError(response.data.message);
       }
     } catch (err) {
       setEmployees([]);
@@ -282,7 +282,7 @@ function ListEmployeePage() {
                     <tbody>
                       {sortedEmployees.length > 0 ? (
                         sortedEmployees.map((item) => (
-                          <tr key={item.employeeId} onClick={() => navigate(`/competences/profil/${item.employeeId}`)}>
+                          <tr key={item.employeeId} onClick={() => navigate(`/softGcc/competences/profil/${item.employeeId}`)}>
                             <td className="py-1">
                               {item.photo ? (
                                 <img src={urlApi(`/Employee/photo/${item.employeeId}`)} alt={'Employe '+item.registrationNumber} />

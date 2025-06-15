@@ -70,13 +70,13 @@ const VerifyAttestationPage = () => {
         </h2>
 
         <div className="info-group">
-          <p><Icon path={mdiDomain} size={1} /> <span className='label'>Société :</span> {data.society}</p>
-          <p><Icon path={mdiFileDocumentOutline} size={1} /> <span className='label'>Référence :</span> {data.reference}</p>
-          <p><Icon path={mdiCalendarEnd} size={1} /> <span className='label'>Delivré le : </span><FormattedDate date={data.createdAt} /></p>
-          <p><Icon path={mdiAccount} size={1} /> <span className='label'>Nom :</span> {data.employee.fullName}</p>
-          <p><Icon path={mdiBriefcase} size={1} /> <span className='label'>Poste :</span> {data.employee.position}</p>
-          <p><Icon path={mdiCalendarStart} size={1} /> <span className='label'>Du :</span> {new Date(data.employee.startDate).toLocaleDateString()}</p>
-          <p><Icon path={mdiCalendarEnd} size={1} /> 
+          <p><Icon path={mdiDomain} size="1em" /> <span className='label'>Société :</span> {data.society}</p>
+          <p><Icon path={mdiFileDocumentOutline} size="1em" /> <span className='label'>Référence :</span> {data.reference}</p>
+          <p><Icon path={mdiCalendarEnd} size="1em" /> <span className='label'>Delivré le : </span><FormattedDate date={data.createdAt} /></p>
+          <p><Icon path={mdiAccount} size="1em" /> <span className='label'>Nom :</span> {data.employee.fullName}</p>
+          <p><Icon path={mdiBriefcase} size="1em" /> <span className='label'>Poste :</span> {data.employee.position}</p>
+          <p><Icon path={mdiCalendarStart} size="1em" /> <span className='label'>Du :</span> {new Date(data.employee.startDate).toLocaleDateString()}</p>
+          <p><Icon path={mdiCalendarEnd} size="1em" /> 
             <span className='label'>Au :
             </span>  
               {data.employee.endDate 
