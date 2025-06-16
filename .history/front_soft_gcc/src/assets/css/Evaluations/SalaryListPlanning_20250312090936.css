@@ -163,88 +163,56 @@
 }
 
 
-/* Animation de confirmation */
-.confirmation-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.confirmation-box {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
-    width: 100%;
-}
-
-/* Animation du checkmark */
+/* Animation de succès */
 .success-animation {
-    display: flex;
-    justify-content: center;
-    margin: 15px auto 20px;
-}
-
-.checkmark {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: block;
-    stroke-width: 2;
-    stroke: #4bb71b;
-    stroke-miterlimit: 10;
-    box-shadow: inset 0px 0px 0px #4bb71b;
-    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
-    position: relative;
-    margin: 0 auto;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
 }
 
 .checkmark__circle {
-    stroke-dasharray: 166;
-    stroke-dashoffset: 166;
-    stroke-width: 2;
-    stroke-miterlimit: 10;
-    stroke: #4bb71b;
-    fill: none;
-    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #4caf50;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
 
 .checkmark__check {
-    transform-origin: 50% 50%;
-    stroke-dasharray: 48;
-    stroke-dashoffset: 48;
-    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #4caf50;
+  fill: none;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
 }
 
 @keyframes stroke {
-    100% {
-        stroke-dashoffset: 0;
-    }
+  100% {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes scale {
-    0%, 100% {
-        transform: none;
-    }
-    50% {
-        transform: scale3d(1.1, 1.1, 1);
-    }
+
+  0%,
+  100% {
+    transform: none;
+  }
+
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
 }
 
-@keyframes fill {
-    100% {
-        box-shadow: inset 0px 0px 0px 30px #4bb71b4d;
-    }
+.success-animation .checkmark__check {
+  animation: scale 0.3s ease-in-out 0.9s both;
 }
+
 
 /* RAPPELS EMAIL CSS */
 .reminder-toggle {

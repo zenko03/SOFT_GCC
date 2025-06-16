@@ -163,6 +163,84 @@ namespace soft_carriere_competence.Application.Services.Evaluations
             return (employees, totalPages);
         }
 
+        //public async Task<(IEnumerable<VEmployeeWithoutEvaluation>, int)> GetEmployeesWithoutEvaluationsPaginatedAsync(
+        //    int pageNumber,
+        //    int pageSize,
+        //    int? position = null,
+        //    int? department = null,
+        //    string? search = null,
+        //    string? sortBy = null,
+        //    string? sortDirection = null)
+        //{
+        //    var query = _context.vEmployeeWithoutEvaluations.AsQueryable();
+
+        //    // Appliquer les filtres
+        //    if (position.HasValue && position.Value > 0)
+        //    {
+        //        query = query.Where(e => e.positionId == position.Value);
+        //    }
+
+        //    if (department.HasValue && department.Value > 0)
+        //    {
+        //        query = query.Where(e => e.DepartmentId == department.Value);
+        //    }
+
+        //    if (!string.IsNullOrWhiteSpace(search))
+        //    {
+        //        search = search.ToLower();
+        //        query = query.Where(e =>
+        //            e.FirstName.ToLower().Contains(search) ||
+        //            e.LastName.ToLower().Contains(search) ||
+        //            e.Position.ToLower().Contains(search) ||
+        //            e.Department.ToLower().Contains(search)
+        //        );
+        //    }
+
+        //    // Appliquer le tri
+        //    if (!string.IsNullOrWhiteSpace(sortBy))
+        //    {
+        //        bool isAscending = string.IsNullOrWhiteSpace(sortDirection) || sortDirection.ToLower() == "ascending";
+
+        //        switch (sortBy.ToLower())
+        //        {
+        //            case "name":
+        //                query = isAscending
+        //                    ? query.OrderBy(e => e.LastName).ThenBy(e => e.FirstName)
+        //                    : query.OrderByDescending(e => e.LastName).ThenByDescending(e => e.FirstName);
+        //                break;
+        //            case "position":
+        //                query = isAscending
+        //                    ? query.OrderBy(e => e.Position)
+        //                    : query.OrderByDescending(e => e.Position);
+        //                break;
+        //            case "department":
+        //                query = isAscending
+        //                    ? query.OrderBy(e => e.Department)
+        //                    : query.OrderByDescending(e => e.Department);
+        //                break;
+        //            default:
+        //                query = query.OrderBy(e => e.LastName).ThenBy(e => e.FirstName);
+        //                break;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        query = query.OrderBy(e => e.LastName).ThenBy(e => e.FirstName);
+        //    }
+
+        //    // Calculer le nombre total de pages
+        //    var totalItems = await query.CountAsync();
+        //    var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+        //    // Récupérer la page demandée
+        //    var employees = await query
+        //        .Skip((pageNumber - 1) * pageSize)
+        //        .Take(pageSize)
+        //        .ToListAsync();
+
+        //    return (employees, totalPages);
+        //}
+
         // Méthode pour récupérer les évaluations planifiées avec pagination
         public async Task<(IEnumerable<PlannedEvaluationDto>, int)> GetPlannedEvaluationsPaginatedAsync(
             int pageNumber,

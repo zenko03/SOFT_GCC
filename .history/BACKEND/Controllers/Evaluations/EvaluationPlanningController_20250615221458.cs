@@ -261,40 +261,40 @@ namespace soft_carriere_competence.Controllers.Evaluations
 		}
 		
 		// Endpoint pour récupérer les évaluations planifiées
-		//[HttpGet("planned-evaluations")]
-		//public async Task<IActionResult> GetPlannedEvaluations(
-		//	int pageNumber = 1,
-		//	int pageSize = 10,
-		//	int? position = null,
-		//	int? department = null,
-		//	string? search = null,
-		//	string? sortBy = null,
-		//	string? sortDirection = null)
-		//{
-		//	try
-		//	{
-		//		var (evaluations, totalPages) = await _evaluationPlanningService.GetPlannedEvaluationsPaginatedAsync(
-		//			pageNumber,
-		//			pageSize,
-		//			position,
-		//			department,
-		//			search,
-		//			sortBy,
-		//			sortDirection);
+		[HttpGet("planned-evaluations")]
+		public async Task<IActionResult> GetPlannedEvaluations(
+			int pageNumber = 1,
+			int pageSize = 10,
+			int? position = null,
+			int? department = null,
+			string? search = null,
+			string? sortBy = null,
+			string? sortDirection = null)
+		{
+			try
+			{
+				var (evaluations, totalPages) = await _evaluationPlanningService.GetPlannedEvaluationsPaginatedAsync(
+					pageNumber,
+					pageSize,
+					position,
+					department,
+					search,
+					sortBy,
+					sortDirection);
 
-		//		return Ok(new
-		//		{
-		//			Evaluations = evaluations,
-		//			TotalPages = totalPages,
-		//			CurrentPage = pageNumber,
-		//			PageSize = pageSize
-		//		});
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		return StatusCode(500, new { error = ex.Message });
-		//	}
-		//}
+				return Ok(new
+				{
+					Evaluations = evaluations,
+					TotalPages = totalPages,
+					CurrentPage = pageNumber,
+					PageSize = pageSize
+				});
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = ex.Message });
+			}
+		}
 	}
 
 }

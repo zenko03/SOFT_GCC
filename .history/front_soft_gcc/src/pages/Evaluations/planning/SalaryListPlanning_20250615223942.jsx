@@ -46,10 +46,6 @@ function SalaryListPlanning() {
   const [autoReminderEnabled, setAutoReminderEnabled] = useState(false); // State for automatic reminders
 
   const [emailSent, setEmailSent] = useState(false); // State for email sent status
-  
-  // Nouveaux états pour les animations et chargement
-  const [planningLoading, setPlanningLoading] = useState(false);
-  const [planningConfirmation, setPlanningConfirmation] = useState(false);
 
   const [evaluationDetails, setEvaluationDetails] = useState({
     evaluationType: '',
@@ -380,9 +376,6 @@ function SalaryListPlanning() {
     }
 
     try {
-      // Activer l'indicateur de chargement
-      setPlanningLoading(true);
-      
       // Création d'un tableau de tâches d'évaluation, une par employé, avec tous les superviseurs sélectionnés
       const payload = selectedEmployees.map((employeeId) => ({
         employeeId: employeeId, // Utilisation directe de l'employeeId
@@ -411,15 +404,10 @@ function SalaryListPlanning() {
         }
       }
       
-      // Afficher l'animation de confirmation
-      setPlanningConfirmation(true);
       setPlanningSuccess(true);
       setEmailSent(true);
-      
-      // Fermer la modal après un délai
       setTimeout(() => {
         setShowModal(false);
-        setPlanningConfirmation(false);
         setPlanningSuccess(false);
         fetchEmployeesWithoutEvaluations();
         setSelectedEmployees([]);
@@ -428,8 +416,6 @@ function SalaryListPlanning() {
       console.error('Erreur lors de la planification :', error);
       console.error('Détails de l\'erreur:', error.response?.data);
       setPlanningError('Une erreur est survenue lors de la planification.');
-    } finally {
-      setPlanningLoading(false);
     }
   };
 
@@ -515,22 +501,6 @@ function SalaryListPlanning() {
           />
         ) : (
           <>
-            {/* Affichage de la confirmation de planification */}
-            {planningConfirmation && (
-              <div className="confirmation-overlay">
-                <div className="confirmation-box">
-                  <div className="success-animation">
-                    <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                      <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-                      <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                    </svg>
-                  </div>
-                  <h4>Planification réussie !</h4>
-                  <p>Les évaluations ont été planifiées avec succès.</p>
-                </div>
-              </div>
-            )}
-            
             {/* Barre de recherche et filtres */}
             <div className="filters card p-3 mb-4">
               <div className="row align-items-center g-3"> {/* Utilisation de la grille Bootstrap et gap g-3 */}
@@ -759,201 +729,6 @@ function SalaryListPlanning() {
             </div>
           </div>
           <div className="modal-backdrop show"></div>
-        </div>
-      )}
-      
-      {/* Modal de configuration des évaluations */}
-      {showModal && (
-        <div className="modal fade show"
-          style={{
-            display: 'block',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            paddingRight: '17px',
-            overflow: 'scroll'
-          }}
-          tabIndex="-1"
-          onClick={(e) => {
-            // Fermer le modal si on clique en dehors du contenu
-            if (e.target.className.includes('modal fade show')) {
-              setShowModal(false);
-            }
-          }}
-        >
-          <div className="modal-dialog modal-lg modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  <i className="mdi mdi-calendar-check"></i> {currentUser ? 'Modifier' : 'Ajouter'} une planification
-                </h5>
-                <button type="button" className="close text-dark" onClick={() => setShowModal(false)}>
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                {planningSuccess ? (
-                  <div className="text-center my-4">
-                    <div className="success-animation">
-                      <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                        <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-                        <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                      </svg>
-                    </div>
-                    <h4 className="mt-3">Planification réussie</h4>
-                    <p>Les évaluations ont été planifiées avec succès.</p>
-                  </div>
-                ) : (
-                  <form onSubmit={(e) => e.preventDefault()}>
-                    <div className="row mb-3">
-                      <div className="col-md-12">
-                        <div className="form-group">
-                          <label className="form-label">
-                            <i className="mdi mdi-format-list-bulleted"></i> Type d'évaluation
-                          </label>
-                          <select
-                            className="form-control form-select"
-                            value={evaluationDetails.evaluationType}
-                            onChange={(e) =>
-                              setEvaluationDetails({ ...evaluationDetails, evaluationType: e.target.value })
-                            }
-                            required
-                          >
-                            <option value="">Sélectionner un type d'évaluation</option>
-                            {evaluationTypes.map((type) => (
-                              <option key={type.evaluationTypeId} value={type.evaluationTypeId}>
-                                {type.designation}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="row mb-3">
-                      <div className="col-md-6">
-                        <div className="form-group">
-                          <label className="form-label">
-                            <i className="mdi mdi-calendar-start"></i> Date de début
-                          </label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            value={evaluationDetails.startDate}
-                            min={today}
-                            onChange={(e) =>
-                              setEvaluationDetails({ ...evaluationDetails, startDate: e.target.value })
-                            }
-                            required
-                          />
-                          {dateError && <div className="text-danger">{dateError}</div>}
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="form-group">
-                          <label className="form-label">
-                            <i className="mdi mdi-calendar-end"></i> Date de fin
-                          </label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            value={evaluationDetails.endDate}
-                            min={evaluationDetails.startDate || today}
-                            onChange={(e) =>
-                              setEvaluationDetails({ ...evaluationDetails, endDate: e.target.value })
-                            }
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="row">
-                      <div className="col-md-12">
-                        <div className="form-group">
-                          <label className="form-label d-flex align-items-center mb-2">
-                            <i className="mdi mdi-account-supervisor-circle me-2"></i> Superviseurs
-                          </label>
-                          <div className="input-group mb-3">
-                            <select
-                              className="form-control"
-                              value={currentSupervisor}
-                              onChange={handleCurrentSupervisorChange}
-                            >
-                              <option value="">Sélectionnez un superviseur</option>
-                              {supervisors.map((supervisor) => (
-                                <option key={supervisor.id} value={supervisor.id}>
-                                  {supervisor.firstName} {supervisor.lastName}
-                                </option>
-                              ))}
-                            </select>
-                            <div className="input-group-append">
-                              <button 
-                                className="btn btn-outline-primary" 
-                                type="button" 
-                                onClick={handleAddSupervisor}
-                              >
-                                <i className="mdi mdi-plus"></i> Ajouter
-                              </button>
-                            </div>
-                          </div>
-                          
-                          <div className="selected-supervisors mt-3">
-                            {evaluationDetails.supervisors.length > 0 ? (
-                              <ul className="list-group">
-                                {evaluationDetails.supervisors.map((supervisorId) => {
-                                  const supervisor = supervisors.find(sup => String(sup.id) === String(supervisorId));
-                                  return supervisor ? (
-                                    <li key={supervisorId} className="list-group-item d-flex justify-content-between align-items-center">
-                                      <span>{supervisor.firstName} {supervisor.lastName}</span>
-                                      <button
-                                        type="button"
-                                        className="btn btn-sm btn-outline-danger"
-                                        onClick={() => handleRemoveSupervisor(supervisorId)}
-                                      >
-                                        <i className="mdi mdi-close"></i>
-                                      </button>
-                                    </li>
-                                  ) : null;
-                                })}
-                              </ul>
-                            ) : (
-                              <div className="alert alert-warning">
-                                <i className="mdi mdi-alert"></i> Aucun superviseur sélectionné
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {planningError && (
-                      <div className="alert alert-danger mt-3">
-                        <i className="mdi mdi-alert-circle"></i> {planningError}
-                      </div>
-                    )}
-                  </form>
-                )}
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-light btn-fw" onClick={() => setShowModal(false)}>
-                  <i className="mdi mdi-close-circle"></i> Fermer
-                </button>
-                {!planningSuccess && (
-                  <button 
-                    type="button" 
-                    className="btn btn-success btn-fw" 
-                    onClick={handleMassPlanning}
-                    disabled={planningLoading}
-                  >
-                    {planningLoading ? (
-                      <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Planification en cours...</>
-                    ) : (
-                      <><i className="mdi mdi-content-save me-1"></i>Planifier les évaluations</>
-                    )}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </Template>
