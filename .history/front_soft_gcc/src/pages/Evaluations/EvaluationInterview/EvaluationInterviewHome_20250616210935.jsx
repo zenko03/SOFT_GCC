@@ -809,7 +809,7 @@ function EvaluationInterviewHome() {
               className="btn btn-info btn-sm"
               onClick={() => redirectToValidation(employee.employeeId)}
             >
-              Valider 
+              Valider (Directeur)
             </button>
           </div>
         );

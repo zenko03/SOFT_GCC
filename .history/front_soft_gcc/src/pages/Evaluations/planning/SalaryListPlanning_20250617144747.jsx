@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Template from '../../Template';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/SalaryListPlanning.css'; // Styles spécifiques
-import '../../../assets/css/Evaluations/SuccessAnimation.css';
 import EvaluationConfiguration from './EvaluationConfiguration';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown, faUndo, faBell, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -108,8 +107,6 @@ function SalaryListPlanning() {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [isLoadingSuccess, setIsLoadingSuccess] = useState(false);
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   // Gestion du changement de superviseur actuel
   const handleCurrentSupervisorChange = (e) => {
@@ -436,32 +433,17 @@ function SalaryListPlanning() {
         }
       }
       
-      // Fermer la modal de planification
+      // Afficher le modal de succès
+      setSuccessMessage('Les évaluations ont été planifiées avec succès.');
+      setShowSuccessModal(true);
       setShowModal(false);
       
-      // Montrer le modal de succès avec chargement
-      setSuccessMessage('Les évaluations ont été planifiées avec succès.');
-      setIsLoadingSuccess(true);
-      setShowSuccessModal(true);
-      
-      // Simuler un traitement en arrière-plan pour montrer le spinner
+      // Rafraîchir les données après un délai
       setTimeout(() => {
-        setIsLoadingSuccess(false); // Cacher le spinner
-        setShowSuccessAnimation(true); // Afficher l'animation de succès
-        
-        // Rafraîchir les données après un délai
-        setTimeout(() => {
-          fetchEmployeesWithoutEvaluations();
-          setSelectedEmployees([]);
-          setSelectAll(false);
-        }, 1000);
-
-        // Fermer automatiquement le modal après l'animation (3 secondes)
-        setTimeout(() => {
-          setShowSuccessModal(false);
-        }, 3000);
-        
-      }, 1500); // Attendre 1.5 secondes avant d'afficher l'animation
+        fetchEmployeesWithoutEvaluations();
+        setSelectedEmployees([]);
+        setSelectAll(false);
+      }, 1000);
       
     } catch (error) {
       console.error('Erreur lors de la planification :', error);
@@ -827,12 +809,16 @@ function SalaryListPlanning() {
                 </button>
               </div>
               <div className="modal-body">
-                {planningLoading ? (
+                {planningSuccess ? (
                   <div className="text-center my-4">
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden">Chargement...</span>
+                    <div className="success-animation">
+                      <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                      </svg>
                     </div>
-                    <p className="mt-3">Planification en cours...</p>
+                    <h4 className="mt-3">Planification réussie</h4>
+                    <p>Les évaluations ont été planifiées avec succès.</p>
                   </div>
                 ) : (
                   <form onSubmit={(e) => e.preventDefault()}>
@@ -970,7 +956,7 @@ function SalaryListPlanning() {
                 <button type="button" className="btn btn-light btn-fw" onClick={() => setShowModal(false)}>
                   <i className="mdi mdi-close-circle"></i> Fermer
                 </button>
-                {!planningLoading && (
+                {!planningSuccess && (
                   <button 
                     type="button" 
                     className="btn btn-success btn-fw" 
@@ -1058,7 +1044,7 @@ function SalaryListPlanning() {
         </div>
       )}
 
-      {/* Modal de succès avec chargement et animation */}
+      {/* Modal de succès */}
       {showSuccessModal && (
         <div className="modal fade show" 
           style={{
@@ -1074,34 +1060,21 @@ function SalaryListPlanning() {
                 <h5 className="modal-title">
                   <FontAwesomeIcon icon={faBell} className="me-2" /> Planification réussie
                 </h5>
-                <button 
-                  type="button" 
-                  className="btn-close btn-close-white" 
-                  onClick={() => setShowSuccessModal(false)}
-                  disabled={isLoadingSuccess} // Désactiver le bouton pendant le chargement
-                ></button>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowSuccessModal(false)}></button>
               </div>
               <div className="modal-body">
-                {isLoadingSuccess ? (
-                  <div className="text-center mb-4">
-                    <div className="spinner-grow text-success mb-3" style={{ width: '3rem', height: '3rem' }} role="status">
-                      <span className="visually-hidden">Chargement...</span>
-                    </div>
-                    <p>Finalisation de la planification en cours...</p>
+                <div className="text-center mb-4">
+                  <div className="success-animation">
+                    <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                      <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                      <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
                   </div>
-                ) : (
-                  <div className="text-center mb-4">
-                    {showSuccessAnimation && (
-                      <div className="success-animation">
-                        <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                          <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-                          <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                        </svg>
-                      </div>
-                    )}
-                    <p className="text-center">{successMessage}</p>
-                  </div>
-                )}
+                </div>
+                <p className="text-center">{successMessage}</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-success" onClick={() => setShowSuccessModal(false)}>OK</button>
               </div>
             </div>
           </div>

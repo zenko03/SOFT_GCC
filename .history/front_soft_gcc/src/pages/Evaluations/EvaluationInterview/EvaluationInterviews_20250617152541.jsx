@@ -341,18 +341,19 @@ const EvaluationInterviews = () => {
       console.log("Réponse de l'API:", response);
       
       if (response.status === 200 || response.status === 204) {
-        toast.success("Entretien sauvegardé avec succès");
+        // Afficher l'animation de succès
+        setShowSuccessAnimation(true);
         
-        // Attendre un court instant pour que l'utilisateur voie le message de confirmation
+        // Attendre que l'animation soit terminée avant de rediriger
         setTimeout(() => {
-          // Rediriger vers la page de confirmation au lieu de la page d'accueil
+          // Rediriger vers la page de confirmation
           navigate('/evaluation-confirmation', { 
             state: { 
               message: "L'entretien a été sauvegardé avec succès",
               type: "success"
             }
           });
-        }, 1500);
+        }, 2000);
         
         return;
       } else {

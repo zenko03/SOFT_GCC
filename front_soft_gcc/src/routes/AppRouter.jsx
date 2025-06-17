@@ -144,7 +144,7 @@ function AppRouter() {
 
       <Route path="/EvaluationLogin" element={<EvaluationLogin />} />
       <Route path="/employee-evaluation" element={<EvaluationPage />} />
-
+      <Route path="/EvaluationConfirmation" element={<EvaluationConfirmation />} />
 
       <Route element={<ProtectedRoute />}>
         {/*COMPETENCES */}

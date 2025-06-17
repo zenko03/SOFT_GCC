@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -6,12 +6,7 @@ import {
   Typography,
   Button,
   Box,
-  Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions
+  Divider
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import {
@@ -23,7 +18,6 @@ import {
 
 const EvaluationConfirmation = () => {
   const navigate = useNavigate();
-  const [showCloseDialog, setShowCloseDialog] = useState(false);
 
   useEffect(() => {
     // Vérifier si l'utilisateur a accès à cette page
@@ -39,19 +33,10 @@ const EvaluationConfirmation = () => {
   }, [navigate]);
 
   const handleCloseApplication = () => {
-    // Montrer la modale de confirmation au lieu d'une alerte
-    setShowCloseDialog(true);
-  };
-
-  const confirmCloseApplication = () => {
-    // Fermer la fenêtre après confirmation
+    // Informer l'utilisateur que la fenêtre va se fermer
+    window.alert("Merci pour votre participation. Cette fenêtre va se fermer.");
+    // Fermer la fenêtre du navigateur
     window.close();
-    
-    // Si la fenêtre ne se ferme pas (ce qui peut arriver dans certains navigateurs),
-    // rediriger vers une page d'accueil par défaut
-    setTimeout(() => {
-      window.location.href = "about:blank";
-    }, 300);
   };
 
   return (
@@ -151,31 +136,6 @@ const EvaluationConfirmation = () => {
           </Paper>
         </motion.div>
       </Box>
-      
-      {/* Dialogue de confirmation pour fermer l'application */}
-      <Dialog
-        open={showCloseDialog}
-        onClose={() => setShowCloseDialog(false)}
-        aria-labelledby="close-dialog-title"
-        aria-describedby="close-dialog-description"
-      >
-        <DialogTitle id="close-dialog-title">
-          {"Fermeture de l'application"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="close-dialog-description">
-            Merci pour votre participation. Vous pouvez maintenant fermer cette fenêtre en toute sécurité.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowCloseDialog(false)} color="primary">
-            Annuler
-          </Button>
-          <Button onClick={confirmCloseApplication} color="primary" autoFocus>
-            Fermer
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Container>
   );
 };

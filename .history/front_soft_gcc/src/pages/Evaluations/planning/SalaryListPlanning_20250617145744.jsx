@@ -455,11 +455,6 @@ function SalaryListPlanning() {
           setSelectedEmployees([]);
           setSelectAll(false);
         }, 1000);
-
-        // Fermer automatiquement le modal après l'animation (3 secondes)
-        setTimeout(() => {
-          setShowSuccessModal(false);
-        }, 3000);
         
       }, 1500); // Attendre 1.5 secondes avant d'afficher l'animation
       
@@ -1102,6 +1097,16 @@ function SalaryListPlanning() {
                     <p className="text-center">{successMessage}</p>
                   </div>
                 )}
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn btn-success" 
+                  onClick={() => setShowSuccessModal(false)}
+                  disabled={isLoadingSuccess} // Désactiver le bouton pendant le chargement
+                >
+                  OK
+                </button>
               </div>
             </div>
           </div>
