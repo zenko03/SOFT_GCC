@@ -685,7 +685,7 @@ function EvaluationInterviewHome() {
       return (
         <div className="d-flex align-items-center justify-content-center">
           <div className="spinner-border spinner-border-sm text-primary" role="status">
-            <span className="visually-hidden"></span>
+            <span className="visually-hidden">Chargement...</span>
           </div>
         </div>
       );
@@ -835,7 +835,7 @@ function EvaluationInterviewHome() {
       };
       
       // Affichage pour les managers qui peuvent valider
-      if (isManager && (employee.managerApproval === null || employee.managerApproval === 0)) {
+      if (isManager && (employee.managerApproval === null || employee.managerComments === null)) {
         return (
           <div className="d-flex align-items-center">
             <button
@@ -849,7 +849,7 @@ function EvaluationInterviewHome() {
       }
 
       // Affichage pour les directeurs qui peuvent valider
-      if (isDirector && (employee.directorApproval === null || employee.directorApproval === 0)) {
+      if (isDirector && (employee.directorApproval === null || employee.directorComments === null)) {
         return (
           <div className="d-flex align-items-center">
             <button
@@ -865,11 +865,7 @@ function EvaluationInterviewHome() {
       // Pour les RH ou autres utilisateurs
       return (
         <div className="d-flex align-items-center">
-          <span className="text-warning me-2">
-            {employee.managerApproval === 1 && employee.directorApproval === null ? 
-              "En attente de validation Directeur" : 
-              "En attente de validation"}
-          </span>
+          <span className="text-warning me-2">En attente de validation</span>
           {isRH && (
             <button
               className="btn btn-outline-secondary btn-sm"
@@ -918,13 +914,7 @@ function EvaluationInterviewHome() {
     <Template>
       <div className="salary-list-planning">
         <h4 className="title">Entretien d&apos;évaluation</h4>
-        {loading && (
-          <div className="d-flex justify-content-center my-3">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden"></span>
-            </div>
-          </div>
-        )}
+        {loading && <div className="loading">Chargement...</div>}
         <div className="filters card p-3 mb-4">
           <div className="row align-items-center g-3">
             {/* Champ de recherche */}

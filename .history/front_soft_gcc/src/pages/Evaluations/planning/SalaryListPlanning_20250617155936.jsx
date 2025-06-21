@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Template from '../../Template';
 import axios from 'axios';
 import '../../../assets/css/Evaluations/SalaryListPlanning.css'; // Styles spécifiques
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import '../../../assets/css/Evaluations/SuccessAnimation.css';
 import EvaluationConfiguration from './EvaluationConfiguration';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown, faUndo, faBell, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -51,6 +50,7 @@ function SalaryListPlanning() {
   
   // Nouveaux états pour les animations et chargement
   const [planningLoading, setPlanningLoading] = useState(false);
+  const [planningConfirmation, setPlanningConfirmation] = useState(false);
 
   const [evaluationDetails, setEvaluationDetails] = useState({
     evaluationType: '',
@@ -61,6 +61,7 @@ function SalaryListPlanning() {
 
   const [showModal, setShowModal] = useState(false);
   const [supervisors, setSupervisors] = useState([]);
+  const [planningSuccess, setPlanningSuccess] = useState(false);
   const [planningError, setPlanningError] = useState('');
   const [loading, setLoading] = useState(false); // Loading state
   const [dateError, setDateError] = useState(''); // State for date validation error
@@ -100,7 +101,15 @@ function SalaryListPlanning() {
   // Variable pour la date d'aujourd'hui
   const today = new Date().toISOString().split('T')[0];
 
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('');
+  const [dialogTitle, setDialogTitle] = useState('');
 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isLoadingSuccess, setIsLoadingSuccess] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   // Gestion du changement de superviseur actuel
   const handleCurrentSupervisorChange = (e) => {
@@ -376,6 +385,19 @@ function SalaryListPlanning() {
     }
   };
 
+  // Fonction pour afficher une erreur dans un dialogue au lieu d'une alerte
+  const showError = (message) => {
+    setDialogTitle('Erreur');
+    setDialogMessage(message);
+    setShowErrorDialog(true);
+  };
+
+  // Fonction pour afficher un succès dans un dialogue au lieu d'une alerte
+  const showSuccess = (title, message) => {
+    setDialogTitle(title);
+    setDialogMessage(message);
+    setShowSuccessDialog(true);
+  };
 
   const handleMassPlanning = async () => {
     const error = validateDates(evaluationDetails.startDate, evaluationDetails.endDate);
@@ -385,14 +407,7 @@ function SalaryListPlanning() {
     }
 
     if (!evaluationDetails.evaluationType || evaluationDetails.supervisors.length === 0) {
-      toast.error('Veuillez remplir tous les champs avant de planifier. Vous devez sélectionner au moins un superviseur.', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      showError('Veuillez remplir tous les champs avant de planifier. Vous devez sélectionner au moins un superviseur.');
       return;
     }
 
@@ -424,15 +439,29 @@ function SalaryListPlanning() {
       // Fermer la modal de planification
       setShowModal(false);
       
-      // Afficher une notification toast de succès
-      toast.success('Les évaluations ont été planifiées avec succès.', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      // Montrer le modal de succès avec chargement
+      setSuccessMessage('Les évaluations ont été planifiées avec succès.');
+      setIsLoadingSuccess(true);
+      setShowSuccessModal(true);
+      
+      // Simuler un traitement en arrière-plan pour montrer le spinner
+      setTimeout(() => {
+        setIsLoadingSuccess(false); // Cacher le spinner
+        setShowSuccessAnimation(true); // Afficher l'animation de succès
+        
+        // Rafraîchir les données après un délai
+        setTimeout(() => {
+          fetchEmployeesWithoutEvaluations();
+          setSelectedEmployees([]);
+          setSelectAll(false);
+        }, 1000);
+        
+        // Fermer automatiquement le modal après l'animation (3 secondes)
+        setTimeout(() => {
+          setShowSuccessModal(false);
+        }, 3000);
+        
+      }, 1500); // Attendre 1.5 secondes avant d'afficher l'animation
       
     } catch (error) {
       console.error('Erreur lors de la planification :', error);
@@ -461,15 +490,8 @@ function SalaryListPlanning() {
       if (autoReminderEnabled) {
         console.log("Configuration des rappels automatiques pour les évaluations");
         
-        // Afficher une notification toast
-        toast.success('Les rappels automatiques ont été activés pour ces évaluations.', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        // Montrer une animation de succès au lieu d'une alerte
+        showSuccess('Rappels Automatiques', 'Les rappels automatiques ont été activés pour ces évaluations.');
       }
       
       setShowConfiguration(false);
@@ -477,14 +499,7 @@ function SalaryListPlanning() {
       fetchEmployeesWithoutEvaluations();
     } catch (error) {
       console.error("Erreur lors de la configuration des rappels:", error);
-      toast.error("Une erreur est survenue lors de la configuration des rappels automatiques.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      showError("Une erreur est survenue lors de la configuration des rappels automatiques.");
     }
   };
 
@@ -537,6 +552,21 @@ function SalaryListPlanning() {
           />
         ) : (
           <>
+            {/* Affichage de la confirmation de planification */}
+            {planningConfirmation && (
+              <div className="confirmation-overlay">
+                <div className="confirmation-box">
+                  <div className="success-animation">
+                    <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                      <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                      <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                  </div>
+                  <h4>Planification réussie !</h4>
+                  <p>Les évaluations ont été planifiées avec succès.</p>
+                </div>
+              </div>
+            )}
             
             {/* Barre de recherche et filtres */}
             <div className="filters card p-3 mb-4">
@@ -798,10 +828,11 @@ function SalaryListPlanning() {
               </div>
               <div className="modal-body">
                 {planningLoading ? (
-                  <div className="d-flex justify-content-center align-items-center p-5">
+                  <div className="text-center my-4">
                     <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden"></span>
+                      <span className="visually-hidden">Chargement...</span>
                     </div>
+                    <p className="mt-3">Planification en cours...</p>
                   </div>
                 ) : (
                   <form onSubmit={(e) => e.preventDefault()}>
@@ -959,8 +990,124 @@ function SalaryListPlanning() {
         </div>
       )}
 
-      {/* Toast Container */}
-      <ToastContainer />
+      {/* Dialogue d'erreur personnalisé */}
+      {showErrorDialog && (
+        <div className="modal fade show" 
+          style={{
+            display: 'block',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            paddingRight: '17px'
+          }} 
+          tabIndex="-1"
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">
+                  <FontAwesomeIcon icon={faExclamationTriangle} className="me-2" /> {dialogTitle}
+                </h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowErrorDialog(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>{dialogMessage}</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowErrorDialog(false)}>Fermer</button>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop show"></div>
+        </div>
+      )}
+
+      {/* Dialogue de succès personnalisé */}
+      {showSuccessDialog && (
+        <div className="modal fade show" 
+          style={{
+            display: 'block',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            paddingRight: '17px'
+          }} 
+          tabIndex="-1"
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title">
+                  <FontAwesomeIcon icon={faBell} className="me-2" /> {dialogTitle}
+                </h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowSuccessDialog(false)}></button>
+              </div>
+              <div className="modal-body">
+                <div className="text-center mb-4">
+                  <div className="success-animation">
+                    <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                      <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                      <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-center">{dialogMessage}</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-success" onClick={() => setShowSuccessDialog(false)}>OK</button>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop show"></div>
+        </div>
+      )}
+
+      {/* Modal de succès avec chargement et animation */}
+      {showSuccessModal && (
+        <div className="modal fade show" 
+          style={{
+            display: 'block',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            paddingRight: '17px'
+          }} 
+          tabIndex="-1"
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title">
+                  <FontAwesomeIcon icon={faBell} className="me-2" /> Planification réussie
+                </h5>
+                <button 
+                  type="button" 
+                  className="btn-close btn-close-white" 
+                  onClick={() => setShowSuccessModal(false)}
+                  disabled={isLoadingSuccess} // Désactiver le bouton pendant le chargement
+                ></button>
+              </div>
+              <div className="modal-body">
+                {isLoadingSuccess ? (
+                  <div className="text-center mb-4">
+                    <div className="spinner-grow text-success mb-3" style={{ width: '3rem', height: '3rem' }} role="status">
+                      <span className="visually-hidden">Chargement...</span>
+                    </div>
+                    <p>Finalisation de la planification en cours...</p>
+                  </div>
+                ) : (
+                  <div className="text-center mb-4">
+                    {showSuccessAnimation && (
+                      <div className="success-animation">
+                        <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                          <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                          <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                        </svg>
+                      </div>
+                    )}
+                    <p className="text-center">{successMessage}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop show"></div>
+        </div>
+      )}
     </Template>
   );
 }

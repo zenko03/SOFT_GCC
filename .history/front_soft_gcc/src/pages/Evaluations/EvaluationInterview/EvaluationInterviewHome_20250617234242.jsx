@@ -835,7 +835,7 @@ function EvaluationInterviewHome() {
       };
       
       // Affichage pour les managers qui peuvent valider
-      if (isManager && (employee.managerApproval === null || employee.managerApproval === 0)) {
+      if (isManager && (employee.managerApproval === null || employee.managerComments === null)) {
         return (
           <div className="d-flex align-items-center">
             <button
@@ -849,7 +849,7 @@ function EvaluationInterviewHome() {
       }
 
       // Affichage pour les directeurs qui peuvent valider
-      if (isDirector && (employee.directorApproval === null || employee.directorApproval === 0)) {
+      if (isDirector && (employee.directorApproval === null || employee.directorComments === null)) {
         return (
           <div className="d-flex align-items-center">
             <button
@@ -865,11 +865,7 @@ function EvaluationInterviewHome() {
       // Pour les RH ou autres utilisateurs
       return (
         <div className="d-flex align-items-center">
-          <span className="text-warning me-2">
-            {employee.managerApproval === 1 && employee.directorApproval === null ? 
-              "En attente de validation Directeur" : 
-              "En attente de validation"}
-          </span>
+          <span className="text-warning me-2">En attente de validation</span>
           {isRH && (
             <button
               className="btn btn-outline-secondary btn-sm"

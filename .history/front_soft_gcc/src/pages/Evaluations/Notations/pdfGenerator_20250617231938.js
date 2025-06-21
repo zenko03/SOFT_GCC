@@ -377,7 +377,7 @@ export const downloadEvaluationPDF = async (
     img.src = logoPath;
     
     // Attendre que l'image soit chargée avant de générer le PDF
-    await new Promise((resolve) => {
+    await new Promise((resolve, reject) => {
       if (img.complete) {
         resolve();
       } else {
@@ -447,27 +447,6 @@ export const previewEvaluationPDF = async (
 ) => {
   // Créer un nouveau document PDF identique à celui du téléchargement
   const doc = new jsPDF();
-  
-  // Précharger l'image du logo pour s'assurer qu'elle est disponible
-  try {
-    const img = new Image();
-    img.src = logoPath;
-    
-    // Attendre que l'image soit chargée avant de générer le PDF
-    await new Promise((resolve) => {
-      if (img.complete) {
-        resolve();
-      } else {
-        img.onload = resolve;
-        img.onerror = () => {
-          console.warn("Impossible de charger le logo pour la prévisualisation, le PDF sera généré sans logo");
-          resolve(); // Continuer même si le logo ne peut pas être chargé
-        };
-      }
-    });
-  } catch (error) {
-    console.warn("Erreur lors du préchargement du logo pour la prévisualisation:", error);
-  }
   
   // Générer le contenu du PDF
   await generatePDFContent(doc, evaluationData, employeeData, questionsData, average, validationData, trainingSuggestions);

@@ -345,7 +345,7 @@ const EvaluationInterviews = () => {
         
         // Attendre un court instant pour que l'utilisateur voie le message de confirmation
         setTimeout(() => {
-          // Rediriger vers la page d'accueil des entretiens
+          // Rediriger vers la page d'accueil des entretiens au lieu de la page de confirmation
           navigate('/homeInterview');
         }, 1500);
         

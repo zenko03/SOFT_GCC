@@ -63,8 +63,6 @@ function EvaluationInterviewHome() {
     direction: null
   });
 
-  const [loadingActions, setLoadingActions] = useState({});
-
   // Fonction de réinitialisation des filtres
   const handleResetFilters = () => {
     setSearchQuery('');
@@ -307,19 +305,6 @@ function EvaluationInterviewHome() {
     }));
   }, []);
 
-  // Fonction pour gérer l'état de chargement des actions
-  const setActionLoading = (employeeId, isLoading) => {
-    setLoadingActions(prev => ({
-      ...prev,
-      [employeeId]: isLoading
-    }));
-  };
-
-  // Fonction pour vérifier si une action est en cours de chargement
-  const isActionLoading = (employeeId) => {
-    return loadingActions[employeeId] === true;
-  };
-
   const handleMassPlanning = useCallback(async () => {
     try {
       // Récupérer à nouveau l'employé sélectionné pour être sûr
@@ -375,6 +360,7 @@ function EvaluationInterviewHome() {
         return;
       }
 
+      toast.info("Planification de l'entretien en cours...");
       await axios.post(
         'https://localhost:7082/api/EvaluationInterview/schedule-interview',
         payload
@@ -392,7 +378,7 @@ function EvaluationInterviewHome() {
 
   const startInterview = useCallback(async (employeeId) => {
     try {
-      setActionLoading(employeeId, true);
+      toast.info("Préparation de l'entretien...");
       console.log(`Démarrage de l'entretien pour l'employé ID: ${employeeId}`);
 
       // Récupérer d'abord l'employé complet pour avoir son evaluationId
@@ -426,7 +412,6 @@ function EvaluationInterviewHome() {
       if (!interview || !interview.interviewId) {
         console.error("Aucun entretien trouvé pour cet employé.");
         toast.error("Aucun entretien trouvé pour cet employé.");
-        setActionLoading(employeeId, false);
         return;
       }
 
@@ -441,6 +426,7 @@ function EvaluationInterviewHome() {
       // Si l'entretien est en attente de validation (statut 25) et l'utilisateur est manager ou directeur
       if (interview.status === 25 && (isManager || isDirector)) {
         console.log("Redirection vers la page de détails pour validation");
+        toast.info("Accès à la page de validation...");
         // Rediriger vers la page de détails de l'entretien pour validation
         navigate("/evaluation-details", { 
           state: { 
@@ -449,7 +435,6 @@ function EvaluationInterviewHome() {
             mode: "validation" 
           } 
         });
-        setActionLoading(employeeId, false);
         return;
       }
       
@@ -468,10 +453,8 @@ function EvaluationInterviewHome() {
         console.log("Redirection vers la page d'entretien avec données:", { interview, employeeId });
         navigate("/validation", { state: { interview, employeeId } });
       }
-      setActionLoading(employeeId, false);
     } catch (error) {
       console.error("Erreur complète:", error);
-      setActionLoading(employeeId, false);
 
       if (error.response) {
         console.error("Détails de la réponse d'erreur:", error.response.status, error.response.data);
@@ -513,7 +496,7 @@ function EvaluationInterviewHome() {
 
   const getAndCancelInterview = useCallback(async (employeeId) => {
     try {
-      setActionLoading(employeeId, true);
+      toast.info("Préparation de l'annulation de l'entretien...");
       const interviewResponse = await axios.get(
         `https://localhost:7082/api/EvaluationInterview/get-interview-by-participant/${employeeId}`
       );
@@ -523,7 +506,6 @@ function EvaluationInterviewHome() {
       
       if (!interview || !interview.interviewId) {
         toast.error("Aucun entretien trouvé pour cet employé.");
-        setActionLoading(employeeId, false);
         return;
       }
 
@@ -532,10 +514,8 @@ function EvaluationInterviewHome() {
       // Réinitialiser la variable globale après annulation
       window.selectedEmployeeForModal = undefined;
       console.log("Variable globale selectedEmployeeForModal réinitialisée après annulation");
-      setActionLoading(employeeId, false);
 
     } catch (error) {
-      setActionLoading(employeeId, false);
       handleError(error, "Erreur lors de la récupération des informations d'entretien.");
     }
   }, [handleCancelInterview, handleError]);
@@ -626,7 +606,7 @@ function EvaluationInterviewHome() {
 
   const getAndEditInterview = useCallback(async (employeeId) => {
     try {
-      setActionLoading(employeeId, true);
+      toast.info("Chargement des informations de l'entretien...");
       console.log("===== DEBUG: getAndEditInterview =====");
       console.log("Tentative de récupération de l'entretien pour l'employé ID:", employeeId);
       
@@ -652,16 +632,14 @@ function EvaluationInterviewHome() {
       
       if (!interview || !interview.interviewId) {
         toast.error("Aucun entretien trouvé pour cet employé.");
-        setActionLoading(employeeId, false);
         return;
       }
 
       // 4. Appeler handleEditInterview avec l'employé prédéfini
       await handleEditInterview(interview.interviewId, fullEmployee);
-      setActionLoading(employeeId, false);
+      toast.success("Entretien prêt à être modifié");
 
     } catch (error) {
-      setActionLoading(employeeId, false);
       handleError(error, "Erreur lors de la récupération des informations d'entretien.");
     }
   }, [handleEditInterview, handleError, employees]);
@@ -677,19 +655,6 @@ function EvaluationInterviewHome() {
     const isToday = compareDates(employee.interviewDate, today);
     const isFutureDate = employee.interviewDate && new Date(employee.interviewDate) > new Date(today);
     const isPastDate = employee.interviewDate && new Date(employee.interviewDate) < new Date(today) && !isToday;
-    
-    // Vérifier si une action est en cours pour cet employé
-    const loading = isActionLoading(employee.employeeId);
-
-    if (loading) {
-      return (
-        <div className="d-flex align-items-center justify-content-center">
-          <div className="spinner-border spinner-border-sm text-primary" role="status">
-            <span className="visually-hidden"></span>
-          </div>
-        </div>
-      );
-    }
 
     if (employee.interviewStatus === INTERVIEW_STATUS.PLANNED) {
       if (isRH) {
@@ -712,7 +677,10 @@ function EvaluationInterviewHome() {
             <div className="d-flex align-items-center">
               <button
                 className="btn btn-success btn-sm me-2"
-                onClick={() => startInterview(employee.employeeId)}
+                onClick={() => {
+                  toast.info("Démarrage de l'entretien en cours...");
+                  startInterview(employee.employeeId);
+                }}
               >
                 Démarrer l&apos;entretien
               </button>
@@ -766,14 +734,13 @@ function EvaluationInterviewHome() {
       // Fonction pour rediriger directement vers la page de validation
       const redirectToValidation = async (employeeId) => {
         try {
-          setActionLoading(employeeId, true);
+          toast.info("Chargement des données pour validation...");
           // Récupérer l'employé complet depuis la liste pour avoir son evaluationId
           const employee = employees.find(emp => emp.employeeId === employeeId);
           console.log("Employé trouvé pour validation:", employee);
           
           if (!employee) {
             toast.error("Informations de l'employé introuvables");
-            setActionLoading(employeeId, false);
             return;
           }
           
@@ -787,7 +754,6 @@ function EvaluationInterviewHome() {
           
           if (!interview || !interview.interviewId) {
             toast.error("Aucun entretien trouvé pour cet employé.");
-            setActionLoading(employeeId, false);
             return;
           }
           
@@ -809,6 +775,7 @@ function EvaluationInterviewHome() {
             employeeId
           });
           
+          toast.success("Accès à la page de validation...");
           // Rediriger vers la page de détails de l'entretien avec tous les IDs nécessaires
           navigate("/evaluation-details", { 
             state: { 
@@ -824,7 +791,6 @@ function EvaluationInterviewHome() {
           });
         } catch (error) {
           console.error("Erreur lors de la récupération de l'entretien:", error);
-          setActionLoading(employeeId, false);
           
           if (error.response) {
             console.error("Détails de l'erreur:", error.response.status, error.response.data);
@@ -835,7 +801,7 @@ function EvaluationInterviewHome() {
       };
       
       // Affichage pour les managers qui peuvent valider
-      if (isManager && (employee.managerApproval === null || employee.managerApproval === 0)) {
+      if (isManager && (employee.managerApproval === null || employee.managerComments === null)) {
         return (
           <div className="d-flex align-items-center">
             <button
@@ -849,7 +815,7 @@ function EvaluationInterviewHome() {
       }
 
       // Affichage pour les directeurs qui peuvent valider
-      if (isDirector && (employee.directorApproval === null || employee.directorApproval === 0)) {
+      if (isDirector && (employee.directorApproval === null || employee.directorComments === null)) {
         return (
           <div className="d-flex align-items-center">
             <button
@@ -865,11 +831,7 @@ function EvaluationInterviewHome() {
       // Pour les RH ou autres utilisateurs
       return (
         <div className="d-flex align-items-center">
-          <span className="text-warning me-2">
-            {employee.managerApproval === 1 && employee.directorApproval === null ? 
-              "En attente de validation Directeur" : 
-              "En attente de validation"}
-          </span>
+          <span className="text-warning me-2">En attente de validation</span>
           {isRH && (
             <button
               className="btn btn-outline-secondary btn-sm"
@@ -889,7 +851,10 @@ function EvaluationInterviewHome() {
           <div className="d-flex align-items-center">
             <button
               className="btn btn-primary btn-sm"
-              onClick={() => startInterview(employee.employeeId)}
+              onClick={() => {
+                toast.info("Reprise de l'entretien en cours...");
+                startInterview(employee.employeeId);
+              }}
             >
               Continuer l&apos;entretien
             </button>
@@ -904,7 +869,10 @@ function EvaluationInterviewHome() {
       return (
         <button
           className="btn btn-outline-primary btn-sm"
-          onClick={() => handleOpenModal(employee.employeeId)}
+          onClick={() => {
+            toast.info("Préparation de la planification...");
+            handleOpenModal(employee.employeeId);
+          }}
         >
           Planifier
         </button>
@@ -912,19 +880,13 @@ function EvaluationInterviewHome() {
     }
 
     return null;
-  }, [user, today, getAndCancelInterview, getAndEditInterview, startInterview, canValidateAsManager, canValidateAsDirector, canImportEvaluation, INTERVIEW_STATUS, handleOpenModal, navigate, employees, isActionLoading]);
+  }, [user, today, getAndCancelInterview, getAndEditInterview, startInterview, canValidateAsManager, canValidateAsDirector, canImportEvaluation, INTERVIEW_STATUS, handleOpenModal, navigate, employees]);
 
   return (
     <Template>
       <div className="salary-list-planning">
         <h4 className="title">Entretien d&apos;évaluation</h4>
-        {loading && (
-          <div className="d-flex justify-content-center my-3">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden"></span>
-            </div>
-          </div>
-        )}
+        {loading && <div className="loading">Chargement...</div>}
         <div className="filters card p-3 mb-4">
           <div className="row align-items-center g-3">
             {/* Champ de recherche */}

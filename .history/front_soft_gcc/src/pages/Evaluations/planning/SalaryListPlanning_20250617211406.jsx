@@ -798,10 +798,11 @@ function SalaryListPlanning() {
               </div>
               <div className="modal-body">
                 {planningLoading ? (
-                  <div className="d-flex justify-content-center align-items-center p-5">
+                  <div className="text-center my-4">
                     <div className="spinner-border text-primary" role="status">
-                      <span className="visually-hidden"></span>
+                      <span className="visually-hidden">Chargement...</span>
                     </div>
+                    <p className="mt-3">Planification en cours...</p>
                   </div>
                 ) : (
                   <form onSubmit={(e) => e.preventDefault()}>
