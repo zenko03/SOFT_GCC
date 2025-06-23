@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSWR from 'swr';
-import Fetcher from '../../../components/fetcher';
+import Fetcher from '../../../components/Fetcher';
 import PageHeader from '../../../components/PageHeader';
 import Template from '../../Template';
 import '../../../styles/skillsStyle.css';

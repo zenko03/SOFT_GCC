@@ -173,6 +173,21 @@ builder.Services.Configure<ReminderSettings>(builder.Configuration.GetSection("R
 
 #endregion
 
+#region Cors configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins(
+               "http://localhost:5173",
+               "http://151.80.218.41:5173"
+           )
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+           .AllowCredentials();
+    });
+});
+#endregion
 
 #region dbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]), ServiceLifetime.Transient);
@@ -199,22 +214,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
-#endregion
-
-#region Cors configuration
-builder.Services.AddCors(options =>
-{
-	options.AddPolicy("AllowReactApp", policy =>
-	{
-		 policy.WithOrigins(
-                "http://localhost:5173",
-                "http://151.80.218.41:5173"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-	});
-});
 #endregion
 
 #region Swagger

@@ -60,7 +60,7 @@ const VerifyAttestationPage = () => {
     <div className="verify-container">
       <div className="card">
         {/* Logo statique de la société */}
-       <img className="logo-top-left" src="/src/assets/images/Logo/softwellogo.png" alt="Logo société" />
+       <img className="logo-top-left" src="/Logo/softwellogo.png" alt="Logo société" />
 
 
         {/* Titre centré uniquement */}

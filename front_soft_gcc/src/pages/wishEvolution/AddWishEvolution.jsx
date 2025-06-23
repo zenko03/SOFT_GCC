@@ -2,18 +2,19 @@ import React, {useState, useEffect} from 'react';
 import Template from '../Template';
 import PageHeader from '../../components/PageHeader';
 import useSWR from 'swr';
-import Fetcher from '../../components/Fetcher';
+import Fetcher from '../../components/fetcher';
 import Loader from '../../helpers/Loader';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import "../../styles/careerStyle.css";
 import CancelButton from '../../helpers/CancelButton';
 import BreadcrumbPers from '../../helpers/BreadcrumbPers';
+import FetcherApi from '../../helpers/FetcherApi';
 
 // Page de creation d'un plan de carriere
 function AddWishEvolution({ onSearch }) {
     // Preparation des donnees de formulaire
-    const { data: dataEmployee } = useSWR('/Employee', Fetcher);
+    const { data: dataEmployee } = useSWR('/Employee', FetcherApi);
     const { data: dataPosition } = useSWR('/Position', Fetcher);
     const { data: dataWishType } = useSWR('/WishType', Fetcher);
 
@@ -119,7 +120,7 @@ function AddWishEvolution({ onSearch }) {
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
                     <i className="mdi mdi-format-list-checks skill-icon"></i>
-                    <p className="skill-title">AJOUT D'UN SOUHAIT D'ÉVALUATION</p>
+                    <p className="skill-title">AJOUT D'UN SOUHAIT D'ÉVOLUTION</p>
                 </div>
 
                 <div className="col-lg-2">

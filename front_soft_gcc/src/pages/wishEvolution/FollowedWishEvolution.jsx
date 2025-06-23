@@ -365,7 +365,7 @@ function FollowedWishEvolution() {
                             )}
                             <td>
                               <button className="btn-details text-primary" >
-                                <Icon path={mdiEyeOutline} size={1} /> Voir détails
+                                <Icon path={mdiEyeOutline} size={1} /> Voir demande
                               </button>
                             </td>
                           </tr>

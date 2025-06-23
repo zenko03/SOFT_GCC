@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Template from '../../Template';
-import PageHeader from '../../../components/PageHeader';
 import useSWR from 'swr';
-import Fetcher from '../../../components/Fetcher';
 import Loader from '../../../helpers/Loader';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 import "../../../styles/careerStyle.css";
 import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 import CancelButton from '../../../helpers/CancelButton';
+import FetcherApi from '../../../helpers/FetcherApi';
+import api from '../../../helpers/api';
 
 function CreateEmployeePage({ onSearch }) {
-    const { data: dataEmployee } = useSWR('/Employee', Fetcher);
-    const { data: dataDepartment } = useSWR('/Department', Fetcher);
+    const { data: dataEmployee } = useSWR('/Employee', FetcherApi);
+    const { data: dataDepartment } = useSWR('/Department', FetcherApi);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -105,7 +105,7 @@ function CreateEmployeePage({ onSearch }) {
                 form.append("photo", formData.photo);
             }
          
-            await axios.post(urlApi('/Employee'), form);
+            await api.post(urlApi('/Employee'), form);
             setFormData({
                 registrationNumber: '',
                 name: '',

@@ -14293,3 +14293,25 @@ dl {
     color: #b1b1b1; }
 
 /*# sourceMappingURL=style.css.map */
+.active-menu {
+  background-color: #fffbe6 !important; /* jaune doux */
+  color: #000 !important;
+  font-weight: bold;
+}
+
+.menu-arrow {
+  transition: transform 0.3s ease;
+}
+
+.menu-arrow.rotate-90 {
+  transform: rotate(90deg);
+}
+
+.nav-link.active-menu {
+  color: #ffe082 !important;
+  font-weight: 600;
+  background-color: transparent !important;
+  text-decoration: none;
+  border-bottom: 2px solid #ffe082;
+  padding-bottom: 4px;
+}

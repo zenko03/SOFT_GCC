@@ -8,7 +8,9 @@ import LayOffForm from '../../../components/career/LayOffForm';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 import { useParams } from 'react-router-dom';
-import LoaderComponent from '../../../helpers/LoaderComponent';
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
+import Loader from '../../../helpers/Loader';
+import { useNavigate } from 'react-router-dom';
 
 // Page pour consulter les détails d'un plan de carrière
 function DetailAssignment() {
@@ -25,6 +27,7 @@ function DetailAssignment() {
     const [state, seState] = useState('');
     const [assignmentType, setAssignmentType] = useState({});
     const [selectedItem, setSelectedItem] = useState(0);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         assignmentTypeId: undefined,
         registrationNumber: undefined,
@@ -149,21 +152,36 @@ function DetailAssignment() {
         }
     };
 
-    // Affichage du Loading page
-    if (isLoading) {
-        return <LoaderComponent />;
-    }
-
-    // Gestion des erreurs
-    if (error) {
-        return <div className="error">Erreur : {error}</div>;
-    }
+    const handleRetour = () => {
+        navigate(`/softGcc/carriere/fiche/${assignmentToEdit.registrationNumber}`);
+    };
 
     return (
         <Template>
-            <PageHeader module={module} action={action} url={url} />
+            {isLoading && <Loader />}
+            {error && <div className="alert alert-danger">Erreur : {error}</div>}
+            <div className="title-container">
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-map-marker-path skill-icon"></i>
+                    <p className="skill-title">DETAILS PLAN DE CARRIÈRE</p>
+                </div>
+                <div className="col-lg-2">
+                    <button onClick={handleRetour} className="btn-outline-dark btn-fw" style={{float: 'right'}}>
+                        <i className="mdi mdi-arrow-left-circle icon-cancel" style={{}}></i>
+                        Retour
+                    </button>
+                </div>  
+            </div>
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/SoftGcc/tableauBord' },
+                    { label: 'Plan de carrière', path: '/SoftGcc/carriere' },
+                    { label: 'Fiche carrière', path: `/softGcc/carriere/fiche/${assignmentToEdit.registrationNumber}` },
+                    { label: 'Détails', path: `SoftGcc/carriere/fiche/edit/${CareerPlanId}` }
+                ]}
+            />
             <Alert variant="warning" className="mb-4">
-                Le plan de carriere est cloture
+                Le plan de carriere est clôturé
             </Alert>
 
             <form className="forms-sample">

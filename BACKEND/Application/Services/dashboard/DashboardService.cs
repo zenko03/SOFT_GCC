@@ -242,7 +242,7 @@ namespace soft_carriere_competence.Application.Services.dashboard
                         results.Add(new StateWishEvolutionDto
                         {
                             Label = reader.GetString(3),
-                            Value = reader.GetString(5),
+                            Value = reader.GetInt32(4),
                             BackgroundColor = reader.GetString(2),
                             Color = reader.GetString(1)
                         });

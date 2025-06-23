@@ -177,7 +177,7 @@ const SummaryCards = ({ dashboard }) => {
         onClose={handleClose}
         keepMounted
         fullWidth={true}
-        maxWidth="lg"
+        maxWidth="xl"
       >
         <DialogTitle
           sx={{

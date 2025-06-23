@@ -7,16 +7,12 @@ import LayOffForm from '../../../components/career/LayOffForm';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 import { useParams } from 'react-router-dom';
-import LoaderComponent from '../../../helpers/LoaderComponent';
 import { useNavigate } from 'react-router-dom';
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
+import Loader from '../../../helpers/Loader';
 
 // Page de modification d'un plan de carrière
 function EditAffectation() {
-    // URL en tête de page 
-    const module = "Plan de carrière";
-    const action = "Edit";
-    const url = "/carriere";
-
     // Initialisation des variables etats
     const { CareerPlanId } = useParams();
     const [isLoading, setIsLoading] = useState(false);
@@ -157,20 +153,13 @@ function EditAffectation() {
 
     // Fonction qui gère le retour en arrière de la page
     const handleRetour = () => {
-        navigate(`/carriere/fiche/${assignmentToEdit.registrationNumber}`);
+        navigate(`/softGcc/carriere/fiche/${assignmentToEdit.registrationNumber}`);
     };
-
-    if (isLoading) {
-        return <LoaderComponent />;
-    }
-
-    if (error) {
-        return <div className="error">Erreur : {error}</div>;
-    }
 
     return (
         <Template>
-            <PageHeader module={module} action={action} url={url} />
+            {isLoading && <Loader />}
+            {error && <div className="alert alert-danger">Erreur : {error}</div>}
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
                     <i className="mdi mdi-map-marker-path skill-icon"></i>
@@ -183,6 +172,15 @@ function EditAffectation() {
                     </button>
                 </div>  
             </div>
+            
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/SoftGcc/tableauBord' },
+                    { label: 'Plan de carrière', path: '/SoftGcc/carriere' },
+                    { label: 'Fiche carrière', path: `/softGcc/carriere/fiche/${assignmentToEdit.registrationNumber}` },
+                    { label: 'Modifier', path: `SoftGcc/carriere/fiche/edit/${CareerPlanId}` }
+                ]}
+            />
           
             <div className="row">
                 <div className="button-save-profil">

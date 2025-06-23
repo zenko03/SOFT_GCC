@@ -15,7 +15,8 @@ SELECT
 	e.manager_id,
 	(select name from employee where employee_id=e.manager_id) as Manager_name,
 	(select FirstName from employee where employee_id=e.manager_id) as Manager_firstName,
-	e.photo AS employee_photo
+	e.photo AS employee_photo,
+	email
 FROM 
     Employee e 
 JOIN 
@@ -372,6 +373,7 @@ SELECT
 	e.hiring_date, 
 	e.civilite_id,
 	e.civilite_name,
+	e.email,
 	COALESCE(count(*), 0) as career_plan_number 
 FROM v_employee e
 LEFT join career_plan c 
@@ -384,7 +386,8 @@ GROUP BY
   e.Birthday, 
   e.hiring_date,
   e.civilite_name,
-  e.civilite_id;
+  e.civilite_id,
+  e.email;
 
 -- Creation de la vue v_employee_position pour le dernier poste de chaque employe
 CREATE VIEW v_employee_get_last_position AS
@@ -453,7 +456,8 @@ SELECT
     ep.Net_salary,
 	cpen.career_plan_number,
 	ep.Establishment_id,
-	ep.Ending_contract
+	ep.Ending_contract,
+	cpen.email
 FROM v_employee_get_last_position ep
 JOIN v_career_plan_employee_number cpen
 ON ep.Registration_number = cpen.Registration_number;
@@ -936,6 +940,7 @@ FROM (
     ON e.Registration_number = cp.Registration_number 
     AND cp.Assignment_type_id = 1 
     AND cp.State > 0
+	AND cp.Ending_contract IS NULL
 ) AS sub
 GROUP BY StatusLabel, StatusColor, Color;
 
@@ -1009,14 +1014,14 @@ SELECT
 		ELSE '#F8D7DA'
 	END AS Background_color,
     sc.Label,
-    sc.Total,
+    sc.Total AS Value,
     CONCAT(
         FORMAT(
             CAST(sc.Total * 100.0 / NULLIF(tg.TotalAll, 0) AS DECIMAL(5,2)),
             'N2'
         ),
         ' %'
-    ) AS Value
+    ) AS PercentValue
 FROM StateCount sc
 CROSS JOIN TotalGeneral tg;
 

@@ -7,7 +7,7 @@ import Loader from '../../../helpers/Loader';
 import '../../../styles/pagination.css';
 import FormattedDate from '../../../helpers/FormattedDate';
 import useSWR from 'swr';
-import Fetcher from '../../../components/fetcher';
+import Fetcher from '../../../components/Fetcher';
 import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 import { mdiEyeOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -65,12 +65,11 @@ const ListCareerPage = () => {
       try {
         const queryParams = new URLSearchParams({
           ...appliedFilters,
-          page: currentPage,
+          pageNumber: currentPage,
           pageSize,
         }).toString();
 
         const response = await Fetcher(`/CareerPlan/filter?${queryParams}`);
-
         if (response.success) {
           setCareers(response.data);
           setTotalPages(response.totalPages || 0);
@@ -131,6 +130,7 @@ const ListCareerPage = () => {
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
+      console.log(currentPage);
     }
   };
 
@@ -302,7 +302,7 @@ const ListCareerPage = () => {
                         <td>{career.careerPlanNumber}</td>
                         <td>
                           <button className="btn-details text-primary" >
-                            <Icon path={mdiEyeOutline} size={1} /> Voir détails
+                            <Icon path={mdiEyeOutline} size={1} /> Voir carrière
                           </button>
                         </td>
                       </tr>

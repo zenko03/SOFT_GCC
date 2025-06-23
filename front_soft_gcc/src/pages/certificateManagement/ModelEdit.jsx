@@ -454,15 +454,15 @@ const ModelEdit = ({ dataEmployee }) => {
           type: "application/pdf",
         });
 
-        const recipient = email || 'chalmaninssa1962002@gmail.com';
+        const recipient = dataEmployee.email || 'chalmaninssa1962002@gmail.com';
 
         // ✅ Attente de l'upload + arrêt si erreur levée
         await handleUpload(generatedFile, 2);
 
         await sendAttestationEmail({
           recipientEmail: recipient,
-          subject: 'Votre attestation de travail',
-          body: '<p>Bonjour,<br/>Veuillez trouver ci-joint votre attestation de travail.</p>',
+          subject: aboutModel.certificateTypeName,
+          body: `<p>Bonjour ${dataEmployee.civiliteName} ${dataEmployee.firstName} ${dataEmployee.name},<br/>Veuillez trouver ci-joint votre attestation de travail.</p>`,
           file: generatedFile,
         });
 
