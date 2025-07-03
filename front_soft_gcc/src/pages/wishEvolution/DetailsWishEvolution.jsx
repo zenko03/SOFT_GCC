@@ -7,6 +7,9 @@ import axios from "axios";
 import { urlApi } from "../../helpers/utils";
 import Loader from "../../helpers/Loader";
 import { useNavigate } from 'react-router-dom';
+import CancelButton from "../../helpers/CancelButton";
+import BreadcrumbPers from "../../helpers/BreadcrumbPers";
+import api from "../../helpers/api";
 
 // Fonction utilitaire pour créer le tableau `skillNecessary`
 const createSkillNecessary = (skillPosition, skillEmployee) => {
@@ -54,7 +57,7 @@ function DetailsWishEvolution() {
       // Récupérer les compétences nécessaires et les compétences de l'employé
       const [skillPositionResponse, employeeSkillResponse, suggestionResponse] = await Promise.all([
         axios.get(urlApi(`/WishEvolution/skillPosition/${descriptionData.wishPositionId}`)),
-        axios.get(urlApi(`/EmployeeSkills/employee/${descriptionData.employeeId}`)),
+        api.get(urlApi(`/EmployeeSkills/employee/${descriptionData.employeeId}`)),
         axios.get(urlApi(`/WishEvolution/suggestionPosition/${descriptionData.employeeId}`))
       ]);
 
@@ -130,27 +133,38 @@ function DetailsWishEvolution() {
 
   return (
     <Template>
-      <PageHeader module={module} action={action} url={url} />
       {isLoading && <Loader />}
-      {error && <p className="text-danger">{error}</p>}
+      <div className="title-container">
+        <div className="col-lg-10 skill-header">
+          <i className="mdi mdi-information-outline skill-icon"></i>
+          <p className="skill-title">DÉTAILS DE LA DEMANDE</p>
+        </div>
+        <div className="col-lg-2">
+          <CancelButton to="souhaitEvolution/suivi" />
+        </div>  
+      </div>
+      <BreadcrumbPers
+        items={[
+          { label: 'Accueil', path: '/softGcc/tableauBord' },
+          { label: 'Souhait évolution', path: '/softGcc/souhaitEvolution/suivi' },
+          { label: 'Détails', path: '/softGcc/souhaitEvolution/détails' },
+        ]}
+      />
+      {error && <div className="alert alert-danger">{error}</div>}
 
-      <div className="action-buttons text-left my-4">
-        <button type="button" onClick={handleSkill} className="btn btn-outline-primary mx-2">Compétences</button>
-        <button type="button" onClick={handleCareer} className="btn btn-outline-primary mx-2">Carrières</button>
-      </div>
+     <div className="action-buttons d-flex justify-content-start my-4">
+      <button type="button" onClick={handleSkill} className="btn btn-outline-primary mx-2">Compétences</button>
+      <button type="button" onClick={handleCareer} className="btn btn-outline-primary mx-2">Carrières</button>
+      <button type="button" className="btn btn-outline-primary mx-2">Évaluer</button>
+    </div>
       <hr></hr>
-      <div className="col-lg-10 skill-header">
-        <i className="mdi mdi-information-outline skill-icon"></i>
-        <h4 className="skill-title">DETAILS DE LA DEMANDE</h4>
-      </div>
         {dataDescription ? (
           <div className="row g-4">
             <div className="col-md-6">
               <div className="card shadow-sm border-0">
-                <div className="card-header title-container">
-                  <h5 className="title">
-                    <i className="mdi mdi-note-text"></i> Description
-                  </h5>
+                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                  <i className="mdi mdi-note-text me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                  <h3 className="mb-0" style={{color: '#B8860B'}}>Description</h3>
                 </div>
                 <div className="card-body">
                   <p><strong>Référence employé :</strong> {dataDescription.registrationNumber}</p>
@@ -164,10 +178,9 @@ function DetailsWishEvolution() {
             </div>
             <div className="col-md-6">
               <div className="card shadow-sm border-0">
-                <div className="card-header title-container">
-                  <h5 className="title">
-                    <i className="mdi mdi-note-text"></i> Description
-                  </h5>
+                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                  <i className="mdi mdi-note-text me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                  <h3 className="mb-0" style={{color: '#B8860B'}}>Description</h3>
                 </div>
                 <div className="card-body">
                   <p><strong>Création de la demande :</strong> {new Date(dataDescription.creationDate).toLocaleDateString()}</p>
@@ -205,10 +218,9 @@ function DetailsWishEvolution() {
         <div className="row g-4">
           <div className="col-md-8">
             <div className="card shadow-sm border-0">
-              <div className="card-header title-container">
-                <h5 className="title">
-                  <i className="mdi mdi-checkbox-marked-outline"></i> Vérification des compétences nécessaires
-                </h5>
+              <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                <i className="mdi mdi-checkbox-marked-outline me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                <h3 className="mb-0" style={{color: '#B8860B'}}>Vérification des compétences nécessaires</h3>
               </div>
               <div className="card-body">
                 <table className="table table-hover">
@@ -234,9 +246,11 @@ function DetailsWishEvolution() {
           </div>
           <div className="col-md-4">
             <div className="card shadow-sm border-0">
+              <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                <i className="mdi mdi-briefcase-search me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                <h3 className="mb-0" style={{color: '#B8860B'}}>Postes suggerrées</h3>
+              </div>
               <div className="card-body">
-                <h5 className="card-title subtitle" 
-                >Postes suggerrées</h5>
                 <table className="table table-hover">
                   <thead>
                     <tr>

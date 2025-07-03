@@ -9,12 +9,10 @@ import '../../styles/pagination.css';
 import BarChart from '../../components/BarChart';
 import { urlApi } from '../../helpers/utils';
 import axios from "axios";
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 // Page de suivi des souhaits d'évolution
 function SettingCareerPage() {
-    const module = 'Parametre';
-    const action = 'Carriere';
-    const url = '/Parametre';
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null); 
@@ -44,13 +42,21 @@ function SettingCareerPage() {
         <Template>
             {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
           
-            <PageHeader module={module} action={action} url={url} />
-            <div className='row'>
-                <div className="col-lg-12 skill-header">
-                    <i className="mdi mdi-settings skill-icon"></i>
-                    <h4 className="skill-title">PARAMETRE DES CARRIERES</h4>
-                </div>             
+            <div className="title-container">
+                <div className="col-lg-10 skill-header">
+                <i className="mdi mdi-settings skill-icon"></i>
+                <p className="skill-title">PARAMÈTRE DES CARRIÈRES</p>
+                </div>
             </div>
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/softGcc/tableauBord' },
+                    { label: 'paramètres carrières', path: '/softGcc/settings/carriere' },
+                    { label: 'Menu', path: '/softGcc/settings/carriere' },
+                ]}
+            />
+            
+            {error && <div className="alert alert-danger">{error}</div>}
 
             <div className="row">
                 {listSettings.map((item, id) => (

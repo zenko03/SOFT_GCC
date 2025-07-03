@@ -7,7 +7,11 @@ import Loader from '../../../helpers/Loader';
 import '../../../styles/pagination.css';
 import FormattedDate from '../../../helpers/FormattedDate';
 import useSWR from 'swr';
-import Fetcher from '../../../components/fetcher';
+import Fetcher from '../../../components/Fetcher';
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
+import { mdiEyeOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+
 
 // Fonction debounce pour éviter les appels excessifs
 const debounce = (func, delay) => {
@@ -61,12 +65,11 @@ const ListCareerPage = () => {
       try {
         const queryParams = new URLSearchParams({
           ...appliedFilters,
-          page: currentPage,
+          pageNumber: currentPage,
           pageSize,
         }).toString();
 
         const response = await Fetcher(`/CareerPlan/filter?${queryParams}`);
-
         if (response.success) {
           setCareers(response.data);
           setTotalPages(response.totalPages || 0);
@@ -127,6 +130,7 @@ const ListCareerPage = () => {
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
+      console.log(currentPage);
     }
   };
 
@@ -139,17 +143,16 @@ const ListCareerPage = () => {
     }
   };
 
-  const handleClick = () => navigate('/carriere/creation');
+  const handleClick = () => navigate('/SoftGcc/carriere/creation');
 
   // Navigation pour details carrieres
   const handleCareersDetails = (registrationNumber) => {
-    navigate(`/carriere/fiche/${registrationNumber}`);
+    navigate(`/SoftGcc/carriere/fiche/${registrationNumber}`);
   };
 
   return (
     <Template>
       {loading && <Loader />}
-      <PageHeader module={module} action={action} url={url} />
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="title-container">
@@ -158,12 +161,21 @@ const ListCareerPage = () => {
           <p className="skill-title">PLAN DE CARRIÈRE</p>
         </div>
                             
-        <div className="col-lg-2">
+      </div>
+      <BreadcrumbPers
+        items={[
+          { label: 'Accueil', path: '/softGcc/tableauBord' },
+          { label: 'Plan de carrière', path: '/softGcc/carriere' },
+          { label: 'Liste', path: '/softGcc/carriere' }
+        ]}
+      />
+      <div className="row mt-3">
+        <div className="col-12 d-flex justify-content-end" style={{marginBottom: '10px'}}>
           <button className="btn-add btn-success btn-fw" onClick={handleClick} style={{float: 'right'}}>
             <i className="mdi mdi-plus"></i>
             Nouveau Plan
           </button>
-        </div>  
+        </div>
       </div>
      
       <div className="card mb-4 search-card">
@@ -271,6 +283,7 @@ const ListCareerPage = () => {
                     <th onClick={() => handleSort('careerPlan')} className="sortable-header">
                       Plan de carrière {sortColumn === 'careerPlan' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
                     </th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -279,7 +292,7 @@ const ListCareerPage = () => {
                       <tr key={id} onClick={() => {handleCareersDetails(career.registrationNumber)}}>
                         <td>{career.registrationNumber}</td>
                         <td>
-                          {career.firstName} {career.name}
+                          {career.name} {career.firstName} 
                         </td>
                         <td>{career.departmentName}</td>
                         <td>{career.positionName}</td>
@@ -287,6 +300,11 @@ const ListCareerPage = () => {
                           <FormattedDate date={career.assignmentDate} />
                         </td>
                         <td>{career.careerPlanNumber}</td>
+                        <td>
+                          <button className="btn-details text-primary" >
+                            <Icon path={mdiEyeOutline} size={1} /> Voir carrière
+                          </button>
+                        </td>
                       </tr>
                     ))
                   ) : (

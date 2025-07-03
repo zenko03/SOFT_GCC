@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import '../../styles/modal.css';
+import api from '../../helpers/api';
 
 function ModalAddSkill({ showSkill, handleCloseSkill, idEmployee, fetchData, error, dataEmployeeDescription }) {
     const { data: dataDomainSkill, error: errorDomainSkill, isLoading: loadingDomainSkill } = useSWR('/DomainSkill', Fetcher);
@@ -54,7 +55,7 @@ function ModalAddSkill({ showSkill, handleCloseSkill, idEmployee, fetchData, err
                 creationDate: new Date().toISOString(),
                 updateDate: new Date().toISOString(),
             };
-            const response = await axios.post(urlApi('/EmployeeSkills'), dataToSend);
+            const response = await api.post('/EmployeeSkills', dataToSend);
             handleCloseSkill();
             await fetchData();
             dataEmployeeDescription.skillNumber++;

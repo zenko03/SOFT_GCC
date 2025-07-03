@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import '../../styles/modal.css';
+import api from '../../helpers/api';
 
 // Gerer la modification d'une competence
 function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, idEmployee, fetchData, error }) {
@@ -90,7 +91,7 @@ function ModalEditSkill({ showEditSkill, handleCloseEditSkill, selectedSkill, id
             };
 
             // Requête PUT pour mettre à jour les données
-            const response = await axios.put(urlApi(`/EmployeeSkills/${selectedSkill.employeeSkillId}`), dataToSend);
+            const response = await api.put(`/EmployeeSkills/${selectedSkill.employeeSkillId}`, dataToSend);
             handleCloseEditSkill();
             fetchData();
             setFormData({

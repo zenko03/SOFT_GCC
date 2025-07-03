@@ -7,8 +7,12 @@ import ChartLine from '../../components/ChartLine';
 import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../../helpers/Loader';
 import '../../styles/pagination.css';
-import Fetcher from '../../components/Fetcher';
+import Fetcher from '../../components/fetcher';
 import useSWR from 'swr';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
+import { mdiEyeOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+
  
 // Fonction debounce pour éviter les appels excessifs
 function debounce(func, delay) {
@@ -188,29 +192,37 @@ function FollowedWishEvolution() {
     return (
         <Template>
           {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
-          
-          <PageHeader module={module} action={action} url={url} />
-          {error && <div className="alert alert-danger">{error}</div>}
-          <div className='row'>
+
+          <div className="title-container">
             <div className="col-lg-10 skill-header">
               <i className="mdi mdi-trending-up skill-icon"></i>
-              <h4 className="skill-title">SOUHAIT D'ÉVOLUTION</h4>
+              <p className="skill-title">SOUHAIT D'ÉVOLUTION</p>
             </div>
-            <div className="col-lg-2">
-              <button className="btn-add btn-success btn-fw" onClick={handleClick}>
+                                
+          </div>
+          <BreadcrumbPers
+            items={[
+              { label: 'Accueil', path: '/softGcc/tableauBord' },
+              { label: 'Souhait évolution', path: '/softGcc/souhaitEvolution/suivi' },
+              { label: 'Liste', path: '/softGcc/souhaitEvolution/suivi' }
+            ]}
+          />
+          {error && <div className="alert alert-danger">{error}</div>}
+          <div className="row mt-3">
+            <div className="col-12 d-flex justify-content-end" style={{marginBottom: '10px'}}>
+              <button className="btn-add btn-success btn-fw" onClick={handleClick} style={{float: 'right'}}>
                 <i className="mdi mdi-plus"></i>
                 Ajouter
-                </button>
-            </div>  
+              </button>
+            </div>
           </div>
 
           <div className="row">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card search-card">
-                <div className="card-header title-container">
-                  <h5 className="title">
-                    <i className="mdi mdi-filter-outline"></i> Filtres
-                  </h5>
+                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                  <i className="mdi mdi-filter-outline me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                  <h3 className="mb-0" style={{color: '#B8860B'}}>Filtres</h3>
                 </div>
                 <div className="card-body">
                   <form className="form-sample">
@@ -314,10 +326,9 @@ function FollowedWishEvolution() {
           <div className="row">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card">
-                <div className="card-header title-container">
-                  <h5 className="title">
-                    <i className="mdi mdi-format-list-bulleted"></i> Liste des demandes
-                  </h5>
+                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                  <i className="mdi mdi-format-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                  <h3 className="mb-0" style={{color: '#B8860B'}}>Liste des demandes</h3>
                 </div>
                 <div className="card-body">
                   <table className="table table-competences">
@@ -330,6 +341,7 @@ function FollowedWishEvolution() {
                         <th>Priorite</th>
                         <th>Date de demande</th>
                         <th>Statut</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -351,6 +363,11 @@ function FollowedWishEvolution() {
                             ) : (
                               <td><label className="badge badge-danger">{item.stateLetter}</label ></td>
                             )}
+                            <td>
+                              <button className="btn-details text-primary" >
+                                <Icon path={mdiEyeOutline} size={1} /> Voir demande
+                              </button>
+                            </td>
                           </tr>
                         ))
                       ) : (
@@ -387,11 +404,9 @@ function FollowedWishEvolution() {
           <div className="row justify-content-center">
             <div className="col-lg-12 grid-margin stretch-card">
               <div className="card shadow-sm border-0">
-                <div className="card-header title-container">
-                  <h4 className="title"> 
-                    <i className="mdi mdi-chart-bar"></i> 
-                    <span>Analyse des demandes par mois</span>
-                  </h4>
+                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                  <i className="mdi mdi-chart-bar me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                  <h3 className="mb-0" style={{color: '#B8860B'}}>Analyse des demandes par mois</h3>
                 </div>
                 <div className="card-body">
                   <p className="card-description text-left">Un aperçu des demandes au cours de l'année</p>
@@ -403,7 +418,8 @@ function FollowedWishEvolution() {
                         value={filters.year}
                         onChange={handleFilterChange}
                       >
-                        <option selected value="2024">2024</option>
+                        <option selected value="2025">2025</option>
+                        <option value="2024">2024</option>
                         <option value="2023">2023</option>
                         <option value="2022">2022</option>
                         <option value="2021">2021</option>

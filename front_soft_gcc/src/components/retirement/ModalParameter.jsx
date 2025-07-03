@@ -72,8 +72,9 @@ function ModalParameter({ Fetcher, showParameter, handleCloseParameter, fetchFil
             className="modal-content"
             overlayClassName="modal-overlay"
         >
-            <div className="modal-header">
-                <h3 className="subtitle">Paramètre légal du départ à la retraite</h3>
+            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                <i className="mdi mdi-settings me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                <h3 className="mb-0" style={{color: '#B8860B'}}>Paramètre légal du départ à la retraite</h3>
                 <button onClick={handleCloseParameter} className="close-button">&times;</button>
             </div>
             <div className="modal-body">

@@ -11,6 +11,7 @@ import Loader from '../../../helpers/Loader';
 import { useParams } from 'react-router-dom';
 import FormattedDate from '../../../helpers/FormattedDate';
 import { useNavigate } from 'react-router-dom';
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
 
 // Page détails du plan de carrière
 function CareerProfilePage({ onSearch }) {
@@ -32,9 +33,27 @@ function CareerProfilePage({ onSearch }) {
     const [dataAssignmentAvailability, setDataAssignmentAvailability] = useState([]);
     const [componentToDisplay, setComponentToDisplay] = useState(1);
 
+    // Pour gerer la navigation
+    const [navLinkAttestationGenerate, setNavLinkAttestationGenerate] = useState("");
+    const [navLinkCareerHistory, setNavLinkCareerHistory] = useState("active");
+    const [navLinkAttestationHistory, setNavLinkAttestationHistory] = useState("");
+
     // Mise à jour du coomposant responsable à l'affichage
     const updateComponent = (value) => {
         setComponentToDisplay(value);
+        if(value === 1) {
+            setNavLinkAttestationGenerate("");
+            setNavLinkCareerHistory("active");
+            setNavLinkAttestationHistory("");
+        } else if (value === 2) {
+            setNavLinkAttestationGenerate("active");
+            setNavLinkCareerHistory("");
+            setNavLinkAttestationHistory("");
+        } else {
+            setNavLinkAttestationGenerate("");
+            setNavLinkCareerHistory("");
+            setNavLinkAttestationHistory("active");
+        }
     };
 
     // Chargement des donnees depuis l'api 
@@ -64,19 +83,18 @@ function CareerProfilePage({ onSearch }) {
 
     // Fonction qui gère le retour en arrière de la page
     const handleRetour = () => {
-        navigate(`/carriere`);
+        navigate(`/SoftGcc/carriere`);
     };
 
     return (
         <Template>
             {isLoading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}            
-            <PageHeader module={module} action={action} url={url} />
             {error && <div className="alert alert-danger">{error}</div>}
 
             <div className="title-container">
                 <div className="col-lg-10 skill-header">
                     <i className="mdi mdi-note-text skill-icon"></i>
-                    <p className="skill-title">DÉTAILS PLAN DE CARRIÈRE</p>
+                    <p className="skill-title">SUIVI PLAN DE CARRIÈRE</p>
                 </div>
                             
                 <div className="col-lg-2">
@@ -87,8 +105,13 @@ function CareerProfilePage({ onSearch }) {
                 </div>  
             </div>
 
-           
-
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/softGcc/tableauBord' },
+                    { label: 'Plan de carrière', path: '/softGcc/carriere' },
+                    { label: 'Détails', path: '/softGcc/carriere/fiche' }
+                ]}
+            />
 
             <div className="row description">
                 <div className="col-md-12">
@@ -112,6 +135,11 @@ function CareerProfilePage({ onSearch }) {
                                     <p><strong className="label-title">Salaire :</strong><span className="value-profil text-info">{dataEmployee.baseSalary} Ar</span></p>
                                     <p><strong className="label-title">Date d'embauche :</strong><span className="value-profil"><FormattedDate date={dataEmployee.assignmentDate} /></span></p>
                                 </div>
+
+                                {/* Colonne droite */}
+                                <div className="col-md-4">
+                                    <p><strong className="label-title-email">Email :</strong><span className="value-profil-email">{dataEmployee.email}</span></p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -122,18 +150,18 @@ function CareerProfilePage({ onSearch }) {
 
             <div className="row">
                 <div className="col-lg-12 grid-margin">
-                            {/* Menu de navigation des compétences */}
-                            <ul className="nav nav-tabs tab-transparent" role="tablist">
-                                <li className="nav-item">
-                                    <a onClick={() => updateComponent(2)} className="nav-link" id="home-tab" data-toggle="tab" href="#" role="tab" aria-selected="true">Attestation</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a onClick={() => updateComponent(1)} className="nav-link active" id="business-tab" data-toggle="tab" href="#business-1" role="tab" aria-selected="false">Suivi carriere</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a onClick={() => updateComponent(3)} className="nav-link" id="performance-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Historiques</a>
-                                </li>
-                            </ul>
+                    {/* Menu de navigation des compétences */}
+                    <ul className="nav nav-tabs tab-transparent" role="tablist">
+                        <li className="nav-item">
+                            <a onClick={() => updateComponent(2)} className={"nav-link "+navLinkAttestationGenerate} id="home-tab" data-toggle="tab" href="#" role="tab" aria-selected="true">Génération d'attestation</a>
+                        </li>
+                        <li className="nav-item">
+                            <a onClick={() => updateComponent(1)} className={"nav-link "+navLinkCareerHistory} id="business-tab" data-toggle="tab" href="#business-1" role="tab" aria-selected="false">Suivi carrière</a>
+                        </li>
+                        <li className="nav-item">
+                            <a onClick={() => updateComponent(3)} className={"nav-link "+navLinkAttestationHistory} id="performance-tab" data-toggle="tab" href="#" role="tab" aria-selected="false">Historiques d'attestation</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
 

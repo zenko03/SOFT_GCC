@@ -38,6 +38,12 @@ import { urlApi } from '../../helpers/utils';
 import { faCertificate } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../../helpers/Loader';
 import FormattedDate from '../../helpers/FormattedDate';
+import { v4 as uuidv4 } from 'uuid';
+
+// Generation d'un token
+const generateToken = () => {
+  return uuidv4().replace(/-/g, '');
+};
 
 // Formattage de date
 const formatDateFr = (isoDate) => {
@@ -130,6 +136,7 @@ const ModelEdit = ({ dataEmployee }) => {
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState(null);
   const [sendSuccess, setSendSuccess] = useState(false);
+  const [token, setToken] = useState(generateToken);
 
   const [sections, setSections] = useState([
     {
@@ -215,7 +222,7 @@ const ModelEdit = ({ dataEmployee }) => {
   }, [dataEmployee]);
 
   const attestationId = "ATT-" + new Date().getTime(); // Simulé
-  const qrValue = `https://monentreprise.com/verify?id=${attestationId}`; // lien de vérification
+  const qrValue = `http://151.80.218.41:5173/verify/${token}`; // lien de vérification
 
   const addSection = () => {
     setSections([...sections, { id: sections.length + 1, content: "" }]);
@@ -353,6 +360,7 @@ const ModelEdit = ({ dataEmployee }) => {
     formData.append('certificateTypeId', aboutModel.certificateType);
     formData.append('reference', aboutModel.reference);
     formData.append('state', state);
+    formData.append('token', token);
 
     setUploading(true);
     setUploadSuccess(null);
@@ -446,15 +454,15 @@ const ModelEdit = ({ dataEmployee }) => {
           type: "application/pdf",
         });
 
-        const recipient = email || 'chalmaninssa1962002@gmail.com';
+        const recipient = dataEmployee.email || 'chalmaninssa1962002@gmail.com';
 
         // ✅ Attente de l'upload + arrêt si erreur levée
         await handleUpload(generatedFile, 2);
 
         await sendAttestationEmail({
           recipientEmail: recipient,
-          subject: 'Votre attestation de travail',
-          body: '<p>Bonjour,<br/>Veuillez trouver ci-joint votre attestation de travail.</p>',
+          subject: aboutModel.certificateTypeName,
+          body: `<p>Bonjour ${dataEmployee.civiliteName} ${dataEmployee.firstName} ${dataEmployee.name},<br/>Veuillez trouver ci-joint votre attestation de travail.</p>`,
           file: generatedFile,
         });
 

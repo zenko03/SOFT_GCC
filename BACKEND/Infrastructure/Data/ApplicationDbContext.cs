@@ -66,9 +66,10 @@ namespace soft_carriere_competence.Infrastructure.Data
 		public DbSet<History> History { get; set; }
 		public DbSet<Civilite> Civilite { get; set; }
 		public DbSet<VEmployeePosition> VEmployeePosition { get; set; }
+        public DbSet<WorkCertificates> WorkCertificates { get; set; }
 
-		//EVALUATIONS
-		public DbSet<Role> Roles { get; set; }
+        //EVALUATIONS
+        public DbSet<Role> Roles { get; set; }
 		public DbSet<User> Users { get; set; }
 		public DbSet<EvaluationType> EvaluationTypes { get; set; }
 		public DbSet<Evaluation> Evaluations { get; set; }
@@ -118,9 +119,11 @@ namespace soft_carriere_competence.Infrastructure.Data
 		// DASHBOARD
 		public DbSet<VNEmployeeSkillByDepartment> VNEmployeeSkillByDepartment { get; set; }
 		public DbSet<VNEmployeeCareerByDepartment> VNEmployeeCareerByDepartment { get; set; }
+        public DbSet<VEmployeeAgeDistribution> VEmployeeAgeDistribution { get; set; }
+        public DbSet<VEmployeeExperienceDistribution> VEmployeeExperienceDistribution { get; set; }
 
-		// Organigramme et effectif
-		public DbSet<VDepartmentEffective> VDepartmentEffective { get; set; }
+        // Organigramme et effectif
+        public DbSet<VDepartmentEffective> VDepartmentEffective { get; set; }
 		public DbSet<TestCsv> TestCsv { get; set; }
 
 		// Historique d'activite
@@ -190,9 +193,13 @@ namespace soft_carriere_competence.Infrastructure.Data
 			modelBuilder.Entity<VNEmployeeSkillByDepartment>().HasNoKey();
 			modelBuilder.Entity<VNEmployeeCareerByDepartment>().ToView("v_n_employee_career_by_department");
 			modelBuilder.Entity<VNEmployeeCareerByDepartment>().HasNoKey();
+            modelBuilder.Entity<VEmployeeAgeDistribution>().ToView("v_employee_age_distribution");
+            modelBuilder.Entity<VEmployeeAgeDistribution>().HasNoKey();
+            modelBuilder.Entity<VEmployeeExperienceDistribution>().ToView("v_employee_experience_distribution");
+            modelBuilder.Entity<VEmployeeExperienceDistribution>().HasNoKey();
 
-			//------------------ORGANIGRAMME ET EFFECTIF-------------------------------------------//
-			modelBuilder.Entity<VDepartmentEffective>().ToView("v_department_effective");
+            //------------------ORGANIGRAMME ET EFFECTIF-------------------------------------------//
+            modelBuilder.Entity<VDepartmentEffective>().ToView("v_department_effective");
 			modelBuilder.Entity<VDepartmentEffective>().HasNoKey();
 
 			// Configuration de la clé composite pour EvaluationSupervisors

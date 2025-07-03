@@ -1,4 +1,4 @@
--- Cr�er la vue v_employee
+-- Créer la vue v_employee
 CREATE VIEW v_employee AS
 SELECT 
     e.Employee_id, 
@@ -15,7 +15,8 @@ SELECT
 	e.manager_id,
 	(select name from employee where employee_id=e.manager_id) as Manager_name,
 	(select FirstName from employee where employee_id=e.manager_id) as Manager_firstName,
-	e.photo AS employee_photo
+	e.photo AS employee_photo,
+	email
 FROM 
     Employee e 
 JOIN 
@@ -279,6 +280,7 @@ SELECT
 	c.Net_salary,
 	c.state,
 	CASE
+		WHEN c.Ending_contract is null THEN 'en cours'
 		WHEN GETDATE() BETWEEN c.Assignment_date AND c.Ending_contract THEN 'en cours'
 		WHEN GETDATE() >= c.Ending_contract THEN 'terminé'
         WHEN GETDATE() < c.Assignment_date THEN 'en attente'  
@@ -371,6 +373,7 @@ SELECT
 	e.hiring_date, 
 	e.civilite_id,
 	e.civilite_name,
+	e.email,
 	COALESCE(count(*), 0) as career_plan_number 
 FROM v_employee e
 LEFT join career_plan c 
@@ -383,7 +386,8 @@ GROUP BY
   e.Birthday, 
   e.hiring_date,
   e.civilite_name,
-  e.civilite_id;
+  e.civilite_id,
+  e.email;
 
 -- Creation de la vue v_employee_position pour le dernier poste de chaque employe
 CREATE VIEW v_employee_get_last_position AS
@@ -400,6 +404,7 @@ WITH Ranked_posts AS (
         Base_salary,
         Net_salary,
 		Establishment_id,
+		Ending_contract,
         ROW_NUMBER() OVER (
             PARTITION BY Registration_number 
             ORDER BY Assignment_date DESC
@@ -419,12 +424,11 @@ SELECT
     p.Position_name,
     rp.Base_salary,
     rp.Net_salary,
-	rp.Establishment_id
+	rp.Establishment_id,
+	rp.Ending_contract
 FROM Ranked_posts rp
--- Jointure avec la table Department
 LEFT JOIN Department d 
 ON d.Department_id = rp.Department_id
--- Jointure avec la table Position
 LEFT JOIN Position p
 ON p.Position_id = rp.Position_id
 WHERE rp.rn = 1;
@@ -451,7 +455,9 @@ SELECT
     ep.Base_salary,
     ep.Net_salary,
 	cpen.career_plan_number,
-	ep.Establishment_id
+	ep.Establishment_id,
+	ep.Ending_contract,
+	cpen.email
 FROM v_employee_get_last_position ep
 JOIN v_career_plan_employee_number cpen
 ON ep.Registration_number = cpen.Registration_number;
@@ -462,7 +468,7 @@ ON Career_plan
 AFTER INSERT
 AS
 BEGIN
-    -- Ins�rer les nouvelles lignes dans la table d'historique avec une description adapt�e
+    -- Insérer les nouvelles lignes dans la table d'historique avec une description adapt�e
     INSERT INTO History (Module_id, Description, Registration_number, State)
     SELECT 
         2, -- Module_id fixe
@@ -477,7 +483,7 @@ BEGIN
                 'L''utilisateur Rasoa a crée un plan de carrière d''un type inconnu pour l''employé ' + Registration_number
         END AS Description,
         Registration_number,
-        1 -- �tat fixe
+        1 -- état fixe
     FROM INSERTED;
 END;
 
@@ -488,7 +494,7 @@ ON Career_plan
 AFTER UPDATE
 AS
 BEGIN
-    -- Ins�rer les nouvelles lignes dans la table d'historique avec une description adapt�e
+    -- Insérer les nouvelles lignes dans la table d'historique avec une description adaptée
     INSERT INTO History (Module_id, Description, Registration_number, State)
     SELECT 
         2, -- Module_id fixe
@@ -509,7 +515,7 @@ BEGIN
                 'L''utilisateur Rasoa a modifié ou modifié un plan de carrière d''un type inconnu pour l''employé ' + DELETED.Registration_number
         END AS Description,
         DELETED.Registration_number,
-        1 -- �tat fixe
+        1 -- état fixe
     FROM DELETED;
 END;
 
@@ -519,7 +525,7 @@ ON Career_plan
 AFTER DELETE
 AS
 BEGIN
-    -- Ins�rer les nouvelles lignes dans la table d'historique avec une description adapt�e
+    -- Insérer les nouvelles lignes dans la table d'historique avec une description adapt�e
     INSERT INTO History (Module_id, Description, Registration_number, State)
     SELECT 
         2, -- Module_id fixe
@@ -534,7 +540,7 @@ BEGIN
                 'L''utilisateur Rasoa a supprimé definitivement un plan de carrière d''un type inconnu pour l''employé ' + DELETED.Registration_number
         END AS Description,
         DELETED.Registration_number,
-        1 -- �tat fixe
+        1 -- état fixe
     FROM DELETED;
 END;
 
@@ -718,22 +724,359 @@ GROUP BY department_id, department_name, department_photo
 
 -- Vue pour les details des employes
 CREATE VIEW v_employee_position AS
-select 
-	e.employee_id, 
-	e.registration_number, 
-	e.name, 
-	e.firstName, 
-	e.Department_id,
-	e.Department_name,
-	e.civilite_id,
-	e.civilite_name,
-	e.manager_id,
-	ec.position_id,
-	ec.Position_name,
-	e.hiring_date,
-	e.Birthday,
-	e.employee_photo,
-    DATEDIFF(YEAR, e.hiring_date, GETDATE()) AS Seniority
-from v_employee e
-left join v_employee_career ec
-on e.Registration_number = ec.Registration_number
+SELECT 
+    e.employee_id, 
+    e.registration_number, 
+    e.name, 
+    e.firstName, 
+    e.Department_id,
+    e.Department_name,
+    e.civilite_id,
+    e.civilite_name,
+    e.manager_id,
+    ec.position_id,
+    ec.Position_name,
+    e.hiring_date,
+    e.Birthday,
+    e.employee_photo,
+
+    -- Calcul de l'ancienneté exacte (années et mois)
+    CONCAT(
+        DATEDIFF(MONTH, e.hiring_date, GETDATE()) / 12, ' an(s) et ',
+        DATEDIFF(MONTH, e.hiring_date, GETDATE()) % 12, ' mois'
+    ) AS Seniority
+
+FROM v_employee e
+LEFT JOIN v_employee_career ec
+    ON e.Registration_number = ec.Registration_number
+
+-- Vue pour les affectations actifs
+CREATE VIEW v_current_assignments AS
+ SELECT
+        cp.Position_id,
+        e.Employee_id,
+        e.Registration_number
+    FROM career_plan cp
+    JOIN Employee e ON e.Registration_number = cp.Registration_number
+    WHERE cp.Assignment_type_id = 1
+      AND (cp.End_date IS NULL OR cp.End_date > GETDATE())
+      AND cp.State > 0
+
+-- Vue pour compétences moyen 
+CREATE VIEW v_employee_skills_level AS
+SELECT
+        ca.Position_id,
+        rs.Skill_id,
+        rs.Required_level,
+        AVG(CAST(es.Level AS FLOAT)) AS AverageLevel
+    FROM skill_position rs
+    LEFT JOIN v_current_assignments ca ON rs.Position_id = ca.Position_id
+    LEFT JOIN employee_skill es ON es.Employee_id = ca.Employee_id AND es.Skill_id = rs.Skill_id
+    GROUP BY ca.Position_id, rs.Skill_id, rs.Required_level
+
+-- Taux moyen des compétences
+CREATE VIEW v_coverage_ratios AS
+ SELECT
+        Position_id,
+        Skill_id,
+        Required_level,
+        ISNULL(AverageLevel, 0) AS AverageLevel,
+        CASE 
+            WHEN Required_level > 0 THEN ROUND((ISNULL(AverageLevel, 0) / Required_level) * 100, 2)
+            ELSE 0
+        END AS CoverageRatio
+    FROM v_employee_skills_level
+
+-- Employé par tranche d'age
+CREATE VIEW v_employee_age_distribution AS
+SELECT 
+    CASE 
+        WHEN Age BETWEEN 18 AND 25 THEN '18-25 ans'
+        WHEN Age BETWEEN 26 AND 35 THEN '26-35 ans'
+        WHEN Age BETWEEN 36 AND 45 THEN '36-45 ans'
+        WHEN Age BETWEEN 46 AND 55 THEN '46-55 ans'
+        WHEN Age >= 56 THEN '56 ans et plus'
+        ELSE 'Inconnu'
+    END AS Age_distribution,
+    COUNT(*) AS Employees_number
+FROM (
+    SELECT 
+        Employee_id,
+        -- Calcul précis de l’âge
+        DATEDIFF(YEAR, Birthday, GETDATE()) 
+        - CASE 
+            WHEN DATEADD(YEAR, DATEDIFF(YEAR, Birthday, GETDATE()), Birthday) > GETDATE() 
+            THEN 1 
+            ELSE 0 
+          END AS Age
+    FROM Employee
+) AS AgeCalc
+GROUP BY 
+    CASE 
+        WHEN Age BETWEEN 18 AND 25 THEN '18-25 ans'
+        WHEN Age BETWEEN 26 AND 35 THEN '26-35 ans'
+        WHEN Age BETWEEN 36 AND 45 THEN '36-45 ans'
+        WHEN Age BETWEEN 46 AND 55 THEN '46-55 ans'
+        WHEN Age >= 56 THEN '56 ans et plus'
+        ELSE 'Inconnu'
+    END;
+
+-- Détails experience employé
+CREATE VIEW v_details_employee_experience_range AS
+SELECT
+    Employee_id,
+    Registration_number,
+    Name,
+    FirstName,
+    -- Texte final d'expérience
+    CASE
+        -- Moins de 1 an : afficher uniquement les mois
+        WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) < 365 THEN 
+            CAST(FLOOR(DATEDIFF(DAY, Hiring_date, GETDATE()) / 30.4375) AS varchar) + ' mois'
+
+        -- 1 an pile
+        WHEN FLOOR(DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25) = 1 AND 
+             (FLOOR((DATEDIFF(DAY, Hiring_date, GETDATE()) / 30.4375)) 
+              - 12) = 0
+            THEN '1 an'
+
+        -- 1 an et X mois
+        WHEN FLOOR(DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25) = 1
+            THEN '1 an et ' + 
+                 CAST(FLOOR((DATEDIFF(DAY, Hiring_date, GETDATE()) / 30.4375)) 
+                      - 12 AS varchar) + ' mois'
+
+        -- X ans pile
+        WHEN (FLOOR((DATEDIFF(DAY, Hiring_date, GETDATE()) / 30.4375)) 
+              - FLOOR(DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25) * 12) = 0
+            THEN CAST(FLOOR(DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25) AS varchar) + ' ans'
+
+        -- X ans et Y mois
+        ELSE 
+            CAST(FLOOR(DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25) AS varchar) + ' ans et ' +
+            CAST(
+                FLOOR((DATEDIFF(DAY, Hiring_date, GETDATE()) / 30.4375)) 
+                - FLOOR(DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25) * 12
+            AS varchar) + ' mois'
+    END AS ExperienceText,
+	CASE
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 < 1.00 THEN 'Moins de 1 an'
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 BETWEEN 1.00 AND 3.99 THEN '1-3 ans'
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 BETWEEN 4.00 AND 6.99 THEN '4-6 ans'
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 BETWEEN 7.00 AND 10.99 THEN '7-10 ans'
+		ELSE 'Plus de 10 ans'
+	END AS Experience_range
+
+FROM Employee;
+
+
+-- Nombre d'employé par tranche d'experience
+CREATE VIEW v_employee_experience_distribution AS
+SELECT
+	CASE
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 < 1.00 THEN 'Moins de 1 an'
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 BETWEEN 1.00 AND 3.99 THEN '1-3 ans'
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 BETWEEN 4.00 AND 6.99 THEN '4-6 ans'
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 BETWEEN 7.00 AND 10.99 THEN '7-10 ans'
+		ELSE 'Plus de 10 ans'
+	END Experience_range,
+	COUNT(*) AS Employee_count
+FROM Employee
+GROUP BY 
+	CASE
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 < 1.00 THEN 'Moins de 1 an'
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 BETWEEN 1.00 AND 3.99 THEN '1-3 ans'
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 BETWEEN 4.00 AND 6.99 THEN '4-6 ans'
+		WHEN DATEDIFF(DAY, Hiring_date, GETDATE()) / 365.25 BETWEEN 7.00 AND 10.99 THEN '7-10 ans'
+		ELSE 'Plus de 10 ans'
+	END
+
+
+-- Vue pour le nombre de sexe et des employés actifs
+CREATE VIEW v_sex_activity_number AS
+SELECT 
+  1 AS Type,
+  CASE
+    WHEN Civilite_id = 1 THEN 'Homme' 
+    WHEN Civilite_id = 2 THEN 'Femme'
+  END AS Designation, 
+  CASE
+    WHEN Civilite_id = 1 THEN '#CCE5FF' 
+    WHEN Civilite_id = 2 THEN '#F8D7DA'
+  END AS Background_color, 
+   CASE
+    WHEN Civilite_id = 1 THEN '#004085' 
+    WHEN Civilite_id = 2 THEN '#721C24'
+  END AS Color, 
+  COUNT(*) AS Number
+FROM employee 
+GROUP BY Civilite_id
+
+UNION
+
+-- Regroupement État Actif / Non actif
+SELECT 
+  2 AS Type,
+  StatusLabel,
+  StatusColor,
+  Color,
+  COUNT(*) AS Number
+FROM (
+  SELECT 
+    CASE 
+      WHEN cp.Position_id IS NOT NULL THEN 'Actif'
+      ELSE 'Non actif'
+    END AS StatusLabel,
+    CASE 
+      WHEN cp.Position_id IS NOT NULL THEN '#D4EDDA'
+      ELSE '#E2E3E5'
+    END AS StatusColor,
+	CASE 
+      WHEN cp.Position_id IS NOT NULL THEN '#155724'
+      ELSE '#383D41'
+    END AS Color
+  FROM employee e
+  LEFT JOIN career_plan cp 
+    ON e.Registration_number = cp.Registration_number 
+    AND cp.Assignment_type_id = 1 
+    AND cp.State > 0
+	AND cp.Ending_contract IS NULL
+) AS sub
+GROUP BY StatusLabel, StatusColor, Color;
+
+
+-- Vue pour les détails d'un employé
+CREATE VIEW v_details_employee AS
+SELECT
+	e.Employee_id, 
+	CASE
+		WHEN e.Civilite_id = 1 THEN 'Homme' 
+		WHEN e.Civilite_id = 2 THEN 'Femme'
+	END AS Sexe,
+	e.Registration_number, 
+	e.Name,
+	e.FirstName, 
+	CASE
+		WHEN cp.Position_id is not null THEN 'Actif'
+		ELSE 'Non actif'
+	END AS isActive
+FROM employee e
+left join career_plan cp ON e.Registration_number = cp.Registration_number AND cp.Assignment_type_id = 1 AND cp.State > 0
+GROUP BY 
+e.Employee_id, 
+	CASE
+		WHEN e.Civilite_id = 1 THEN 'Homme' 
+		WHEN e.Civilite_id = 2 THEN 'Femme'
+	END,
+	e.Registration_number, 
+	e.Name,
+	e.FirstName, 
+	CASE
+		WHEN cp.Position_id is not null THEN 'Actif'
+		ELSE 'Non actif'
+	END;
+
+-- Compter le nombre des etats de validation
+CREATE VIEW v_state_wish_evolution AS 
+WITH Etat AS (
+    SELECT 0 AS State, 'Refusé' AS Label
+    UNION ALL
+    SELECT 1, 'En attente'
+    UNION ALL
+    SELECT 5, 'En cours'
+    UNION ALL
+    SELECT 10, 'Validé'
+),
+StateCount AS (
+    SELECT 
+        e.State,
+        e.Label,
+        COUNT(w.State) AS Total
+    FROM Etat e
+    LEFT JOIN Wish_evolution_career w ON e.State = w.State
+    GROUP BY e.State, e.Label
+),
+TotalGeneral AS (
+    SELECT SUM(Total) AS TotalAll FROM StateCount
+)
+SELECT 
+    sc.State,
+	CASE
+		WHEN sc.State = 1 THEN '#856404'
+		WHEN sc.State = 5 THEN '#0C5460'
+		WHEN sc.State = 10 THEN '#155724'
+		ELSE '#721C24'
+	END AS Color,
+	CASE
+		WHEN sc.State = 1 THEN '#FFF3CD'
+		WHEN sc.State = 5 THEN '#D1ECF1'
+		WHEN sc.State = 10 THEN '#D4EDDA'
+		ELSE '#F8D7DA'
+	END AS Background_color,
+    sc.Label,
+    sc.Total AS Value,
+    CONCAT(
+        FORMAT(
+            CAST(sc.Total * 100.0 / NULLIF(tg.TotalAll, 0) AS DECIMAL(5,2)),
+            'N2'
+        ),
+        ' %'
+    ) AS PercentValue
+FROM StateCount sc
+CROSS JOIN TotalGeneral tg;
+
+-- Détails d'un souhait d'évolution
+CREATE VIEW v_details_wish_evolution AS
+SELECT 
+	e.Employee_id, 
+	e.FirstName, 
+	e.Name, 
+	wec.Motivation, 
+	p.position_name AS Wish_position,
+	CASE
+		WHEN wec.Priority >= 0 AND wec.Priority < 5 THEN 'Bas'
+		WHEN wec.Priority >= 5 AND wec.Priority < 9 THEN 'Moyen'
+		WHEN wec.Priority >= 9 THEN 'Elevé'
+		ELSE 'Inconnu'
+	END AS Priority_letter,
+	CASE
+		WHEN wec.State = 0 THEN 'Refusé'
+		WHEN wec.State = 1 THEN 'En attente'
+		WHEN wec.State = 5 THEN 'En cours'
+		ELSE 'Validé'
+	END AS State_letter
+FROM Wish_evolution_career wec
+join employee e on wec.Employee_id = e.Employee_id
+join position p on p.Position_id = wec.Position_id
+
+-- Vue pour les détails 
+CREATE VIEW v_details_employee_age_distribution AS
+WITH AgeWithGroup AS (
+    SELECT 
+        Employee_id,
+		Registration_number,
+        Name,
+        FirstName,
+        DATEDIFF(YEAR, Birthday, GETDATE()) 
+        - CASE 
+            WHEN DATEADD(YEAR, DATEDIFF(YEAR, Birthday, GETDATE()), Birthday) > GETDATE() 
+            THEN 1 
+            ELSE 0 
+        END AS Age
+    FROM Employee
+)
+SELECT 
+    Employee_id,
+	Registration_number,
+    Name,
+    FirstName,
+    CASE 
+        WHEN Age BETWEEN 18 AND 25 THEN '18-25 ans'
+        WHEN Age BETWEEN 26 AND 35 THEN '26-35 ans'
+        WHEN Age BETWEEN 36 AND 45 THEN '36-45 ans'
+        WHEN Age BETWEEN 46 AND 55 THEN '46-55 ans'
+        WHEN Age >= 56 THEN '56 ans et plus'
+        ELSE 'Inconnu'
+    END AS Age_distribution,
+    Age
+FROM AgeWithGroup

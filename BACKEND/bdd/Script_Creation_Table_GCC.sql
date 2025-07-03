@@ -336,6 +336,7 @@ CREATE TABLE Skill_position (
 	Skill_position_id INT PRIMARY KEY IDENTITY(1,1),
 	Position_id INT NOT NULL REFERENCES Position(Position_id),
 	Skill_id INT NOT NULL REFERENCES Skill(Skill_id),
+	Required_level DOUBLE PRECISION NULL,
 	State INT,
 	Creation_date DATETIME,
 	Updated_date DATETIME

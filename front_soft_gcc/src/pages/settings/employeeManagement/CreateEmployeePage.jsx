@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Template from '../../Template';
-import PageHeader from '../../../components/PageHeader';
 import useSWR from 'swr';
-import Fetcher from '../../../components/Fetcher';
 import Loader from '../../../helpers/Loader';
 import axios from 'axios';
 import { urlApi } from '../../../helpers/utils';
 import "../../../styles/careerStyle.css";
+import BreadcrumbPers from '../../../helpers/BreadcrumbPers';
+import CancelButton from '../../../helpers/CancelButton';
+import FetcherApi from '../../../helpers/FetcherApi';
+import api from '../../../helpers/api';
 
 function CreateEmployeePage({ onSearch }) {
-    const module = "Souhait evolution";
-    const action = "Ajouter";
-    const url = "/SouhaitEvolution/Ajouter";
-
-    const { data: dataEmployee } = useSWR('/Employee', Fetcher);
-    const { data: dataDepartment } = useSWR('/Department', Fetcher);
+    const { data: dataEmployee } = useSWR('/Employee', FetcherApi);
+    const { data: dataDepartment } = useSWR('/Department', FetcherApi);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -107,7 +105,7 @@ function CreateEmployeePage({ onSearch }) {
                 form.append("photo", formData.photo);
             }
          
-            await axios.post(urlApi('/Employee'), form);
+            await api.post(urlApi('/Employee'), form);
             setFormData({
                 registrationNumber: '',
                 name: '',
@@ -157,17 +155,34 @@ function CreateEmployeePage({ onSearch }) {
 
     return (
         <Template>
-            <PageHeader module={module} action={action} url={url} />
-            <h4>AJOUT D'UN NOUVEAU EMPLOYE</h4>
+            <div className="title-container">
+                <div className="col-lg-10 skill-header">
+                    <i className="mdi mdi-account-plus skill-icon"></i>
+                    <p className="skill-title">AJOUT D'UN NOUVEL EMPLOYÉ</p>
+                </div>
+
+                <div className="col-lg-2">
+                    <CancelButton to="settings/employeeManagement/liste" />
+                </div>  
+            </div>
+            <BreadcrumbPers
+                items={[
+                    { label: 'Accueil', path: '/softGcc/tableauBord' },
+                    { label: 'Gestion employés', path: '/softGcc/settings/employeeManagement/liste' },
+                    { label: 'Ajout', path: '/softGcc/settings/employeeManagement/create' },
+                ]}
+            />
             {error && <div className="alert alert-danger">{error}</div>}
             {success && <div className="alert alert-success">{success}</div>}
             <form className="forms-sample">
                 <div className="row">            
                     <div className="col-md-6 grid-margin stretch-card">
                         <div className="card">
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-file-document-edit me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}>Formulaire d'ajout 1</h3>
+                            </div>
                             <div className="card-body">
-                                <h5 className="card-title subtitle">Formulaire d'ajout d'un nouvel employé</h5>
-                                <br />
                                 <div className="form-group">
                                     <label>Numero de matricule</label>
                                     <input type="text" name="registrationNumber" value={formData.registrationNumber} onChange={handleChange} className="form-control" />
@@ -198,6 +213,17 @@ function CreateEmployeePage({ onSearch }) {
                                     </select>  
                                     {formErrors.department_id && <div className="error-text">{formErrors.department_id}</div>}
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-md-6 grid-margin stretch-card">
+                        <div className="card">
+                            <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                <i className="mdi mdi-file-document-edit me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                <h3 className="mb-0" style={{color: '#B8860B'}}>Formulaire d'ajout 2</h3>
+                            </div>
+                            <div className="card-body">
                                 <div className="form-group">
                                     <label>Date d'embauche</label>
                                     <input type="date" name="hiring_date" value={formData.hiring_date} onChange={handleChange} className="form-control" />

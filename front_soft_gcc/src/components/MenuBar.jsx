@@ -23,7 +23,7 @@ function MenuBar() {
   };
 
   return (
-    <nav className="sidebar sidebar-offcanvas" id="sidebar">
+    <nav className="sidebar sidebar-offcanvas" id="sidebar" style={{ paddingTop: '30px' }}>
       <ul className="nav">
         <li className={`nav-item ${isActiveLink('/softGcc/tableauBord') ? 'active' : ''}`}>
           <Link 
@@ -32,7 +32,7 @@ function MenuBar() {
             style={isActiveLink('/softGcc/tableauBord') ? activeLinkStyle : {}}
           >
             <span className="icon-bg"><i className="mdi mdi-view-grid menu-icon"></i></span>
-            <span className="menu-title">Tableau de bord</span>
+            <span className="menu-title">Analyse statistiques</span>
           </Link>
         </li>
         <li className={`nav-item ${isActiveLink('/softGcc/competences') ? 'active' : ''}`}>
@@ -45,6 +45,7 @@ function MenuBar() {
             <span className="menu-title">Compétences</span>
           </Link>
         </li>
+
         <li className="nav-item">
           <a 
             className={`nav-link ${isActiveDropdown(['/carriere', '/retraite', '/softGcc/souhaitEvolution']) ? 'active' : ''}`} 
@@ -88,8 +89,9 @@ function MenuBar() {
                 </Link>
               </li>
             </ul>
-          </div>
+          )}
         </li>
+
         <li className="nav-item">
           <a 
             className={`nav-link ${isActiveDropdown(['/softGcc/attestationManagement', '/softGcc/settings/carriere', '/softGcc/settings/employeeManagement']) ? 'active' : ''}`} 
@@ -188,6 +190,22 @@ function MenuBar() {
               </li>
             </ul>
           </div>
+          {openMenu === 'evaluation' && (
+            <ul className="nav flex-column sub-menu">
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/salary-list') ? 'active-menu' : ''}`} to="/salary-list" onClick={() => setOpenMenu(null)}>Notation d'évaluation</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/planning') ? 'active-menu' : ''}`} to="/planning" onClick={() => setOpenMenu(null)}>Planning d'évaluations</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/homeInterview') ? 'active-menu' : ''}`} to="/homeInterview" onClick={() => setOpenMenu(null)}>Entretien d'évaluations</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/history') ? 'active-menu' : ''}`} to="/history" onClick={() => setOpenMenu(null)}>Historique d'évaluations</Link>
+              </li>
+            </ul>
+          )}
         </li>
         <li className={`nav-item ${isActiveLink('/softGcc/effectif') ? 'active' : ''}`}>
           <Link 
@@ -209,6 +227,7 @@ function MenuBar() {
             <span className="menu-title">Historiques des activités</span>
           </Link>
         </li>
+
         <li className="nav-item">
           <a 
             className={`nav-link ${isActiveDropdown(['/softGcc/settings']) ? 'active' : ''}`} 
@@ -271,7 +290,27 @@ function MenuBar() {
               </li>
             </ul>
           </div>
+          {openMenu === 'param' && (
+            <ul className="nav flex-column sub-menu">
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/softGcc/settings/competence') ? 'active-menu' : ''}`} to="/softGcc/settings/competence" onClick={() => setOpenMenu(null)}>Gestion Compétences</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/softGcc/settings/carriere') ? 'active-menu' : ''}`} to="/softGcc/settings/carriere" onClick={() => setOpenMenu(null)}>Gestion Carrières</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/softGcc/settings/employeeManagement/liste') ? 'active-menu' : ''}`} to="/softGcc/settings/employeeManagement/liste" onClick={() => setOpenMenu(null)}>Gestion employés</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/EvaluationSettings') ? 'active-menu' : ''}`} to="/EvaluationSettings" onClick={() => setOpenMenu(null)}>Gestion des évaluations</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/user-management') ? 'active-menu' : ''}`} to="/user-management" onClick={() => setOpenMenu(null)}>Gestion des utilisateurs</Link>
+              </li>
+            </ul>
+          )}
         </li>
+
         <li className="nav-item sidebar-user-actions">
           <div className="sidebar-user-menu">
             <a href="#" className="nav-link">

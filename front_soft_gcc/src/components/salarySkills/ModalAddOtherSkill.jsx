@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
 import '../../styles/modal.css';
+import api from '../../helpers/api';
     
 // Gerer l'inertion d'autres formations
 function ModalAddOtherSkill ({ showOtherSkill, handleCloseOtherSkill, idEmployee, fetchData, error, dataEmployeeDescription }) {
@@ -61,7 +62,7 @@ function ModalAddOtherSkill ({ showOtherSkill, handleCloseOtherSkill, idEmployee
                 updateDate: new Date().toISOString(),
             };
 
-            const response = await axios.post(urlApi('/EmployeeOtherFormation'), dataToSend);
+            const response = await api.post('/EmployeeOtherFormation', dataToSend);
             handleCloseOtherSkill(); 
             await fetchData();
             dataEmployeeDescription.otherFormationNumber++;

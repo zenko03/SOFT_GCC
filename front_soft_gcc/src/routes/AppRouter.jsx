@@ -17,7 +17,7 @@ import EvaluationDetails from '../pages/Evaluations/EvaluationInterview/Evaluati
 import RetirementPage from '../pages/retirement/RetirementPage';
 import FollowedWishEvolution from '../pages/wishEvolution/FollowedWishEvolution';
 import DetailsWishEvolution from '../pages/wishEvolution/DetailsWishEvolution';
-import AddWishEvolution from '../pages/wishEvolution/addWishEvolution';
+import AddWishEvolution from '../pages/wishEvolution/AddWishEvolution';
 import EditWishEvolution from '../pages/wishEvolution/EditWishEvolution';
 import Login from '../pages/Authentification/Login';
 import Register from '../pages/Authentification/Register';
@@ -71,7 +71,7 @@ import RolesManagement from '../pages/settings/UserManagement/RolesManagement';
 import PermissionsManagement from '../pages/settings/UserManagement/PermissionsManagement';
 import Unauthorized from '../pages/Authentification/Unauthorized';
 import EvaluationNotation from '../pages/Evaluations/Notations/EvaluationNotation';
-import EvaluationTypesSettings from '../pages/settings/evaluations/EvaluationTypesSettings';
+import VerifyAttestationPage from '../pages/certificateManagement/VerifyAttestationPage';
 
 function AppRouter() {
   return (
@@ -80,6 +80,7 @@ function AppRouter() {
       <Route path="/Register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
+      <Route path="/verify/:Token" element={<VerifyAttestationPage />} />
 
       {/* Routes protégées avec permissions */}
       <Route element={<ProtectedRoute requiredPermission="MANAGE_USERS" />}>
@@ -113,35 +114,15 @@ function AppRouter() {
       <Route path="/evaluations/notation/evaluation/:evaluationId" element={<EvaluationNotation />} />
       <Route path="/evaluations/salary-list" element={<SalaryList />} />
 
-      <Route path="/carriere" element={<ListSalaryPage />} />
-      <Route path="/carriere/creation" element={<CreationCareerPlan />} />
-      <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
-      <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
-      <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
-
-      <Route path="/retraite" element={<RetirementPage />} />
-
       {/* Route par défaut */}
       <Route path="*" element={<Navigate to="/login" replace />} />
-
-      {/*COMPETENCES */}
-      <Route path="/competences" element={<ListSkillSalaryPage />} />
-      <Route path="/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
-
+    
       {/* EVALUATIONS */}
       <Route path="/salary-list" element={<SalaryList />} />
       <Route path="/notation" element={<Notation />} />
       <Route path="/planning" element={<SalaryListPlanning />} />
       <Route path="/history" element={<EvalHistory />} />
       <Route path="/validation" element={<EvaluationInterviews />} />
-
-      {/*CARRIERE */}
-      <Route path="/carriere" element={<ListSalaryPage />} />
-      <Route path="/carriere/creation" element={<CreationCareerPlan />} />
-      <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
-      <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
-      <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
-
       <Route path="/EvaluationLogin" element={<EvaluationLogin />} />
       <Route path="/employee-evaluation" element={<EvaluationPage />} />
       <Route path="/EvaluationConfirmation" element={<EvaluationConfirmation />} />
@@ -151,6 +132,7 @@ function AppRouter() {
         <Route path="/softGCC/competences" element={<ListSkillSalaryPage />} />
         <Route path="/softGcc/competences/profil/:idEmployee" element={<SalaryProfilePage />} />
 
+        <Route path="/retraite" element={<RetirementPage />} />
         {/* EVALUATIONS */}
         <Route path="/salary-list" element={<SalaryList />} />
         <Route path="/notation" element={<Notation />} />
@@ -163,71 +145,65 @@ function AppRouter() {
         <Route path="/EvaluationQuestionSettings" element={<QuestionEvaluation />} />
         <Route path="/EvaluationFormationSettings" element={<FormationSuggestions />} />
 
-
-
-
-
-
         {/*CARRIERE */}
-        <Route path="/carriere" element={<ListSalaryPage />} />
-        <Route path="/carriere/creation" element={<CreationCareerPlan />} />
-        <Route path="/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
-        <Route path="/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
-        <Route path="/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
+        <Route path="SoftGcc/carriere" element={<ListSalaryPage />} />
+        <Route path="SoftGcc/carriere/creation" element={<CreationCareerPlan />} />
+        <Route path="SoftGcc/carriere/fiche/:registrationNumber" element={<CareerProfilePage />} />
+        <Route path="SoftGcc/carriere/fiche/edit/:CareerPlanId" element={<EditAffectation />} />
+        <Route path="SoftGcc/carriere/fiche/detail/:CareerPlanId" element={<DetailAssignment />} />
 
         {/*Gestion retraite */}
         <Route path="/retraite" element={<RetirementPage />} />
+
+        {/*Souhait evolution */}
+        <Route path="/softGcc/souhaitEvolution/ajouter" element={<AddWishEvolution />} />
+        <Route path="/softGcc/souhaitEvolution/suivi" element={<FollowedWishEvolution />} />
+        <Route path="/softGcc/souhaitEvolution/details/:WishEvolutionId" element={<DetailsWishEvolution />} />
+        <Route path="/softGcc/souhaitEvolution/edit/:WishEvolutionId" element={<EditWishEvolution />} />
+
+        {/*Tableau de bord et statistique */}
+        <Route path="/softGcc/tableauBord" element={<DashboardPage />} />
+
+        {/*Organigramme */}
+        <Route path="/softGcc/effectif" element={<DepartmentEffective />} />
+        <Route path="/softGcc/organigramme" element={<EmployeeOrgChart />} />
+        <Route path="/softGcc/effectif/details/:DepartmentId" element={<DetailDepartment />} />
+        <Route path="/softGcc/effectif/importEmploye" element={<CsvUploader />} />
+
+        {/*Historiques d'activites */}
+        <Route path="/softGcc/activityHistory" element={<HistoryPage />} />
+
+        {/*Parametre des entites */}
+        <Route path="/softGcc/settings/competence" element={<SettingSkillPage />} />
+        <Route path="/softGcc/settings/carriere" element={<SettingCareerPage />} />
+        <Route path="/softGcc/settings/competence/Crud" element={<CrudPage />} />
+        <Route path="/softGcc/settings/competence/niveau" element={<DegreeCrudPage />} />
+        <Route path="/softGcc/settings/competence/departement" element={<DepartmentCrudPage />} />
+        <Route path="/softGcc/settings/competence/domaine" element={<DomainCrudPage />} />
+        <Route path="/softGcc/settings/competence/language" element={<LanguageCrudPage />} />
+        <Route path="/softGcc/settings/competence/ecole" element={<SchoolCrudPage />} />
+        <Route path="/softGcc/settings/competence/competence" element={<SkillCrudPage />} />
+        <Route path="/softGcc/settings/competence/filiere" element={<StudyPathCrudPage />} />
+        <Route path="/softGcc/settings/carriere/typeAffectation" element={<AssignmentTypeCrudPage />} />
+        <Route path="/softGcc/settings/carriere/typeCertificat" element={<CertificateTypeCrudPage />} />
+        <Route path="/softGcc/settings/carriere/echelon" element={<EchelonCrudPage />} />
+        <Route path="/softGcc/settings/carriere/typeEmploye" element={<EmployeeTypeCrudPage />} />
+        <Route path="/softGcc/settings/carriere/etablissement" element={<EstablishmentCrudPage />} />
+        <Route path="/softGcc/settings/carriere/fonction" element={<FonctionCrudPage />} />
+        <Route path="/softGcc/settings/carriere/indication" element={<IndicationCrudPage />} />
+        <Route path="/softGcc/settings/carriere/classeLegale" element={<LegalClassCrudPage />} />
+        <Route path="/softGcc/settings/carriere/bulletin" element={<NewsLetterTemplateCrudPage />} />
+        <Route path="/softGcc/settings/carriere/methodePaiement" element={<PaymentMethodCrudPage />} />
+        <Route path="/softGcc/settings/carriere/poste" element={<PositionCrudPage />} />
+        <Route path="/softGcc/settings/carriere/categorieProfessionnelle" element={<ProfessionalCategoryCrudPage />} />
+        <Route path="/softGcc/settings/carriere/categorieSocioProfessionnelle" element={<SocioCategoryProfessionalCrudPage />} />
+        <Route path="/softGcc/settings/employeeManagement/create" element={<CreateEmployeePage />} />
+        <Route path="/softGcc/settings/employeeManagement/liste" element={<ListEmployeePage />} />
+
+        {/*Gestion d'attestation */}
+        <Route path="/softGcc/attestationManagement/list" element={<ModelList />} />
+        <Route path="/softGcc/attestationManagement/edit" element={<ModelEdit />} />
       </Route>
-      <Route path="*" element={<Navigate to="/login" replace />} />
-
-      {/*Souhait evolution */}
-      <Route path="/softGcc/souhaitEvolution/ajouter" element={<AddWishEvolution />} />
-      <Route path="/softGcc/souhaitEvolution/suivi" element={<FollowedWishEvolution />} />
-      <Route path="/softGcc/souhaitEvolution/details/:WishEvolutionId" element={<DetailsWishEvolution />} />
-      <Route path="/softGcc/souhaitEvolution/edit/:WishEvolutionId" element={<EditWishEvolution />} />
-
-      {/*Tableau de bord et statistique */}
-      <Route path="/softGcc/tableauBord" element={<DashboardPage />} />
-
-      {/*Organigramme */}
-      <Route path="/softGcc/effectif" element={<DepartmentEffective />} />
-      <Route path="/softGcc/organigramme" element={<EmployeeOrgChart />} />
-      <Route path="/softGcc/effectif/details/:DepartmentId" element={<DetailDepartment />} />
-      <Route path="/softGcc/effectif/importEmploye" element={<CsvUploader />} />
-
-      {/*Historiques d'activites */}
-      <Route path="/softGcc/activityHistory" element={<HistoryPage />} />
-
-      {/*Parametre des entites */}
-      <Route path="/softGcc/settings/competence" element={<SettingSkillPage />} />
-      <Route path="/softGcc/settings/carriere" element={<SettingCareerPage />} />
-      <Route path="/softGcc/settings/competence/Crud" element={<CrudPage />} />
-      <Route path="/softGcc/settings/competence/niveau" element={<DegreeCrudPage />} />
-      <Route path="/softGcc/settings/competence/departement" element={<DepartmentCrudPage />} />
-      <Route path="/softGcc/settings/competence/domaine" element={<DomainCrudPage />} />
-      <Route path="/softGcc/settings/competence/language" element={<LanguageCrudPage />} />
-      <Route path="/softGcc/settings/competence/ecole" element={<SchoolCrudPage />} />
-      <Route path="/softGcc/settings/competence/competence" element={<SkillCrudPage />} />
-      <Route path="/softGcc/settings/competence/filiere" element={<StudyPathCrudPage />} />
-      <Route path="/softGcc/settings/carriere/typeAffectation" element={<AssignmentTypeCrudPage />} />
-      <Route path="/softGcc/settings/carriere/typeCertificat" element={<CertificateTypeCrudPage />} />
-      <Route path="/softGcc/settings/carriere/echelon" element={<EchelonCrudPage />} />
-      <Route path="/softGcc/settings/carriere/typeEmploye" element={<EmployeeTypeCrudPage />} />
-      <Route path="/softGcc/settings/carriere/etablissement" element={<EstablishmentCrudPage />} />
-      <Route path="/softGcc/settings/carriere/fonction" element={<FonctionCrudPage />} />
-      <Route path="/softGcc/settings/carriere/indication" element={<IndicationCrudPage />} />
-      <Route path="/softGcc/settings/carriere/classeLegale" element={<LegalClassCrudPage />} />
-      <Route path="/softGcc/settings/carriere/bulletin" element={<NewsLetterTemplateCrudPage />} />
-      <Route path="/softGcc/settings/carriere/methodePaiement" element={<PaymentMethodCrudPage />} />
-      <Route path="/softGcc/settings/carriere/poste" element={<PositionCrudPage />} />
-      <Route path="/softGcc/settings/carriere/categorieProfessionnelle" element={<ProfessionalCategoryCrudPage />} />
-      <Route path="/softGcc/settings/carriere/categorieSocioProfessionnelle" element={<SocioCategoryProfessionalCrudPage />} />
-      <Route path="/softGcc/settings/employeeManagement/create" element={<CreateEmployeePage />} />
-      <Route path="/softGcc/settings/employeeManagement/liste" element={<ListEmployeePage />} />
-
-      {/*Gestion d'attestation */}
-      <Route path="/softGcc/attestationManagement/list" element={<ModelList />} />
-      <Route path="/softGcc/attestationManagement/edit" element={<ModelEdit />} />
     </Routes>
   );
 }

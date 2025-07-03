@@ -49,7 +49,7 @@ function AppointmentForm({ formData, setFormData }) {
                       borderBottom: '2px solid #B8860B', 
                       paddingBottom: '5px'
                     }}
-                  >Employé</h4>
+                  >Nomination</h4>
                                 
                   <div className="form-group">
                     <label htmlFor="exampleInputUsername1">Etablissement</label>
@@ -95,17 +95,7 @@ function AppointmentForm({ formData, setFormData }) {
                       ))}
                     </select>    
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="exampleInputUsername1">Categorie socio-professionnelle</label>
-                    <select name="socioCategoryProfessionalId" value={formData.socioCategoryProfessionalId} onChange={handleChange} className="form-control" id="exampleSelectGender">
-                      <option value="">Sélectionner une categorie socio-professionnelle</option>
-                      {dataSocioCategoryProfessional && dataSocioCategoryProfessional.map((item, id) => (
-                        <option key={item.socioCategoryProfessionalId} value={item.socioCategoryProfessionalId}>
-                          {item.socioCategoryProfessionalName}
-                        </option>
-                      ))}
-                    </select>    
-                  </div>
+                  
                   <div className="form-group">
                     <label htmlFor="exampleInputUsername1">Indice</label>
                     <select name="indicationId" value={formData.indicationId} onChange={handleChange} className="form-control" id="exampleSelectGender">
@@ -129,7 +119,7 @@ function AppointmentForm({ formData, setFormData }) {
                       borderBottom: '2px solid #B8860B', 
                       paddingBottom: '5px'
                     }}
-                  >Contrat</h4>
+                  >Nomination</h4>
 
                   <div className="form-group">
                     <label htmlFor="exampleInputEmail1">Salaire de base</label>

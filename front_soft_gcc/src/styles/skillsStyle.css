@@ -381,7 +381,7 @@
 .label-title {
   display: inline-block;
   min-width: 140px; /* Ajuste selon la longueur des labels */
-  margin-right: 100px;
+  margin-right: 50px;
   font-weight: 800;
   font-size: 14px;
   color: #333;
@@ -397,6 +397,20 @@
 }
 
 .value-profil {
+  color: #555;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.label-title-email {
+  display: inline-block;
+  min-width: 140px; /* Ajuste selon la longueur des labels */
+  font-weight: 800;
+  font-size: 14px;
+  color: #333;
+}
+
+.value-profil-email {
   color: #555;
   font-weight: 500;
   font-size: 14px;

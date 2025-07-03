@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import './Register.css';
 import { FaUser, FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa'; // Ajout des icônes
+import { urlApi } from "../../helpers/utils";
 
 
 const Register = () => {
@@ -32,7 +33,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:7082/api/Authentification/register",
+        urlApi("/Authentification/register"),
         formData,
         {
           headers: {

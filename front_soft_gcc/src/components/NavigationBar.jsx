@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from "../pages/Authentification/UserContext"; // Importez le hook useUser
+import { Dropdown, Image } from 'react-bootstrap';
 
 // Affichage de la barre de navigation
 function NavigationBar({ task }) {
@@ -26,7 +27,7 @@ function NavigationBar({ task }) {
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
         <a className="navbar-brand brand-logo" href="index.html">
-          <img src="/src/assets/images/Logo/softwellogo.png" alt="logo" />
+          <img src="/Logo/softwellogo.png" alt="logo" />
         </a>
         <a className="navbar-brand brand-logo-mini" href="index.html">
           <img src="/src/assets/images/logo-mini.svg" alt="logo" />
@@ -37,82 +38,52 @@ function NavigationBar({ task }) {
           <span className="mdi mdi-menu"></span>
         </button>
 
-        <ul className="navbar-nav navbar-nav-right">
-          <li className="nav-item dropdown">
-            
-            <div className="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-              <h6 className="p-3 mb-0 bg-primary text-white py-4">Notifications</h6>
-              <div className="dropdown-divider"></div>
-              <a className="dropdown-item preview-item">
-                <div className="preview-thumbnail">
-                  <div className="preview-icon bg-success">
-                    <i className="mdi mdi-calendar"></i>
-                  </div>
+        <ul className="navbar-nav ml-auto">
+          <li className="nav-item nav-profile">
+            <Dropdown align="end">
+              <Dropdown.Toggle
+                as="a"
+                id="profileDropdown"
+                className="nav-link dropdown-toggle d-flex align-items-center"
+                href="#"
+              >
+                <div className="nav-profile-img mr-2">
+                  <Image src="/images/user.png" alt="Profil" roundedCircle width={40} height={40} />
                 </div>
-                <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
-                  <h6 className="preview-subject font-weight-normal mb-1">Event today</h6>
-                  <p className="text-gray ellipsis mb-0">Just a reminder that you have an event today</p>
+                <div className="nav-profile-text">
+                  <p className="mb-0 text-black">
+                    {userLoading ? 'Chargement...' : userName || 'Non connecté'}
+                  </p>
                 </div>
-              </a>
-              <div className="dropdown-divider"></div>
-              <a className="dropdown-item preview-item">
-                <div className="preview-thumbnail">
-                  <div className="preview-icon bg-warning">
-                    <i className="mdi mdi-settings"></i>
-                  </div>
-                </div>
-                <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
-                  <h6 className="preview-subject font-weight-normal mb-1">Settings</h6>
-                  <p className="text-gray ellipsis mb-0">Update dashboard</p>
-                </div>
-              </a>
-              <div className="dropdown-divider"></div>
-              <a className="dropdown-item preview-item">
-                <div className="preview-thumbnail">
-                  <div className="preview-icon bg-info">
-                    <i className="mdi mdi-link-variant"></i>
-                  </div>
-                </div>
-                <div className="preview-item-content d-flex align-items-start flex-column justify-content-center">
-                  <h6 className="preview-subject font-weight-normal mb-1">Launch Admin</h6>
-                  <p className="text-gray ellipsis mb-0">New admin wow!</p>
-                </div>
-              </a>
-              <div className="dropdown-divider"></div>
-              <h6 className="p-3 mb-0 text-center">See all notifications</h6>
-            </div>
-          </li>
+              </Dropdown.Toggle>
 
-          <li className="nav-item nav-profile dropdown">
-            <a className="nav-link dropdown-toggle" id="profileDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
-              <div className="nav-profile-img">
-                <img src="/src/assets/images/faces/user.png" alt="image" />
-              </div>
-              <div className="nav-profile-text">
-                <p className="mb-1 text-black">
-                  {userLoading ? 'Chargement...' : userName || 'Non connecté'}
-                </p>
-              </div>
-            </a>
-            <div className="dropdown-menu navbar-dropdown dropdown-menu-right p-0 border-0 font-size-sm" aria-labelledby="profileDropdown" data-x-placement="bottom-end">
-              <div className="p-3 text-center bg-primary">
-                <img className="img-avatar img-avatar48 img-avatar-thumb" src="/src/assets/images/faces/user.png" alt="" />
-              </div>
-              <div className="p-2">
-                <div role="separator" className="dropdown-divider"></div>
-                <h5 className="dropdown-header text-uppercase pl-2 text-dark mt-2">Actions</h5>
-                {/* Vous pourriez aussi conditionner l'affichage du bouton de déconnexion */}
-                {!userLoading && user && (
-                  <button
-                    className="dropdown-item py-1 d-flex align-items-center justify-content-between"
-                    onClick={handleLogout}
-                  >
-                    <span>Se déconnecter</span>
-                    <i className="mdi mdi-logout ml-1"></i>
-                  </button>
-                )}
-              </div>
-            </div>
+              <Dropdown.Menu className="p-0 border-0 font-size-sm">
+                <div className="p-3 text-center bg-primary">
+                  <Image
+                    src="/src/assets/images/faces/user.png"
+                    alt="Avatar"
+                    roundedCircle
+                    width={48}
+                    height={48}
+                  />
+                </div>
+                <div className="p-2">
+                  <Dropdown.Divider />
+                  <Dropdown.Header className="text-uppercase text-dark pl-2 mt-2">
+                    Actions
+                  </Dropdown.Header>
+                  {!userLoading && user && (
+                    <Dropdown.Item
+                      className="py-1 d-flex align-items-center justify-content-between"
+                      onClick={handleLogout}
+                    >
+                      <span>Se déconnecter</span>
+                      <i className="mdi mdi-logout ml-1" />
+                    </Dropdown.Item>
+                  )}
+                </div>
+              </Dropdown.Menu>
+            </Dropdown>
           </li>
         </ul>
         <button className="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">

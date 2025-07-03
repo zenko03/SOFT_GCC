@@ -11,11 +11,11 @@ const Node = ({ data }) => {
             onMouseLeave={() => setShowDetails(false)}
         >
             <img
-                src={`https://ui-avatars.com/api/?name=${data.name}`}
-                alt={`${data.name}`}
+                src={`https://ui-avatars.com/api/?name=${data.firstName}`}
+                alt={`${data.firstName}`}
                 className="avatar"
             />
-            <div className="node-name">{data.name}</div>
+            <div className="node-name">{data.firstName}</div>
             {showDetails && (
                 <div className="node-details">
                     <p>Civilite: {data.civilite || 'Not Specified'}</p>

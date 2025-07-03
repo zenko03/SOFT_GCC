@@ -134,6 +134,9 @@ builder.Services.AddScoped<DashboardService>();
 
 builder.Services.AddScoped<OrgService>();
 
+builder.Services.AddScoped<WorkCertificatesService>();
+builder.Services.AddScoped<ICrudRepository<WorkCertificates>, CrudRepository<WorkCertificates>>();
+
 // EVALUATIONS
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 builder.Services.AddScoped<EvaluationService>();
@@ -175,6 +178,21 @@ builder.Services.AddScoped<soft_carriere_competence.Application.Services.PDFExtr
 
 #endregion
 
+#region Cors configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins(
+               "http://localhost:5173",
+               "http://151.80.218.41:5173"
+           )
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+           .AllowCredentials();
+    });
+});
+#endregion
 
 #region dbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]), ServiceLifetime.Transient);
@@ -201,19 +219,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
-#endregion
-
-#region Cors configuration
-builder.Services.AddCors(options =>
-{
-	options.AddPolicy("AllowReactApp", policy =>
-	{
-		policy.WithOrigins("http://localhost:5173", "https://a611-2605-59c0-5ef4-db10-2906-df1f-1411-6a96.ngrok-free.app") // Autoriser uniquement cette origine
-			  .AllowAnyHeader() // Autoriser tous les en-t�tes
-			  .AllowAnyMethod() // Autoriser toutes les m�thodes (GET, POST, etc.)
-			  .AllowCredentials(); // Autoriser l'envoi des cookies ou des credentials
-	});
-});
 #endregion
 
 #region Swagger

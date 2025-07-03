@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types'; // Importer PropTypes
+import { urlApi } from '../../helpers/utils';
 
 const UserContext = createContext(null);
 
@@ -46,7 +47,7 @@ export const UserProvider = ({ children }) => {
     const fetchUserData = async (token) => {
         try {
             // Récupération des informations de l'utilisateur
-            const userResponse = await axios.get("https://localhost:7082/api/Authentification/current-user", {
+            const userResponse = await axios.get(urlApi("/Authentification/current-user"), {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -56,7 +57,7 @@ export const UserProvider = ({ children }) => {
             const userData = userResponse.data;
 
             // Récupération des permissions
-            const permissionsResponse = await axios.get(`https://localhost:7082/api/Permission/user/${userData.id}`, {
+            const permissionsResponse = await axios.get(urlApi(`/Permission/user/${userData.id}`), {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -152,7 +153,7 @@ export const UserProvider = ({ children }) => {
         }
 
         try {
-            const response = await axios.get(`https://localhost:7082/api/Permission/user/${userData.id}`, {
+            const response = await axios.get(urlApi(`/Permission/user/${userData.id}`), {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

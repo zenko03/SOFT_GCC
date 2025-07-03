@@ -8,13 +8,11 @@ import '../../styles/orgChart.css';
 import pic1 from '/src/assets/images/faces-clipart/pic-1.png';
 import '../../styles/skillsStyle.css';
 import { useParams } from "react-router-dom";
+import CancelButton from '../../helpers/CancelButton';
+import BreadcrumbPers from '../../helpers/BreadcrumbPers';
 
 // Page pour les nombres des employés par département
 function DetailDepartment() {
-    const module = 'Effectif';
-    const action = 'details';
-    const url = '/Details';
-
     // Initialisation des states
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -30,7 +28,7 @@ function DetailDepartment() {
         }
 
         setLoading(true);
-        setError(null); // Réinitialiser l'erreur avant un nouvel appel
+        setError(null); 
 
         try {
             const [employeeListResponse, departmentResponse] = await Promise.all([
@@ -54,26 +52,34 @@ function DetailDepartment() {
 
     return (
         <Template>
-            {loading && <Loader />} {/* Affichez le loader lorsque `loading` est true */}
-            {error && <div className="alert alert-danger">{error}</div>} {/* Affichez les erreurs */}
-
+            {loading && <Loader />} 
             {department && (
                 <>
-                    <PageHeader module={module} action={action} url={url} />
-
-                    <div className="row mb-3">
-                        <div className="col-lg-12 skill-header">
+                    <div className="title-container">
+                        <div className="col-lg-10 skill-header">
                             <i className="mdi mdi-domain skill-icon"></i>
-                            <h4 className="skill-title"> Département : {department.name || "Inconnu"}</h4>
+                            <p className="skill-title"> DÉPARTEMENT : {department.name || "Inconnu"}</p>
                         </div>
+
+                        <div className="col-lg-2">
+                            <CancelButton to="effectif" />
+                        </div>  
                     </div>
+                    <BreadcrumbPers
+                        items={[
+                            { label: 'Accueil', path: '/softGcc/tableauBord' },
+                            { label: 'Effectif par département', path: '/softGcc/effectif' },
+                            { label: 'Détails', path: `/softGcc/effectif/details/${DepartmentId}` },
+                        ]}
+                    />
+                    {error && <div className="alert alert-danger">{error}</div>}
+
                     <div className="row">
                         <div className="col-lg-12 grid-margin stretch-card">
                             <div className="card">
-                                <div className="card-header title-container">
-                                    <h5 className="title">
-                                        <i className="mdi mdi-format-list-bulleted"></i> Liste des employés
-                                    </h5>
+                                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
+                                    <i className="mdi mdi-format-list-bulleted me-2 fs-4" style={{fontSize: '30px', marginRight: '10px'}}></i>
+                                    <h3 className="mb-0" style={{color: '#B8860B'}}>Liste des employés</h3>
                                 </div>
                                 <div className="card-body">
                                     <table className="table table-competences">
@@ -102,7 +108,7 @@ function DetailDepartment() {
                                                         <td>{`${item.name} ${item.firstName}`}</td>
                                                         <td>{item.positionName}</td>
                                                         <td>{new Date(item.hiringDate).toLocaleDateString()}</td>
-                                                        <td style={{color: '#44ce42'}}>{item.seniority} ans</td>
+                                                        <td style={{color: '#44ce42'}}>{item.seniority}</td>
                                                     </tr>
                                                 ))
                                             ) : (

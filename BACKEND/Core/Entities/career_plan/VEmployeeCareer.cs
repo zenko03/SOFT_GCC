@@ -61,5 +61,11 @@ namespace soft_carriere_competence.Core.Entities.career_plan
 
         [Column("Establishment_id")]
         public int? EstablishmentId { get; set; }
+
+        [Column("Ending_contract")]
+        public DateTime? EndingContract { get; set; }
+
+        [Column("email")]
+        public string? Email { get; set; }
     }
 }

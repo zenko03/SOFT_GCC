@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Button, Modal, Alert } from 'react-bootstrap';
+import { Dropdown, Button, Modal, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { urlApi } from '../../helpers/utils';
@@ -16,14 +16,21 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
     const [successMessage, setSuccessMessage] = useState(null); // État pour le message de succès
     const [error, setError] = useState(null); 
 
+    // Mapping des types d'affectation
+    const assignmentTypes = {
+    1: 'Nomination',
+    2: 'Avancements',
+    3: 'Mise en disponibilités'
+    };
+
     // Click sur le bouton edit 
     const handleClickEdit = (item) => {
-        navigate(`/carriere/fiche/edit/${item.careerPlanId}`); 
+        navigate(`/softGcc/carriere/fiche/edit/${item.careerPlanId}`); 
     };
 
     // Click sur le bouton détails
     const handleClickDetail = (item) => {
-        navigate(`/carriere/fiche/detail/${item.careerPlanId}`); 
+        navigate(`/softGcc/carriere/fiche/detail/${item.careerPlanId}`); 
     };
 
     /// Affichage d'une modale de confirmation d'une suppression d'item de competence
@@ -77,15 +84,24 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                 <div className="card">
                     <div className="card-body">  
                         <div className="template-demo">
-                            <div className="dropdown">
-                                <button className="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuButton4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Type d'affectation </button>
-                                <div className="dropdown-menu" aria-labelledby="dropdownMenuButton4">
-                                    <h1 className="dropdown-header" style={{color: 'black'}}>Type d'affectation</h1>
-                                    <a className="dropdown-item" onClick={() => { setSelectedAssignment(1); }}>Nomination</a>
-                                    <a className="dropdown-item" onClick={() => { setSelectedAssignment(2); }}> Avancements</a>
-                                    <a className="dropdown-item" onClick={() => { setSelectedAssignment(3); }}> Mise en disponibilites</a>
-                                </div>
-                            </div>
+                            <Dropdown>
+                                <Dropdown.Toggle variant="warning" id="dropdown-basic">
+                                {selectedAssignment ? assignmentTypes[selectedAssignment] : "Type d'affectation"}
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu>
+                                <Dropdown.Header>Type d'affectation</Dropdown.Header>
+                                {Object.entries(assignmentTypes).map(([key, label]) => (
+                                    <Dropdown.Item
+                                    key={key}
+                                    active={selectedAssignment === parseInt(key)}
+                                    onClick={() => setSelectedAssignment(parseInt(key))}
+                                    >
+                                    {label}
+                                    </Dropdown.Item>
+                                ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
                         </div>
                         <Modal show={showConfirmDelete} onHide={handleCloseDelete}>
                         <Modal.Header closeButton>
@@ -142,7 +158,7 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                                     <td><FormattedDate date={item.endingContract} /></td>
                                                     <td>{item.netSalary}</td>
                                                     
-                                                    {item.careerState !== 'termine' ? (
+                                                    {item.careerState !== 'terminé' ? (
                                                         <>
                                                             <td>
                                                                 <label className='badge badge-success'>{item.careerState}</label>
@@ -314,7 +330,7 @@ function AffectationList({ dataAssignmentAppointment, dataAssignmentAdvancement,
                                                     <td>{new Date(item.endDate).toLocaleDateString()}</td>
                                                     <td>{item.reason}</td>
                                                     
-                                                    {item.careerState !== 'termine' ? (
+                                                    {item.careerState !== 'terminé' ? (
                                                         <>
                                                             <td>
                                                                 <label className='badge badge-success'>{item.careerState}</label>
