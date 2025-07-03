@@ -134,6 +134,9 @@ builder.Services.AddScoped<DashboardService>();
 
 builder.Services.AddScoped<OrgService>();
 
+builder.Services.AddScoped<WorkCertificatesService>();
+builder.Services.AddScoped<ICrudRepository<WorkCertificates>, CrudRepository<WorkCertificates>>();
+
 // EVALUATIONS
 builder.Services.AddScoped<IGenericRepository<User>, GenericRepository<User>>();
 builder.Services.AddScoped<EvaluationService>();
@@ -150,6 +153,8 @@ builder.Services.AddScoped<ReferenceAnswerService>();
 builder.Services.AddScoped<EvaluationCompetenceService>();
 builder.Services.AddScoped<TrainingSuggestionService>();
 builder.Services.AddScoped<ResponseTypeService>();
+builder.Services.AddScoped<EvaluationTypeService>();
+builder.Services.AddScoped<EvaluationDurationService>();
 
 builder.Services.AddScoped<IFileProcessingService, FileProcessingService>();
 builder.Services.AddScoped<IEvaluationQuestionRepository, EvaluationQuestionRepository>();
@@ -165,11 +170,29 @@ builder.Services.AddScoped<TemporaryAccountService>();
 
 builder.Services.Configure<ReminderSettings>(builder.Configuration.GetSection("ReminderSettings"));
 
+// Enregistrement des services
+builder.Services.AddScoped<soft_carriere_competence.Application.Services.PDFExtraction.PdfExtractionService>();
+
 
 
 
 #endregion
 
+#region Cors configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins(
+               "http://localhost:5173",
+               "http://151.80.218.41:5173"
+           )
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+           .AllowCredentials();
+    });
+});
+#endregion
 
 #region dbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]), ServiceLifetime.Transient);
@@ -196,19 +219,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
-#endregion
-
-#region Cors configuration
-builder.Services.AddCors(options =>
-{
-	options.AddPolicy("AllowReactApp", policy =>
-	{
-		policy.WithOrigins("http://localhost:5173") // Autoriser uniquement cette origine
-			  .AllowAnyHeader() // Autoriser tous les en-t�tes
-			  .AllowAnyMethod() // Autoriser toutes les m�thodes (GET, POST, etc.)
-			  .AllowCredentials(); // Autoriser l'envoi des cookies ou des credentials
-	});
-});
 #endregion
 
 #region Swagger
