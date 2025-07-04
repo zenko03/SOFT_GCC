@@ -369,7 +369,7 @@ VALUES
 -- Attribution des permissions aux r�les
 -- Administrator (Role_id = 1) : Toutes les permissions
 INSERT INTO Role_Permissions (role_id, permission_id)
-SELECT 1, Permission_id FROM Permissions;
+SELECT 3, Permission_id FROM Permissions;
 
 -- Manager (Role_id = 2) : Permissions limit�es
 INSERT INTO Role_Permissions (role_id, permission_id)

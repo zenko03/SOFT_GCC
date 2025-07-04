@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 // Gestion des menu de navigation
@@ -273,6 +274,25 @@ function MenuBar() {
               </li>
             </ul>
           </div>
+          {openMenu === 'param' && (
+            <ul className="nav flex-column sub-menu">
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/softGcc/settings/competence') ? 'active-menu' : ''}`} to="/softGcc/settings/competence" onClick={() => setOpenMenu(null)}>Gestion Compétences</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/softGcc/settings/carriere') ? 'active-menu' : ''}`} to="/softGcc/settings/carriere" onClick={() => setOpenMenu(null)}>Gestion Carrières</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/softGcc/settings/employeeManagement/liste') ? 'active-menu' : ''}`} to="/softGcc/settings/employeeManagement/liste" onClick={() => setOpenMenu(null)}>Gestion employés</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/EvaluationSettings') ? 'active-menu' : ''}`} to="/EvaluationSettings" onClick={() => setOpenMenu(null)}>Gestion des évaluations</Link>
+              </li>
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive('/user-management') ? 'active-menu' : ''}`} to="/user-management" onClick={() => setOpenMenu(null)}>Gestion des utilisateurs</Link>
+              </li>
+            </ul>
+          )}
         </li>
 
         <li className="nav-item sidebar-user-actions">

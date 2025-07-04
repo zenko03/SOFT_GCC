@@ -494,7 +494,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                             $"<strong>Mot de passe :</strong> {tempAccount.TempPassword}<br>" +
                             $"</div><br>" +
                             $"Ces identifiants seront valides à partir du {startDate.ToShortDateString()}.<br><br>" +
-                            $"<a href='http://localhost:5173/EvaluationLogin' class='button'>Accéder à l'évaluation</a><br><br>" +
+                            $"<a href='http://151.80.218.41:5173/EvaluationLogin' class='button'>Accéder à l'évaluation</a><br><br>" +
                             $"Cordialement,<br>" +
                             $"L'équipe Gestion des Carrières et Compétences"
                         );
@@ -516,7 +516,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                                 $"<strong>Employé concerné :</strong> {employeeName}<br>" +
                                 $"<strong>Période d'évaluation :</strong> Du {startDate.ToShortDateString()} au {endDate.ToShortDateString()}<br><br>" +
                                 $"Veuillez vous connecter à votre compte pour consulter et gérer cette évaluation.<br><br>" +
-                                $"<a href='http://localhost:5173/' class='button'>Accéder au système</a><br><br>" +
+                                $"<a href='http://151.80.218.41:5173/salary-list' class='button'>Accéder au système</a><br><br>" +
                                 $"Cordialement,<br>" +
                                 $"L'équipe Gestion des Carrières et Compétences"
                             );
@@ -634,7 +634,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                 $"<strong>Mot de passe :</strong> {tempAccount.TempPassword}<br>" +
                 $"</div><br>" +
                 $"Ces identifiants ne seront valides qu'à partir du {currentEvaluation.StartDate.ToShortDateString()}.<br><br>" +
-                $"<a href='http://localhost:5173/EvaluationLogin' class='button'>Accéder à l'évaluation</a><br><br>" +
+                $"<a href='http://151.80.218.41:5173/EvaluationLogin' class='button'>Accéder à l'évaluation</a><br><br>" +
                 $"Cordialement,<br>" +
                 $"L'équipe Gestion des Carrières et Compétences"
             );
@@ -658,8 +658,6 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                         $"Bonjour {supervisor.FirstName} {supervisor.LastName},<br><br>" +
                         $"Ceci est un rappel concernant une {evaluationTypeName.ToLower()} que vous devez superviser, prévue pour le {evaluationDate.ToShortDateString()}.<br><br>" +
                         $"<strong>Employé concerné:</strong> {user.FirstName} {user.LastName}<br><br>" +
-                        $"Veuillez vous connecter à votre compte pour effectuer cette supervision.<br><br>" +
-                        $"<a href='http://localhost:5173/' class='button'>Accéder au système</a><br><br>" +
                         $"Cordialement,<br>" +
                         $"L'équipe Gestion des Carrières et Compétences"
                     );

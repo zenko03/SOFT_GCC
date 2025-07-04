@@ -796,7 +796,7 @@ namespace soft_carriere_competence.Controllers.Evaluations
 									$"<strong>Date de soumission :</strong> {submission.CompletionDate.ToShortDateString()}<br>" +
 									$"<strong>Période d'évaluation :</strong> Du {evaluation.StartDate.ToShortDateString()} au {evaluation.EndDate.ToShortDateString()}<br><br>" +
 									$"En tant que superviseur désigné, vous êtes invité(e) à consulter et à valider cette évaluation.<br><br>" +
-									$"<a href='http://localhost:5173/' class='button'>Accéder au système</a><br><br>" +
+									$"<a href='http://151.80.218.41:5173/salary-list' class='button'>Accéder au système</a><br><br>" +
 									$"Cordialement,<br>" +
 									$"L'équipe Gestion des Carrières et Compétences"
 								);
