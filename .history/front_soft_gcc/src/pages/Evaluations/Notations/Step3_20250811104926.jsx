@@ -360,7 +360,7 @@ const Step3 = ({ ratings, average, evaluationId, validationData, onValidationCha
     setLoading(true);
     setError('');
     try {
-      const response = await api.post('/Evaluation/suggestions', { ratings });
+      const response = await axios.post('https://localhost:7082/api/Evaluation/suggestions', { ratings });
       console.log('Training suggestions response:', response.data);
       setTrainingSuggestions(response.data);
       setShowTrainingSuggestions(true);

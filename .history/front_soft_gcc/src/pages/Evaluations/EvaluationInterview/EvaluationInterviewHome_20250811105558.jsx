@@ -553,8 +553,8 @@ function EvaluationInterviewHome() {
         console.log("État de window.selectedEmployeeForModal APRÈS affectation:", window.selectedEmployeeForModal);
       }
       
-      const interviewResponse = await api.get(
-        `/EvaluationInterview/interview-details/${interviewId}`
+      const interviewResponse = await axios.get(
+        `https://localhost:7082/api/EvaluationInterview/interview-details/${interviewId}`
       );
 
       const interview = interviewResponse.data;
@@ -643,8 +643,8 @@ function EvaluationInterviewHome() {
       }
 
       // 3. Continuer avec la récupération de l'entretien
-      const interviewResponse = await api.get(
-        `/EvaluationInterview/get-interview-by-participant/${employeeId}`
+      const interviewResponse = await axios.get(
+        `https://localhost:7082/api/EvaluationInterview/get-interview-by-participant/${employeeId}`
       );
 
       const interview = interviewResponse.data;
@@ -778,8 +778,8 @@ function EvaluationInterviewHome() {
           }
           
           // Récupérer l'entretien
-          const interviewResponse = await api.get(
-            `/EvaluationInterview/get-interview-by-participant/${employeeId}`
+          const interviewResponse = await axios.get(
+            `https://localhost:7082/api/EvaluationInterview/get-interview-by-participant/${employeeId}`
           );
           
           let interview = interviewResponse.data;

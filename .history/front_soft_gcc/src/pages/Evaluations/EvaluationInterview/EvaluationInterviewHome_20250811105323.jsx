@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Template from '../../Template';
-import api from '../../../helpers/api';
+import axios from 'axios';
 import '../../../assets/css/Evaluations/SalaryListPlanning.css';
 import { formatDate, isValidInterviewDate, compareDates } from '../../../services/Evaluations/utils';
 import ParticipantsSelector from './ParticipantSelector';
@@ -90,7 +90,7 @@ function EvaluationInterviewHome() {
   const fetchParticipants = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.get('/User/managers-directors');
+      const response = await axios.get('https://localhost:7082/api/User/managers-directors');
       setParticipantsList(response.data);
     } catch (error) {
       handleError(error, "Erreur lors de la récupération des participants.");
@@ -105,7 +105,7 @@ function EvaluationInterviewHome() {
 
     setLoading(true);
     try {
-      const response = await api.get('/EvaluationInterview/employees-finished-evaluations-paginated', {
+      const response = await axios.get('https://localhost:7082/api/EvaluationInterview/employees-finished-evaluations-paginated', {
         params: {
           pageNumber: currentPage,
           pageSize: pageSize,
@@ -132,8 +132,8 @@ function EvaluationInterviewHome() {
 
     try {
       const [positionsRes, departmentsRes] = await Promise.all([
-        api.get('/EvaluationInterview/positions'),
-        api.get('/EvaluationInterview/departments'),
+        axios.get('https://localhost:7082/api/EvaluationInterview/positions'),
+        axios.get('https://localhost:7082/api/EvaluationInterview/departments'),
       ]);
       setPositions(positionsRes.data);
       setDepartments(departmentsRes.data);
@@ -375,8 +375,8 @@ function EvaluationInterviewHome() {
         return;
       }
 
-      await api.post(
-        '/EvaluationInterview/schedule-interview',
+      await axios.post(
+        'https://localhost:7082/api/EvaluationInterview/schedule-interview',
         payload
       );
 
@@ -402,8 +402,8 @@ function EvaluationInterviewHome() {
 
       // Étape 1: Récupérer l'interview par participant
       console.log("Récupération de l'entretien...");
-      const interviewResponse = await api.get(
-        `/EvaluationInterview/get-interview-by-participant/${employeeId}`
+      const interviewResponse = await axios.get(
+        `https://localhost:7082/api/EvaluationInterview/get-interview-by-participant/${employeeId}`
       );
 
       let interview = interviewResponse.data;
@@ -458,7 +458,7 @@ function EvaluationInterviewHome() {
         // Étape 2: Démarrer l'entretien (seulement si statut < 25)
         if (interview.status < 25) {
           console.log(`Appel de l'API pour démarrer l'entretien ID: ${interviewId}`);
-          const startResponse = await api.put(`/EvaluationInterview/start-interview/${interviewId}`);
+          const startResponse = await axios.put(`https://localhost:7082/api/EvaluationInterview/start-interview/${interviewId}`);
           console.log("Réponse au démarrage de l'entretien:", startResponse);
         }
 
@@ -553,8 +553,8 @@ function EvaluationInterviewHome() {
         console.log("État de window.selectedEmployeeForModal APRÈS affectation:", window.selectedEmployeeForModal);
       }
       
-      const interviewResponse = await api.get(
-        `/EvaluationInterview/interview-details/${interviewId}`
+      const interviewResponse = await axios.get(
+        `https://localhost:7082/api/EvaluationInterview/interview-details/${interviewId}`
       );
 
       const interview = interviewResponse.data;
@@ -643,8 +643,8 @@ function EvaluationInterviewHome() {
       }
 
       // 3. Continuer avec la récupération de l'entretien
-      const interviewResponse = await api.get(
-        `/EvaluationInterview/get-interview-by-participant/${employeeId}`
+      const interviewResponse = await axios.get(
+        `https://localhost:7082/api/EvaluationInterview/get-interview-by-participant/${employeeId}`
       );
 
       const interview = interviewResponse.data;
@@ -778,8 +778,8 @@ function EvaluationInterviewHome() {
           }
           
           // Récupérer l'entretien
-          const interviewResponse = await api.get(
-            `/EvaluationInterview/get-interview-by-participant/${employeeId}`
+          const interviewResponse = await axios.get(
+            `https://localhost:7082/api/EvaluationInterview/get-interview-by-participant/${employeeId}`
           );
           
           let interview = interviewResponse.data;

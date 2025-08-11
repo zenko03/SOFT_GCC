@@ -778,8 +778,8 @@ function EvaluationInterviewHome() {
           }
           
           // Récupérer l'entretien
-          const interviewResponse = await api.get(
-            `/EvaluationInterview/get-interview-by-participant/${employeeId}`
+          const interviewResponse = await axios.get(
+            `https://localhost:7082/api/EvaluationInterview/get-interview-by-participant/${employeeId}`
           );
           
           let interview = interviewResponse.data;
