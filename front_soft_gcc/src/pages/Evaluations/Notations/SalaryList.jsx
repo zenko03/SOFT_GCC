@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Template from '../../Template';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../../../helpers/api';
 import '../../../assets/css/Evaluations/notationModal.css';
 import '../../../assets/css/Evaluations/Questions.css';
 import '../../../assets/css/Evaluations/Steps.css';
@@ -72,8 +73,8 @@ function SalaryList() {
     const fetchFilterOptions = async () => {
       try {
         const [positionsRes, departmentsRes] = await Promise.all([
-          axios.get('https://localhost:7082/api/EvaluationPlanning/positions'),
-          axios.get('https://localhost:7082/api/EvaluationPlanning/departments'),
+          api.get('/EvaluationPlanning/positions'),
+          api.get('/EvaluationPlanning/departments'),
         ]);
         setPositions(positionsRes.data);
         setDepartments(departmentsRes.data);
@@ -89,7 +90,7 @@ function SalaryList() {
     const fetchEmployees = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('https://localhost:7082/api/User/vemployee-details-paginated', {
+        const response = await api.get('/User/vemployee-details-paginated', {
           params: {
             pageNumber: currentPage,
             pageSize: pageSize,

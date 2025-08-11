@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../../../helpers/api';
 import { toast } from 'react-toastify';
 import { 
   Card, TextField, Button, Typography, Box, CircularProgress, 
@@ -27,7 +28,7 @@ const EvaluationLogin = () => {
     
     if (token && evaluationId) {
       // Vérifier si le token est toujours valide
-      axios.get(`https://localhost:7082/api/evaluation/validate-token`, {
+      api.get(`/evaluation/validate-token`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(response => {
@@ -57,7 +58,7 @@ const EvaluationLogin = () => {
       const ipResponse = await axios.get('https://api.ipify.org?format=json');
       const ipAddress = ipResponse.data.ip;
 
-      const response = await axios.post('https://localhost:7082/api/EvaluationLogin/login', {
+      const response = await api.post('/EvaluationLogin/login', {
         tempLogin,
         tempPassword,
         ipAddress

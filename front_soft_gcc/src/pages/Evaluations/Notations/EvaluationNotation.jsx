@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../../../helpers/api';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import Template from '../../Template';
@@ -55,7 +56,7 @@ const EvaluationNotation = () => {
         if (employeeId) {
           try {
             // Essayer d'abord avec l'API vemployee-details-paginated qui contient plus d'informations
-            const employeeListResponse = await axios.get('https://localhost:7082/api/User/vemployee-details-paginated', {
+            const employeeListResponse = await api.get('/User/vemployee-details-paginated', {
               params: { pageNumber: 1, pageSize: 100 } // Utiliser une taille suffisamment grande
             });
             
@@ -73,7 +74,7 @@ const EvaluationNotation = () => {
               });
             } else {
               // Si non trouvé dans la liste, essayer l'API User directe
-              const employeeResponse = await axios.get(`https://localhost:7082/api/User/${employeeId}`);
+              const employeeResponse = await api.get(`/User/${employeeId}`);
               console.log('Données employé reçues via API directe:', employeeResponse.data);
               
               setSelectedEmployee({
@@ -93,7 +94,7 @@ const EvaluationNotation = () => {
         else if (evaluationId) {
           try {
             // D'abord essayer de récupérer les informations complètes via l'API vemployee-details-paginated
-            const employeeListResponse = await axios.get('https://localhost:7082/api/User/vemployee-details-paginated', {
+            const employeeListResponse = await api.get('/User/vemployee-details-paginated', {
               params: { pageNumber: 1, pageSize: 100 }
             });
             
@@ -111,7 +112,7 @@ const EvaluationNotation = () => {
               });
             } else {
               // Si non trouvée, essayer l'API Evaluation directe
-              const evaluationResponse = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}`);
+              const evaluationResponse = await api.get(`/Evaluation/${evaluationId}`);
               console.log('Données évaluation reçues via API directe:', evaluationResponse.data);
               
               if (evaluationResponse.data) {
@@ -127,7 +128,7 @@ const EvaluationNotation = () => {
                 if (!evaluationResponse.data.firstName || !evaluationResponse.data.position || !evaluationResponse.data.department) {
                   const employeeId = evaluationResponse.data.userId || evaluationResponse.data.employeeId;
                   if (employeeId) {
-                    const employeeDetails = await axios.get(`https://localhost:7082/api/User/${employeeId}`);
+                    const employeeDetails = await api.get(`/User/${employeeId}`);
                     console.log('Données complémentaires employé:', employeeDetails.data);
                     
                     setSelectedEmployee({
@@ -152,7 +153,7 @@ const EvaluationNotation = () => {
 
         // Récupérer les types d'évaluation
         try {
-          const evalTypesResponse = await axios.get('https://localhost:7082/api/Evaluation/types');
+          const evalTypesResponse = await api.get('/Evaluation/types');
           if (evalTypesResponse.data && evalTypesResponse.data.length > 0) {
             setSelectedEvaluationType(evalTypesResponse.data[0]);
           }
@@ -163,7 +164,7 @@ const EvaluationNotation = () => {
         // Récupérer les questions pour cette évaluation si evaluationId est disponible
         if (evaluationId) {
           try {
-            const questionsResponse = await axios.get(`https://localhost:7082/api/Evaluation/evaluation/${evaluationId}/selected-questions`);
+            const questionsResponse = await api.get(`/Evaluation/evaluation/${evaluationId}/selected-questions`);
             // Les questions viennent maintenant avec les réponses formatées correctement (texte de l'option pour QCM)
             const formattedQuestions = questionsResponse.data.map(item => ({
               questionId: item.questionId,
@@ -444,8 +445,8 @@ const EvaluationNotation = () => {
     };
 
     try {
-      const response = await axios.post(
-        'https://localhost:7082/api/Evaluation/save-evaluation-results',
+      const response = await api.post(
+        '/Evaluation/save-evaluation-results',
         data
       );
       console.log('Résultats soumis avec succès :', response.data);
@@ -497,7 +498,7 @@ const EvaluationNotation = () => {
     console.log('Payload envoyé pour validation:', payload);
 
     try {
-      await axios.post('https://localhost:7082/api/Evaluation/validate-evaluation', payload);
+      await api.post('/Evaluation/validate-evaluation', payload);
       console.log("Validation réussie côté serveur");
       setValidationSuccess(true);
       return true;

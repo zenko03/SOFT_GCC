@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../../../helpers/api';
 import { 
   Container, Typography, Box, Paper, Button, 
   Grid, Radio, RadioGroup, FormControlLabel, 
@@ -93,7 +94,7 @@ const EvaluationPage = () => {
   const fetchQuestionOptions = async (evaluationId) => {
     try {
       console.log('Récupération des options pour l\'évaluation:', evaluationId);
-      const response = await axios.get(`https://localhost:7082/api/evaluation/${evaluationId}/options`, {
+      const response = await api.get(`/evaluation/${evaluationId}/options`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('evaluationToken')}` }
       });
       console.log('Options récupérées:', response.data);
@@ -131,7 +132,7 @@ const EvaluationPage = () => {
         const answeredQuestions = Object.keys(answers).filter(key => answers[key] !== undefined && answers[key] !== '').length;
         const progressPercentage = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
 
-        await axios.post(`https://localhost:7082/api/evaluation/${evaluationId}/save-progress`, {
+        await api.post(`/evaluation/${evaluationId}/save-progress`, {
           userId: parseInt(userId),
           totalQuestions,
           answeredQuestions,
@@ -323,7 +324,7 @@ const EvaluationPage = () => {
     const fetchEvaluation = async () => {
       try {
         console.log('Récupération des données d\'évaluation pour l\'ID:', evaluationId);
-        const response = await axios.get(`https://localhost:7082/api/evaluation/${evaluationId}`, {
+        const response = await api.get(`/evaluation/${evaluationId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -350,7 +351,7 @@ const EvaluationPage = () => {
               console.log('Recherche de l\'utilisateur par nom:', employeeName);
               
               // Utiliser l'endpoint vemployee-details-paginated pour rechercher l'employé
-              const employeeListResponse = await axios.get('https://localhost:7082/api/User/vemployee-details-paginated', {
+              const employeeListResponse = await api.get('/User/vemployee-details-paginated', {
                 params: { 
                   pageNumber: 1, 
                   pageSize: 100,  // Une taille de page suffisamment grande pour trouver l'employé
@@ -402,7 +403,7 @@ const EvaluationPage = () => {
         
         // Récupérer séparément les questions sélectionnées
         try {
-          const questionsResponse = await axios.get(`https://localhost:7082/api/Evaluation/evaluation/${evaluationId}/selected-questions`, {
+          const questionsResponse = await api.get(`/Evaluation/evaluation/${evaluationId}/selected-questions`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -428,7 +429,7 @@ const EvaluationPage = () => {
             if (employeeId) {
               console.log('ID utilisateur trouvé dans les questions:', employeeId);
               
-              const employeeDetailsResponse = await axios.get(`https://localhost:7082/api/User/${employeeId}`, {
+              const employeeDetailsResponse = await api.get(`/User/${employeeId}`, {
                 headers: { Authorization: `Bearer ${token}` }
               });
               
@@ -640,7 +641,7 @@ const EvaluationPage = () => {
 
       console.log("Payload being sent:", JSON.stringify(payload));
 
-      const response = await axios.post(`https://localhost:7082/api/evaluation/${evaluationId}/submit`, payload, {
+      const response = await api.post(`/evaluation/${evaluationId}/submit`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

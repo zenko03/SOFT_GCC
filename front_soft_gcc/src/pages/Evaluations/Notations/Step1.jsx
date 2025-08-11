@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import api from '../../../helpers/api';
 import './Step1.css';
 
 const Step1 = ({ evaluationId, setRatings }) => {
@@ -37,7 +38,7 @@ const Step1 = ({ evaluationId, setRatings }) => {
 
         // Récupérer le type d'évaluation
         try {
-          const evalResponse = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}`);
+          const evalResponse = await api.get(`/Evaluation/${evaluationId}`);
           if (evalResponse.data && evalResponse.data.evaluationTypeId) {
             setEvaluationType(evalResponse.data.evaluationTypeId);
           }
@@ -45,7 +46,7 @@ const Step1 = ({ evaluationId, setRatings }) => {
           console.warn("Erreur lors de la récupération du type d'évaluation:", err);
         }
 
-        const questionsResponse = await axios.get(`https://localhost:7082/api/Evaluation/evaluation/${evaluationId}/selected-questions`);
+        const questionsResponse = await api.get(`/Evaluation/evaluation/${evaluationId}/selected-questions`);
         
         // Vérifier les doublons potentiels par ID de question
         const questionIds = questionsResponse.data.map(q => q.questionId);
@@ -137,8 +138,8 @@ const Step1 = ({ evaluationId, setRatings }) => {
           try {
             const questionIds = formattedQuestions.map(q => q.questionId);
             
-            const referencesResponse = await axios.post(
-              'https://localhost:7082/api/ReferenceAnswer/questions', 
+            const referencesResponse = await api.post(
+              '/ReferenceAnswer/questions', 
               questionIds,
               { 
                 headers: { 
@@ -182,7 +183,7 @@ const Step1 = ({ evaluationId, setRatings }) => {
         if (!evaluationId) return;
         
         // Récupérer les options de questions pour les questions QCM
-        const optionsResponse = await axios.get(`https://localhost:7082/api/evaluation/${evaluationId}/options`);
+        const optionsResponse = await api.get(`/evaluation/${evaluationId}/options`);
         setQuestionOptions(optionsResponse.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des options:", error);

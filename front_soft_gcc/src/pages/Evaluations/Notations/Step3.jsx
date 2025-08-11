@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import api from '../../../helpers/api';
 import '../../../assets/css/Evaluations/Steps.css';
 import './Step3.css';
 import { previewEvaluationPDF } from './pdfGenerator';
@@ -38,7 +39,7 @@ const Step3 = ({ ratings, average, evaluationId, validationData, onValidationCha
         
         // Essayer de récupérer les informations de l'évaluation
         try {
-          const evaluationResponse = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}`);
+          const evaluationResponse = await api.get(`/Evaluation/${evaluationId}`);
           console.log("Données d'évaluation reçues:", evaluationResponse.data);
           
           if (evaluationResponse.data) {
@@ -72,7 +73,7 @@ const Step3 = ({ ratings, average, evaluationId, validationData, onValidationCha
             if (employeeId) {
               try {
                 // Essayer de récupérer les détails de l'employé
-                const employeeResponse = await axios.get(`https://localhost:7082/api/User/${employeeId}`);
+                const employeeResponse = await api.get(`/User/${employeeId}`);
                 
                 if (employeeResponse.data) {
                   console.log("Données d'employé récupérées:", employeeResponse.data);
@@ -108,7 +109,7 @@ const Step3 = ({ ratings, average, evaluationId, validationData, onValidationCha
         
         // Essayer avec l'API des employés évalués
         try {
-          const employeesResponse = await axios.get('https://localhost:7082/api/User/vemployee-details-paginated', {
+          const employeesResponse = await api.get('/User/vemployee-details-paginated', {
             params: { pageNumber: 1, pageSize: 100 }
           });
           
@@ -162,7 +163,7 @@ const Step3 = ({ ratings, average, evaluationId, validationData, onValidationCha
       
       try {
         // Récupérer les questions complètes
-        const questionsResponse = await axios.get(`https://localhost:7082/api/Evaluation/evaluation/${evaluationId}/selected-questions`);
+        const questionsResponse = await api.get(`/Evaluation/evaluation/${evaluationId}/selected-questions`);
         
         // Filtrer pour n'avoir que des questions uniques par ID
         const uniqueQuestions = [];
@@ -187,7 +188,7 @@ const Step3 = ({ ratings, average, evaluationId, validationData, onValidationCha
         
         // Récupérer les commentaires
         try {
-          const commentsResponse = await axios.get(`https://localhost:7082/api/Evaluation/${evaluationId}/comments`);
+          const commentsResponse = await api.get(`/Evaluation/${evaluationId}/comments`);
           if (commentsResponse.data) {
             setComments(commentsResponse.data);
           }
@@ -211,7 +212,7 @@ const Step3 = ({ ratings, average, evaluationId, validationData, onValidationCha
       let suggestions = trainingSuggestions;
       if (!showTrainingSuggestions) {
         try {
-          const response = await axios.post('https://localhost:7082/api/Evaluation/suggestions', { ratings });
+          const response = await api.post('/Evaluation/suggestions', { ratings });
           suggestions = response.data;
         } catch (err) {
           console.error('Error fetching training suggestions for preview:', err);
@@ -360,7 +361,7 @@ const Step3 = ({ ratings, average, evaluationId, validationData, onValidationCha
     setLoading(true);
     setError('');
     try {
-      const response = await axios.post('https://localhost:7082/api/Evaluation/suggestions', { ratings });
+      const response = await api.post('/Evaluation/suggestions', { ratings });
       console.log('Training suggestions response:', response.data);
       setTrainingSuggestions(response.data);
       setShowTrainingSuggestions(true);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../../../helpers/api';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 
@@ -57,7 +58,7 @@ const EvaluationFill = ({ interview, employeeId, extractedData }) => {
         setIsLoading(true);
         
         // Récupérer les détails de l'employé
-        const employeeResponse = await axios.get(`https://localhost:7082/api/Employee/${employeeId}`);
+        const employeeResponse = await api.get(`/Employee/${employeeId}`);
         
         if (employeeResponse.data) {
           const employee = employeeResponse.data;
@@ -66,7 +67,7 @@ const EvaluationFill = ({ interview, employeeId, extractedData }) => {
           // Récupérer l'évaluation
           if (interview && interview.evaluationId) {
             // Récupérer les détails de l'évaluation
-            const evaluationResponse = await axios.get(`https://localhost:7082/api/Evaluation/${interview.evaluationId}`);
+            const evaluationResponse = await api.get(`/Evaluation/${interview.evaluationId}`);
             
             if (evaluationResponse.data) {
               // Mettre à jour les informations générales
@@ -84,7 +85,7 @@ const EvaluationFill = ({ interview, employeeId, extractedData }) => {
           
           // Charger les compétences associées au poste
           if (employee.positionId) {
-            const skillsResponse = await axios.get(`https://localhost:7082/api/Skill/position/${employee.positionId}`);
+            const skillsResponse = await api.get(`/Skill/position/${employee.positionId}`);
             
             if (skillsResponse.data && Array.isArray(skillsResponse.data)) {
               const skills = skillsResponse.data.map(skill => ({
@@ -211,8 +212,8 @@ const EvaluationFill = ({ interview, employeeId, extractedData }) => {
         average: averageRating
       };
       
-      await axios.post(
-        'https://localhost:7082/api/EvaluationQuestion/evaluation/save-responses',
+      await api.post(
+        '/EvaluationQuestion/evaluation/save-responses',
         payload
       );
       

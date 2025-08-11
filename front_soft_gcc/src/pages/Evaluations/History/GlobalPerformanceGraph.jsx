@@ -11,6 +11,7 @@ import {
   LabelList
 } from 'recharts';
 import axios from 'axios';
+import api from '../../../helpers/api';
 import { FaChartBar, FaChartLine, FaTachometerAlt } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import '../../../assets/css/Evaluations/GlobalPerformance.css';
@@ -58,7 +59,7 @@ const GlobalPerformanceGraph = ({ filters = {}, globalStats = null }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get('https://localhost:7082/api/EvaluationHistory/global-performance', {
+      const response = await api.get('/EvaluationHistory/global-performance', {
         params: {
           startDate: filters.startDate || null,
           endDate: filters.endDate || null,
@@ -97,7 +98,7 @@ const GlobalPerformanceGraph = ({ filters = {}, globalStats = null }) => {
     
     // Sinon, faire l'appel API comme avant
     try {
-      const response = await axios.get('https://localhost:7082/api/EvaluationHistory/kpis', {
+      const response = await api.get('/EvaluationHistory/kpis', {
         params: {
           startDate: filters.startDate || null,
           endDate: filters.endDate || null,

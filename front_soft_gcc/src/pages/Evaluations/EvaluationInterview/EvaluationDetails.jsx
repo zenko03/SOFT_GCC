@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import '../../../assets/css/Evaluations/EvaluationDetails.css'; // Styles spécifiques
 import axios from 'axios';
+import api from '../../../helpers/api';
 import { useUser } from '../../Authentification/UserContext';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
@@ -101,7 +102,7 @@ const EvaluationDetails = ({ interview: propInterview, employeeId: propEmployeeI
                 // Utiliser l'employeeId pour des requêtes spécifiques si nécessaire
                 console.log("Employé concerné ID:", employeeId);
                 
-                const response = await axios.get(`https://localhost:7082/api/EvaluationInterview/interview-details/${actualInterviewId}`);
+                const response = await api.get(`/EvaluationInterview/interview-details/${actualInterviewId}`);
                 const data = response.data;
                 
                 // Log détaillé des données récupérées
@@ -239,8 +240,8 @@ const EvaluationDetails = ({ interview: propInterview, employeeId: propEmployeeI
             try {
                 // Premier essai: complete-interview
                 console.log("Essai avec complete-interview...");
-                const completeResponse = await axios.put(
-                    `https://localhost:7082/api/EvaluationInterview/complete-interview/${interviewId}`,
+                const completeResponse = await api.put(
+                    `/EvaluationInterview/complete-interview/${interviewId}`,
                     payload
                 );
                 
@@ -254,8 +255,8 @@ const EvaluationDetails = ({ interview: propInterview, employeeId: propEmployeeI
                 try {
                     // Deuxième essai: update-interview
                     console.log("Essai avec update-interview...");
-                    const updateResponse = await axios.put(
-                        `https://localhost:7082/api/EvaluationInterview/update-interview/${interviewId}`,
+                    const updateResponse = await api.put(
+                        `/EvaluationInterview/update-interview/${interviewId}`,
                         payload
                     );
                     

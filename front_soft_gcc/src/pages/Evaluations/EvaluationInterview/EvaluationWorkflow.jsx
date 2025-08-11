@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useUser } from '../../Authentification/UserContext';
 import axios from 'axios';
+import api from '../../../helpers/api';
 import PropTypes from 'prop-types';
 import PermissionService from '../../../services/PermissionService';
 
@@ -45,8 +46,8 @@ const EvaluationWorkflow = ({ interview }) => {
       console.log("Données envoyées au backend :", body);
 
       // Requête PUT avec Axios
-      const response = await axios.put(
-        `https://localhost:7082/api/EvaluationInterview/complete-interview/${interview.interviewId}`,
+      const response = await api.put(
+        `/EvaluationInterview/complete-interview/${interview.interviewId}`,
         body,
         {
           headers: {
