@@ -126,8 +126,8 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                         
                         // Vérifier si la compétence existe déjà
                         var existingSkillId = await CheckExistingSkill(employeeId, skillId);
-                        var score = (double)result.Score;
-                        
+                        var score = (double)result.Score * 20; // Convertir le score en pourcentage
+
                         if (existingSkillId > 0)
                         {
                             // Mise à jour
