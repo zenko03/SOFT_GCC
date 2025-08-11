@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import Template from '../../Template';
 import { ResponsivePie } from '@nivo/pie';
 import '../../../assets/css/Evaluations/EvaluationHistory.css';
-import axios from 'axios';
 import EvaluationDetailsModal from './EvaluationDetailsModal';
 import GlobalPerformanceGraph from './GlobalPerformanceGraph';
 import * as XLSX from 'xlsx';
@@ -10,8 +9,9 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { FaFileExcel, FaFilePdf, FaFileCsv, FaDownload, FaSearch, FaUndo } from 'react-icons/fa';
 import PropTypes from 'prop-types';
+import api from '../../../helpers/api';
 
-const API_BASE_URL = 'https://localhost:7082/api/EvaluationHistory';
+// Les appels API utilisent désormais le client `api` (baseURL centralisée)
 
 const KpiCard = ({ title, value, icon, color }) => (
   <div className="kpi-card">
@@ -133,11 +133,11 @@ const EvaluationHistory = () => {
   const fetchMetadata = useCallback(async () => {
     try {
       // Récupérer les départements
-      const deptResponse = await axios.get(`${API_BASE_URL}/departments`);
+      const deptResponse = await api.get('/EvaluationHistory/departments');
       setDepartments(deptResponse.data);
       
       // Récupérer les types d'évaluation
-      const evalTypesResponse = await axios.get(`${API_BASE_URL}/evaluation-types`);
+      const evalTypesResponse = await api.get('/EvaluationHistory/evaluation-types');
       if (Array.isArray(evalTypesResponse.data)) {
         setEvaluationTypes(evalTypesResponse.data);
       } else {
@@ -147,7 +147,7 @@ const EvaluationHistory = () => {
       
       // Récupérer la liste des employés pour la recherche avancée
       try {
-        const employeesResponse = await axios.get(`${API_BASE_URL}/employees`);
+        const employeesResponse = await api.get('/EvaluationHistory/employees');
         if (Array.isArray(employeesResponse.data)) {
           console.log(`${employeesResponse.data.length} employés chargés`);
           // Vous pouvez stocker les employés dans l'état si nécessaire pour la recherche avancée
@@ -167,7 +167,7 @@ const EvaluationHistory = () => {
     setLoadingStats(true);
     try {
       // Appel API pour récupérer les statistiques globales (sans pagination)
-      const response = await axios.get(`${API_BASE_URL}/global-statistics`, {
+      const response = await api.get('/EvaluationHistory/global-statistics', {
         params: {
           // On peut conserver certains filtres pour les statistiques
           startDate: filters.startDate || null,
@@ -205,7 +205,7 @@ const EvaluationHistory = () => {
         employeeName: searchQuery || null,
       });
       
-      const response = await axios.get(`${API_BASE_URL}/evaluation-history-paginated`, {
+      const response = await api.get('/EvaluationHistory/evaluation-history-paginated', {
         params: {
           pageNumber: currentPage,
           pageSize: pageSize,
@@ -293,7 +293,7 @@ const EvaluationHistory = () => {
 
   const handleDetailsClick = async (evaluationId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/detail/${evaluationId}`);
+      const response = await api.get(`/EvaluationHistory/detail/${evaluationId}`);
       setSelectedEvaluation(response.data);
       setShowModal(true);
     } catch (error) {
@@ -338,7 +338,7 @@ const EvaluationHistory = () => {
         doc.save('historique_evaluations.pdf');
       } else {
         // Sinon, nous utilisons l'API backend pour des exports plus complexes
-        const response = await axios.get(`${API_BASE_URL}/export`, {
+        const response = await api.get(`/EvaluationHistory/export`, {
           params: {
             format: format,
             startDate: filters.startDate || null,

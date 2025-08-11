@@ -8,6 +8,7 @@ import { useUser } from '../../Authentification/UserContext';
 import PermissionService from '../../../services/PermissionService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
+import api from '../../../helpers/api';
 
 const EvaluationInterviews = () => {
   const { state } = useLocation();
@@ -107,7 +108,7 @@ const EvaluationInterviews = () => {
       
       if (interview && interview.evaluationId) {
         // Récupérer directement les détails de l'évaluation avec l'endpoint spécifié
-        const evaluationResponse = await axios.get(`https://localhost:7082/api/Evaluation/${interview.evaluationId}`);
+        const evaluationResponse = await api.get(`/Evaluation/${interview.evaluationId}`);
         
         if (evaluationResponse.data) {
           const evaluation = evaluationResponse.data;
@@ -149,7 +150,7 @@ const EvaluationInterviews = () => {
           
           // Charger les compétences associées au poste
           if (evaluation.positionId) {
-            const skillsResponse = await axios.get(`https://localhost:7082/api/Skill/position/${evaluation.positionId}`);
+            const skillsResponse = await api.get(`/Skill/position/${evaluation.positionId}`);
             
             if (skillsResponse.data && Array.isArray(skillsResponse.data)) {
               const skills = skillsResponse.data.map(skill => ({
@@ -170,7 +171,7 @@ const EvaluationInterviews = () => {
         }
       } else if (employeeId) {
         // Si on a l'employeeId mais pas l'evaluationId, on récupère les données de l'employé
-        const employeeResponse = await axios.get(`https://localhost:7082/api/Employee/${employeeId}`);
+        const employeeResponse = await api.get(`/Employee/${employeeId}`);
         
         if (employeeResponse.data) {
           const employee = employeeResponse.data;
@@ -333,8 +334,8 @@ const EvaluationInterviews = () => {
 
       console.log("Payload final:", payload);
       
-      const response = await axios.put(
-        `https://localhost:7082/api/EvaluationInterview/complete-interview/${interview.interviewId}`,
+      const response = await api.put(
+        `/EvaluationInterview/complete-interview/${interview.interviewId}`,
         payload
       );
       
@@ -359,8 +360,8 @@ const EvaluationInterviews = () => {
         console.error("Première tentative échouée, essai avec endpoint alternatif:", error);
         
         // Utiliser update-interview comme solution de secours
-        const updateResponse = await axios.put(
-          `https://localhost:7082/api/EvaluationInterview/update-interview/${interview.interviewId}`,
+        const updateResponse = await api.put(
+          `/EvaluationInterview/update-interview/${interview.interviewId}`,
           {
             newStatus: interview.status || 20,
             // Ces champs sont obligatoires pour cet endpoint selon le contrôleur

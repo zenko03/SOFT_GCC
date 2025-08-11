@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import EvaluationConfiguration from './EvaluationConfiguration';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown, faUndo, faBell, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import api from '../../../helpers/api';
 
 // Styles pour les colonnes triables
 const sortableStyles = {
@@ -140,7 +141,7 @@ function SalaryListPlanning() {
 
   const fetchSupervisors = async () => {
     try {
-      const response = await axios.get('https://localhost:7082/api/User/managers-directors');
+      const response = await api.get('/User/managers-directors');
       setSupervisors(response.data);
     } catch (error) {
       console.error('Erreur lors de la récupération des superviseurs :', error);
@@ -149,7 +150,7 @@ function SalaryListPlanning() {
 
   const fetchEvaluationTypes = async () => {
     try {
-      const response = await axios.get('https://localhost:7082/api/EvaluationPlanning/evaluation-types');
+      const response = await api.get('/EvaluationPlanning/evaluation-types');
       setEvaluationTypes(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des types d'évaluation :", error);
@@ -159,8 +160,8 @@ function SalaryListPlanning() {
   const fetchEmployeesWithoutEvaluations = async () => {
     setLoading(true); // Start loading
     try {
-      const response = await axios.get(
-        'https://localhost:7082/api/EvaluationPlanning/employees-without-evaluations-paginated',
+      const response = await api.get(
+        '/EvaluationPlanning/employees-without-evaluations-paginated',
         {
           params: {
             pageNumber: currentPage,
@@ -186,8 +187,8 @@ function SalaryListPlanning() {
   const fetchFilterOptions = async () => {
     try {
       const [positionsRes, departmentsRes] = await Promise.all([
-        axios.get('https://localhost:7082/api/EvaluationPlanning/positions'),
-        axios.get('https://localhost:7082/api/EvaluationPlanning/departments'),
+        api.get('/EvaluationPlanning/positions'),
+        api.get('/EvaluationPlanning/departments'),
       ]);
       setPositions(positionsRes.data);
       setDepartments(departmentsRes.data);
@@ -200,8 +201,8 @@ function SalaryListPlanning() {
   const fetchPlannedEvaluations = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        'https://localhost:7082/api/EvaluationPlanning/planned-evaluations',
+      const response = await api.get(
+        '/EvaluationPlanning/planned-evaluations',
         {
           params: {
             pageNumber: currentPage,
@@ -366,7 +367,7 @@ function SalaryListPlanning() {
 
   const handleSendReminderEmail = async () => {
     try {
-      await axios.post('https://localhost:7082/api/EvaluationPlanning/send-reminder', {
+      await api.post('/EvaluationPlanning/send-reminder', {
         employees: selectedEmployees,
       });
       alert('Rappel envoyé avec succès !'); // Optional success message
@@ -408,11 +409,11 @@ function SalaryListPlanning() {
         enableReminders: autoReminderEnabled
       }));
 
-      const response = await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation', payload);
+      const response = await api.post('/EvaluationPlanning/create-evaluation', payload);
       
       if (autoReminderEnabled) {
         try {
-          await axios.post('https://localhost:7082/api/EvaluationPlanning/configure-reminders', {
+          await api.post('/EvaluationPlanning/configure-reminders', {
             evaluationIds: response.data.map(res => res.evaluationId),
             isEnabled: true
           });
@@ -499,7 +500,7 @@ function SalaryListPlanning() {
     setLoadingCancel(true);
     setCancelError('');
     try {
-      await axios.put(`https://localhost:7082/api/EvaluationPlanning/cancel-evaluation/${evaluationToCancel}`);
+      await api.put(`/EvaluationPlanning/cancel-evaluation/${evaluationToCancel}`);
       setCancelSuccess(true);
       setTimeout(() => {
         setShowCancelConfirmModal(false);

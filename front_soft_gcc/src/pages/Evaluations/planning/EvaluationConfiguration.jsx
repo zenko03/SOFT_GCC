@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 import '../../../assets/css/Evaluations/EvaluationConfiguration.css';
+import api from '../../../helpers/api';
 
 function EvaluationConfiguration({ selectedEmployees, employees, onBack, onComplete, onRemoveEmployee, autoReminderEnabled }) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -120,8 +120,8 @@ function EvaluationConfiguration({ selectedEmployees, employees, onBack, onCompl
       try {
         setLoading(true);
         const [evalTypesRes, supervisorsRes] = await Promise.all([
-          axios.get('https://localhost:7082/api/Evaluation/types'),
-          axios.get('https://localhost:7082/api/User/managers-directors')
+          api.get('/Evaluation/types'),
+          api.get('/User/managers-directors')
         ]);
 
         setEvaluationTypes(evalTypesRes.data);
@@ -132,7 +132,7 @@ function EvaluationConfiguration({ selectedEmployees, employees, onBack, onCompl
           const employee = employees.find(e => e.employeeId === employeeId);
           if (!employee) return null;
 
-          const response = await axios.get(`https://localhost:7082/api/CompetenceLine/position/${employee.positionId}`);
+          const response = await api.get(`/CompetenceLine/position/${employee.positionId}`);
           console.log(`Données de compétences pour l'employé ${employeeId}:`, response.data);
           return { employeeId, competences: response.data };
         });
@@ -185,8 +185,8 @@ function EvaluationConfiguration({ selectedEmployees, employees, onBack, onCompl
                 competenceLineId: competence.competenceLineId
               });
 
-              const response = await axios.get(
-                `https://localhost:7082/api/Evaluation/questions`,
+              const response = await api.get(
+                `/Evaluation/questions`,
                 {
                   params: {
                     evaluationTypeId: selectedEvaluationType,
@@ -415,8 +415,8 @@ function EvaluationConfiguration({ selectedEmployees, employees, onBack, onCompl
       console.log('Envoi de la requête de calcul de durée:', requestData);
       
       // Appeler l'API
-      const response = await axios.post(
-        'https://localhost:7082/api/EvaluationPlanning/calculate-recommended-duration',
+      const response = await api.post(
+        '/EvaluationPlanning/calculate-recommended-duration',
         requestData
       );
       
@@ -587,12 +587,12 @@ function EvaluationConfiguration({ selectedEmployees, employees, onBack, onCompl
 
       console.log('Données envoyées pour la planification:', planningData);
 
-      const response = await axios.post('https://localhost:7082/api/EvaluationPlanning/create-evaluation-with-questions', planningData);
+      const response = await api.post('/EvaluationPlanning/create-evaluation-with-questions', planningData);
       console.log('Réponse du serveur:', response.data);
 
       if (autoReminderEnabled && response.data && response.data.evaluationIds) {
         try {
-          await axios.post('https://localhost:7082/api/EvaluationPlanning/configure-reminders', {
+          await api.post('/EvaluationPlanning/configure-reminders', {
             evaluationIds: response.data.evaluationIds,
             isEnabled: true
           });

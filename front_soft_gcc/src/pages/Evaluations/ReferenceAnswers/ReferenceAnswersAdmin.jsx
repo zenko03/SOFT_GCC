@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Template from '../../Template';
 import '../../../assets/css/Common/crud-ui.css';
+import api from '../../../helpers/api';
 
 const ReferenceAnswersAdmin = () => {
   const [questions, setQuestions] = useState([]);
@@ -36,7 +36,7 @@ const ReferenceAnswersAdmin = () => {
       setLoading(true);
       setError(null);
       
-      const response = await axios.get(`https://localhost:7082/api/Evaluation/questions/paginated`, {
+      const response = await api.get(`/Evaluation/questions/paginated`, {
         params: {
           pageNumber: currentPage,
           pageSize: 10
@@ -57,7 +57,7 @@ const ReferenceAnswersAdmin = () => {
     setSelectedQuestion(question);
     
     try {
-      const response = await axios.get(`https://localhost:7082/api/ReferenceAnswer/question/${question.questiondId}`);
+      const response = await api.get(`/ReferenceAnswer/question/${question.questiondId}`);
       
       if (response.status === 200) {
         setReferenceData(response.data);
@@ -101,7 +101,7 @@ const ReferenceAnswersAdmin = () => {
     try {
       setSaveStatus('saving');
       
-      const response = await axios.post('https://localhost:7082/api/ReferenceAnswer', referenceData);
+      const response = await api.post('/ReferenceAnswer', referenceData);
       
       if (response.status === 200) {
         setSaveStatus('success');
