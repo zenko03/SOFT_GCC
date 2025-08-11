@@ -1,26 +1,24 @@
-import axios from 'axios';
-
-const API_URL = 'https://localhost:7082/api/EvaluationType'; // Adaptez si votre URL d'API est différente
+import api from '../../helpers/api';
 
 const EvaluationTypeService = {
     getEvaluationTypes: () => {
-        return axios.get(API_URL);
+        return api.get('/EvaluationType');
     },
 
     getEvaluationType: (id) => {
-        return axios.get(`${API_URL}/${id}`);
+        return api.get(`/EvaluationType/${id}`);
     },
 
     createEvaluationType: (evaluationType) => {
-        return axios.post(API_URL, evaluationType);
+        return api.post('/EvaluationType', evaluationType);
     },
 
     updateEvaluationType: (id, evaluationType) => {
-        return axios.put(`${API_URL}/${id}`, evaluationType);
+        return api.put(`/EvaluationType/${id}`, evaluationType);
     },
 
     deleteEvaluationType: (id) => {
-        return axios.delete(`${API_URL}/${id}`);
+        return api.delete(`/EvaluationType/${id}`);
     }
 };
 

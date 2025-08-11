@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'https://localhost:7082/api'; // URL de l'API backend
+import api from '../../helpers/api';
 
 const UserService = {
   getEmployeeById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/User/employee/${id}`);
+      const response = await api.get(`/User/employee/${id}`);
       return response.data;
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
@@ -16,7 +14,7 @@ const UserService = {
   // Nouvelle méthode pour récupérer l'employé associé à un utilisateur
   getUserEmployeeMapping: async (userId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/User/${userId}/employee-mapping`);
+      const response = await api.get(`/User/${userId}/employee-mapping`);
       return response.data;
     } catch (error) {
       console.error('Erreur lors de la récupération du mapping utilisateur-employé:', error);
@@ -27,7 +25,7 @@ const UserService = {
   // Méthode pour récupérer tous les utilisateurs ayant un rôle de manager ou directeur
   getManagers: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/User/managers-directors`);
+      const response = await api.get(`/User/managers-directors`);
       return response.data;
     } catch (error) {
       console.error('Erreur lors de la récupération des managers:', error);
