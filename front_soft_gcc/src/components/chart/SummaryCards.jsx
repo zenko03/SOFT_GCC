@@ -140,37 +140,56 @@ const SummaryCards = ({ dashboard }) => {
         <Row className="g-4">
           {dataSource.map((item, index) => (
             <Col xs={12} sm={6} md={3} key={index} style={{ marginTop: '20px' }}>
-              <Card className="summary-card shadow-sm h-100" onClick={() => handleCardClick(item)} style={{ cursor: 'pointer' }}>
-                <Card.Body className="text-center">
-                  <div
-                    className="d-flex align-items-center justify-content-center gap-2 mb-3"
-                    style={{ fontSize: '1.5rem', color: item.color }}
+              <Card 
+                className="summary-card shadow-lg h-100 border-0" 
+                onClick={() => handleCardClick(item)} 
+                style={{ cursor: 'pointer', borderRadius: '20px' }}
+              >
+                <Card.Body className="d-flex flex-column align-items-center justify-content-center text-center p-4">
+                  
+                  {/* Logo centré en haut */}
+                  <div 
+                    className="d-flex align-items-center justify-content-center mb-4"
+                    style={{
+                      backgroundColor: `${item.color}20`,
+                      borderRadius: '50%',
+                      width: '80px',
+                      height: '80px',
+                      color: item.color,
+                      fontSize: '2rem'
+                    }}
                   >
-                    <div className="icon-wrapper d-flex align-items-center justify-content-center"
-                      style={{
-                        backgroundColor: `${item.color}33`,
-                        borderRadius: '50%',
-                        width: '40px',
-                        height: '40px'
-                      }}>
-                      {item.icon}
-                    </div>
-                    <span className="fw-semibold text-muted">{item.title}</span>
+                    {item.icon}
                   </div>
 
+                  {/* Titre centré au milieu */}
+                  <h5 className="fw-semibold text-secondary mb-4">
+                    {item.title}
+                  </h5>
+
+                  {/* Chiffre en énorme */}
                   {loading ? (
-                    <Skeleton height={30} width={80} className="mx-auto" />
+                    <Skeleton height={80} width={120} className="mx-auto" />
                   ) : (
-                    <Card.Text className="fs-2 fw-bold" style={{ color: item.color, fontSize: '50px' }}>
+                    <div 
+                      style={{
+                        fontWeight: 500,
+                        fontSize: '80px',
+                        lineHeight: '1',
+                        color: item.color
+                      }}
+                    >
                       {item.value}
-                    </Card.Text>
+                    </div>
                   )}
+
                 </Card.Body>
               </Card>
             </Col>
           ))}
         </Row>
       </Container>
+
 
       <Dialog
         open={showModal}

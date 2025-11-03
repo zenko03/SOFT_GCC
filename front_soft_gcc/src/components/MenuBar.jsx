@@ -135,7 +135,7 @@ function MenuBar() {
           <div className="sidebar-user-menu">
             <a href="#" className="nav-link">
               <i className="mdi mdi-logout menu-icon"></i>
-              <span className="menu-title">Se déconnecter</span>
+              <span className="menu-title">Déconnexion</span>
             </a>
           </div>
         </li>

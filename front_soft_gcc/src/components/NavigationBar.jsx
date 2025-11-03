@@ -77,7 +77,7 @@ function NavigationBar({ task }) {
                       className="py-1 d-flex align-items-center justify-content-between"
                       onClick={handleLogout}
                     >
-                      <span>Se déconnecter</span>
+                      <span>Déconnexion</span>
                       <i className="mdi mdi-logout ml-1" />
                     </Dropdown.Item>
                   )}
