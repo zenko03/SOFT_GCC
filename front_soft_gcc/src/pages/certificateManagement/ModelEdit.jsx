@@ -55,37 +55,37 @@ const formatDateFr = (isoDate) => {
 
 const genererNouvelleReference = async (setIsLoading, setError) => {
   setIsLoading(true);
-    try {
-      const [allCertificatesResponse] = await Promise.all([
-        axios.get(urlApi(`/CareerPlan/Certificate/GetAll`))
-      ]);
+  try {
+    const [allCertificatesResponse] = await Promise.all([
+      axios.get(urlApi(`/CareerPlan/Certificate/GetAll`))
+    ]);
 
-      const attestations = allCertificatesResponse.data;
-      //console.log(allCertificatesResponse.data);
-      //console.log(attestations);
+    const attestations = allCertificatesResponse.data;
+    //console.log(allCertificatesResponse.data);
+    //console.log(attestations);
 
-      const dateDuJour = new Date();
-      const annee = dateDuJour.getFullYear();
-      const mois = String(dateDuJour.getMonth() + 1).padStart(2, '0');
-      const jour = String(dateDuJour.getDate()).padStart(2, '0');
-      const heures = String(dateDuJour.getHours()).padStart(2, '0');
-      const minutes = String(dateDuJour.getMinutes()).padStart(2, '0');
-      const secondes = String(dateDuJour.getSeconds()).padStart(2, '0');
-      const dateStr = `${annee}${mois}${jour}-${heures}${minutes}${secondes}`;
-      let prochainCompteur = '';
-      if(attestations.length == 0) {
-        prochainCompteur = `0RF01`;
+    const dateDuJour = new Date();
+    const annee = dateDuJour.getFullYear();
+    const mois = String(dateDuJour.getMonth() + 1).padStart(2, '0');
+    const jour = String(dateDuJour.getDate()).padStart(2, '0');
+    const heures = String(dateDuJour.getHours()).padStart(2, '0');
+    const minutes = String(dateDuJour.getMinutes()).padStart(2, '0');
+    const secondes = String(dateDuJour.getSeconds()).padStart(2, '0');
+    const dateStr = `${annee}${mois}${jour}-${heures}${minutes}${secondes}`;
+    let prochainCompteur = '';
+    if (attestations.length == 0) {
+      prochainCompteur = `0RF01`;
 
-      } else {
-        prochainCompteur = `0RF0${attestations[attestations.length-1].id+1}`;
-      }
-
-      return `ATT-${dateStr}-${prochainCompteur}`;     
-    } catch (error) {
-      setError(`Erreur lors de la recuperation des donnees : ${error.message}`);
-    } finally {
-      setIsLoading(false);
+    } else {
+      prochainCompteur = `0RF0${attestations[attestations.length - 1].id + 1}`;
     }
+
+    return `ATT-${dateStr}-${prochainCompteur}`;
+  } catch (error) {
+    setError(`Erreur lors de la recuperation des donnees : ${error.message}`);
+  } finally {
+    setIsLoading(false);
+  }
 }
 
 const fileToBase64 = (file) => {
@@ -102,7 +102,7 @@ const fileToBase64 = (file) => {
 
 const sendAttestationEmail = async ({ recipientEmail, subject, body, file }) => {
   try {
-    const base64Pdf = await fileToBase64(file); 
+    const base64Pdf = await fileToBase64(file);
     const payload = {
       recipientEmail,
       subject,
@@ -123,8 +123,8 @@ const sendAttestationEmail = async ({ recipientEmail, subject, body, file }) => 
 const ModelEdit = ({ dataEmployee }) => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [signaturePreview, setSignaturePreview] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); 
-  const [error, setError] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [errorUpload, setErrorUpload] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -180,8 +180,8 @@ const ModelEdit = ({ dataEmployee }) => {
   const previewRef = useRef(); // Référence pour l'export PDF
 
   // Appel api pour les donnees du formulaire
-  const [certificates, setCertificates] = useState([]); 
-  const [employeeEstablishment, setEmployeeEstablishment] = useState({}); 
+  const [certificates, setCertificates] = useState([]);
+  const [employeeEstablishment, setEmployeeEstablishment] = useState({});
   const [certificateTypes, setCertificateTypes] = useState([]);
 
   // Chargement des donnees depuis l'api 
@@ -222,7 +222,7 @@ const ModelEdit = ({ dataEmployee }) => {
   }, [dataEmployee]);
 
   const attestationId = "ATT-" + new Date().getTime(); // Simulé
-  const qrValue = `http://151.80.218.41:5173/verify/${token}`; // lien de vérification
+  const qrValue = `http://localhost:5189/api/verify/${token}`; // lien de vérification
 
   const addSection = () => {
     setSections([...sections, { id: sections.length + 1, content: "" }]);
@@ -288,19 +288,19 @@ const ModelEdit = ({ dataEmployee }) => {
           const file = new File([blob], `Attestation_${aboutModel.reference}.pdf`, { type: "application/pdf" });
 
           // Uploader avec un nom correct
-          handleUpload(file, 1);          
+          handleUpload(file, 1);
         });
-      } else {
-        setInfo("Veuillez cliquer d'abord sur le bouton voir aperçu");
-      }
+    } else {
+      setInfo("Veuillez cliquer d'abord sur le bouton voir aperçu");
+    }
   };
 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAboutModel((prevData) => ({
-        ...prevData,
-        [name]: value === "" ? null : value,
+      ...prevData,
+      [name]: value === "" ? null : value,
     }));
   };
 
@@ -333,7 +333,7 @@ const ModelEdit = ({ dataEmployee }) => {
 
   const replaceVariables = (text) => {
     if (!dataEmployee) return text;
-  
+
     const mapping = {
       Nom: dataEmployee.name || "",
       Prenom: dataEmployee.firstName || "",
@@ -343,7 +343,7 @@ const ModelEdit = ({ dataEmployee }) => {
       Ancienneté: dataEmployee.anciennete || "",
       Civilité: dataEmployee.civiliteName || "",
     };
-  
+
     return text.replace(/{{(.*?)}}/g, (_, key) => mapping[key.trim()] || "");
   };
 
@@ -371,7 +371,7 @@ const ModelEdit = ({ dataEmployee }) => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      if(state === 1) {
+      if (state === 1) {
         setUploadSuccess('PDF exporté et enregistré avec succès.');
 
       } else {
@@ -482,356 +482,356 @@ const ModelEdit = ({ dataEmployee }) => {
   };
 
 
-// Initialisation du formulaire de géneration du formulaire
-    const initializeForm = async () => {
-        setAboutModel((prevData) => ({
-            ...prevData, // Conserve les autres champs inchangés
-            reference: "",
-            place: "",
-            signatoryPosition: "",
-            reason: "",
-            signatoryName: "",
-            date: "",
-            entreprise: 0,
-            certificateType: 0,
-            certificateTypeName: "",
-            state: 0
-        }));
-        setLogoPreview(null);
-        console.log("Manda");
-        const nouvelleRef = await genererNouvelleReference(setIsLoading, setError);
-        setAboutModel(prev => ({
-          ...prev,
-          reference: nouvelleRef
-        }));
-    };
-  
+  // Initialisation du formulaire de géneration du formulaire
+  const initializeForm = async () => {
+    setAboutModel((prevData) => ({
+      ...prevData, // Conserve les autres champs inchangés
+      reference: "",
+      place: "",
+      signatoryPosition: "",
+      reason: "",
+      signatoryName: "",
+      date: "",
+      entreprise: 0,
+      certificateType: 0,
+      certificateTypeName: "",
+      state: 0
+    }));
+    setLogoPreview(null);
+    console.log("Manda");
+    const nouvelleRef = await genererNouvelleReference(setIsLoading, setError);
+    setAboutModel(prev => ({
+      ...prev,
+      reference: nouvelleRef
+    }));
+  };
+
   return (
-      <Container fluid>
-        <h2 className="mb-4 fw-bold">Géneration du document d'attestation</h2>
-        <p>{aboutModel.date}</p>
-        {isLoading && <Loader />}
-        {error && <div className="alert alert-danger">{error}</div>}
-        <Form>
-          <Row>
-            <Col md={6}>
-              {/* Bloc gauche */}
-              <Card className="mb-4 shadow-sm">
-                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
-                  <Icon path={mdiFileDocumentEdit} size={1} className="me-2" style={{marginRight: '10px'}}/>
-                  <h3 className="mb-0" style={{color: '#B8860B'}}>À propos du modèle</h3>
+    <Container fluid>
+      <h2 className="mb-4 fw-bold">Géneration du document d'attestation</h2>
+      <p>{aboutModel.date}</p>
+      {isLoading && <Loader />}
+      {error && <div className="alert alert-danger">{error}</div>}
+      <Form>
+        <Row>
+          <Col md={6}>
+            {/* Bloc gauche */}
+            <Card className="mb-4 shadow-sm">
+              <div className="card-header d-flex align-items-center" style={{ color: '#B8860B' }}>
+                <Icon path={mdiFileDocumentEdit} size={1} className="me-2" style={{ marginRight: '10px' }} />
+                <h3 className="mb-0" style={{ color: '#B8860B' }}>À propos du modèle</h3>
+              </div>
+              <Card.Body>
+                <Form.Group className="mb-3">
+                  <Form.Label>Réference</Form.Label>
+                  <Form.Control type="text" name="reference" value={aboutModel.reference} onChange={handleChange} />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Type d'attestation</Form.Label>
+                  <select name="certificateType" value={aboutModel.certificateType} onChange={handleSelectChange} className="form-control" id="exampleSelectGender">
+                    <option value="">Sélectionner le type</option>
+                    {certificateTypes && certificateTypes.map((item, id) => (
+                      <option key={id} value={item.certificateTypeId}>
+                        {item.certificateTypeName}
+                      </option>
+                    ))}
+                  </select>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Fait à</Form.Label>
+                  <Form.Control type="text" name="place" placeholder="Antananarivo" value={aboutModel.place} onChange={handleChange} />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Le</Form.Label>
+                  <Form.Control type="date" name="date" placeholder="date de soumission" value={aboutModel.date} onChange={handleChange} />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Par</Form.Label>
+                  <Form.Control type="text" name="signatoryPosition" placeholder="Le Directeur géneral" value={aboutModel.signatoryPosition} onChange={handleChange} />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Motif</Form.Label>
+                  <Form.Control type="text" name="reason" placeholder="Administratif" value={aboutModel.reason} onChange={handleChange} />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Ajouter un logo</Form.Label>
+                  <Form.Control type="file" onChange={handleLogoChange} />
+                  {logoPreview && (
+                    <div className="mt-2">
+                      <img
+                        src={logoPreview}
+                        alt="Logo"
+                        style={{ width: "150px", objectFit: "contain" }}
+                      />
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={removeLogo}
+                        className="mt-2"
+                      >
+                        Supprimer
+                      </Button>
+                    </div>
+                  )}
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Le signataire</Form.Label>
+                  <Form.Control type="text" name="signatoryName" placeholder="Nom complet" value={aboutModel.signatoryName} onChange={handleChange} />
+                </Form.Group>
+              </Card.Body>
+            </Card>
+
+            <Card className="mb-4 shadow-sm">
+              <div className="card-header d-flex align-items-center" style={{ color: '#B8860B' }}>
+                <Icon path={mdiInformationOutline} size={1} className="me-2" style={{ marginRight: '10px' }} />
+                <h3 className="mb-0" style={{ color: '#B8860B' }}> Contenu dynamique</h3>
+              </div>
+              <Card.Body>
+                {sections.map((section) => (
+                  <Card className="mb-3" key={section.id}>
+                    <Card.Body>
+                      <Row className="align-items-start">
+                        <Col md={10}>
+                          <Form.Group>
+                            <Form.Label>Contenu {section.id}</Form.Label>
+                            <ReactQuill
+                              theme="snow"
+                              value={section.content}
+                              onChange={(value) =>
+                                updateSection(section.id, "content", value)
+                              }
+                              modules={{
+                                toolbar: [
+                                  [{ header: [1, 2, false] }],
+                                  ["bold", "italic", "underline"],
+                                  ["link"],
+                                  [{ list: "ordered" }, { list: "bullet" }],
+                                  ["clean"],
+                                ],
+                              }}
+                              className="bg-white"
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col md={2} className="d-flex flex-column align-items-stretch gap-2 justify-content-start pt-1">
+                          <Dropdown onSelect={(variable) => insertVariable(section.id, variable)}>
+                            <Dropdown.Toggle
+                              variant="outline-primary"
+                              size="sm"
+                              className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
+                            >
+                              <Icon path={mdiFormatListBulleted} size={0.75} className="me-1" />
+                              Champ
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                              {variables.map((v) => (
+                                <Dropdown.Item key={v} eventKey={v}>
+                                  {v}
+                                </Dropdown.Item>
+                              ))}
+                            </Dropdown.Menu>
+                          </Dropdown>
+
+                          <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => removeSection(section.id)}
+                            className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
+                          >
+                            <Icon path={mdiDelete} size={0.75} />
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                ))}
+                <div className="mt-4">
+                  <Row className="g-3">
+                    <Col xs={12} md="auto">
+                      <Button variant="outline-success" onClick={addSection} className="w-100 shadow-sm rounded-3 px-4">
+                        <Icon path={mdiPlus} size={0.9} className="me-2" />
+                        Ajouter une section
+                      </Button>
+                    </Col>
+                    <Col xs={12} md="auto">
+                      <Button variant="info" onClick={() => setShowPreview(true)} className="w-100 text-white shadow-sm rounded-3 px-4">
+                        <Icon path={mdiEye} size={0.9} className="me-2" />
+                        Voir l’aperçu
+                      </Button>
+                    </Col>
+                  </Row>
                 </div>
-                <Card.Body>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Réference</Form.Label>
-                    <Form.Control type="text" name="reference" value={aboutModel.reference} onChange={handleChange} />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Type d'attestation</Form.Label>
-                    <select name="certificateType" value={aboutModel.certificateType} onChange={handleSelectChange} className="form-control" id="exampleSelectGender">
-                      <option value="">Sélectionner le type</option>
-                        {certificateTypes && certificateTypes.map((item, id) => (
-                          <option key={id} value={item.certificateTypeId}>
-                            {item.certificateTypeName}
-                          </option>
-                        ))}
-                    </select>                     
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Fait à</Form.Label>
-                    <Form.Control type="text" name="place" placeholder="Antananarivo" value={aboutModel.place} onChange={handleChange} />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Le</Form.Label>
-                    <Form.Control type="date" name="date" placeholder="date de soumission" value={aboutModel.date} onChange={handleChange} />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Par</Form.Label>
-                    <Form.Control type="text" name="signatoryPosition" placeholder="Le Directeur géneral" value={aboutModel.signatoryPosition} onChange={handleChange} />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Motif</Form.Label>
-                    <Form.Control type="text" name="reason" placeholder="Administratif" value={aboutModel.reason} onChange={handleChange} />
-                  </Form.Group>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Ajouter un logo</Form.Label>
-                    <Form.Control type="file" onChange={handleLogoChange} />
+
+              </Card.Body>
+            </Card>
+
+            <div className="my-4">
+              <Row className="g-3">
+                <Col xs={12} md="auto">
+                  <Button variant="success" onClick={handleSend} disabled={sending} className="w-100 shadow-sm rounded-3 px-4">
+                    <Icon path={mdiEmailFastOutline} size={0.9} className="me-2" />
+                    {sending ? "Envoi en cours..." : "Envoyer par e-mail"}
+                  </Button>
+                </Col>
+                <Col xs={12} md="auto">
+                  <Button variant="primary" onClick={handleExportPDF} className="w-100 shadow-sm rounded-3 px-4">
+                    <Icon path={mdiFileExportOutline} size={0.9} className="me-2" />
+                    Export PDF
+                    {uploading ? "Export pdf en cours..." : "Export pdf"}
+                  </Button>
+                </Col>
+                <Col xs={12} md="auto">
+                  <Button variant="outline-secondary" onClick={initializeForm} className="w-100 shadow-sm rounded-3 px-4">
+                    <Icon path={mdiCancel} size={0.9} className="me-2" />
+                    Annuler
+                  </Button>
+                </Col>
+              </Row>
+            </div>
+
+            <br></br>
+            {errorUpload && (
+              <div className="alert alert-danger rounded-3 d-flex align-items-center gap-2">
+                <Icon path={mdiAlertCircle} size={0.8} />
+                {errorUpload}
+              </div>
+            )}
+            {uploadSuccess && (
+              <div className="alert alert-success rounded-3 d-flex align-items-center gap-2">
+                <Icon path={mdiCheckCircle} size={0.8} />
+                {uploadSuccess}
+              </div>
+            )}
+            {uploading && (
+              <Alert variant="info" className="mt-3">
+                Export pdf en cours...
+              </Alert>
+            )}
+            {sending && (
+              <Alert variant="info" className="mt-3">
+                Envoi en cours...
+              </Alert>
+            )}
+
+            {sendSuccess && (
+              <Alert variant="success" className="mt-3">
+                L’attestation a été envoyée avec succès !
+              </Alert>
+            )}
+
+            {sendError && (
+              <Alert variant="danger" className="mt-3">
+                {sendError}
+              </Alert>
+            )}
+            {info && (
+              <Alert variant="info" className="mt-3">
+                {info}
+              </Alert>
+            )}
+
+          </Col>
+
+          {/* Aperçu PDF */}
+          <Col md={6}>
+            <AnimatePresence>
+              {showPreview && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <Card className="p-4 shadow-sm mt-4" ref={previewRef}>
                     {logoPreview && (
-                      <div className="mt-2">
+                      <div className="mb-3 text-start">
                         <img
                           src={logoPreview}
                           alt="Logo"
                           style={{ width: "150px", objectFit: "contain" }}
                         />
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={removeLogo}
-                          className="mt-2"
-                        >
-                          Supprimer
-                        </Button>
                       </div>
                     )}
-                  </Form.Group>
 
-                  <Form.Group className="mb-3">
-                    <Form.Label>Le signataire</Form.Label>
-                    <Form.Control type="text" name="signatoryName" placeholder="Nom complet" value={aboutModel.signatoryName} onChange={handleChange} />
-                  </Form.Group>
-                </Card.Body>
-              </Card>
+                    <p className="text-center fw-bold" style={{ fontSize: '30px', textTransform: 'uppercase' }}>
+                      <b>{aboutModel.certificateTypeName}</b>
+                    </p>
 
-              <Card className="mb-4 shadow-sm">
-                <div className="card-header d-flex align-items-center" style={{color: '#B8860B'}}>
-                  <Icon path={mdiInformationOutline} size={1} className="me-2" style={{marginRight: '10px'}}/>
-                  <h3 className="mb-0" style={{color: '#B8860B'}}> Contenu dynamique</h3>
-                </div>
-                <Card.Body>
-                  {sections.map((section) => (
-                    <Card className="mb-3" key={section.id}>
-                      <Card.Body>
-                        <Row className="align-items-start">
-                          <Col md={10}>
-                            <Form.Group>
-                              <Form.Label>Contenu {section.id}</Form.Label>
-                              <ReactQuill
-                                theme="snow"
-                                value={section.content}
-                                onChange={(value) =>
-                                  updateSection(section.id, "content", value)
-                                }
-                                modules={{
-                                  toolbar: [
-                                    [{ header: [1, 2, false] }],
-                                    ["bold", "italic", "underline"],
-                                    ["link"],
-                                    [{ list: "ordered" }, { list: "bullet" }],
-                                    ["clean"],
-                                  ],
-                                }}
-                                className="bg-white"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col md={2} className="d-flex flex-column align-items-stretch gap-2 justify-content-start pt-1">
-                            <Dropdown onSelect={(variable) => insertVariable(section.id, variable)}>
-                              <Dropdown.Toggle
-                                variant="outline-primary"
-                                size="sm"
-                                className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
-                              >
-                                <Icon path={mdiFormatListBulleted} size={0.75} className="me-1" />
-                                Champ
-                              </Dropdown.Toggle>
-                              <Dropdown.Menu>
-                                {variables.map((v) => (
-                                  <Dropdown.Item key={v} eventKey={v}>
-                                    {v}
-                                  </Dropdown.Item>
-                                ))}
-                              </Dropdown.Menu>
-                            </Dropdown>
+                    <p className="text-center">
+                      <strong style={{ textDecoration: 'underline' }}>Ref </strong>: {aboutModel.reference}
+                    </p>
+                    {sections.map((section) => (
+                      <div
+                        key={section.id}
+                        className="mb-3"
+                        dangerouslySetInnerHTML={{
+                          __html: replaceVariables(section.content),
+                        }}
+                      />
+                    ))}
 
-                            <Button
-                              variant="outline-danger"
-                              size="sm"
-                              onClick={() => removeSection(section.id)}
-                              className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
-                            >
-                              <Icon path={mdiDelete} size={0.75} />
-                            </Button>
-                          </Col>
-                        </Row>
-                      </Card.Body>
-                    </Card>
-                  ))}
-                  <div className="mt-4">
-                    <Row className="g-3">
-                      <Col xs={12} md="auto">
-                        <Button variant="outline-success" onClick={addSection} className="w-100 shadow-sm rounded-3 px-4">
-                          <Icon path={mdiPlus} size={0.9} className="me-2" />
-                          Ajouter une section
-                        </Button>
+                    <Row>
+                      <Col md={8}>
+                        <div className="mt-4 text-start">
+                          <p>
+                            <strong style={{ textDecoration: 'underline' }}>Motif </strong>: <strong>{aboutModel.reason}</strong>
+                          </p>
+                        </div>
+                        <div className="mt-4 text-center">
+                          <QRCodeSVG value={qrValue} size={130} />
+                        </div>
                       </Col>
-                      <Col xs={12} md="auto">
-                        <Button variant="info" onClick={() => setShowPreview(true)} className="w-100 text-white shadow-sm rounded-3 px-4">
-                          <Icon path={mdiEye} size={0.9} className="me-2" />
-                          Voir l’aperçu
-                        </Button>
+                      <Col md={4}>
+                        <div className="mt-4 text-end">
+                          <p>Fait à <strong>{aboutModel.place}</strong>, le <strong><DateDisplayNoTime isoDate={aboutModel.date} /></strong></p>
+                          <p><strong>{aboutModel.signatoryPosition}</strong></p>
+                        </div>
+                        <div className="mt-5 text-end" style={{ paddingTop: '50px' }}>
+                          <p>
+                            <strong>{aboutModel.signatoryName}</strong>
+                          </p>
+                        </div>
                       </Col>
                     </Row>
-                  </div>
 
-                </Card.Body>
-              </Card>
 
-              <div className="my-4">
-                <Row className="g-3">
-                  <Col xs={12} md="auto">
-                    <Button variant="success" onClick={handleSend} disabled={sending} className="w-100 shadow-sm rounded-3 px-4">
-                      <Icon path={mdiEmailFastOutline} size={0.9} className="me-2" />
-                      {sending ? "Envoi en cours..." : "Envoyer par e-mail"}
-                    </Button>
-                  </Col>
-                  <Col xs={12} md="auto">
-                    <Button variant="primary" onClick={handleExportPDF} className="w-100 shadow-sm rounded-3 px-4">
-                      <Icon path={mdiFileExportOutline} size={0.9} className="me-2" />
-                      Export PDF
-                      {uploading ? "Export pdf en cours..." : "Export pdf"}
-                    </Button>
-                  </Col>
-                  <Col xs={12} md="auto">
-                    <Button variant="outline-secondary" onClick={initializeForm} className="w-100 shadow-sm rounded-3 px-4">
-                      <Icon path={mdiCancel} size={0.9} className="me-2" />
-                      Annuler
-                    </Button>
-                  </Col>
-                </Row>
-              </div>
-
-              <br></br>
-              {errorUpload && (
-                <div className="alert alert-danger rounded-3 d-flex align-items-center gap-2">
-                  <Icon path={mdiAlertCircle} size={0.8} />
-                  {errorUpload}
-                </div>
-              )}
-              {uploadSuccess && (
-                <div className="alert alert-success rounded-3 d-flex align-items-center gap-2">
-                  <Icon path={mdiCheckCircle} size={0.8} />
-                  {uploadSuccess}
-                </div>
-              )}
-              {uploading && (
-                <Alert variant="info" className="mt-3">
-                  Export pdf en cours...
-                </Alert>
-              )}
-              {sending && (
-                <Alert variant="info" className="mt-3">
-                  Envoi en cours...
-                </Alert>
-              )}
-
-              {sendSuccess && (
-                <Alert variant="success" className="mt-3">
-                  L’attestation a été envoyée avec succès !
-                </Alert>
-              )}
-
-              {sendError && (
-                <Alert variant="danger" className="mt-3">
-                  {sendError}
-                </Alert>
-              )}
-              {info && (
-                <Alert variant="info" className="mt-3">
-                  {info}
-                </Alert>
-              )}
-
-            </Col>
-
-            {/* Aperçu PDF */}
-            <Col md={6}>
-              <AnimatePresence>
-                {showPreview && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{ duration: 0.4 }}
-                  >
-                    <Card className="p-4 shadow-sm mt-4" ref={previewRef}>
-                      {logoPreview && (
-                        <div className="mb-3 text-start">
-                          <img
-                            src={logoPreview}
-                            alt="Logo"
-                            style={{ width: "150px", objectFit: "contain" }}
-                          />
-                        </div>
-                      )}
-
-                      <p className="text-center fw-bold" style={{ fontSize: '30px', textTransform: 'uppercase' }}>
-                        <b>{aboutModel.certificateTypeName}</b>
-                      </p>
-
-                      <p className="text-center">
-                        <strong style={{textDecoration: 'underline'}}>Ref </strong>: {aboutModel.reference}
-                      </p>
-                      {sections.map((section) => (
-                        <div
-                          key={section.id}
-                          className="mb-3"
-                          dangerouslySetInnerHTML={{
-                            __html: replaceVariables(section.content),
-                          }}
-                        />
-                      ))}
-
-                      <Row>
+                    <footer className="pt-5 text-muted small">
+                      <Row style={{ background: '#e6e9ed', padding: '50px' }}>
                         <Col md={8}>
-                          <div className="mt-4 text-start">
-                            <p>
-                              <strong style={{textDecoration: 'underline'}}>Motif </strong>: <strong>{aboutModel.reason}</strong>
-                            </p>
-                          </div>
-                          <div className="mt-4 text-center">
-                            <QRCodeSVG value={qrValue} size={130} />
-                          </div>
+                          <p className="mb-1">
+                            <strong>Adresse :</strong>{" "}
+                            {companyInfo.adresse || "..."}
+                          </p>
+                          <p className="mb-1">
+                            <strong>Téléphone :</strong>{" "}
+                            {companyInfo.telephone || "..."}
+                          </p>
+                          <p className="mb-1">
+                            <strong>Email :</strong>{" "}
+                            {companyInfo.email || "..."}
+                          </p>
                         </Col>
-                        <Col md={4}>
-                          <div className="mt-4 text-end">
-                            <p>Fait à <strong>{aboutModel.place}</strong>, le <strong><DateDisplayNoTime isoDate={aboutModel.date} /></strong></p>
-                            <p><strong>{aboutModel.signatoryPosition}</strong></p>
-                          </div>
-                          <div className="mt-5 text-end" style={{paddingTop: '50px'}}>
-                            <p>
-                              <strong>{aboutModel.signatoryName}</strong>
-                            </p>
-                          </div>
+                        <Col md={4} className="text-md-end">
+                          <p className="mb-1">
+                            <strong>Site web :</strong>{" "}
+                            {companyInfo.site || "..."}
+                          </p>
+                          <p className="mb-1">
+                            <strong>Réseaux sociaux :</strong>{" "}
+                            {companyInfo.reseaux || "..."}
+                          </p>
                         </Col>
-                      </Row>                      
-                      
-
-                      <footer className="pt-5 text-muted small">
-                        <Row style={{background: '#e6e9ed', padding: '50px'}}>
-                          <Col md={8}>
-                            <p className="mb-1">
-                              <strong>Adresse :</strong>{" "}
-                              {companyInfo.adresse || "..."}
-                            </p>
-                            <p className="mb-1">
-                              <strong>Téléphone :</strong>{" "}
-                              {companyInfo.telephone || "..."}
-                            </p>
-                            <p className="mb-1">
-                              <strong>Email :</strong>{" "}
-                              {companyInfo.email || "..."}
-                            </p>
-                          </Col>
-                          <Col md={4} className="text-md-end">
-                            <p className="mb-1">
-                              <strong>Site web :</strong>{" "}
-                              {companyInfo.site || "..."}
-                            </p>
-                            <p className="mb-1">
-                              <strong>Réseaux sociaux :</strong>{" "}
-                              {companyInfo.reseaux || "..."}
-                            </p>
-                          </Col>
-                        </Row>
-                      </footer>
-                    </Card>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Col>
-          </Row>
-        </Form>
-      </Container>
+                      </Row>
+                    </footer>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Col>
+        </Row>
+      </Form>
+    </Container>
   );
 };
 
