@@ -376,7 +376,7 @@ namespace soft_carriere_competence.Application.Services.Evaluations
                                    $"<strong>Employé concerné :</strong> {evaluatedEmployeeName}<br>" +
                                    $"<strong>Date et heure :</strong> {formattedDate}<br><br>" +
                                    $"Veuillez vous connecter à votre compte pour consulter les détails de cet entretien.<br><br>" +
-                                   $"<a href='http://151.80.218.41:5173/homeInterview' class='button'>Accéder au système</a><br><br>" +
+                                   $"<a href='http://localhost:5189/api/homeInterview' class='button'>Accéder au système</a><br><br>" +
                                    $"Cordialement,<br>" +
                                    $"L'équipe Gestion des Carrières et Compétences";
                     }
